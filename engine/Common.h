@@ -1,0 +1,37 @@
+// Copyright (c)  Zhirnov Andrey. For more information see 'LICENSE.txt'
+
+#pragma once
+
+#define FG_ENABLE_VOLK
+
+#include "stl/include/Cast.h"
+
+#include "framework/Vulkan/VulkanDevice.h"
+#include "framework/Vulkan/VulkanSwapchain.h"
+#include "framework/Window/IWindow.h"
+
+
+namespace VTC
+{
+	using namespace FG;
+
+
+	// for raw vulkan calls
+	class VApp;
+	using VDrawFrame_t = void (*) (const VApp &);
+
+
+	// for framegraph
+	class FGApp;
+	using FGDrawFrame_t = void (*) (const FGApp &);
+	
+
+
+	// TODO: move it somewhere
+	template <typename T, size_t S>
+	inline void operator << (T (&dst)[S], const StaticArray<T,S> &src)
+	{
+		memcpy( dst, src.data(), sizeof(src) );
+	}
+
+}	// VTC
