@@ -30,8 +30,6 @@ set( SOURCES
 	"Analyzer/IAnalyzer.h"
 	"Analyzer/ImageUsageAnalyzer.cpp"
 	"Analyzer/ImageUsageAnalyzer.h"
-	"Analyzer/MemoryAnalyzer.cpp"
-	"Analyzer/MemoryAnalyzer.h"
 	"Analyzer/SwapchainAnalyzer.cpp"
 	"Analyzer/SwapchainAnalyzer.h"
 	"CMakeLists.txt"
@@ -52,7 +50,7 @@ source_group( "Parser" FILES "Parser/AppTrace.cpp" "Parser/AppTrace.h" "Parser/T
 source_group( "Converters\\Utils" FILES "Converters/Utils/BasicTypesConverter.h" "Converters/Utils/NameSerializer.cpp" "Converters/Utils/NameSerializer.h" )
 source_group( "Converters\\Data" FILES "Converters/Data/Block.h" "Converters/Data/IResourceDataManager.h" "Converters/Data/ResourceDataManager.cpp" "Converters/Data/ResourceDataManager.h" )
 source_group( "Converters\\RawVulkan" FILES "Converters/RawVulkan/CppRawVulkanConverter.cpp" "Converters/RawVulkan/CppRawVulkanConverter.h" )
-source_group( "Analyzer" FILES "Analyzer/AllResourcesBookmarks.cpp" "Analyzer/AllResourcesBookmarks.h" "Analyzer/AnalyzerUtils.h" "Analyzer/DeviceAnalyzer.cpp" "Analyzer/DeviceAnalyzer.h" "Analyzer/DrawCallAnalyzer.h" "Analyzer/IAnalyzer.h" "Analyzer/ImageUsageAnalyzer.cpp" "Analyzer/ImageUsageAnalyzer.h" "Analyzer/MemoryAnalyzer.cpp" "Analyzer/MemoryAnalyzer.h" "Analyzer/SwapchainAnalyzer.cpp" "Analyzer/SwapchainAnalyzer.h" )
+source_group( "Analyzer" FILES "Analyzer/AllResourcesBookmarks.cpp" "Analyzer/AllResourcesBookmarks.h" "Analyzer/AnalyzerUtils.h" "Analyzer/DeviceAnalyzer.cpp" "Analyzer/DeviceAnalyzer.h" "Analyzer/DrawCallAnalyzer.h" "Analyzer/IAnalyzer.h" "Analyzer/ImageUsageAnalyzer.cpp" "Analyzer/ImageUsageAnalyzer.h" "Analyzer/SwapchainAnalyzer.cpp" "Analyzer/SwapchainAnalyzer.h" )
 source_group( "" FILES "CMakeLists.txt" "Common.h" "main.cpp" "VkTraceCommon.h" )
 source_group( "Generated" FILES "Generated/BuildFunctionResourceBookmarks.h" "Generated/BuildRawVulkanCalls.h" "Generated/BuildStructResourceBookmarks.h" "Generated/UnpackPacket.h" "Generated/VkEnumToString.h" "Generated/VkStructToString.h" "Generated/VkStructTypes.h" )
 source_group( "Converters" FILES "Converters/Converter.h" "Converters/ConverterConfig.h" )

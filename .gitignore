@@ -1,0 +1,11 @@
+/build
+/external/Vulkan-Loader
+/external/Vulkan-Headers
+/external/Vulkan-ValidationLayers
+/external/glslang
+/external/LunarG-VulkanTools
+/external/Vulkan-Tools
+/external/brotli
+/external/cryptopp
+/external/BLAKE2
+/external/FrameGraph

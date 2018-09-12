@@ -332,13 +332,7 @@ if (TRUE)
 
 	set( JSONCPP_INSTALL_DIR "${VT_EXTERNAL_INSTALL_DIR}/jsoncpp" CACHE INTERNAL "" FORCE )
 	set( VT_BUILD_TARGET_FLAGS "${VT_BUILD_TARGET_FLAGS}" "-DJSONCPP_INSTALL_DIR=${JSONCPP_INSTALL_DIR}" )
-
-	if (TRUE)
-		set( LUNARG_VULKANTOOLS_REPOSITORY "https://github.com/LunarG/VulkanTools.git" )
-	else ()
-		set( LUNARG_VULKANTOOLS_REPOSITORY "https://github.com/azhirnov/VulkanTools.git" )
-	endif ()
-
+	
 	if (WIN32)
 		set( LUNARG_VULKANTOOLS_UPDATE_EXTERNAL_SOURCES "cmd //C \"${VT_EXTERNALS_PATH}/LunarG-VulkanTools/update_external_sources.bat\"" )
 	else ()
@@ -349,7 +343,7 @@ if (TRUE)
 		LIST_SEPARATOR		"${VT_LIST_SEPARATOR}"
 		DEPENDS				"External.Vulkan-ValidationLayers"
 		# download
-		GIT_REPOSITORY		${LUNARG_VULKANTOOLS_REPOSITORY}
+		GIT_REPOSITORY		https://github.com/LunarG/VulkanTools.git
 		GIT_TAG				master
 		EXCLUDE_FROM_ALL	1
 		LOG_DOWNLOAD		1
