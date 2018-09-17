@@ -68,8 +68,8 @@ namespace VTC
 
 
 	
-#include "brotli/decode.h"
-#include "brotli/encode.h"
+//#include "brotli/decode.h"
+//#include "brotli/encode.h"
 
 namespace VTC
 {
