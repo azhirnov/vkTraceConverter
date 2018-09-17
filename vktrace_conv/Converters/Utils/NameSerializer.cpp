@@ -1,4 +1,4 @@
-// Copyright (c)  Zhirnov Andrey. For more information see 'LICENSE.txt'
+// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #include "NameSerializer.h"
 
@@ -68,6 +68,17 @@ namespace VTC
 		return var0;
 	}
 	
+/*
+=================================================
+	ReserveName
+=================================================
+*/
+	bool  NameSerializer::ReserveName (String &&name)
+	{
+		CHECK_ERR( _unique.insert( std::move(name) ).second );
+		return true;
+	}
+
 /*
 =================================================
 	_MakeUnique

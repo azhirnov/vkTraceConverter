@@ -1,28 +1,9 @@
-// Copyright (c)  Zhirnov Andrey. For more information see 'LICENSE.txt'
+// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #include "Parser/AppTrace.h"
 
 namespace VTC
 {
-
-/*
-=================================================
-	constructor
-=================================================
-*/
-	AppTrace::AppTrace ()
-	{
-	}
-	
-/*
-=================================================
-	destructor
-=================================================
-*/
-	AppTrace::~AppTrace ()
-	{
-		Close();
-	}
 	
 /*
 =================================================
@@ -61,9 +42,9 @@ namespace VTC
 		CHECK_ERR( id < _presentBookmarks.size() );
 
 		if ( id == 0 )
-			return _fullTrace.SubRange( _fullTrace.begin(), _fullTrace.Get(_presentBookmarks.front()) );
+			return _fullTrace.SubRange( _fullTrace.FirstBookmark(), _presentBookmarks.front() );
 
-		return _fullTrace.SubRange( _fullTrace.Get(_presentBookmarks[id-1]), _fullTrace.Get(_presentBookmarks[id]) );
+		return _fullTrace.SubRange( _presentBookmarks[id-1], _presentBookmarks[id] );
 	}
 
 /*
@@ -73,8 +54,12 @@ namespace VTC
 */
 	bool AppTrace::Open (StringView filename)
 	{
+		using namespace std::chrono;
+
 		Close();
 		
+		FG_TIMEPROFILER();
+
 		FILE*	file = null;
 		CHECK( fopen_s( OUT &file, filename.data(), "rb" ) == 0 );
 
@@ -91,11 +76,6 @@ namespace VTC
 		_fullTrace = TraceRange{ _traceFile };
 
 		CHECK_ERR( _ParseFullTrace() );
-		
-		// post processing
-		for (auto& analyzer : _analyzers) {
-			analyzer->PostProcess();
-		}
 		return true;
 	}
 	
@@ -163,20 +143,35 @@ namespace VTC
 	_ParseFullTrace
 ----
 	this is first trace processing pass,
-	create bookmarks for all resources
+	run analyzers for each packet,
+	bookmark all resource usage
 =================================================
 */
 	bool AppTrace::_ParseFullTrace ()
 	{
-		FrameID		frame_id = 0;
+		FrameID		frame_id	= 0;
+		bool		new_frame	= false;
+		
+		// pre processing
+		for (auto& analyzer : _analyzers) {
+			analyzer->PreProcess( *this );
+		}
 
-		for (auto iter = _fullTrace.begin(), end = _fullTrace.end();
-			 iter < end;
-			 ++iter)
+		for (auto iter = _fullTrace.begin(); iter < _fullTrace.LastBookmark(); ++iter)
 		{
 			ASSERT( iter->tracer_id == VKTRACE_TID_VULKAN );
 
 			_uniqueThreads.insert( iter->thread_id );
+
+			// add bookmark to next frame
+			if ( new_frame )
+			{
+				ASSERT( frame_id != ~FrameID(0) );
+				++frame_id;
+
+				_presentBookmarks.push_back( iter.GetBookmark() );
+				new_frame = false;
+			}
 
 			// analyze before bookmarking
 			for (auto& analyzer : _analyzers)
@@ -191,17 +186,19 @@ namespace VTC
 			// divide by frames
 			switch ( iter->packet_id )
 			{
-				case VKTRACE_TPI_VK_vkQueuePresentKHR : {
-					_presentBookmarks.push_back( iter.GetBookmark() );
-					
-					ASSERT( frame_id != ~FrameID(0) );
-					++frame_id;
+				case VKTRACE_TPI_VK_vkQueuePresentKHR :
+					new_frame = true;
 					break;
-				}
 			}
 		}
+		
+		// post processing
+		for (auto& analyzer : _analyzers) {
+			analyzer->PostProcess();
+		}
 
-		FG_LOGI( "total frames: " + ToString(frame_id) );
+		FG_LOGI( "total frames: "s << ToString(_presentBookmarks.size()) );
+		FG_LOGI( "unique threads: "s << ToString(_uniqueThreads.size()) );
 		return true;
 	}
 	
@@ -210,27 +207,9 @@ namespace VTC
 	_AddStructBookmsrks
 =================================================
 */
-	bool AppTrace::_AddStructBookmsrks (const VkBaseInStructure *header, const Iterator &iter, FrameID frame_id)
+	void AppTrace::_AddStructBookmsrks (const VkBaseInStructure *header, const Iterator &iter, FrameID frame_id)
 	{
 #		include "Generated/BuildStructResourceBookmarks.h"
-		return true;
-	}
-
-/*
-=================================================
-	_AddResourceBookmark
-=================================================
-*/
-	bool AppTrace::_AddResourceBookmark (EResourceType type, ResourceID id, const Iterator &pos, FrameID frameId)
-	{
-		if ( id == 0 )
-			return true;
-
-		for (auto& analyzer : _analyzers)
-		{
-			analyzer->AddResourceUsage( pos, type, id, frameId );
-		}
-		return true;
 	}
 
 

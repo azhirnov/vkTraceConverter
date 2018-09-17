@@ -15,6 +15,11 @@ include( "cmake/compilers.cmake" )
 add_subdirectory( "external" "external" )
 
 
+set( MAIN_BINARY_DIR "${CMAKE_BINARY_DIR}/bin" CACHE INTERNAL "" FORCE )
+set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${MAIN_BINARY_DIR}" )
+set( CMAKE_LIBRARY_OUTPUT_DIRECTORY "${MAIN_BINARY_DIR}" )
+set( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${MAIN_BINARY_DIR}" )
+
 link_directories( "${LUNARG_VULKANTOOLS_INSTALL_DIR}" )
 link_directories( "${FRAMEGRAPH_INSTALL_DIR}/lib" )
 link_directories( "${BROTLI_INSTALL_DIR}/lib" )

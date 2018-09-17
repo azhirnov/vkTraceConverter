@@ -1,4 +1,4 @@
-// Copyright (c)  Zhirnov Andrey. For more information see 'LICENSE.txt'
+// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #pragma once
 
@@ -127,7 +127,8 @@ namespace VTC
 			CpuBenchmark			cpuBench;
 		}						passes;
 
-		String					directory;
+		String					inputTraceFile;
+		String					outputDirectory;
 	};
 
 

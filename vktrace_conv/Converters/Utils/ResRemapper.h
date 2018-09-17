@@ -1,8 +1,8 @@
-// Copyright (c)  Zhirnov Andrey. For more information see 'LICENSE.txt'
+// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #pragma once
 
-#include "Analyzer/AllResourcesBookmarks.h"
+#include "Analyzer/old/AllResourcesBookmarks.h"
 #include "Converters/Utils/BasicTypesConverter.h"
 
 namespace VTC
@@ -17,6 +17,7 @@ namespace VTC
 	// variables
 	private:
 		AllResourcesBookmarks const*	_resBookmarks;
+		TraceRange::Bookmark			_currentPos;
 
 
 	// methods
@@ -24,21 +25,22 @@ namespace VTC
 		explicit ResRemapper (const AllResourcesBookmarks *rbm) : _resBookmarks{rbm}
 		{}
 
+		void SetCurrentPos (const TraceRange::Bookmark &pos)
+		{
+			_currentPos = pos;
+		}
+
+
 		template <typename T>
-		ND_ String  operator () (const T &resourceId) const
+		ND_ String  operator () (EResourceType type, const T &resourceId) const
 		{
 			STATIC_ASSERT( std::is_pointer_v<T> or std::is_same_v<T, uint64_t> );
 
-			if ( resourceId == 0 )
-				return "~0u";
-
-			auto*	res_info = _resBookmarks->GetResource( ResourceID(resourceId) );
-
-			CHECK_ERR( res_info, "<error>" );
-			CHECK_ERR( res_info->localIndex != ~0u, "<error>" );
-
-			return IntToString( res_info->localIndex );
+			return GetResource( type, ResourceID(resourceId) );
 		}
+
+
+		ND_ String  GetResource (EResourceType type, ResourceID id) const;
 	};
 
 

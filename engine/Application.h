@@ -1,9 +1,7 @@
-// Copyright (c)  Zhirnov Andrey. For more information see 'LICENSE.txt'
+// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #pragma once
 
-#include "engine/DrawCommand.h"
-#include "engine/CommandBufferBuilder.h"
 #include "engine/FIValue.h"
 #include "engine/ResourceIDs.h"
 
@@ -18,10 +16,6 @@ namespace VTC
 	{
 	// types
 	public:
-		using ResourceMap_t		= StaticArray< Array<VkResourceID_t>, 32 >;
-		using ObjectMap_t		= Array< DrawCommand >;
-		using DataMap_t			= HashMap< DataID, Array<uint8_t> >;
-
 		struct QueueInfo
 		{
 			QueueID				id;
@@ -29,25 +23,66 @@ namespace VTC
 			float				priority;
 		};
 
+		struct FilePart
+		{
+			DataID			id			= DataID(~0u);
+			uint64_t		offset		= 0;
+			uint64_t		size		= 0;
+			FrameID			firstFrame	= FrameID(0);	// frame when data will be requested at first time
+			FrameID			lastFrame	= FrameID(0);	// frame when data can be unloaded
+		};
+
+
+	private:
+		using ResourceMap_t		= StaticArray< Array<VkResourceID_t>, 32 >;
+
+		struct MemRange
+		{
+			void *			mappedPtr	= null;
+			VkDeviceSize	offset		= 0;
+			VkDeviceSize	size		= 0;
+		};
+		using MappedMemory_t	= Array< MemRange >;
+
+		
+		struct FilePartExt : FilePart
+		{
+			FILE*		file = null;
+
+			FilePartExt () {}
+			FilePartExt (const FilePart &part, FILE* file) : FilePart{part}, file{file} {}
+		};
+
+		using DataMap_t			= HashMap< DataID, Array<uint8_t> >;
+		using LoadEvents_t		= HashMap< FrameID, Array<FilePartExt> >;
+		using UnloadEvents_t	= HashMap< FrameID, Array<DataID> >;
+		using FileMap_t			= HashMap< String, FILE* >;
+
 
 	// variables
 	private:
-		VulkanDevice			_vulkan;
+		VulkanDeviceExt			_vulkan;
 		VulkanSwapchainPtr		_swapchain;
 		WindowPtr				_window;
+		String					_windowTitle;
 		uint2					_surfaceSize;
 		
 		mutable ResourceMap_t 	_resources;
-		ObjectMap_t				_objects;
+		mutable MappedMemory_t	_mappedMemory;
+
 		DataMap_t				_loadableData;
-		
+		LoadEvents_t			_loadEvents;
+		UnloadEvents_t			_unloadEvents;
+		FileMap_t				_files;
+
 
 	// methods
 	public:
 		VApp ();
 		~VApp ();
 
-		bool CreateWindow (uint width, uint height, StringView caption);
+
+		bool CreateWindow (uint width, uint height, StringView title);
 
 		bool CreateDevice (InstanceID				instance,
 						   PhysicalDeviceID			physicalDevice,
@@ -56,9 +91,9 @@ namespace VTC
 						   StringView				gpuDeviceName,
 						   uint						apiVersion,
 						   ArrayView<QueueInfo>		queues,
-						   ArrayView<StringView>	instanceLayers		= Default,
-						   ArrayView<StringView>	instanceExtensions	= Default,
-						   ArrayView<StringView>	deviceExtensions	= Default);
+						   ArrayView<const char*>	instanceLayers		= VulkanDevice::GetRecomendedInstanceLayers(),
+						   ArrayView<const char*>	instanceExtensions	= VulkanDevice::GetRecomendedInstanceExtensions(),
+						   ArrayView<const char*>	deviceExtensions	= VulkanDevice::GetRecomendedDeviceExtensions());
 
 		bool CreateSwapchain (SwapchainKHRID						swapchain,
 							  ArrayView<ImageID>					swapchainImages,
@@ -76,6 +111,9 @@ namespace VTC
 		template <typename ResIdType>
 		void AllocateResources (const ResIdType count);
 
+		bool AddExternalData (const String &filename, ArrayView<FilePart> parts);
+		bool PreloadAllData ();
+
 		bool Run (ArrayView<VDrawFrame_t> frames);
 
 
@@ -83,9 +121,17 @@ namespace VTC
 		bool Present (QueueID queue, ImageID image, SemaphoreID renderFinishedSemaphore) const;
 
 
-		ND_ DrawCommand const&			GetObject (ObjectID id)				const	{ return _objects[size_t(id)]; }
+		ND_ uint  GetMemoryTypeIndex (uint memoryTypeBits, VkMemoryPropertyFlags flags) const;
 
-		ND_ ArrayView<uint8_t>			LoadData (DataID id);
+
+		ND_ ArrayView<uint8_t>  LoadData (DataID id) const;
+
+
+		bool OnMapMemory (DeviceMemoryID memId, void *ptr, VkDeviceSize offset, VkDeviceSize size) const;
+		bool OnUnmapMemory (DeviceMemoryID memId) const;
+		//bool GetMappedMemory (DeviceMemoryID memId, OUT void* &ptr, OUT VkDeviceSize &size) const;
+		bool LoadDataToMappedMemory (DeviceMemoryID memId, DataID dataId, VkDeviceSize offset, VkDeviceSize size) const;
+
 
 		template <typename ResIdType>
 		ND_ typename _ObjInfo<ResIdType>::vktype const	GetResource (ResIdType id)	const;
@@ -105,6 +151,9 @@ namespace VTC
 		ND_ VkSwapchainKHR &			EditResource (SwapchainKHRID id)			{ return _EditResource( id ); }
 		//ND_ VkSurfaceKHR &			EditResource (SurfaceKHRID id)				{ return _EditResource( id ); }
 		
+		bool _PrepareData (FrameID frameId);
+		bool _LoadDataPart (FilePartExt &part);
+
 
 	// implement IWindowEventListener
 	private:
@@ -128,11 +177,14 @@ namespace VTC
 			return 0;
 
 		constexpr uint	index = _ObjInfo<ResIdType>::index;
-
-		ASSERT( index < _resources.size() );
+		
+		STATIC_ASSERT( index < std::tuple_size<decltype(_resources)>::value );
 		ASSERT( size_t(id) < _resources[index].size() );
 
-		return BitCast< typename _ObjInfo<ResIdType>::vktype >( _resources[index] [size_t(id)] );
+		auto	result = BitCast< typename _ObjInfo<ResIdType>::vktype >( _resources[index] [size_t(id)] );
+		ASSERT( result != 0 );
+
+		return result;
 	}
 	
 /*
@@ -144,11 +196,14 @@ namespace VTC
 	inline typename _ObjInfo<ResIdType>::vktype &  VApp::_EditResource (ResIdType id) const
 	{
 		constexpr uint	index = _ObjInfo<ResIdType>::index;
-
-		ASSERT( index < _resources.size() );
+		
+		STATIC_ASSERT( index < std::tuple_size<decltype(_resources)>::value );
 		ASSERT( size_t(id) < _resources[index].size() );
 
-		return BitCast< typename _ObjInfo<ResIdType>::vktype >( _resources[index] [size_t(id)] );
+		auto&	result = BitCast< typename _ObjInfo<ResIdType>::vktype >( _resources[index] [size_t(id)] );
+		//ASSERT( result == 0 );
+
+		return result;
 	}
 	
 /*
@@ -160,11 +215,16 @@ namespace VTC
 	inline void  VApp::AllocateResources (const ResIdType count)
 	{
 		constexpr uint	index = _ObjInfo<ResIdType>::index;
-
-		ASSERT( index < _resources.size() );
+		
+		STATIC_ASSERT( index < std::tuple_size<decltype(_resources)>::value );
 		ASSERT( count < ResIdType(~0u) );
 
 		_resources[ index ].resize( size_t(count) );
+
+		if constexpr ( std::is_same_v< ResIdType, DeviceMemoryID > )
+		{
+			_mappedMemory.resize( size_t(count) );
+		}
 	}
 
 

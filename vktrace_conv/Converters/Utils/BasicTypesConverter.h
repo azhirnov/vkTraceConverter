@@ -1,4 +1,4 @@
-// Copyright (c)  Zhirnov Andrey. For more information see 'LICENSE.txt'
+// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #pragma once
 
@@ -120,7 +120,7 @@ namespace VTC
 	VoidToFIValueString
 =================================================
 */
-	ND_ String  VoidToFIValueString (const void *data, size_t offset)
+	ND_ inline String  VoidToFIValueString (const void *data, size_t offset)
 	{
 		FIValue		value;
 		memcpy( &value, static_cast<const char*>(data) + offset, sizeof(value) );
@@ -128,10 +128,32 @@ namespace VTC
 		String	fstr = FloatToString( value.f );
 		String	ustr = HexToString( value.u );
 
-		if ( fstr.length() > ustr.length()+4 )
+		if ( not std::isfinite( value.f ) or fstr.length() > ustr.length()+4 )
 			return ustr;
 		else
 			return fstr;
+	}
+
+/*
+=================================================
+	ConvertToCStyleString
+=================================================
+*/
+	ND_ inline String  ConvertToCStyleString (StringView str)
+	{
+		String	result;
+		result.reserve( str.length() + 10 );
+
+		for (const char c : str)
+		{
+			switch ( c ) {
+				case '\\' :		result << '\\' << '\\';		break;
+				case '"' :		result << '\\' << '\"';		break;
+				default :		result << c;				break;
+			}
+		}
+
+		return result;
 	}
 
 

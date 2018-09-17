@@ -1,4 +1,4 @@
-// Copyright (c)  Zhirnov Andrey. For more information see 'LICENSE.txt'
+// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #pragma once
 
@@ -68,8 +68,8 @@ namespace VTC
 
 
 	
-//#include "brotli/decode.h"
-//#include "brotli/encode.h"
+#include "brotli/decode.h"
+#include "brotli/encode.h"
 
 namespace VTC
 {

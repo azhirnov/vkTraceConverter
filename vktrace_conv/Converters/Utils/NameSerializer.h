@@ -1,4 +1,4 @@
-// Copyright (c)  Zhirnov Andrey. For more information see 'LICENSE.txt'
+// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #pragma once
 
@@ -37,6 +37,8 @@ namespace VTC
 		ND_ String	MakeUnique (const void *ptr, String &&var0, String &&var1 = Default, String &&var2 = Default);
 
 		void Clear ();
+
+		bool ReserveName (String &&name);
 
 
 	private:

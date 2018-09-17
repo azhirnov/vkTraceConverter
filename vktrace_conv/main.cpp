@@ -1,19 +1,21 @@
-// Copyright (c)  Zhirnov Andrey. For more information see 'LICENSE.txt'
+// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #include "Parser/AppTrace.h"
 #include "Converters/Converter.h"
 #include "Converters/Data/ResourceDataManager.h"
 
-#include "Analyzer/SwapchainAnalyzer.h"
-#include "Analyzer/ImageUsageAnalyzer.h"
-#include "Analyzer/AllResourcesBookmarks.h"
-#include "Analyzer/DeviceAnalyzer.h"
+#include "Analyzer/Default/ImageAnalyzer.h"
+#include "Analyzer/Default/BufferAnalyzer.h"
+#include "Analyzer/Default/MemoryObjAnalyzer.h"
+
+#include "Analyzer/old/SwapchainAnalyzer.h"
+#include "Analyzer/old/AllResourcesBookmarks.h"
+#include "Analyzer/old/DeviceAnalyzer.h"
 
 #include <iostream>
 #include <filesystem>
 
 using namespace VTC;
-using namespace std::string_literals;
 
 /*
 =================================================
@@ -307,15 +309,13 @@ static bool ParseAdditionalConfig (const int argc, const char** argv, StringView
 int main (int argc, const char** argv)
 {
 	ConverterConfig		config;
-	AppTrace			app_trace;
-	String				filename;
 
 	// test
 	#if 1
 		const char*	test_commands[] = {
 			"TODO: path to exe",
 			"--convert",	"vk-cpp",
-			"--cfg-vk-cpp",	"end=4",
+			"--cfg-vk-cpp",	"end=5",
 			#if 0
 				"--open",		R"(D:\VkTraceOutput\doom1.vktrace)",
 				"--output-dir",	R"(D:\VkTraceOutput\converted\doom1)",
@@ -325,6 +325,9 @@ int main (int argc, const char** argv)
 			#elif 0
 				"--open",		R"(D:\VkTraceOutput\dota2_1.vktrace)",
 				"--output-dir",	R"(D:\VkTraceOutput\converted\dota2)",
+			#elif 0
+				"--open",		R"(D:\VkTraceOutput\parallaxmapping_1.vktrace)",
+				"--output-dir",	R"(D:\VkTraceOutput\converted\parallaxmapping)",
 			#endif
 		};
 		argv = test_commands;
@@ -342,7 +345,7 @@ int main (int argc, const char** argv)
 		{
 			CHECK_ERR( i+1 < argc, -100 );
 
-			filename = argv[++i];
+			config.inputTraceFile = argv[++i];
 			continue;
 		}
 
@@ -351,7 +354,7 @@ int main (int argc, const char** argv)
 		{
 			CHECK_ERR( i+1 < argc, -101 );
 
-			config.directory = argv[++i];
+			config.outputDirectory = argv[++i];
 			continue;
 		}
 
@@ -390,17 +393,13 @@ int main (int argc, const char** argv)
 		RETURN_ERR( "unknown command \""s << curr << "\", see help with command -h or --help", -102 );
 	}
 
-	// TODO: validate
-	//if ( exists_converters == EConverterType::Unknown )
-	//	RETURN_ERR( "converters is not defined!", -110 );
-
 
 	// create resource data writer
 	IResourceDataWriterPtr	data_writer;
 	{
 		namespace fs = std::filesystem;
 
-		fs::path	path = fs::absolute(fs::path{ config.directory });
+		fs::path	path = fs::absolute(fs::path{ config.outputDirectory });
 
 		if ( not fs::exists( path ) ) {
 			CHECK_ERR( fs::create_directories( path ), -111 );
@@ -419,14 +418,19 @@ int main (int argc, const char** argv)
 
 
 	// initialize tracer
-	app_trace.AddAnalyzer(AnalyzerPtr{ new SwapchainAnalyzer() });
-	app_trace.AddAnalyzer(AnalyzerPtr{ new ImageUsageAnalyzer() });
+	AppTrace	app_trace;
+	
+	app_trace.AddAnalyzer(AnalyzerPtr{ new ImageAnalyzer() });
+	app_trace.AddAnalyzer(AnalyzerPtr{ new BufferAnalyzer() });
+	app_trace.AddAnalyzer(AnalyzerPtr{ new MemoryObjAnalyzer() });
+
 	app_trace.AddAnalyzer(AnalyzerPtr{ new AllResourcesBookmarks() });
+	app_trace.AddAnalyzer(AnalyzerPtr{ new SwapchainAnalyzer() });
 	app_trace.AddAnalyzer(AnalyzerPtr{ new DeviceAnalyzer() });
 
 
 	// load vktrace
-	CHECK_ERR( app_trace.Open( filename ), -120 );
+	CHECK_ERR( app_trace.Open( config.inputTraceFile ), -120 );
 
 
 	// run converters

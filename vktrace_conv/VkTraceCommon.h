@@ -1,4 +1,4 @@
-// Copyright (c)  Zhirnov Andrey. For more information see 'LICENSE.txt'
+// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #pragma once
 
@@ -30,5 +30,13 @@ namespace VTC
 	using PacketID		= decltype(vktrace_trace_packet_header::packet_id);
 	using ThreadID		= decltype(vktrace_trace_packet_header::thread_id);
 	using EResourceType = VkDebugReportObjectTypeEXT;
+
+
+	enum class EResOp
+	{
+		Construct,
+		Access,
+		Destruct,
+	};
 
 }	// VTC

@@ -1,8 +1,15 @@
-// Copyright (c)  Zhirnov Andrey. For more information see 'LICENSE.txt'
+// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
+#include "stl/include/StringUtils.h"
 #include "engine/Application.h"
 #include "framework/Window/WindowGLFW.h"
 #include "framework/Window/WindowSDL2.h"
+
+#ifdef PLATFORM_WINDOWS
+#	define Ftell	_ftelli64
+#	define Fseek	_fseeki64
+#endif
+
 
 namespace VTC
 {
@@ -34,6 +41,11 @@ namespace VTC
 */
 	VApp::~VApp ()
 	{
+		for (auto& file : _files)
+		{
+			fclose( file.second );
+		}
+
 		if ( _swapchain ) {
 			_swapchain->Destroy();
 			_swapchain.reset();
@@ -91,13 +103,14 @@ namespace VTC
 	CreateWindow
 =================================================
 */
-	bool VApp::CreateWindow (uint width, uint height, StringView caption)
+	bool VApp::CreateWindow (uint width, uint height, StringView title)
 	{
 		CHECK_ERR( _window );
 
-		CHECK_ERR( _window->Create( uint2{width, height}, caption, this ));
+		CHECK_ERR( _window->Create( uint2{width, height}, title, this ));
 
-		_surfaceSize = uint2{width, height};
+		_windowTitle	= title;
+		_surfaceSize	= uint2{width, height};
 		return true;
 	}
 	
@@ -112,25 +125,21 @@ namespace VTC
 							 StringView				gpuDeviceName,
 							 uint					apiVersion,
 							 ArrayView<QueueInfo>	queues,
-							 ArrayView<StringView>	instanceLayers,
-							 ArrayView<StringView>	instanceExtensions,
-							 ArrayView<StringView>	deviceExtensions)
+							 ArrayView<const char*>	instanceLayers,
+							 ArrayView<const char*>	instanceExtensions,
+							 ArrayView<const char*>	deviceExtensions)
 	{
-		// not supported yet:
-		ASSERT( instanceLayers.empty() );
-		ASSERT( instanceExtensions.empty() );
-		ASSERT( deviceExtensions.empty() );
-
-
 		FixedArray< VulkanDevice::QueueCreateInfo, 16 >		queue_ci;
 		for (auto& q : queues) {
 			queue_ci.push_back({ q.flags, q.priority });
 		}
 
-		CHECK_ERR( _vulkan.Create( _window->GetVulkanSurface(), "", apiVersion, gpuDeviceName, queue_ci ));
+		CHECK_ERR( _vulkan.Create( _window->GetVulkanSurface(), "", apiVersion, gpuDeviceName, queue_ci,
+								   instanceLayers, instanceExtensions, deviceExtensions ));
+
 		CHECK_ERR( queues.size() == _vulkan.GetVkQuues().size() );
 
-		CHECK_ERR( _vulkan.CreateDebugCallback( VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT | VK_DEBUG_REPORT_ERROR_BIT_EXT ));
+		_vulkan.CreateDebugCallback( VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT | VK_DEBUG_REPORT_ERROR_BIT_EXT );
 
 
 		// map resource IDs
@@ -151,8 +160,8 @@ namespace VTC
 */
 	bool VApp::CreateSwapchain (SwapchainKHRID						swapchain,
 								ArrayView<ImageID>					swapchainImages,
-								SemaphoreID							imageAvailableSemaphore,
-								SemaphoreID							renderFinishedSemaphore,
+								SemaphoreID							, //imageAvailableSemaphore,
+								SemaphoreID							, //renderFinishedSemaphore,
 								VkFormat							colorFormat,
 								VkColorSpaceKHR						colorSpace,
 								const uint							minImageCount,
@@ -189,10 +198,9 @@ namespace VTC
 
 		EditResource( swapchain ) = _swapchain->GetVkSwapchain();
 
-		CHECK_ERR( imageAvailableSemaphore != renderFinishedSemaphore );
-
-		EditResource( imageAvailableSemaphore )	= _swapchain->GetImageAvailableSemaphore();
-		EditResource( renderFinishedSemaphore ) = _swapchain->GetRenderFinishedSemaphore();
+		//CHECK_ERR( imageAvailableSemaphore != renderFinishedSemaphore );
+		//EditResource( imageAvailableSemaphore )	= _swapchain->GetImageAvailableSemaphore();
+		//EditResource( renderFinishedSemaphore ) = _swapchain->GetRenderFinishedSemaphore();
 
 		return true;
 	}
@@ -204,10 +212,16 @@ namespace VTC
 */
 	bool VApp::Run (ArrayView<VDrawFrame_t> frames)
 	{
+		CHECK_ERR( _window and _swapchain and _vulkan.GetVkDevice() );
+
 		for (size_t i = 0; i < frames.size(); ++i)
 		{
 			if ( not _window->Update() )
 				return true;
+
+			_window->SetTitle( _windowTitle + "[FPS: "s + ToString(uint(_swapchain->GetFramesPerSecond())) + "]"s );
+
+			_PrepareData( FrameID(i) );
 
 			frames[i]( *this );
 		}
@@ -220,12 +234,80 @@ namespace VTC
 	LoadData
 =================================================
 */
-	ArrayView<uint8_t>  VApp::LoadData (DataID id)
+	ArrayView<uint8_t>  VApp::LoadData (DataID id) const
 	{
-		ASSERT(false);
-		return {};
+		auto	data = _loadableData.find( id );
+		CHECK_ERR( data != _loadableData.end() );
+
+		return data->second;
 	}
 	
+/*
+=================================================
+	OnMapMemory
+=================================================
+*/
+	bool VApp::OnMapMemory (DeviceMemoryID memId, void *ptr, VkDeviceSize offset, VkDeviceSize size) const
+	{
+		CHECK_ERR( size_t(memId) < _mappedMemory.size() );
+		ASSERT( _mappedMemory[size_t(memId)].mappedPtr == null );
+
+		_mappedMemory[size_t(memId)] = { ptr, offset, size };
+		return true;
+	}
+	
+/*
+=================================================
+	OnUnmapMemory
+=================================================
+*/
+	bool VApp::OnUnmapMemory (DeviceMemoryID memId) const
+	{
+		CHECK_ERR( size_t(memId) < _mappedMemory.size() );
+		ASSERT( _mappedMemory[size_t(memId)].mappedPtr != null );
+
+		_mappedMemory[size_t(memId)] = {};
+		return true;
+	}
+	
+/*
+=================================================
+	GetMappedMemory
+=================================================
+*
+	bool VApp::GetMappedMemory (DeviceMemoryID memId, OUT void* &ptr, OUT VkDeviceSize &size) const
+	{
+		CHECK_ERR( size_t(memId) < _mappedMemory.size() );
+		CHECK_ERR( _mappedMemory[size_t(memId)].mappedPtr != null );
+
+		const auto&	mem = _mappedMemory[size_t(memId)];
+
+		ptr		= mem.mappedPtr;
+		size	= mem.size;
+		return true;
+	}
+	
+/*
+=================================================
+	LoadDataToMappedMemory
+=================================================
+*/
+	bool VApp::LoadDataToMappedMemory (DeviceMemoryID memId, DataID dataId, VkDeviceSize offset, VkDeviceSize size) const
+	{
+		CHECK_ERR( size_t(memId) < _mappedMemory.size() );
+		CHECK_ERR( _mappedMemory[size_t(memId)].mappedPtr != null );
+		
+		auto	data = _loadableData.find( dataId );
+		CHECK_ERR( data != _loadableData.end() );
+		CHECK_ERR( data->second.size() == size );
+
+		const auto&	mem = _mappedMemory[size_t(memId)];
+		CHECK_ERR( (offset + size) <= mem.size );
+
+		memcpy( mem.mappedPtr + BytesU(offset), data->second.data(), size );
+		return true;
+	}
+
 /*
 =================================================
 	AcquireImage
@@ -234,9 +316,9 @@ namespace VTC
 	bool VApp::AcquireImage (ImageID image, SemaphoreID imageAvailableSemaphore) const
 	{
 		CHECK_ERR( _swapchain );
-		CHECK_ERR( GetResource(imageAvailableSemaphore) == _swapchain->GetImageAvailableSemaphore() );
+		//CHECK_ERR( GetResource(imageAvailableSemaphore) == _swapchain->GetImageAvailableSemaphore() );
 		
-		VK_CHECK( _swapchain->AcquireNextImage() );		// TODO: handle errors
+		VK_CHECK( _swapchain->AcquireNextImage( GetResource(imageAvailableSemaphore) ));		// TODO: handle errors
 
 		ASSERT( GetResource(image) == _swapchain->GetCurrentImage() );
 		return true;
@@ -250,10 +332,149 @@ namespace VTC
 	bool VApp::Present (QueueID queue, ImageID image, SemaphoreID renderFinishedSemaphore) const
 	{
 		CHECK_ERR( _swapchain );
-		CHECK_ERR( GetResource(renderFinishedSemaphore) == _swapchain->GetRenderFinishedSemaphore() );
+		//CHECK_ERR( GetResource(renderFinishedSemaphore) == _swapchain->GetRenderFinishedSemaphore() );
 		ASSERT( GetResource(image) == _swapchain->GetCurrentImage() );
 		
-		CHECK_ERR( _swapchain->Present( GetResource(queue) ));
+		CHECK_ERR( _swapchain->Present( GetResource(queue), GetResource(renderFinishedSemaphore) ));
+		return true;
+	}
+	
+/*
+=================================================
+	GetMemoryTypeIndex
+=================================================
+*/
+	uint  VApp::GetMemoryTypeIndex (uint memoryTypeBits, VkMemoryPropertyFlags flags) const
+	{
+		uint	index;
+		CHECK( _vulkan.GetMemoryTypeIndex( memoryTypeBits, flags, OUT index ));		// TODO: emulate required memory type?
+		return index;
+	}
+	
+/*
+=================================================
+	CalcFirstFrame
+=================================================
+*/
+	ND_ static FrameID  CalcFirstFrame (FrameID frameId, uint64_t dataSize)
+	{
+		return FrameID( uint64_t(frameId) - Max( uint64_t(frameId), (dataSize >> 24) ));
+	}
+
+/*
+=================================================
+	AddExternalData
+=================================================
+*/
+	bool VApp::AddExternalData (const String &filename, ArrayView<FilePart> parts)
+	{
+		auto	file_iter = _files.find( filename );
+
+		// open file
+		if ( file_iter == _files.end() )
+		{
+			FILE*	file = null;
+			CHECK_ERR( fopen_s( OUT &file, filename.c_str(), "rb" ) == 0 );
+
+			file_iter = _files.insert({ filename, file }).first;
+		}
+
+		// add load & unload events
+		for (auto& part : parts)
+		{
+			// add 'load' event
+			FrameID	first_frame = CalcFirstFrame( part.firstFrame, part.size );
+
+			auto	load_ev = _loadEvents.find( first_frame );
+
+			if ( load_ev == _loadEvents.end() ) {
+				load_ev = _loadEvents.insert({ first_frame, {} }).first;
+			}
+
+			// add 'unload' event
+			load_ev->second.push_back(FilePartExt{ part, file_iter->second });
+
+			auto	unload_ev = _unloadEvents.find( part.lastFrame );
+
+			if ( unload_ev == _unloadEvents.end() ) {
+				unload_ev = _unloadEvents.insert({ part.lastFrame, {} }).first;
+			}
+
+			unload_ev->second.push_back( part.id );
+		}
+
+		return true;
+	}
+	
+/*
+=================================================
+	PreloadAllData
+=================================================
+*/
+	bool  VApp::PreloadAllData ()
+	{
+		for (auto& load_ev : _loadEvents)
+		{
+			for (auto& part : load_ev.second)
+			{
+				CHECK_ERR( _LoadDataPart( part ));
+			}
+		}
+
+		_loadEvents.clear();
+		_unloadEvents.clear();
+		return true;
+	}
+	
+/*
+=================================================
+	_LoadDataPart
+=================================================
+*/
+	bool  VApp::_LoadDataPart (FilePartExt &part)
+	{
+		CHECK_ERR( part.size < ~size_t(0) );
+
+		auto	iter = _loadableData.insert({ part.id, {} });
+		ASSERT( iter.second );	// all IDs must be unique
+
+		auto&	buffer = iter.first->second;
+
+		buffer.resize( size_t(part.size) );		// TODO: check for bad alloc exception
+
+		CHECK_ERR( Fseek( part.file, part.offset, SEEK_SET ) == 0 );
+		CHECK_ERR( fread( buffer.data(), sizeof(buffer[0]), buffer.size(), part.file ) == buffer.size() );
+
+		return true;
+	}
+
+/*
+=================================================
+	_PrepareData
+=================================================
+*/
+	bool  VApp::_PrepareData (FrameID frameId)
+	{
+		// load required data
+		auto	load_ev = _loadEvents.find( frameId );
+
+		if ( load_ev != _loadEvents.end() )
+		{
+			for (auto& part : load_ev->second) {
+				CHECK_ERR( _LoadDataPart( part ));
+			}
+		}
+
+		// unload data
+		auto	unload_ev = _unloadEvents.find( frameId );
+
+		if ( unload_ev != _unloadEvents.end() )
+		{
+			for (auto& id : unload_ev->second) {
+				_loadableData.erase( id );
+			}
+		}
+
 		return true;
 	}
 

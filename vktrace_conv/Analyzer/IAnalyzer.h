@@ -1,4 +1,4 @@
-// Copyright (c)  Zhirnov Andrey. For more information see 'LICENSE.txt'
+// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #pragma once
 
@@ -17,11 +17,11 @@ namespace VTC
 	public:
 		virtual ~IAnalyzer () {}
 
+		virtual void PreProcess (const class AppTrace &) = 0;
 		virtual void Process (const TraceRange::Iterator &) = 0;
-
 		virtual void PostProcess () = 0;
 
-		virtual void AddResourceUsage (const TraceRange::Iterator &, EResourceType, ResourceID, FrameID) = 0;
+		virtual void AddResourceUsage (const TraceRange::Iterator &, EResourceType, ResourceID, FrameID, EResOp) = 0;
 
 		ND_ virtual std::type_index  GetType () const = 0;
 

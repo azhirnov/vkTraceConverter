@@ -1,4 +1,4 @@
-// Copyright (c)  Zhirnov Andrey. For more information see 'LICENSE.txt'
+// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #pragma once
 
@@ -12,6 +12,7 @@
 #include "stl/include/EnumUtils.h"
 #include "stl/include/Math.h"
 #include "stl/include/StringUtils.h"
+#include "stl/include/TimeProfiler.h"
 
 namespace VTC
 {

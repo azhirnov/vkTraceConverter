@@ -1,4 +1,4 @@
-// Copyright (c)  Zhirnov Andrey. For more information see 'LICENSE.txt'
+// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #pragma once
 
@@ -39,7 +39,8 @@ namespace VTC
 	//enum class SurfaceKHRID : ResourceID_t {};
 	
 	enum class ObjectID : size_t {};
-	enum class DataID : uint64_t {};
+	enum class DataID : uint32_t {};
+	enum class FrameID : uint32_t {};
 
 
 	template <typename ID>  struct _ObjInfo;
