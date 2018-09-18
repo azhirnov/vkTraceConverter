@@ -1,14 +1,10 @@
 // Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #include "stl/include/StringUtils.h"
+#include "stl/include/EnumUtils.h"
 #include "engine/Application.h"
 #include "framework/Window/WindowGLFW.h"
 #include "framework/Window/WindowSDL2.h"
-
-#ifdef PLATFORM_WINDOWS
-#	define Ftell	_ftelli64
-#	define Fseek	_fseeki64
-#endif
 
 
 namespace VTC
@@ -41,10 +37,14 @@ namespace VTC
 */
 	VApp::~VApp ()
 	{
-		for (auto& file : _files)
-		{
-			fclose( file.second );
+		if ( _vulkan.GetVkDevice() )
+			VK_CALL( vkDeviceWaitIdle( _vulkan.GetVkDevice() ));
+
+		#if VTC_MEMORY_REMAPPING
+		if ( _memAllocator ) {
+			vmaDestroyAllocator( _memAllocator );
 		}
+		#endif
 
 		if ( _swapchain ) {
 			_swapchain->Destroy();
@@ -150,6 +150,11 @@ namespace VTC
 		for (size_t i = 0; i < queues.size(); ++i) {
 			EditResource(queues[i].id) = _vulkan.GetVkQuues()[i].id;
 		}
+
+		#if VTC_MEMORY_REMAPPING
+		CHECK_ERR( _CreateAllocator( 64ull << 20 ));
+		#endif
+
 		return true;
 	}
 
@@ -244,72 +249,6 @@ namespace VTC
 	
 /*
 =================================================
-	OnMapMemory
-=================================================
-*/
-	bool VApp::OnMapMemory (DeviceMemoryID memId, void *ptr, VkDeviceSize offset, VkDeviceSize size) const
-	{
-		CHECK_ERR( size_t(memId) < _mappedMemory.size() );
-		ASSERT( _mappedMemory[size_t(memId)].mappedPtr == null );
-
-		_mappedMemory[size_t(memId)] = { ptr, offset, size };
-		return true;
-	}
-	
-/*
-=================================================
-	OnUnmapMemory
-=================================================
-*/
-	bool VApp::OnUnmapMemory (DeviceMemoryID memId) const
-	{
-		CHECK_ERR( size_t(memId) < _mappedMemory.size() );
-		ASSERT( _mappedMemory[size_t(memId)].mappedPtr != null );
-
-		_mappedMemory[size_t(memId)] = {};
-		return true;
-	}
-	
-/*
-=================================================
-	GetMappedMemory
-=================================================
-*
-	bool VApp::GetMappedMemory (DeviceMemoryID memId, OUT void* &ptr, OUT VkDeviceSize &size) const
-	{
-		CHECK_ERR( size_t(memId) < _mappedMemory.size() );
-		CHECK_ERR( _mappedMemory[size_t(memId)].mappedPtr != null );
-
-		const auto&	mem = _mappedMemory[size_t(memId)];
-
-		ptr		= mem.mappedPtr;
-		size	= mem.size;
-		return true;
-	}
-	
-/*
-=================================================
-	LoadDataToMappedMemory
-=================================================
-*/
-	bool VApp::LoadDataToMappedMemory (DeviceMemoryID memId, DataID dataId, VkDeviceSize offset, VkDeviceSize size) const
-	{
-		CHECK_ERR( size_t(memId) < _mappedMemory.size() );
-		CHECK_ERR( _mappedMemory[size_t(memId)].mappedPtr != null );
-		
-		auto	data = _loadableData.find( dataId );
-		CHECK_ERR( data != _loadableData.end() );
-		CHECK_ERR( data->second.size() == size );
-
-		const auto&	mem = _mappedMemory[size_t(memId)];
-		CHECK_ERR( (offset + size) <= mem.size );
-
-		memcpy( mem.mappedPtr + BytesU(offset), data->second.data(), size );
-		return true;
-	}
-
-/*
-=================================================
 	AcquireImage
 =================================================
 */
@@ -341,18 +280,6 @@ namespace VTC
 	
 /*
 =================================================
-	GetMemoryTypeIndex
-=================================================
-*/
-	uint  VApp::GetMemoryTypeIndex (uint memoryTypeBits, VkMemoryPropertyFlags flags) const
-	{
-		uint	index;
-		CHECK( _vulkan.GetMemoryTypeIndex( memoryTypeBits, flags, OUT index ));		// TODO: emulate required memory type?
-		return index;
-	}
-	
-/*
-=================================================
 	CalcFirstFrame
 =================================================
 */
@@ -373,8 +300,7 @@ namespace VTC
 		// open file
 		if ( file_iter == _files.end() )
 		{
-			FILE*	file = null;
-			CHECK_ERR( fopen_s( OUT &file, filename.c_str(), "rb" ) == 0 );
+			RFilePtr	file{ new HddRFile{ filename }};
 
 			file_iter = _files.insert({ filename, file }).first;
 		}
@@ -442,8 +368,8 @@ namespace VTC
 
 		buffer.resize( size_t(part.size) );		// TODO: check for bad alloc exception
 
-		CHECK_ERR( Fseek( part.file, part.offset, SEEK_SET ) == 0 );
-		CHECK_ERR( fread( buffer.data(), sizeof(buffer[0]), buffer.size(), part.file ) == buffer.size() );
+		CHECK_ERR( part.file->SeekSet( BytesU(part.offset) ));
+		CHECK_ERR( part.file->Read( buffer.data(), BytesU(buffer.size()) ));
 
 		return true;
 	}
@@ -477,7 +403,288 @@ namespace VTC
 
 		return true;
 	}
+//-----------------------------------------------------------------------------
+	
+
+
+#if VTC_MEMORY_REMAPPING
+/*
+=================================================
+	_CreateAllocator
+=================================================
+*/
+	bool  VApp::_CreateAllocator (VkDeviceSize pageSize)
+	{
+		CHECK_ERR( _memAllocator == null );
+
+		VmaVulkanFunctions		funcs = {};
+		funcs.vkGetPhysicalDeviceProperties			= vkGetPhysicalDeviceProperties;
+		funcs.vkGetPhysicalDeviceMemoryProperties	= vkGetPhysicalDeviceMemoryProperties;
+        funcs.vkAllocateMemory						= BitCast<PFN_vkAllocateMemory>(vkGetDeviceProcAddr( _vulkan.GetVkDevice(), "vkAllocateMemory" ));
+        funcs.vkFreeMemory							= BitCast<PFN_vkFreeMemory>(vkGetDeviceProcAddr( _vulkan.GetVkDevice(), "vkFreeMemory" ));
+        funcs.vkMapMemory							= BitCast<PFN_vkMapMemory>(vkGetDeviceProcAddr( _vulkan.GetVkDevice(), "vkMapMemory" ));
+        funcs.vkUnmapMemory							= BitCast<PFN_vkUnmapMemory>(vkGetDeviceProcAddr( _vulkan.GetVkDevice(), "vkUnmapMemory" ));
+        funcs.vkBindBufferMemory					= BitCast<PFN_vkBindBufferMemory>(vkGetDeviceProcAddr( _vulkan.GetVkDevice(), "vkBindBufferMemory" ));
+        funcs.vkBindImageMemory						= BitCast<PFN_vkBindImageMemory>(vkGetDeviceProcAddr( _vulkan.GetVkDevice(), "vkBindImageMemory" ));
+        funcs.vkGetBufferMemoryRequirements			= BitCast<PFN_vkGetBufferMemoryRequirements>(vkGetDeviceProcAddr( _vulkan.GetVkDevice(), "vkGetBufferMemoryRequirements" ));
+        funcs.vkGetImageMemoryRequirements			= BitCast<PFN_vkGetImageMemoryRequirements>(vkGetDeviceProcAddr( _vulkan.GetVkDevice(), "vkGetImageMemoryRequirements" ));
+		funcs.vkCreateBuffer						= null;
+		funcs.vkDestroyBuffer						= null;
+		funcs.vkCreateImage							= null;
+		funcs.vkDestroyImage						= null;
+        funcs.vkGetBufferMemoryRequirements2KHR		= BitCast<PFN_vkGetBufferMemoryRequirements2KHR>(vkGetDeviceProcAddr( _vulkan.GetVkDevice(), "vkGetBufferMemoryRequirements2KHR" ));
+        funcs.vkGetImageMemoryRequirements2KHR		= BitCast<PFN_vkGetImageMemoryRequirements2KHR>(vkGetDeviceProcAddr( _vulkan.GetVkDevice(), "vkGetImageMemoryRequirements2KHR" ));
+        funcs.vkFlushMappedMemoryRanges             = BitCast<PFN_vkFlushMappedMemoryRanges>(vkGetDeviceProcAddr( _vulkan.GetVkDevice(), "vkFlushMappedMemoryRanges" ));
+        funcs.vkInvalidateMappedMemoryRanges        = BitCast<PFN_vkInvalidateMappedMemoryRanges>(vkGetDeviceProcAddr( _vulkan.GetVkDevice(), "vkInvalidateMappedMemoryRanges" ));
+
+		VmaAllocatorCreateInfo	info = {};
+		info.flags			= VMA_ALLOCATOR_CREATE_EXTERNALLY_SYNCHRONIZED_BIT;
+		info.physicalDevice	= _vulkan.GetVkPhysicalDevice();
+		info.device			= _vulkan.GetVkDevice();
+
+		info.preferredLargeHeapBlockSize	= pageSize;
+		info.pAllocationCallbacks			= null;
+		info.pDeviceMemoryCallbacks			= null;
+		//info.frameInUseCount	// ignore
+		info.pHeapSizeLimit					= null;		// TODO
+		info.pVulkanFunctions				= &funcs;
+
+		VK_CHECK( vmaCreateAllocator( &info, OUT &_memAllocator ));
+		return true;
+	}
+
+/*
+=================================================
+	AllocateBufferMemory
+=================================================
+*/
+	bool  VApp::AllocateBufferMemory (BufferID id, VmaAllocationCreateFlags flags, VmaMemoryUsage usage, VkMemoryPropertyFlags propertyFlags) const
+	{
+		CHECK_ERR( size_t(id) < _bufferAlloc.size() );
+
+		auto&	mem = _bufferAlloc[size_t(id)];
+		CHECK_ERR( mem.alloc == null );
+
+		VmaAllocationCreateInfo		info = {};
+		info.flags			= flags;
+		info.usage			= usage;
+		info.requiredFlags	= 0;
+		info.preferredFlags	= propertyFlags;
+		info.memoryTypeBits	= 0;
+		info.pool			= VK_NULL_HANDLE;
+		info.pUserData		= null;
+
+		VK_CHECK( vmaAllocateMemoryForBuffer( _memAllocator, GetResource(id), &info, OUT &mem.alloc, null ));
+		VK_CHECK( vmaBindBufferMemory( _memAllocator, mem.alloc, GetResource(id) ));
+		
+		VmaAllocationInfo	alloc_info = {};
+		vmaGetAllocationInfo( _memAllocator, mem.alloc, OUT &alloc_info );
+
+		mem.mappedPtr	= alloc_info.pMappedData;
+		mem.size		= alloc_info.size;
+
+		return true;
+	}
+	
+/*
+=================================================
+	AllocateImageMemory
+=================================================
+*/
+	bool  VApp::AllocateImageMemory (ImageID id, VmaAllocationCreateFlags flags, VmaMemoryUsage usage, VkMemoryPropertyFlags propertyFlags) const
+	{
+		CHECK_ERR( size_t(id) < _imageAlloc.size() );
+
+		auto&	mem = _imageAlloc[size_t(id)];
+		CHECK_ERR( mem.alloc == null );
+
+		VmaAllocationCreateInfo		info = {};
+		info.flags			= flags;
+		info.usage			= usage;
+		info.requiredFlags	= 0;
+		info.preferredFlags	= propertyFlags;
+		info.memoryTypeBits	= 0;
+		info.pool			= VK_NULL_HANDLE;
+		info.pUserData		= null;
+
+		VK_CHECK( vmaAllocateMemoryForImage( _memAllocator, GetResource(id), &info, OUT &mem.alloc, null ));
+		VK_CHECK( vmaBindImageMemory( _memAllocator, mem.alloc, GetResource(id) ));
+		
+		VmaAllocationInfo	alloc_info = {};
+		vmaGetAllocationInfo( _memAllocator, mem.alloc, OUT &alloc_info );
+
+		mem.mappedPtr	= alloc_info.pMappedData;
+		mem.size		= alloc_info.size;
+
+		return true;
+	}
+	
+/*
+=================================================
+	FreeBufferMemory
+=================================================
+*/
+	bool  VApp::FreeBufferMemory (BufferID id) const
+	{
+		CHECK_ERR( size_t(id) < _bufferAlloc.size() );
+
+		auto&	mem = _bufferAlloc[size_t(id)];
+		CHECK_ERR( mem.alloc );
+
+		vmaFreeMemory( _memAllocator, mem.alloc );
+
+		mem = {};
+		return true;
+	}
+	
+/*
+=================================================
+	FreeImageMemory
+=================================================
+*/
+	bool  VApp::FreeImageMemory (ImageID id) const
+	{
+		CHECK_ERR( size_t(id) < _imageAlloc.size() );
+
+		auto&	mem = _imageAlloc[size_t(id)];
+		CHECK_ERR( mem.alloc );
+
+		vmaFreeMemory( _memAllocator, mem.alloc );
+
+		mem = {};
+		return true;
+	}
+	
+/*
+=================================================
+	LoadDataToBuffer
+=================================================
+*/
+	bool  VApp::LoadDataToBuffer (BufferID bufferId, DataID dataId, VkDeviceSize offset, VkDeviceSize size) const
+	{
+		CHECK_ERR( size_t(bufferId) < _bufferAlloc.size() );
+
+		auto&	mem = _bufferAlloc[size_t(bufferId)];
+		CHECK_ERR( mem.mappedPtr );
+		
+		auto	data = _loadableData.find( dataId );
+		CHECK_ERR( data != _loadableData.end() );
+		CHECK_ERR( data->second.size() == size );
+
+		CHECK_ERR( (offset + size) <= mem.size );
+
+		memcpy( mem.mappedPtr + BytesU(offset), data->second.data(), size );
+		return true;
+	}
+	
+/*
+=================================================
+	LoadDataToImage
+=================================================
+*/
+	bool  VApp::LoadDataToImage (ImageID imageId, DataID dataId, VkDeviceSize offset, VkDeviceSize size) const
+	{
+		CHECK_ERR( size_t(imageId) < _imageAlloc.size() );
+
+		auto&	mem = _imageAlloc[size_t(imageId)];
+		CHECK_ERR( mem.mappedPtr );
+		
+		auto	data = _loadableData.find( dataId );
+		CHECK_ERR( data != _loadableData.end() );
+		CHECK_ERR( data->second.size() == size );
+
+		CHECK_ERR( (offset + size) <= mem.size );
+
+		memcpy( mem.mappedPtr + BytesU(offset), data->second.data(), size );
+		return true;
+	}
+
+#endif	// VTC_MEMORY_REMAPPING
+//-----------------------------------------------------------------------------
+
+
+	
+#if not VTC_MEMORY_REMAPPING
+/*
+=================================================
+	OnMapMemory
+=================================================
+*/
+	bool VApp::OnMapMemory (DeviceMemoryID memId, void *ptr, VkDeviceSize offset, VkDeviceSize size) const
+	{
+		auto&	mem = _mappedMemory.insert({ memId, {} }).first->second;
+		CHECK( mem.mappedPtr == null );
+
+		mem = { ptr, offset, size };
+		return true;
+	}
+	
+/*
+=================================================
+	OnUnmapMemory
+=================================================
+*/
+	bool VApp::OnUnmapMemory (DeviceMemoryID memId) const
+	{
+		auto	mem = _mappedMemory.find( memId );
+		CHECK_ERR( mem != _mappedMemory.end() );
+		CHECK( mem->second.mappedPtr != null );
+
+		mem->second = {};
+		return true;
+	}
+	
+/*
+=================================================
+	LoadDataToMappedMemory
+=================================================
+*/
+	bool VApp::LoadDataToMappedMemory (DeviceMemoryID memId, DataID dataId, VkDeviceSize offset, VkDeviceSize size) const
+	{
+		auto	mem = _mappedMemory.find( memId );
+		CHECK_ERR( mem != _mappedMemory.end() );
+		CHECK_ERR( mem->second.mappedPtr != null );
+		
+		auto	data = _loadableData.find( dataId );
+		CHECK_ERR( data != _loadableData.end() );
+		CHECK_ERR( data->second.size() == size );
+
+		CHECK_ERR( (offset + size) <= mem->second.size );
+
+		memcpy( mem->second.mappedPtr + BytesU(offset), data->second.data(), size );
+		return true;
+	}
+
+#endif	// not VTC_MEMORY_REMAPPING
 
 
 }	// VTC
 
+
+#if VTC_MEMORY_REMAPPING
+
+# ifdef COMPILER_GCC
+#   pragma GCC diagnostic push
+#   pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+# endif
+
+# ifdef COMPILER_MSVC
+#	pragma warning (push)
+#	pragma warning (disable: 4100)
+#	pragma warning (disable: 4127)
+# endif
+
+# define VMA_IMPLEMENTATION				1
+# define VMA_USE_STL_CONTAINERS			1
+# define VMA_STATIC_VULKAN_FUNCTIONS	0
+# include "external/VulkanMemoryAllocator/src/vk_mem_alloc.h"
+
+# ifdef COMPILER_GCC
+#   pragma GCC diagnostic pop
+# endif
+
+# ifdef COMPILER_MSVC
+#	pragma warning (pop)
+# endif
+
+#endif	// VTC_MEMORY_REMAPPING

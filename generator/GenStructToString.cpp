@@ -648,7 +648,7 @@ namespace VTC
 
 		if ( stype.empty() )
 		{
-			str	<< "ND_ static String  Serialize_" << info.name << " (const " << info.name << " *obj, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)\n"
+			str	<< "ND_ String  Serialize_" << info.name << " (const " << info.name << " *obj, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)\n"
 				<< "{\n"
 				<< "	String	result, before;\n"
 				<< "	if ( obj == null ) return result;\n"
@@ -659,7 +659,7 @@ namespace VTC
 				<< "}\n\n";
 		}
 
-		str	<< "static void  Serialize2_" << info.name << " (const " << info.name << " *obj, StringView name, NameSerializer &nameSer,"
+		str	<< "void  Serialize2_" << info.name << " (const " << info.name << " *obj, StringView name, NameSerializer &nameSer,"
 			<< " ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)\n"
 			<< "{\n";
 
@@ -736,15 +736,15 @@ namespace VTC
 	GenStructToString
 =================================================
 */
-	bool Generator::GenStructToString (const fs::path &output) const
+	bool Generator::GenStructToString (const fs::path &headerFile, const fs::path &sourceFile) const
 	{
-		String	str0 = "// auto-generated file\n\nusing namespace std::string_literals;\n\n";
+		String	header = "// auto-generated file\n\n";
 		String	str1, str2;
 	
-		str0 << "ND_ static String  SerializeStruct (const VkBaseInStructure*, NameSerializer&, ResRemapper &, StringView);\n";
+		header << "ND_ String  SerializeStruct (const VkBaseInStructure*, NameSerializer&, ResRemapper &, StringView);\n";
 
-		str1 << "\n\n"
-			<< "ND_ static String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)\n"
+		str1 << "// auto-generated file\n\nusing namespace std::string_literals;\n\n"
+			<< "ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)\n"
 			<< "{\n"
 			<< "	if ( ptr == null ) return {};\n"
 			<< "	String	result, before;\n"
@@ -778,12 +778,12 @@ namespace VTC
 				 info.data.name == "VkBaseOutStructure" )
 				continue;
 		
-			str0 << "    static void    Serialize2_" << info.data.name << " (const " << info.data.name
-				 << "*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);\n";
+			header << "    void    Serialize2_" << info.data.name << " (const " << info.data.name
+					<< "*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);\n";
 
 			if ( not has_stype )
 			{
-				str0 << "ND_ static String  Serialize_" << info.data.name << " (const " << info.data.name << "*, NameSerializer&, ResRemapper &, StringView);\n";
+				header << "ND_ String  Serialize_" << info.data.name << " (const " << info.data.name << "*, NameSerializer&, ResRemapper &, StringView);\n";
 
 				CHECK_ERR( _GenStructToString_ProcessStruct( info.data, "", OUT temp ));
 			
@@ -842,13 +842,19 @@ namespace VTC
 			<< "}\n\n";
 
 
-		// store to file
-		WFile	file{ output };
-		CHECK_ERR( file.IsOpen() );
-		CHECK_ERR( file.Write( StringView(str0) ));
-		CHECK_ERR( file.Write( StringView(str1) ));
-		CHECK_ERR( file.Write( StringView(str2) ));
-
+		// store header to file
+		{
+			HddWFile	file{ headerFile };
+			CHECK_ERR( file.IsOpen() );
+			CHECK_ERR( file.Write( StringView(header) ));
+		}
+		// store source to file
+		{
+			HddWFile	file{ sourceFile };
+			CHECK_ERR( file.IsOpen() );
+			CHECK_ERR( file.Write( StringView(str1) ));
+			CHECK_ERR( file.Write( StringView(str2) ));
+		}
 		return true;
 	}
 

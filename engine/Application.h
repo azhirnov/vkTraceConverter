@@ -2,8 +2,23 @@
 
 #pragma once
 
-#include "engine/FIValue.h"
+#include "engine/Common.h"
 #include "engine/ResourceIDs.h"
+#include "engine/FIValue.h"
+
+#define VTC_MEMORY_REMAPPING	1
+
+#ifndef VTC_MEMORY_REMAPPING
+#	error VTC_MEMORY_REMAPPING must be defined
+#endif
+
+#if VTC_MEMORY_REMAPPING
+#	undef NOMINMAX
+#	define VMA_RECORDING_ENABLED	0
+#	define VMA_DEDICATED_ALLOCATION	1
+#	include "external/VulkanMemoryAllocator/src/vk_mem_alloc.h"
+#endif
+
 
 namespace VTC
 {
@@ -31,49 +46,108 @@ namespace VTC
 			FrameID			firstFrame	= FrameID(0);	// frame when data will be requested at first time
 			FrameID			lastFrame	= FrameID(0);	// frame when data can be unloaded
 		};
-
+		
 
 	private:
-		using ResourceMap_t		= StaticArray< Array<VkResourceID_t>, 32 >;
+		#if VTC_MEMORY_REMAPPING
+		/*using BufImgUnion = Union< BufferID, ImageID >;
+
+		struct MemBindingRange
+		{
+			BufImgUnion		id;
+			VkDeviceSize	offset	= 0;
+			VkDeviceSize	size	= 0;
+		};
 
 		struct MemRange
 		{
-			void *			mappedPtr	= null;
-			VkDeviceSize	offset		= 0;
-			VkDeviceSize	size		= 0;
-		};
-		using MappedMemory_t	= Array< MemRange >;
+			void *					mappedPtr		= null;
+			VkDeviceSize			mappingOffset	= 0;
+			VkDeviceSize			mappingSize		= 0;
 
+			Array< BufImgUnion >	resources;			// buffer and image IDs that binded to memory
+			VkDeviceSize			srcSize			= 0;
+			VkDeviceSize			dstSize			= 0;
+			VkDeviceSize			dstOffset		= 0;
+		};
 		
+		struct MemRemappingInfo
+		{
+			// before remapping
+			VkDeviceSize			srcOffset	= 0;
+			VkDeviceSize			srcSize		= 0;
+			// after remapping
+			VkDeviceSize			dstOffset	= 0;
+			VkDeviceSize			dstSize		= 0;
+		};
+
+		using MappedMemory_t		= HashMap< DeviceMemoryID, MemRange >;
+		using ImageMemInfoMap_t		= Array< MemRemappingInfo >;
+		using BufferMemInfoMap_t	= Array< MemRemappingInfo >;*/
+
+		struct MemAllocationInfo
+		{
+			VmaAllocation		alloc		= null;
+			void *				mappedPtr	= null;
+			VkDeviceSize		size		= 0;
+		};
+		
+		using ImageAllocations_t	= Array< MemAllocationInfo >;
+		using BufferAllocations_t	= Array< MemAllocationInfo >;
+
+		#else
+		struct MemRange
+		{
+			void *					mappedPtr	= null;
+			VkDeviceSize			offset		= 0;
+			VkDeviceSize			size		= 0;
+		};
+		using MappedMemory_t		= HashMap< DeviceMemoryID, MemRange >;
+
+		#endif	// VTC_MEMORY_REMAPPING
+
+
+		using RFilePtr	= SharedPtr<RFile>;
+
 		struct FilePartExt : FilePart
 		{
-			FILE*		file = null;
+			RFilePtr	file;
 
 			FilePartExt () {}
-			FilePartExt (const FilePart &part, FILE* file) : FilePart{part}, file{file} {}
+			FilePartExt (const FilePart &part, const RFilePtr &file) : FilePart{part}, file{file} {}
 		};
+		
+		using ResourceMap_t			= StaticArray< Array<VkResourceID_t>, 32 >;
+		using DataMap_t				= HashMap< DataID, Array<uint8_t> >;
+		using LoadEvents_t			= HashMap< FrameID, Array<FilePartExt> >;
+		using UnloadEvents_t		= HashMap< FrameID, Array<DataID> >;
+		using FileMap_t				= HashMap< String, RFilePtr >;
 
-		using DataMap_t			= HashMap< DataID, Array<uint8_t> >;
-		using LoadEvents_t		= HashMap< FrameID, Array<FilePartExt> >;
-		using UnloadEvents_t	= HashMap< FrameID, Array<DataID> >;
-		using FileMap_t			= HashMap< String, FILE* >;
 
 
 	// variables
 	private:
-		VulkanDeviceExt			_vulkan;
-		VulkanSwapchainPtr		_swapchain;
-		WindowPtr				_window;
-		String					_windowTitle;
-		uint2					_surfaceSize;
+		VulkanDeviceExt				_vulkan;
+		VulkanSwapchainPtr			_swapchain;
+		WindowPtr					_window;
+		String						_windowTitle;
+		uint2						_surfaceSize;
 		
-		mutable ResourceMap_t 	_resources;
-		mutable MappedMemory_t	_mappedMemory;
+		mutable ResourceMap_t		_resources;
+		
+		#if VTC_MEMORY_REMAPPING
+		mutable ImageAllocations_t	_imageAlloc;
+		mutable BufferAllocations_t	_bufferAlloc;
+		mutable VmaAllocator		_memAllocator	= null;
 
-		DataMap_t				_loadableData;
-		LoadEvents_t			_loadEvents;
-		UnloadEvents_t			_unloadEvents;
-		FileMap_t				_files;
+		#else
+		mutable MappedMemory_t		_mappedMemory;
+		#endif
+
+		DataMap_t					_loadableData;
+		LoadEvents_t				_loadEvents;
+		UnloadEvents_t				_unloadEvents;
+		FileMap_t					_files;
 
 
 	// methods
@@ -121,17 +195,23 @@ namespace VTC
 		bool Present (QueueID queue, ImageID image, SemaphoreID renderFinishedSemaphore) const;
 
 
-		ND_ uint  GetMemoryTypeIndex (uint memoryTypeBits, VkMemoryPropertyFlags flags) const;
+		#if VTC_MEMORY_REMAPPING
+		bool AllocateBufferMemory (BufferID id, VmaAllocationCreateFlags flags, VmaMemoryUsage usage, VkMemoryPropertyFlags propertyFlags) const;
+		bool AllocateImageMemory (ImageID id, VmaAllocationCreateFlags flags, VmaMemoryUsage usage, VkMemoryPropertyFlags propertyFlags) const;
+		bool FreeBufferMemory (BufferID id) const;
+		bool FreeImageMemory (ImageID id) const;
+		bool LoadDataToBuffer (BufferID bufferId, DataID dataId, VkDeviceSize offset, VkDeviceSize size) const;
+		bool LoadDataToImage (ImageID imageId, DataID dataId, VkDeviceSize offset, VkDeviceSize size) const;
+
+		#else
+		bool OnMapMemory (DeviceMemoryID memId, void *ptr, VkDeviceSize offset, VkDeviceSize size) const;
+		bool OnUnmapMemory (DeviceMemoryID memId) const;
+		bool LoadDataToMappedMemory (DeviceMemoryID memId, DataID dataId, VkDeviceSize offset, VkDeviceSize size) const;
+
+		#endif // VTC_MEMORY_REMAPPING
 
 
 		ND_ ArrayView<uint8_t>  LoadData (DataID id) const;
-
-
-		bool OnMapMemory (DeviceMemoryID memId, void *ptr, VkDeviceSize offset, VkDeviceSize size) const;
-		bool OnUnmapMemory (DeviceMemoryID memId) const;
-		//bool GetMappedMemory (DeviceMemoryID memId, OUT void* &ptr, OUT VkDeviceSize &size) const;
-		bool LoadDataToMappedMemory (DeviceMemoryID memId, DataID dataId, VkDeviceSize offset, VkDeviceSize size) const;
-
 
 		template <typename ResIdType>
 		ND_ typename _ObjInfo<ResIdType>::vktype const	GetResource (ResIdType id)	const;
@@ -150,9 +230,13 @@ namespace VTC
 		ND_ VkQueue & 					EditResource (QueueID id)					{ return _EditResource( id ); }
 		ND_ VkSwapchainKHR &			EditResource (SwapchainKHRID id)			{ return _EditResource( id ); }
 		//ND_ VkSurfaceKHR &			EditResource (SurfaceKHRID id)				{ return _EditResource( id ); }
-		
+
 		bool _PrepareData (FrameID frameId);
 		bool _LoadDataPart (FilePartExt &part);
+		
+		#if VTC_MEMORY_REMAPPING
+		bool _CreateAllocator (VkDeviceSize pageSize);
+		#endif
 
 
 	// implement IWindowEventListener
@@ -220,12 +304,23 @@ namespace VTC
 		ASSERT( count < ResIdType(~0u) );
 
 		_resources[ index ].resize( size_t(count) );
-
-		if constexpr ( std::is_same_v< ResIdType, DeviceMemoryID > )
-		{
-			_mappedMemory.resize( size_t(count) );
-		}
+		
+		#if VTC_MEMORY_REMAPPING
+			if constexpr ( std::is_same_v<ResIdType, ImageID> )		_imageAlloc.resize( size_t(count) );
+			if constexpr ( std::is_same_v<ResIdType, BufferID> )	_bufferAlloc.resize( size_t(count) );
+		#endif
 	}
 
 
 }	// VTC
+
+
+#if defined (COMPILER_MSVC) or defined (COMPILER_CLANG)
+
+# if VTC_MEMORY_REMAPPING
+#	pragma detect_mismatch( "VTC_MEMORY_REMAPPING", "1" )
+# else
+#	pragma detect_mismatch( "VTC_MEMORY_REMAPPING", "0" )
+# endif
+
+#endif	// COMPILER_MSVC or COMPILER_CLANG

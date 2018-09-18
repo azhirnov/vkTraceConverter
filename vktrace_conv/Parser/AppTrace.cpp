@@ -54,24 +54,38 @@ namespace VTC
 */
 	bool AppTrace::Open (StringView filename)
 	{
-		using namespace std::chrono;
-
 		Close();
-		
 		FG_TIMEPROFILER();
 
-		FILE*	file = null;
-		CHECK( fopen_s( OUT &file, filename.data(), "rb" ) == 0 );
+		_traceFile.reset( new HddRFile{ filename });
+		CHECK_ERR( _traceFile->IsOpen() );
 
-		_traceFile	= vktrace_FileLike_create_file( file );
-		
-		CHECK_ERR( vktrace_FileLike_ReadRaw( _traceFile, &_fileHeader, sizeof(_fileHeader) ));
-		_gpuInfo.resize( _fileHeader.n_gpuinfo );
+		return _ProcessTrace();
+	}
 
-		CHECK_ERR( vktrace_FileLike_ReadRaw( _traceFile, _gpuInfo.data(), size_t(ArraySizeOf(_gpuInfo)) ));
+	bool AppTrace::Open (const fs::path &path)
+	{
+		Close();
+		FG_TIMEPROFILER();
 		
-		if ( _fileHeader.portability_table_valid )
-			_fileHeader.portability_table_valid = _ReadPortabilityTable();
+		_traceFile.reset( new HddRFile{ path });
+		CHECK_ERR( _traceFile->IsOpen() );
+
+		return _ProcessTrace();
+	}
+	
+/*
+=================================================
+	_ProcessTrace
+=================================================
+*/
+	bool AppTrace::_ProcessTrace ()
+	{
+		CHECK_ERR( _traceFile->Read( OUT _fileHeader ));
+		CHECK_ERR( _traceFile->Read( _fileHeader.n_gpuinfo, _gpuInfo ));
+		
+		//if ( _fileHeader.portability_table_valid )
+		//	_fileHeader.portability_table_valid = _ReadPortabilityTable();
 
 		_fullTrace = TraceRange{ _traceFile };
 
@@ -86,14 +100,6 @@ namespace VTC
 */
 	void AppTrace::Close ()
 	{
-		if ( _traceFile )
-		{
-			if ( _traceFile->mFile )
-				fclose( _traceFile->mFile );
-			
-			vktrace_free( _traceFile );
-		}
-
 		_fullTrace	= Default;
 		_traceFile	= null;
 
@@ -110,7 +116,7 @@ namespace VTC
 ----
 	copied from readPortabilityTable() in vkreplay_main.cpp
 =================================================
-*/
+*
 	bool AppTrace::_ReadPortabilityTable ()
 	{
 		uint64_t table_size			= 0;

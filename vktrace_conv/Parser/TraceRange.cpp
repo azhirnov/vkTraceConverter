@@ -10,12 +10,12 @@ namespace VTC
 	constructor
 =================================================
 */
-	TraceRange::TraceRange (FileLike* file, uint64_t first, uint64_t last) :
+	TraceRange::TraceRange (const RFilePtr &file, BytesU first, BytesU last) :
 		_file{file}, _firstPacketOffset{first}, _lastPacketOffset{last}
 	{
 		ASSERT( _file );
 		ASSERT( _firstPacketOffset <= _lastPacketOffset );
-		ASSERT( _lastPacketOffset <= _file->mFileLen );
+		ASSERT( _lastPacketOffset <= _file->Size() );
 	}
 	
 /*
@@ -23,10 +23,10 @@ namespace VTC
 	constructor
 =================================================
 */
-	TraceRange::TraceRange (FileLike* file) :
+	TraceRange::TraceRange (const RFilePtr &file) :
 		_file{ file },
-		_firstPacketOffset{ vktrace_FileLike_GetCurrentPosition( _file ) },
-		_lastPacketOffset{ _file->mFileLen }
+		_firstPacketOffset{ file->Position() },
+		_lastPacketOffset{ _file->Size() }
 	{}
 
 /*
@@ -144,7 +144,7 @@ namespace VTC
 		const size_t	off_2	= BitCast<size_t>( member );
 		CHECK_ERR( off_1 < off_2 );
 
-		const uint64_t	result = bookmark._offset + uint64_t(off_2 - off_1);
+		const uint64_t	result = uint64_t(bookmark._offset) + uint64_t(off_2 - off_1);
 		CHECK_ERR( result >= _firstPacketOffset and result < _lastPacketOffset );
 
 		return result;
@@ -195,32 +195,61 @@ namespace VTC
 # ifdef _MSC_VER
 #	pragma warning (pop)
 # endif
+	
+/*
+=================================================
+	constructor
+=================================================
+*/
+	TraceRange::Iterator::Iterator (const RFilePtr &file, BytesU offset) :
+		_file{file}, _offset{offset}
+	{
+		_buffer.reserve( _MaxBufferSize );
+		_ReadPacket();
+	}
+		
+	TraceRange::Iterator::Iterator ()
+	{
+		_buffer.reserve( _MaxBufferSize );
+		STATIC_ASSERT( alignof(vktrace_trace_packet_header) <= sizeof(_buffer[0]) );
+	}
 
 /*
 =================================================
 	_ReadPacket
 =================================================
 */
-	void TraceRange::Iterator::_ReadPacket ()
+	bool TraceRange::Iterator::_ReadPacket ()
 	{
 		_ReleasePacket();
 
-		if ( not _file or _offset >= _file->mFileLen ) {
+		if ( not _file or _offset >= _file->Size() ) {
 			//ASSERT(false);
-			return;
+			return false;
 		}
 
-		if ( vktrace_FileLike_SetCurrentPosition( _file, _offset ) == FALSE ) {
+		if ( not _file->SeekSet( _offset ) ) {
 			ASSERT(false);
-			return;
+			return false;
 		}
 
-		_lastPacket = vktrace_read_trace_packet( _file );
-		ASSERT( _lastPacket );
+		uint64_t		packet_size			= 0;
+		const BytesU	packet_size_sizeof	= BytesU::SizeOf(packet_size);
+
+		CHECK_ERR( _file->Read( OUT packet_size ));
+		_buffer.resize( (packet_size + sizeof(_buffer[0])) / sizeof(_buffer[0]) );
+
+		_lastPacket = BitCast<vktrace_trace_packet_header *>(_buffer.data());
+		CHECK_ERR( _lastPacket );
+		CHECK_ERR( _file->Read( _lastPacket + packet_size_sizeof, (packet_size - packet_size_sizeof) ));
+
+        _lastPacket->size = packet_size;
+        _lastPacket->pBody = BitCast<uintptr_t>(_lastPacket) + sizeof(vktrace_trace_packet_header);	
 
 		UnpackPacket( _lastPacket );
 
-		_nextOffset = vktrace_FileLike_GetCurrentPosition( _file );
+		_nextOffset = _file->Position();
+		return true;
 	}
 	
 /*
@@ -230,7 +259,12 @@ namespace VTC
 */
 	void TraceRange::Iterator::_ReleasePacket ()
 	{
-		vktrace_delete_trace_packet_no_lock( &_lastPacket );
+		if ( _buffer.capacity() > _MaxBufferSize*2 )
+		{
+			_buffer.resize( _MaxBufferSize );
+			_buffer.shrink_to_fit();
+		}
+
 		_lastPacket = null;
 	}
 

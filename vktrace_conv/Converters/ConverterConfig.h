@@ -14,29 +14,37 @@ namespace VTC
 	struct ConverterConfig
 	{
 	// converters:
-		struct CppRawVulkan
+		struct VulkanCppSource
 		{
-			bool		isEnabled			= false;
-			//bool		isMultithreaded		= false;
-			//bool		isAsyncLoadEnabled	= false;
-			FrameID		firstFrame			= 0;
-			FrameID		lastFrame			= ~FrameID(0);
+			bool		isEnabled				= false;
+			//bool		isMultithreaded			= false;
+			//bool		isAsyncLoadEnabled		= false;
+			bool		remapMemory				= true;
+			bool		remapQueueFamily		= false;
+			FrameID		firstFrame				= 0;
+			FrameID		lastFrame				= ~FrameID(0);
 		};
+		
 
-
-		struct CppVulkanEZ
-		{
-			bool		isEnabled		= false;
-		};
-
-
-		struct CppRawOpenGL
+		struct VulkanTrace
 		{
 			bool		isEnabled		= false;
 		};
 
 
-		struct CppFrameGraph
+		struct VulkanEZTrace
+		{
+			bool		isEnabled		= false;
+		};
+
+
+		struct OpenGLTrace
+		{
+			bool		isEnabled		= false;
+		};
+
+
+		struct FrameGraphTrace
 		{
 			bool		isEnabled		= false;
 		};
@@ -109,10 +117,11 @@ namespace VTC
 
 	// config:
 		struct Converters {
-			CppRawVulkan			cppRawVulkan;
-			CppVulkanEZ				cppVulkanEZ;
-			CppRawOpenGL			cppRawOpenGL;
-			CppFrameGraph			cppFrameGraph;
+			VulkanCppSource			vulkanCppSource;
+			VulkanTrace				vulkanTrace;
+			VulkanEZTrace			vulkanEZTrace;
+			OpenGLTrace				openGLTrace;
+			FrameGraphTrace			frameGraphTrace;
 			GraphViz				graphviz;
 			Screenshot				screenshot;
 		}						conveters;

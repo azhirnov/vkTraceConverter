@@ -1,7 +1,6 @@
 # download and install all external dependencies
 
 cmake_policy( SET CMP0022 NEW )
-
 cmake_minimum_required (VERSION 3.6.0)
 
 include( ExternalProject )
@@ -36,7 +35,10 @@ foreach ( CONFIG ${CMAKE_CONFIGURATION_TYPES} )
 endforeach ()
 
 
-include( "${CMAKE_SOURCE_DIR}/cmake/download-vulkan-tools.cmake" )
+if (NOT VTC_STABLE)
+	include( "${CMAKE_SOURCE_DIR}/cmake/download-vulkan-tools.cmake" )
+endif ()
+
 include( "${CMAKE_SOURCE_DIR}/cmake/download-other.cmake" )
 include( "${CMAKE_SOURCE_DIR}/cmake/download-fg.cmake" )
 

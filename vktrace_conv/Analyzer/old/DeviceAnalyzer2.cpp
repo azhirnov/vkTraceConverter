@@ -1,6 +1,6 @@
 // Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
-#include "Analyzer/old/DeviceAnalyzer.h"
+#include "Analyzer/old/DeviceAnalyzer2.h"
 #include "Analyzer/AnalyzerUtils.h"
 
 namespace VTC
@@ -11,7 +11,7 @@ namespace VTC
 	constructor
 =================================================
 */
-	DeviceAnalyzer::DeviceAnalyzer ()
+	DeviceAnalyzer2::DeviceAnalyzer2 ()
 	{
 	}
 	
@@ -20,7 +20,7 @@ namespace VTC
 	AddResourceUsage
 =================================================
 */
-	void DeviceAnalyzer::AddResourceUsage (const TraceRange::Iterator &pos, EResourceType type, ResourceID id, FrameID, EResOp)
+	void DeviceAnalyzer2::AddResourceUsage (const TraceRange::Iterator &pos, EResourceType type, ResourceID id, FrameID, EResOp)
 	{
 		switch ( type )
 		{
@@ -37,7 +37,7 @@ namespace VTC
 	_ProcessInstanceUsage
 =================================================
 */
-	bool DeviceAnalyzer::_ProcessInstanceUsage (const TraceRange::Iterator &pos, ResourceID id)
+	bool DeviceAnalyzer2::_ProcessInstanceUsage (const TraceRange::Iterator &pos, ResourceID id)
 	{
 		switch ( pos->packet_id )
 		{
@@ -45,7 +45,7 @@ namespace VTC
 			case VKTRACE_TPI_VK_vkEnumeratePhysicalDevices :	CHECK_ERR( _OnEnumeratePhysicalDevices( pos ));	break;
 
 			default :
-				CHECK_ERR( _instances.AddResourceUsage( pos, id, 0, EResOp::Access ));
+				CHECK_ERR( _instances.AddResourceUsage( pos, id, EResOp::Access ));
 				break;
 		}
 		return true;
@@ -56,14 +56,14 @@ namespace VTC
 	_OnCreateInstance
 =================================================
 */
-	bool DeviceAnalyzer::_OnCreateInstance (const TraceRange::Iterator &pos)
+	bool DeviceAnalyzer2::_OnCreateInstance (const TraceRange::Iterator &pos)
 	{
 		auto&	packet		= pos.Cast< packet_vkCreateInstance >();
 		CHECK_ERR( packet.pCreateInfo );
 		ASSERT( packet.pCreateInfo->pNext == null );	// add support if assert triggered
 
 		InstancesMap_t::iterator	instance;
-		CHECK_ERR( _instances.AddResourceUsage( OUT instance, pos, ResourceID(*packet.pInstance), FrameID(0), EResOp::Construct ));
+		CHECK_ERR( _instances.AddResourceUsage( OUT instance, pos, ResourceID(*packet.pInstance), EResOp::Construct ));
 
 		auto&	info = instance->second.back();
 
@@ -88,12 +88,12 @@ namespace VTC
 	_OnEnumeratePhysicalDevices
 =================================================
 */
-	bool DeviceAnalyzer::_OnEnumeratePhysicalDevices (const TraceRange::Iterator &pos)
+	bool DeviceAnalyzer2::_OnEnumeratePhysicalDevices (const TraceRange::Iterator &pos)
 	{
 		auto&	packet	= pos.Cast< packet_vkEnumeratePhysicalDevices >();
 		
 		InstancesMap_t::iterator	instance;
-		CHECK_ERR( _instances.AddResourceUsage( OUT instance, pos, ResourceID(packet.instance), 0, EResOp::Access ));
+		CHECK_ERR( _instances.AddResourceUsage( OUT instance, pos, ResourceID(packet.instance), EResOp::Access ));
 
 		auto&	info = instance->second.back();
 
@@ -110,13 +110,13 @@ namespace VTC
 			if ( not _physicalDevices.FindIn( info.physicalDevices[i], pos, false ) )
 			{
 				PhysicalDevicesMap_t::iterator	dev;
-				CHECK( _physicalDevices.AddResourceUsage( OUT dev, pos, info.physicalDevices[i], FrameID(0), EResOp::Construct ));
+				CHECK( _physicalDevices.AddResourceUsage( OUT dev, pos, info.physicalDevices[i], EResOp::Construct ));
 
 				dev->second.back().instance = ResourceID(packet.instance);
 			}
 			else
 			{
-				CHECK( _physicalDevices.AddResourceUsage( pos, info.physicalDevices[i], FrameID(0), EResOp::Access ));
+				CHECK( _physicalDevices.AddResourceUsage( pos, info.physicalDevices[i], EResOp::Access ));
 			}
 		}
 		return true;
@@ -127,13 +127,13 @@ namespace VTC
 	_ProcessPhysicalDeviceUsage
 =================================================
 */
-	bool DeviceAnalyzer::_ProcessPhysicalDeviceUsage (const TraceRange::Iterator &pos, ResourceID id)
+	bool DeviceAnalyzer2::_ProcessPhysicalDeviceUsage (const TraceRange::Iterator &pos, ResourceID id)
 	{
 		if ( pos->packet_id == VKTRACE_TPI_VK_vkEnumeratePhysicalDevices )
 			return true;
 		
 		PhysicalDevicesMap_t::iterator	dev;
-		CHECK_ERR( _physicalDevices.AddResourceUsage( OUT dev, pos, id, FrameID(0), EResOp::Access ));
+		CHECK_ERR( _physicalDevices.AddResourceUsage( OUT dev, pos, id, EResOp::Access ));
 		auto&	dev_info = dev->second.back();
 
 		switch ( pos->packet_id )
@@ -166,7 +166,7 @@ namespace VTC
 	_OnGetPhysicalDeviceQueueFamilyProperties
 =================================================
 */
-	bool DeviceAnalyzer::_OnGetPhysicalDeviceQueueFamilyProperties (const TraceRange::Iterator &pos, PhysicalDeviceInfo &info)
+	bool DeviceAnalyzer2::_OnGetPhysicalDeviceQueueFamilyProperties (const TraceRange::Iterator &pos, PhysicalDeviceInfo &info)
 	{
 		auto&	packet = pos.Cast< packet_vkGetPhysicalDeviceQueueFamilyProperties >();
 		
@@ -188,7 +188,7 @@ namespace VTC
 	_OnGetPhysicalDeviceSurfaceSupportKHR
 =================================================
 */
-	bool DeviceAnalyzer::_OnGetPhysicalDeviceSurfaceSupportKHR (const TraceRange::Iterator &pos, PhysicalDeviceInfo &info)
+	bool DeviceAnalyzer2::_OnGetPhysicalDeviceSurfaceSupportKHR (const TraceRange::Iterator &pos, PhysicalDeviceInfo &info)
 	{
 		auto&	packet = pos.Cast< packet_vkGetPhysicalDeviceSurfaceSupportKHR >();
 
@@ -203,13 +203,13 @@ namespace VTC
 	_ProcessLogicalDeviceUsage
 =================================================
 */
-	bool DeviceAnalyzer::_ProcessLogicalDeviceUsage (const TraceRange::Iterator &pos, ResourceID id)
+	bool DeviceAnalyzer2::_ProcessLogicalDeviceUsage (const TraceRange::Iterator &pos, ResourceID id)
 	{
 		if ( pos->packet_id == VKTRACE_TPI_VK_vkCreateDevice )
 			return _OnCreateDevice( pos, id );
 		
 		LogicalDevicesMap_t::iterator	dev;
-		CHECK_ERR( _logicalDevices.AddResourceUsage( OUT dev, pos, id, FrameID(0), EResOp::Access ));
+		CHECK_ERR( _logicalDevices.AddResourceUsage( OUT dev, pos, id, EResOp::Access ));
 
 		switch ( pos->packet_id )
 		{
@@ -224,7 +224,7 @@ namespace VTC
 	_OnCreateDevice
 =================================================
 */
-	bool DeviceAnalyzer::_OnCreateDevice (const TraceRange::Iterator &pos, ResourceID id)
+	bool DeviceAnalyzer2::_OnCreateDevice (const TraceRange::Iterator &pos, ResourceID id)
 	{
 		auto&	packet = pos.Cast< packet_vkCreateDevice >();
 
@@ -242,7 +242,7 @@ namespace VTC
 		instance->logicalDevices.insert( id );
 
 		LogicalDevicesMap_t::iterator	dev;
-		CHECK_ERR( _logicalDevices.AddResourceUsage( OUT dev, pos, id, FrameID(0), EResOp::Construct ));
+		CHECK_ERR( _logicalDevices.AddResourceUsage( OUT dev, pos, id, EResOp::Construct ));
 
 		auto&	info	= dev->second.back();
 
@@ -278,7 +278,7 @@ namespace VTC
 	_OnGetDeviceQueue
 =================================================
 */
-	bool DeviceAnalyzer::_OnGetDeviceQueue (const TraceRange::Iterator &pos, ResourceID id, LogicalDeviceInfo_t &dev)
+	bool DeviceAnalyzer2::_OnGetDeviceQueue (const TraceRange::Iterator &pos, ResourceID id, LogicalDeviceInfo_t &dev)
 	{
 		auto&	packet = pos.Cast< packet_vkGetDeviceQueue >();
 		CHECK_ERR( ResourceID(packet.device) == id );
@@ -289,7 +289,7 @@ namespace VTC
 		CHECK_ERR( gpu );
 		
 		QueuesMap_t::iterator	queue;
-		CHECK_ERR( _queues.AddResourceUsage( OUT queue, pos, ResourceID(*packet.pQueue), FrameID(0), EResOp::Construct ));
+		CHECK_ERR( _queues.AddResourceUsage( OUT queue, pos, ResourceID(*packet.pQueue), EResOp::Construct ));
 
 		auto&	info = queue->second.back();
 
@@ -327,13 +327,13 @@ namespace VTC
 	_ProcessQueueUsage
 =================================================
 */
-	bool DeviceAnalyzer::_ProcessQueueUsage (const TraceRange::Iterator &pos, ResourceID id)
+	bool DeviceAnalyzer2::_ProcessQueueUsage (const TraceRange::Iterator &pos, ResourceID id)
 	{
 		if ( pos->packet_id == VKTRACE_TPI_VK_vkGetDeviceQueue )
 			return true;
 		
 		QueuesMap_t::iterator	queue;
-		CHECK_ERR( _queues.AddResourceUsage( OUT queue, pos, id, FrameID(0), EResOp::Access ));
+		CHECK_ERR( _queues.AddResourceUsage( OUT queue, pos, id, EResOp::Access ));
 		
 		auto&	info = queue->second.back();
 
@@ -359,7 +359,7 @@ namespace VTC
 	_OnQueueSubmit
 =================================================
 */
-	bool DeviceAnalyzer::_OnQueueSubmit (const TraceRange::Iterator &pos, ResourceID id, QueueInfo &queue)
+	bool DeviceAnalyzer2::_OnQueueSubmit (const TraceRange::Iterator &pos, ResourceID id, QueueInfo &queue)
 	{
 		auto&	packet = pos.Cast< packet_vkQueueSubmit >();
 		CHECK( ResourceID(packet.queue) == id );
@@ -386,7 +386,7 @@ namespace VTC
 	_QueueSubmitCommand
 =================================================
 */
-	bool DeviceAnalyzer::_QueueSubmitCommand (QueueInfo &queue, ResourceID cmdBufferId)
+	bool DeviceAnalyzer2::_QueueSubmitCommand (QueueInfo &queue, ResourceID cmdBufferId)
 	{
 		queue.commandBuffers.insert( cmdBufferId );
 
@@ -428,7 +428,7 @@ namespace VTC
 	_ProcessCommandBufferUsage
 =================================================
 */
-	bool DeviceAnalyzer::_ProcessCommandBufferUsage (const TraceRange::Iterator &pos, ResourceID id)
+	bool DeviceAnalyzer2::_ProcessCommandBufferUsage (const TraceRange::Iterator &pos, ResourceID id)
 	{
 		switch ( pos->packet_id )
 		{
@@ -545,7 +545,7 @@ namespace VTC
 	_OnCmdPipelineBarrier
 =================================================
 */
-	bool DeviceAnalyzer::_OnCmdPipelineBarrier (ArrayView<VkBufferMemoryBarrier> bufferBarriers, ArrayView<VkImageMemoryBarrier> imageBarriers,
+	bool DeviceAnalyzer2::_OnCmdPipelineBarrier (ArrayView<VkBufferMemoryBarrier> bufferBarriers, ArrayView<VkImageMemoryBarrier> imageBarriers,
 												ResourceID id, TraceRange::Bookmark pos)
 	{
 		auto	cmdbuf = _cmdBuffers.find( id );
@@ -583,82 +583,10 @@ namespace VTC
 
 /*
 =================================================
-	GetInstanceInfo
-=================================================
-*/
-	DeviceAnalyzer::InstanceInfo_t const*  DeviceAnalyzer::GetInstanceInfo (ResourceID id, TraceRange::Bookmark pos) const
-	{
-		return _instances.FindIn( id, pos, false );
-	}
-	
-/*
-=================================================
-	GetPhysicalDeviceInfo
-=================================================
-*/
-	DeviceAnalyzer::PhysicalDeviceInfo_t const*  DeviceAnalyzer::GetPhysicalDeviceInfo (ResourceID id, TraceRange::Bookmark pos) const
-	{
-		return _physicalDevices.FindIn( id, pos, false );
-	}
-	
-/*
-=================================================
-	GetLogicalDeviceInfo
-=================================================
-*/
-	DeviceAnalyzer::LogicalDeviceInfo_t const*  DeviceAnalyzer::GetLogicalDeviceInfo (ResourceID id, TraceRange::Bookmark pos) const
-	{
-		return _logicalDevices.FindIn( id, pos, false );
-	}
-	
-/*
-=================================================
-	GetQueueInfo
-=================================================
-*/
-	DeviceAnalyzer::QueueInfo_t const*  DeviceAnalyzer::GetQueueInfo (ResourceID id, TraceRange::Bookmark pos) const
-	{
-		return _queues.FindIn( id, pos, false );
-	}
-	
-/*
-=================================================
-	GetQueueFamily
-=================================================
-*
-	VkQueueFlags  DeviceAnalyzer::GetQueueFamily (ResourceID queueId, TraceRange::Bookmark pos) const
-	{
-		auto*	info = _queues.FindIn( queueId, pos, false );
-		CHECK_ERR( info, VK_QUEUE_FLAG_BITS_MAX_ENUM );
-		
-		return info->props.queueFlags;
-	}
-	
-/*
-=================================================
-	GetQueuesFamily
-=================================================
-*
-	VkQueueFlags  DeviceAnalyzer::GetQueuesFamily (ArrayView<ResourceID> queueIds, TraceRange::Bookmark pos) const
-	{
-		VkQueueFlags	result = 0;
-
-		for (auto& q : queueIds)
-		{
-			auto*	info = _queues.FindIn( q, pos, false );
-			CHECK_ERR( info, VK_QUEUE_FLAG_BITS_MAX_ENUM );
-
-			result |= info->props.queueFlags;
-		}
-		return result;
-	}
-
-/*
-=================================================
 	GetCommandPoolQueueFamily
 =================================================
 */
-	VkQueueFlags  DeviceAnalyzer::GetCommandPoolQueueFamily (ResourceID commandPoolId, TraceRange::Bookmark pos) const
+	VkQueueFlags  DeviceAnalyzer2::GetCommandPoolQueueFamily (ResourceID commandPoolId, TraceRange::Bookmark pos) const
 	{
 		CHECK_ERR( not _queues.empty() );
 
@@ -690,76 +618,6 @@ namespace VTC
 		
 		return *supported_families.begin();
 	}
-	
-/*
-=================================================
-	GetBufferQueueFamily
-=================================================
-*
-	Array<VkQueueFlags>  DeviceAnalyzer::GetBufferQueueFamily (ResourceID bufferId, TraceRange::Bookmark pos) const
-	{
-		Array<VkQueueFlags>	supported_families;
-
-		for (auto& queue : _queues)
-		{
-			for (auto& qobj : queue.second)
-			{
-				if ( pos >= qobj.bookmarks.front().pos and
-					 pos <= qobj.bookmarks.back().pos )
-				{
-					if ( qobj.bufferUsage.find( bufferId ) == qobj.bufferUsage.end() )
-						continue;
-
-					bool	found = false;
-
-					for (auto& flags : supported_families)
-					{
-						if ( flags == qobj.props.queueFlags ) {
-							found = true;
-							break;
-						}
-					}
-
-					if ( not found )
-						supported_families.push_back( qobj.props.queueFlags );
-				}
-			}
-		}
-
-
-		
-		return *supported_families.begin();
-	}
-	
-/*
-=================================================
-	GetImageQueueFamily
-=================================================
-*
-	Array<VkQueueFlags>  DeviceAnalyzer::GetImageQueueFamily (ResourceID imageId, TraceRange::Bookmark pos) const
-	{
-		HashSet<VkQueueFlags>	supported_families;
-
-		for (auto& queue : _queues)
-		{
-			for (auto& qobj : queue.second)
-			{
-				if ( pos >= qobj.bookmarks.front().pos and
-					 pos <= qobj.bookmarks.back().pos )
-				{
-					if ( qobj.imageUsage.find( imageId ) == qobj.imageUsage.end() )
-						continue;
-
-					supported_families.insert( qobj.props.queueFlags );
-				}
-			}
-		}
-
-		// TODO: merge flags
-		ASSERT( supported_families.size() == 1 );
-		
-		return *supported_families.begin();
-	}*/
 
 
 }	// VTC

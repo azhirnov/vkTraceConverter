@@ -390,7 +390,7 @@ if (TRUE)
 									"${VT_EXTERNALS_PATH}/LunarG-VulkanTools/vktrace/vktrace_common"
 									"${VT_EXTERNALS_PATH}/LunarG-VulkanTools/vktrace/vktrace_replay"
 									"${CMAKE_BINARY_DIR}/build-LunarG-VulkanTools/vktrace" )
-	set( VT_CONVERTER_LIBRARIES "${VT_CONVERTER_LIBRARIES}" "vktrace_common" )
+	#set( VT_CONVERTER_LIBRARIES "${VT_CONVERTER_LIBRARIES}" "vktrace_common" )
 	set( VT_CONVERTER_DEPENDENCIES "${VT_CONVERTER_DEPENDENCIES}" "External.LunarG-VulkanTools" )
 endif ()
 

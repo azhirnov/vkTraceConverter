@@ -21,7 +21,7 @@ namespace VTC
 	// Resource Tracker
 	//
 
-	template <typename ItemType, typename BookmarkType = DefaultBookmark>
+	template <typename ItemType, typename BookmarkType = DefaultBookmark, bool UseBookmarkArray = false>
 	struct ResourceTracker
 	{
 	// types
@@ -29,24 +29,49 @@ namespace VTC
 		struct Bookmark : BookmarkType
 		{
 			TraceRange::Bookmark	pos;
-			FrameID					frameId;
 			PacketID				packetId;
 
 			ND_ bool operator == (const Bookmark &rhs) const {
 				return	BookmarkType::operator == (rhs)	and
 						pos			== rhs.pos			and
-						frameId		== rhs.frameId		and
 						packetId	== rhs.packetId;
 			}
 		};
 
-		struct Item : ItemType
+
+		struct ItemWithBookmarkArray : ItemType
 		{
+		// variables
 			Deque<Bookmark>		bookmarks;
 			bool				destroyed	= false;
+
+		// methods
+			ItemWithBookmarkArray () {}
+			
+			void AddBookmark (Bookmark &&bm);
+
+			ND_ Bookmark const&		FirstBookmark ()	const	{ return bookmarks.front(); }
+			ND_ Bookmark const&		LastBookmark ()		const	{ return bookmarks.back(); }
 		};
 
 
+		struct ItemWithBookmarkRange : ItemType
+		{
+		// variables
+			Bookmark			firstBookmark;
+			Bookmark			lastBookmark;
+			bool				destroyed	= false;
+
+		// methods
+			ItemWithBookmarkRange () {}
+
+			void AddBookmark (Bookmark &&bm);
+
+			ND_ Bookmark const&		FirstBookmark ()	const	{ return firstBookmark; }
+			ND_ Bookmark const&		LastBookmark ()		const	{ return lastBookmark; }
+		};
+
+		using Item				= std::conditional_t< UseBookmarkArray, ItemWithBookmarkArray, ItemWithBookmarkRange >;
 		using ItemArray_t		= Deque< Item >;
 		using ItemMap_t			= HashMap< ResourceID, ItemArray_t >;
 
@@ -76,7 +101,6 @@ namespace VTC
 		ND_ auto	end ()					const	{ return _items.end(); }
 		ND_ auto	end ()							{ return _items.end(); }
 
-		//ND_ size_t	size ()				const	{ return _items.size(); }
 		ND_ bool	empty ()				const	{ return _items.empty(); }
 
 		ND_ auto	find (ResourceID id)	const	{ return _items.find( id ); }
@@ -96,24 +120,64 @@ namespace VTC
 		ND_ Item_t *		FindIn (ResourceID id, const TraceRange::Iterator &pos, bool strict = true);
 
 		
-		bool	AddResourceUsage (const TraceRange::Iterator &pos, ResourceID id, FrameID frameId, EResOp op)
+		bool	AddResourceUsage (const TraceRange::Iterator &pos, ResourceID id, EResOp op)
 		{
 			iterator	iter;
-			return AddResourceUsage( OUT iter, pos, id, frameId, op );
+			return AddResourceUsage( OUT iter, pos, id, op );
 		}
 
-		bool	AddResourceUsage (OUT iterator &iter, const TraceRange::Iterator &pos, ResourceID id, FrameID frameId, EResOp op);
+		bool	AddResourceUsage (OUT iterator &iter, const TraceRange::Iterator &pos, ResourceID id, EResOp op);
 	};
 
 
 	
+	
+/*
+=================================================
+	AddBookmark
+=================================================
+*/
+	template <typename IT, typename BT, bool A>
+	inline void ResourceTracker<IT,BT,A>::ItemWithBookmarkArray::AddBookmark (Bookmark &&bm)
+	{
+		if ( bookmarks.empty() or not (bookmarks.back() == bm) )
+		{
+			ASSERT( bookmarks.empty() or bookmarks.back().pos <= bm.pos );
+
+			bookmarks.push_back( std::move(bm) );
+		}
+	}
+	
+/*
+=================================================
+	AddBookmark
+=================================================
+*/
+	template <typename IT, typename BT, bool A>
+	inline void ResourceTracker<IT,BT,A>::ItemWithBookmarkRange::AddBookmark (Bookmark &&bm)
+	{
+		if ( firstBookmark.pos != TraceRange::Bookmark() )
+		{
+			ASSERT( bm.pos >= lastBookmark.pos );
+
+			lastBookmark = std::move(bm);
+		}
+		else
+		{
+			firstBookmark = (lastBookmark = std::move(bm));
+		}
+	}
+//-----------------------------------------------------------------------------
+
+
+
 /*
 =================================================
 	AddResourceUsage
 =================================================
 */
-	template <typename IT, typename BT>
-	inline bool  ResourceTracker<IT,BT>::AddResourceUsage (OUT iterator &iter, const TraceRange::Iterator &pos, ResourceID id, FrameID frameId, EResOp op)
+	template <typename IT, typename BT, bool A>
+	inline bool  ResourceTracker<IT,BT,A>::AddResourceUsage (OUT iterator &iter, const TraceRange::Iterator &pos, ResourceID id, EResOp op)
 	{
 		CHECK_ERR( id != 0 );
 
@@ -145,17 +209,9 @@ namespace VTC
 			
 		Bookmark	bm;
 		bm.packetId	= PacketID(pos->packet_id);
-		bm.frameId	= frameId;
 		bm.pos		= pos.GetBookmark();
 
-		auto&	bookmarks = iter->second.back().bookmarks;
-
-		if ( bookmarks.empty() or not (bookmarks.back() == bm) )
-		{
-			ASSERT( bookmarks.empty() or bookmarks.back().pos <= bm.pos );
-
-			bookmarks.push_back( std::move(bm) );
-		}
+		iter->second.back().AddBookmark( std::move(bm) );
 		return true;
 	}
 	
@@ -164,9 +220,9 @@ namespace VTC
 	FindIn
 =================================================
 */
-	template <typename IT, typename BT>
-	inline typename ResourceTracker<IT,BT>::Item_t const*
-		ResourceTracker<IT,BT>::FindIn (ResourceID id, TraceRange::Bookmark pos, bool strict) const
+	template <typename IT, typename BT, bool A>
+	inline typename ResourceTracker<IT,BT,A>::Item_t const*
+		ResourceTracker<IT,BT,A>::FindIn (ResourceID id, TraceRange::Bookmark pos, bool strict) const
 	{
 		auto	iter = _items.find( id );
 
@@ -181,22 +237,20 @@ namespace VTC
 	FindIn
 =================================================
 */
-	template <typename IT, typename BT>
-	inline typename ResourceTracker<IT,BT>::Item_t const*
-		ResourceTracker<IT,BT>::FindIn (const_iterator iter, TraceRange::Bookmark pos, bool strict) const
+	template <typename IT, typename BT, bool A>
+	inline typename ResourceTracker<IT,BT,A>::Item_t const*
+		ResourceTracker<IT,BT,A>::FindIn (const_iterator iter, TraceRange::Bookmark pos, bool strict) const
 	{
 		for (auto& res : iter->second)
 		{
-			ASSERT( not res.bookmarks.empty() );
-
-			if ( strict								and
-				 pos >= res.bookmarks.front().pos	and
-				 pos <= res.bookmarks.back().pos )
+			if ( strict							and
+				 pos >= res.FirstBookmark().pos	and
+				 pos <= res.LastBookmark().pos )
 			{
 				return &res;
 			}
 			
-			if ( not strict and pos <= res.bookmarks.back().pos )
+			if ( not strict and pos <= res.LastBookmark().pos )
 				return &res;
 		}
 		
@@ -214,11 +268,11 @@ namespace VTC
 	FindIn
 =================================================
 */
-	template <typename IT, typename BT>
-	inline typename ResourceTracker<IT,BT>::Item_t *
-		ResourceTracker<IT,BT>::FindIn (ResourceID id, TraceRange::Bookmark pos, bool strict)
+	template <typename IT, typename BT, bool A>
+	inline typename ResourceTracker<IT,BT,A>::Item_t *
+		ResourceTracker<IT,BT,A>::FindIn (ResourceID id, TraceRange::Bookmark pos, bool strict)
 	{
-		return const_cast<Item_t *>( static_cast< ResourceTracker<IT,BT> const *>(this)->FindIn( id, pos, strict ));
+		return const_cast<Item_t *>( static_cast< ResourceTracker<IT,BT,A> const *>(this)->FindIn( id, pos, strict ));
 	}
 	
 /*
@@ -226,11 +280,11 @@ namespace VTC
 	FindIn
 =================================================
 */
-	template <typename IT, typename BT>
-	inline typename ResourceTracker<IT,BT>::Item_t *
-		ResourceTracker<IT,BT>::FindIn (iterator item, TraceRange::Bookmark pos, bool strict)
+	template <typename IT, typename BT, bool A>
+	inline typename ResourceTracker<IT,BT,A>::Item_t *
+		ResourceTracker<IT,BT,A>::FindIn (iterator item, TraceRange::Bookmark pos, bool strict)
 	{
-		return const_cast<Item_t *>( static_cast< ResourceTracker<IT,BT> const *>(this)->FindIn( item, pos, strict ));
+		return const_cast<Item_t *>( static_cast< ResourceTracker<IT,BT,A> const *>(this)->FindIn( item, pos, strict ));
 	}
 	
 /*
@@ -238,16 +292,16 @@ namespace VTC
 	FindIn
 =================================================
 */
-	template <typename IT, typename BT>
-	inline typename ResourceTracker<IT,BT>::Item_t const*
-		ResourceTracker<IT,BT>::FindIn (const_iterator item, const TraceRange::Iterator &pos, bool strict) const
+	template <typename IT, typename BT, bool A>
+	inline typename ResourceTracker<IT,BT,A>::Item_t const*
+		ResourceTracker<IT,BT,A>::FindIn (const_iterator item, const TraceRange::Iterator &pos, bool strict) const
 	{
 		return FindIn( item, pos.GetBookmark(), strict );
 	}
 	
-	template <typename IT, typename BT>
-	inline typename ResourceTracker<IT,BT>::Item_t *
-		ResourceTracker<IT,BT>::FindIn (iterator item, const TraceRange::Iterator &pos, bool strict)
+	template <typename IT, typename BT, bool A>
+	inline typename ResourceTracker<IT,BT,A>::Item_t *
+		ResourceTracker<IT,BT,A>::FindIn (iterator item, const TraceRange::Iterator &pos, bool strict)
 	{
 		return FindIn( item, pos.GetBookmark(), strict );
 	}
@@ -257,16 +311,16 @@ namespace VTC
 	FindIn
 =================================================
 */	
-	template <typename IT, typename BT>
-	inline typename ResourceTracker<IT,BT>::Item_t const*
-		ResourceTracker<IT,BT>::FindIn (ResourceID id, const TraceRange::Iterator &pos, bool strict) const
+	template <typename IT, typename BT, bool A>
+	inline typename ResourceTracker<IT,BT,A>::Item_t const*
+		ResourceTracker<IT,BT,A>::FindIn (ResourceID id, const TraceRange::Iterator &pos, bool strict) const
 	{
 		return FindIn( id, pos.GetBookmark(), strict );
 	}
 	
-	template <typename IT, typename BT>
-	inline typename ResourceTracker<IT,BT>::Item_t *
-		ResourceTracker<IT,BT>::FindIn (ResourceID id, const TraceRange::Iterator &pos, bool strict)
+	template <typename IT, typename BT, bool A>
+	inline typename ResourceTracker<IT,BT,A>::Item_t *
+		ResourceTracker<IT,BT,A>::FindIn (ResourceID id, const TraceRange::Iterator &pos, bool strict)
 	{
 		return FindIn( id, pos.GetBookmark(), strict );
 	}

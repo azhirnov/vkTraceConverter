@@ -15,6 +15,7 @@ include( "cmake/compilers.cmake" )
 add_subdirectory( "external" "external" )
 
 
+set( VTC_STABLE OFF CACHE BOOL "disable code generation and some external projects" )
 set( MAIN_BINARY_DIR "${CMAKE_BINARY_DIR}/bin" CACHE INTERNAL "" FORCE )
 set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${MAIN_BINARY_DIR}" )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY "${MAIN_BINARY_DIR}" )

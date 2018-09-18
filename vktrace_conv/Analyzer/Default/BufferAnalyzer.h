@@ -31,7 +31,7 @@ namespace VTC
 			VkMemoryRequirements		memRequirements	= {};
 		};
 
-		using BuffersMap_t		= ResourceTracker< BufferInfo >;
+		using BuffersMap_t		= ResourceTracker< BufferInfo, DefaultBookmark, true >;
 		using BufferInfo_t		= BuffersMap_t::Item_t;
 
 
@@ -42,7 +42,7 @@ namespace VTC
 			VkBufferViewCreateInfo		createInfo	= {};
 		};
 
-		using BufferViewsMap_t	= ResourceTracker< BufferViewInfo >;
+		using BufferViewsMap_t	= ResourceTracker< BufferViewInfo, DefaultBookmark, true >;
 		using BufferViewInfo_t	= BufferViewsMap_t::Item_t;
 
 
@@ -57,6 +57,9 @@ namespace VTC
 	// methods
 	public:
 		BufferAnalyzer ();
+		
+		ND_ BufferInfo_t const *	GetBuffer (ResourceID id, TraceRange::Bookmark pos) const			{ return _buffers.FindIn( id, pos ); }
+		ND_ BufferViewInfo_t const*	GetBufferView (ResourceID id, TraceRange::Bookmark pos) const		{ return _bufferViews.FindIn( id, pos ); }
 
 
 	// IAnalyzer implementation
@@ -75,16 +78,16 @@ namespace VTC
 
 
 	private:
-		bool _ProcessBufferUsage (const TraceRange::Iterator &, ResourceID, FrameID, EResOp);
-		bool _ProcessBufferViewUsage (const TraceRange::Iterator &, ResourceID, FrameID, EResOp);
+		bool _ProcessBufferUsage (const TraceRange::Iterator &, ResourceID, EResOp);
+		bool _ProcessBufferViewUsage (const TraceRange::Iterator &, ResourceID, EResOp);
 
-		bool _OnCreateBuffer (const TraceRange::Iterator &, ResourceID, FrameID);
+		bool _OnCreateBuffer (const TraceRange::Iterator &, ResourceID);
 		bool _OnBindBufferMemory (const TraceRange::Iterator &, BufferInfo_t &);
 		bool _OnBindBufferMemory2 (const TraceRange::Iterator &, BufferInfo_t &);
 		bool _OnGetBufferMemoryRequirements (const TraceRange::Iterator &, BufferInfo_t &);
 		bool _OnGetBufferMemoryRequirements2 (const TraceRange::Iterator &, BufferInfo_t &);
 
-		bool _OnCreateBufferView (const TraceRange::Iterator &, ResourceID, FrameID);
+		bool _OnCreateBufferView (const TraceRange::Iterator &, ResourceID);
 
 		bool _ProcessBufferMemoryBarriers (TraceRange::Bookmark pos, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask,
 										   ArrayView<VkBufferMemoryBarrier> barriers);

@@ -56,7 +56,7 @@ namespace VTC
 			VkMemoryRequirements		memRequirements	= {};
 		};
 
-		using ImagesMap_t		= ResourceTracker< ImageInfo >;
+		using ImagesMap_t		= ResourceTracker< ImageInfo, DefaultBookmark, true >;
 		using ImageInfo_t		= ImagesMap_t::Item_t;
 
 
@@ -67,7 +67,7 @@ namespace VTC
 			VkImageViewCreateInfo		createInfo	= {};
 		};
 		
-		using ImageViewsMap_t	= ResourceTracker< ImageViewInfo >;
+		using ImageViewsMap_t	= ResourceTracker< ImageViewInfo, DefaultBookmark, true >;
 		using ImageViewInfo_t	= ImageViewsMap_t::Item_t;
 
 
@@ -83,7 +83,8 @@ namespace VTC
 	public:
 		ImageAnalyzer ();
 		
-
+		ND_ ImageInfo_t const*		GetImage (ResourceID id, TraceRange::Bookmark pos) const		{ return _images.FindIn( id, pos ); }
+		ND_ ImageViewInfo_t const*	GetImageView (ResourceID id, TraceRange::Bookmark pos) const	{ return _imageViews.FindIn( id, pos ); }
 
 
 	// IAnalyzer implementation
@@ -102,13 +103,13 @@ namespace VTC
 
 
 	private:
-		bool _ProcessImageUsage (const TraceRange::Iterator &, ResourceID, FrameID, EResOp);
-		bool _ProcessImageViewUsage (const TraceRange::Iterator &, ResourceID, FrameID, EResOp);
+		bool _ProcessImageUsage (const TraceRange::Iterator &, ResourceID, EResOp);
+		bool _ProcessImageViewUsage (const TraceRange::Iterator &, ResourceID, EResOp);
 
-		bool _OnCreateFramebuffer (const TraceRange::Iterator &, ResourceID);
+		//bool _OnCreateFramebuffer (const TraceRange::Iterator &, ResourceID);
 
-		bool _OnCreateImage (const TraceRange::Iterator &, ResourceID, FrameID);
-		bool _OnGetSwapchainImages (const TraceRange::Iterator &, ResourceID, FrameID);
+		bool _OnCreateImage (const TraceRange::Iterator &, ResourceID);
+		bool _OnGetSwapchainImages (const TraceRange::Iterator &, ResourceID);
 		bool _OnClearColorImage (const TraceRange::Iterator &, ImageInfo_t &);
 		bool _OnClearDepthStencilImage (const TraceRange::Iterator &, ImageInfo_t &);
 		bool _OnCopyImageToBuffer (const TraceRange::Iterator &, ImageInfo_t &);
@@ -122,7 +123,7 @@ namespace VTC
 		bool _OnBindImageMemory (const TraceRange::Iterator &, ImageInfo_t &);
 		bool _OnBindImageMemory2 (const TraceRange::Iterator &, ImageInfo_t &);
 		
-		bool _OnCreateImageView (const TraceRange::Iterator &, ResourceID, FrameID);
+		bool _OnCreateImageView (const TraceRange::Iterator &, ResourceID);
 
 		bool _ProcessImageMemoryBarriers (TraceRange::Bookmark pos, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask,
 										  ArrayView<VkImageMemoryBarrier> barriers);

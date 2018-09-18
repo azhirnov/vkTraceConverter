@@ -63,7 +63,7 @@ namespace VTC
 
 
 		// store to file
-		WFile	file{ output };
+		HddWFile	file{ output };
 		CHECK_ERR( file.IsOpen() );
 		CHECK_ERR( file.Write( StringView(str) ));
 

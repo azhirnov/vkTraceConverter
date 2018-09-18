@@ -15,7 +15,7 @@ namespace VTC
 	ImageAnalyzer::ImageAnalyzer ()
 	{
 	}
-	
+
 /*
 =================================================
 	PreProcess
@@ -64,12 +64,12 @@ namespace VTC
 	AddResourceUsage
 =================================================
 */
-	void ImageAnalyzer::AddResourceUsage (const TraceRange::Iterator &pos, EResourceType type, ResourceID id, FrameID frameId, EResOp op)
+	void ImageAnalyzer::AddResourceUsage (const TraceRange::Iterator &pos, EResourceType type, ResourceID id, FrameID, EResOp op)
 	{
 		switch ( type )
 		{
-			case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT :			CHECK( _ProcessImageUsage( pos, id, frameId, op ));		break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT :		CHECK( _ProcessImageViewUsage( pos, id, frameId, op ));	break;
+			case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT :			CHECK( _ProcessImageUsage( pos, id, op ));		break;
+			case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT :		CHECK( _ProcessImageViewUsage( pos, id, op ));	break;
 		}
 	}
 	
@@ -78,16 +78,16 @@ namespace VTC
 	_ProcessImageUsage
 =================================================
 */
-	bool ImageAnalyzer::_ProcessImageUsage (const TraceRange::Iterator &pos, ResourceID id, FrameID frameId, EResOp op)
+	bool ImageAnalyzer::_ProcessImageUsage (const TraceRange::Iterator &pos, ResourceID id, EResOp op)
 	{
 		if ( pos->packet_id == VKTRACE_TPI_VK_vkCreateImage )
-			return _OnCreateImage( pos, id, frameId );
+			return _OnCreateImage( pos, id );
 
 		if ( pos->packet_id == VKTRACE_TPI_VK_vkGetSwapchainImagesKHR )
-			return _OnGetSwapchainImages( pos, id, frameId );
+			return _OnGetSwapchainImages( pos, id );
 	
 		ImagesMap_t::iterator	image;
-		CHECK( _images.AddResourceUsage( OUT image, pos, id, frameId, op ));
+		CHECK( _images.AddResourceUsage( OUT image, pos, id, op ));
 
 		auto&	info = image->second.back();
 
@@ -119,6 +119,7 @@ namespace VTC
 			case VKTRACE_TPI_VK_vkCmdWaitEvents :
 			case VKTRACE_TPI_VK_vkCmdPipelineBarrier :
 			case VKTRACE_TPI_VK_vkCreateImageView :
+			case VKTRACE_TPI_VK_vkDestroySwapchainKHR :
 				break;
 
 			default :
@@ -133,7 +134,7 @@ namespace VTC
 	_OnCreateImage
 =================================================
 */
-	bool ImageAnalyzer::_OnCreateImage (const TraceRange::Iterator &pos, ResourceID id, FrameID frameId)
+	bool ImageAnalyzer::_OnCreateImage (const TraceRange::Iterator &pos, ResourceID id)
 	{
 		auto&	packet = pos.Cast<packet_vkCreateImage>();
 		CHECK_ERR( packet.pCreateInfo );
@@ -141,7 +142,7 @@ namespace VTC
 		ASSERT( packet.pCreateInfo->pNext == null );	// add support if assert triggered
 
 		ImagesMap_t::iterator	image;
-		CHECK_ERR( _images.AddResourceUsage( OUT image, pos, ResourceID(*packet.pImage), frameId, EResOp::Construct ));
+		CHECK_ERR( _images.AddResourceUsage( OUT image, pos, ResourceID(*packet.pImage), EResOp::Construct ));
 
 		auto&	info = image->second.back();
 		
@@ -157,12 +158,12 @@ namespace VTC
 	_OnGetSwapchainImages
 =================================================
 */
-	bool ImageAnalyzer::_OnGetSwapchainImages (const TraceRange::Iterator &pos, ResourceID id, FrameID frameId)
+	bool ImageAnalyzer::_OnGetSwapchainImages (const TraceRange::Iterator &pos, ResourceID id)
 	{
 		auto&	packet = pos.Cast< packet_vkGetSwapchainImagesKHR >();
 
 		ImagesMap_t::iterator	image;
-		CHECK_ERR( _images.AddResourceUsage( OUT image, pos, id, frameId, EResOp::Construct ));
+		CHECK_ERR( _images.AddResourceUsage( OUT image, pos, id, EResOp::Construct ));
 
 		auto&	info = image->second.back();
 
@@ -381,16 +382,16 @@ namespace VTC
 	_ProcessImageViewUsage
 =================================================
 */
-	bool ImageAnalyzer::_ProcessImageViewUsage (const TraceRange::Iterator &pos, ResourceID id, FrameID frameId, EResOp op)
+	bool ImageAnalyzer::_ProcessImageViewUsage (const TraceRange::Iterator &pos, ResourceID id, EResOp op)
 	{
 		if ( pos->packet_id == VKTRACE_TPI_VK_vkCreateImageView )
-			return _OnCreateImageView( pos, id, frameId );
+			return _OnCreateImageView( pos, id );
 
 		if ( pos->packet_id == VKTRACE_TPI_VK_vkDestroyFramebuffer )
 			return true;	// TODO: image view may be already destroyed
 
 		ImageViewsMap_t::iterator	view;
-		CHECK_ERR( _imageViews.AddResourceUsage( OUT view, pos, id, frameId, op ));
+		CHECK_ERR( _imageViews.AddResourceUsage( OUT view, pos, id, op ));
 
 		auto&	info = view->second.back();
 
@@ -405,6 +406,15 @@ namespace VTC
 			case VKTRACE_TPI_VK_vkCmdEndRenderPass :
 				break;
 
+			// render target usage
+			case VKTRACE_TPI_VK_vkCmdDraw :
+			case VKTRACE_TPI_VK_vkCmdDrawIndirect :
+			case VKTRACE_TPI_VK_vkCmdDrawIndirectCountAMD :
+			case VKTRACE_TPI_VK_vkCmdDrawIndexed :
+			case VKTRACE_TPI_VK_vkCmdDrawIndexedIndirect :
+			case VKTRACE_TPI_VK_vkCmdDrawIndexedIndirectCountAMD :
+				break;
+
 			default :
 				ASSERT(false);	// unknown usage
 				break;
@@ -417,7 +427,7 @@ namespace VTC
 	_OnCreateImageView
 =================================================
 */
-	bool ImageAnalyzer::_OnCreateImageView (const TraceRange::Iterator &pos, ResourceID id, FrameID frameId)
+	bool ImageAnalyzer::_OnCreateImageView (const TraceRange::Iterator &pos, ResourceID id)
 	{
 		auto&	packet = pos.Cast<packet_vkCreateImageView>();
 		CHECK_ERR( packet.pCreateInfo );
@@ -428,7 +438,7 @@ namespace VTC
 		CHECK_ERR( image );
 
 		ImageViewsMap_t::iterator	view;
-		CHECK_ERR( _imageViews.AddResourceUsage( OUT view, pos, id, frameId, EResOp::Construct ));
+		CHECK_ERR( _imageViews.AddResourceUsage( OUT view, pos, id, EResOp::Construct ));
 
 		auto&	info = view->second.back();
 
@@ -437,34 +447,6 @@ namespace VTC
 		info.image		= image;
 
 		image->imageViews.insert({ id, pos.GetBookmark() });
-		return true;
-	}
-	
-/*
-=================================================
-	_OnCreateFramebuffer
-=================================================
-*
-	bool ImageAnalyzer::_OnCreateFramebuffer (const TraceRange::Iterator &pos, ResourceID id)
-	{
-		auto&	packet = pos.Cast<packet_vkCreateFramebuffer>();
-		CHECK_ERR( packet.pCreateInfo );
-		CHECK_ERR( id == ResourceID(*packet.pFramebuffer) );
-		ASSERT( packet.pCreateInfo->pNext == null );	// add support if assert triggered
-
-		FramebufferMap_t::iterator	framebuffer;
-		CHECK_ERR( _framebuffers.AddResourceUsage( OUT framebuffer, pos, ResourceID(*packet.pFramebuffer), FrameID(0), EResOp::Construct ));
-
-		auto	renderpass = _renderPasses.FindIn( ResourceID(packet.pCreateInfo->renderPass), pos, false );
-		CHECK_ERR( renderpass );
-
-		for (uint i = 0; i < packet.pCreateInfo->attachmentCount; ++i)
-		{
-			auto	imageview = _imageViews.FindIn( ResourceID(packet.pCreateInfo->pAttachments[i]), pos, false );
-			CHECK_ERR( imageview );
-
-			framebuffer->second.back().attachment.push_back( imageview );
-		}
 		return true;
 	}
 	

@@ -1,8 +1,9 @@
-// Copyright (c)  Zhirnov Andrey. For more information see 'LICENSE.txt'
+// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #pragma once
 
 #include "Analyzer/IAnalyzer.h"
+#include "Analyzer/ResourceTracker.h"
 
 namespace VTC
 {
@@ -15,13 +16,6 @@ namespace VTC
 	{
 	// types
 	public:
-		struct Bookmark
-		{
-			TraceRange::Bookmark		pos;
-			PacketID					packetId;
-		};
-
-
 		struct InstanceInfo
 		{
 			VkInstanceCreateFlags		instanceCreateFlags		= 0;
@@ -35,7 +29,6 @@ namespace VTC
 
 			Array<ResourceID>			physicalDevices;
 			HashSet<ResourceID>			logicalDevices;
-			Array<Bookmark>				bookmarks;
 		};
 
 
@@ -48,60 +41,49 @@ namespace VTC
 
 		struct PhysicalDeviceInfo
 		{
+			ResourceID							instance;
 			VkPhysicalDeviceProperties			deviceProperties;
 			VkPhysicalDeviceFeatures			deviceFeatures;
 			VkPhysicalDeviceMemoryProperties	deviceMemoryProperties;
 			Array<QueueFamilyProperties>		queueFamilyProperties;
 
 			HashSet<ResourceID>					logicalDevices;
-			Array<Bookmark>						bookmarks;
 		};
 
 
-		struct QueueCreateInfo
+		struct QueueInstance
 		{
-			VkDeviceQueueCreateFlags		flags				= 0;
-			uint32_t						queueFamilyIndex	= 0;
-			Array<float>					queuesPriorities;
+			ResourceID					id			= 0;
+			float						priority	= 0.0f;
+		};
+
+		struct QueueFamilyInfo
+		{
+			VkDeviceQueueCreateFlags	flags				= 0;
+			uint32_t					queueFamilyIndex	= 0;
+			Array<QueueInstance>		instances;
 		};
 
 
 		struct LogicalDeviceInfo
 		{
-			VkDeviceCreateFlags				deviceCreateFlags	= 0;
-			Array<QueueCreateInfo>			queueCreateInfos;
-			HashSet<String>					enabledLayers;
-			HashSet<String>					enabledExtensions;
-			VkPhysicalDeviceFeatures		enabledFeatures;
-			
-			ResourceID						physicalDevice;
-			HashSet<ResourceID>				queues;
-			Array<Bookmark>					bookmarks;
+			ResourceID					id					= 0;
+			VkDeviceCreateFlags			deviceCreateFlags	= 0;
+			Array<QueueFamilyInfo>		queues;
+			HashSet<String>				enabledLayers;
+			HashSet<String>				enabledExtensions;
+			VkPhysicalDeviceFeatures	enabledFeatures;
+			ResourceID					physicalDevice;
 		};
 
 
-		struct QueueInfo
-		{
-			VkQueueFamilyProperties			props;
-			VkDeviceQueueCreateFlags		createFlags		= 0;
-			float							priority		= 0.0f;
-			uint							familyIndex		= ~0u;
-			uint							queueIndex		= ~0u;
-			
-			ResourceID						physicalDevice	= 0;
-			ResourceID						logicalDevice	= 0;
+		using InstancesMap_t		= ResourceTracker< InstanceInfo >;
+		using PhysicalDevicesMap_t	= ResourceTracker< PhysicalDeviceInfo >;
+		using LogicalDevicesMap_t	= ResourceTracker< LogicalDeviceInfo >;
 
-			VkQueueFlags					usageFlags		= 0;
-			bool							usedForPresent	= false;
-
-			Array<Bookmark>					bookmarks;
-		};
-
-
-		using InstancesMap_t		= HashMap< ResourceID, InstanceInfo >;
-		using PhysicalDevicesMap_t	= HashMap< ResourceID, PhysicalDeviceInfo >;
-		using LogicalDevicesMap_t	= HashMap< ResourceID, LogicalDeviceInfo >;
-		using QueuesMap_t			= HashMap< ResourceID, QueueInfo >;
+		using InstanceInfo_t		= InstancesMap_t::Item_t;
+		using PhysicalDeviceInfo_t	= PhysicalDevicesMap_t::Item_t;
+		using LogicalDeviceInfo_t	= LogicalDevicesMap_t::Item_t;
 
 
 	// variables
@@ -109,26 +91,26 @@ namespace VTC
 		InstancesMap_t			_instances;
 		PhysicalDevicesMap_t	_physicalDevices;
 		LogicalDevicesMap_t		_logicalDevices;
-		QueuesMap_t				_queues;
 
 
 	// methods
 	public:
 		DeviceAnalyzer ();
 
-		ND_ InstanceInfo const*			GetInstanceInfo (ResourceID id) const;
-		ND_ PhysicalDeviceInfo const*	GetPhysicalDeviceInfo (ResourceID id) const;
-		ND_ LogicalDeviceInfo const*	GetLogicalDeviceInfo (ResourceID id) const;
-		ND_ QueueInfo const*			GetQueueInfo (ResourceID id) const;
+		ND_ InstanceInfo_t const*		GetInstanceInfo (ResourceID id, TraceRange::Bookmark pos)		const	{ return _instances.FindIn( id, pos, false ); }
+		ND_ PhysicalDeviceInfo_t const*	GetPhysicalDeviceInfo (ResourceID id, TraceRange::Bookmark pos)	const	{ return _physicalDevices.FindIn( id, pos, false ); }
+		ND_ LogicalDeviceInfo_t const*	GetLogicalDeviceInfo (ResourceID id, TraceRange::Bookmark pos)	const	{ return _logicalDevices.FindIn( id, pos, false ); }
 
 
 	// IAnalyzer implementation
 	public:
-		void Process (const TraceRange::Iterator &) override;
+		void PreProcess (const class AppTrace &) override {}
+
+		void Process (const TraceRange::Iterator &) override {}
 		
 		void PostProcess () override {}
 
-		void AddResourceUsage (const TraceRange::Iterator &, EResourceType, ResourceID, FrameID) override;
+		void AddResourceUsage (const TraceRange::Iterator &, EResourceType, ResourceID, FrameID, EResOp) override;
 		
 		std::type_index		GetType ()	const override		{ return typeid(*this); }
 
@@ -140,15 +122,17 @@ namespace VTC
 		bool _ProcessPhysicalDeviceUsage (const TraceRange::Iterator &, ResourceID);
 		bool _ProcessLogicalDeviceUsage (const TraceRange::Iterator &, ResourceID);
 		bool _ProcessQueueUsage (const TraceRange::Iterator &, ResourceID);
+		bool _ProcessCommandBufferUsage (const TraceRange::Iterator &, ResourceID);
 
 		bool _OnCreateInstance (const TraceRange::Iterator &);
 		bool _OnEnumeratePhysicalDevices (const TraceRange::Iterator &);
 
-		bool _OnCreateDevice (const TraceRange::Iterator &, ResourceID);
 		bool _OnGetPhysicalDeviceQueueFamilyProperties (const TraceRange::Iterator &, PhysicalDeviceInfo &);
 		bool _OnGetPhysicalDeviceSurfaceSupportKHR (const TraceRange::Iterator &, PhysicalDeviceInfo &);
 
-		bool _OnGetDeviceQueue (const TraceRange::Iterator &, ResourceID);
+		bool _OnCreateDevice (const TraceRange::Iterator &, ResourceID);
+		bool _OnGetDeviceQueue (const TraceRange::Iterator &, LogicalDeviceInfo &);
+		bool _OnGetDeviceQueue2 (const TraceRange::Iterator &, LogicalDeviceInfo &);
 	};
 
 

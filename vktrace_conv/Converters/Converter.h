@@ -8,10 +8,11 @@
 namespace VTC
 {
 
-	bool RunConverter_CppRawVulkan (const AppTrace &trace, const ConverterConfig &config);
-	//bool RunConverter_CppVulkanEZ (const AppTrace &trace, EOptimizationPass passes, EBenchmarkType benchmark);
-	//bool RunConverter_CppFrameGraph (const AppTrace &trace, EOptimizationPass passes, EBenchmarkType benchmark);
-	//bool RunConverter_CppOpenGL (const AppTrace &trace, EOptimizationPass passes, EBenchmarkType benchmark);
+	bool RunConverter_VulkanCppSource (const AppTrace &trace, const ConverterConfig &config);
+	//bool RunConverter_VulkanPlayer (const AppTrace &trace, const ConverterConfig &config);
+	//bool RunConverter_VulkanEZPlayer (const AppTrace &trace, EOptimizationPass passes, EBenchmarkType benchmark);
+	//bool RunConverter_FrameGraphPlayer (const AppTrace &trace, EOptimizationPass passes, EBenchmarkType benchmark);
+	//bool RunConverter_OpenGLPlayer (const AppTrace &trace, EOptimizationPass passes, EBenchmarkType benchmark);
 	//bool RunConverter_GraphViz (const AppTrace &trace, EOptimizationPass passes, EBenchmarkType benchmark);
 
 }	// VTC

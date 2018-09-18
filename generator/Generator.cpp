@@ -38,6 +38,7 @@ int main (int argc, const char** argv)
 		}
 	}
 
+	// temp
 #if 0
 	vulkan_headers = "C:/Projects/VkTraceConvertor/build/install/Vulkan-Headers/include/vulkan";
 	vktrace_ids = "C:/Projects/VkTraceConvertor/external/LunarG-VulkanTools/vktrace/vktrace_common/vktrace_trace_packet_identifiers.h";
@@ -68,8 +69,8 @@ int main (int argc, const char** argv)
 	
 	CHECK_ERR( generator.MarkRequiredTypesForSerializing(), -14 );
 	CHECK_ERR( generator.GenRawVulkanCalls( fs::path(output).append( "BuildRawVulkanCalls.h" )), -15 );
-	CHECK_ERR( generator.GenEnumToString( fs::path(output).append( "VkEnumToString.h" )), -16 );
-	CHECK_ERR( generator.GenStructToString( fs::path(output).append( "VkStructToString.h" )), -17 );
+	CHECK_ERR( generator.GenEnumToString( fs::path(output).append( "VkEnumToString.h" ), fs::path(output).append( "VkEnumToStringImpl.h" )), -16 );
+	CHECK_ERR( generator.GenStructToString( fs::path(output).append( "VkStructToString.h" ), fs::path(output).append( "VkStructToStringImpl.h" )), -17 );
 	CHECK_ERR( generator.GenStructTypeHelpers( fs::path(output).append( "VkStructTypes.h" )), -18 );
 
 	return 0;

@@ -31,7 +31,7 @@ namespace VTC
 	// variables
 	private:
 		TraceRange					_fullTrace;		// full vktrace file
-		FileLike *					_traceFile		= null;
+		TraceRange::RFilePtr		_traceFile;
 
 		vktrace_trace_file_header	_fileHeader;
 		GpuInfoArray_t				_gpuInfo;
@@ -53,6 +53,7 @@ namespace VTC
 		void AddAnalyzer (AnalyzerPtr &&);
 
 		bool Open (StringView filename);
+		bool Open (const fs::path &path);
 		void Close ();
 
 		ND_ TraceRange const&			FullTrace ()						const	{ return _fullTrace; }
@@ -69,6 +70,7 @@ namespace VTC
 
 
 	private:
+		bool _ProcessTrace ();
 		bool _ReadPortabilityTable ();
 		bool _ParseFullTrace ();
 

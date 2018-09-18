@@ -1,6 +1,6 @@
 // Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
-#include "Analyzer/old/AllResourcesBookmarks.h"
+#include "Analyzer/Default/AllResourcesBookmarks.h"
 
 namespace VTC
 {
@@ -24,22 +24,24 @@ namespace VTC
 		// set local indices
 		for (auto& res_type : _resources)
 		{
-			uint	counter = 0;
+			uint64_t	unique_index	= 0;
+			uint64_t	local_index		= 0;
 
 			for (auto& res : res_type.second)
 			{
 			#if 0
 				// unique indices
-				for (auto& inst : res.second)
-				{
-					inst.localIndex = counter++;
+				for (auto& inst : res.second) {
+					inst.uniqueIndex = unique_index++;
+					inst.localIndex  = local_index++;
 				}
 			#else
 				// minimize memory usage
 				for (auto& inst : res.second) {
-					inst.localIndex = counter;
+					inst.uniqueIndex = unique_index++;
+					inst.localIndex  = local_index;
 				}
-				++counter;
+				++local_index;
 			#endif
 			}
 		}
@@ -50,7 +52,7 @@ namespace VTC
 	AddResourceUsage
 =================================================
 */
-	void AllResourcesBookmarks::AddResourceUsage (const TraceRange::Iterator &pos, EResourceType type, ResourceID id, FrameID frameId, EResOp op)
+	void AllResourcesBookmarks::AddResourceUsage (const TraceRange::Iterator &pos, EResourceType type, ResourceID id, FrameID, EResOp op)
 	{
 		if ( id == 0 )
 			return;
@@ -58,7 +60,7 @@ namespace VTC
 		auto&	res_type = _resources[type];
 
 		ResourceMap_t::iterator		res_iter;
-		CHECK_ERR( res_type.AddResourceUsage( OUT res_iter, pos, id, frameId, op ), void());
+		CHECK_ERR( res_type.AddResourceUsage( OUT res_iter, pos, id, op ), void());
 
 		auto&	info = res_iter->second.back();
 
@@ -92,7 +94,7 @@ namespace VTC
 	GetResourceCountByType
 =================================================
 */
-	uint  AllResourcesBookmarks::GetResourceCountByType (EResourceType type) const
+	uint64_t  AllResourcesBookmarks::GetResourceCountByType (EResourceType type) const
 	{
 		auto	res_type = _resources.find( type );
 
@@ -104,6 +106,27 @@ namespace VTC
 				return 0;
 
 			return arr.back().localIndex+1;
+		}
+		return 0;
+	}
+	
+/*
+=================================================
+	GetUniqueResourceCountByType
+=================================================
+*/
+	uint64_t  AllResourcesBookmarks::GetUniqueResourceCountByType (EResourceType type) const
+	{
+		auto	res_type = _resources.find( type );
+
+		if ( res_type != _resources.end() )
+		{
+			auto&	arr = (--res_type->second.end())->second;
+
+			if ( arr.empty() )
+				return 0;
+
+			return arr.back().uniqueIndex+1;
 		}
 		return 0;
 	}

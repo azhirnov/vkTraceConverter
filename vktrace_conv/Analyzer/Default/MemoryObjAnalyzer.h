@@ -24,6 +24,17 @@ namespace VTC
 			TraceRange::Bookmark	pos;
 		};
 
+		enum class EMemoryUsage
+		{
+			None			= 0,
+			HostRead		= 1 << 0,
+			HostWrite		= 1 << 1,
+			Dedicated		= 1 << 2,
+			Exported		= 1 << 3,
+			Imported		= 1 << 4,
+			_Last,
+		};
+
 		struct MemInfo
 		{
 			ResourceID				id					= 0;
@@ -32,14 +43,13 @@ namespace VTC
 			VkMemoryPropertyFlags	propertyFlags		= 0;
 			VkDeviceSize			size				= 0;
 			ResourceID				dedicatedResource	= 0;	// image or buffer
-			bool					isExported			= false;
-			bool					isImported			= false;
+			EMemoryUsage			usage				= EMemoryUsage::None;
 			Array<MemBinding>		imageBindings;
 			Array<MemBinding>		bufferBindings;
 		};
 
-		using MemoryObjectsMap_t	= ResourceTracker< MemInfo >;
-		using MemoryInfo_t			= MemoryObjectsMap_t::Item_t;
+		using MemoryObjectsMap_t	= ResourceTracker< MemInfo, DefaultBookmark, true >;
+		using MemoryObjInfo_t		= MemoryObjectsMap_t::Item_t;
 
 
 	// variables
@@ -54,6 +64,7 @@ namespace VTC
 	public:
 		MemoryObjAnalyzer ();
 		
+		ND_ MemoryObjInfo_t const*	GetMemoryObj (ResourceID id, TraceRange::Bookmark pos) const	{ return _memObjects.FindIn( id, pos ); }
 
 
 	// IAnalyzer implementation
@@ -74,16 +85,21 @@ namespace VTC
 	private:
 		bool _ProcessMemoryUsage (const TraceRange::Iterator &, ResourceID, EResOp);
 		
-		bool _OnQueueBindSparse (const TraceRange::Iterator &, MemoryInfo_t &);
+		bool _OnQueueBindSparse (const TraceRange::Iterator &, MemoryObjInfo_t &);
 		bool _OnAllocateMemory (const TraceRange::Iterator &, ResourceID);
-		bool _OnMapMemory (const TraceRange::Iterator &, MemoryInfo_t &);
-		bool _OnBindBufferMemory (const TraceRange::Iterator &, MemoryInfo_t &);
-		bool _OnBindImageMemory (const TraceRange::Iterator &, MemoryInfo_t &);
-		bool _OnBindBufferMemory2 (const TraceRange::Iterator &, MemoryInfo_t &);
-		bool _OnBindImageMemory2 (const TraceRange::Iterator &, MemoryInfo_t &);
-		bool _BindBufferMemory (MemoryInfo_t &mem, VkBuffer buffer, VkDeviceSize memoryOffset, const TraceRange::Iterator &pos);
-		bool _BindImageMemory (MemoryInfo_t &mem, VkImage image, VkDeviceSize memoryOffset, const TraceRange::Iterator &pos);
+		bool _OnMapMemory (const TraceRange::Iterator &, MemoryObjInfo_t &);
+		bool _OnBindBufferMemory (const TraceRange::Iterator &, MemoryObjInfo_t &);
+		bool _OnBindImageMemory (const TraceRange::Iterator &, MemoryObjInfo_t &);
+		bool _OnBindBufferMemory2 (const TraceRange::Iterator &, MemoryObjInfo_t &);
+		bool _OnBindImageMemory2 (const TraceRange::Iterator &, MemoryObjInfo_t &);
+		bool _BindBufferMemory (MemoryObjInfo_t &mem, VkBuffer buffer, VkDeviceSize memoryOffset, const TraceRange::Iterator &pos);
+		bool _BindImageMemory (MemoryObjInfo_t &mem, VkImage image, VkDeviceSize memoryOffset, const TraceRange::Iterator &pos);
+		bool _OnFlushMappedMemoryRanges (const TraceRange::Iterator &, MemoryObjInfo_t &);
+		bool _OnInvalidateMappedMemoryRanges (const TraceRange::Iterator &, MemoryObjInfo_t &);
 	};
+
+
+	FG_BIT_OPERATORS( MemoryObjAnalyzer::EMemoryUsage );
 
 
 }	// VTC

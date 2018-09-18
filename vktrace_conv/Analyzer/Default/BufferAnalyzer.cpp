@@ -62,12 +62,12 @@ namespace VTC
 	AddResourceUsage
 =================================================
 */
-	void BufferAnalyzer::AddResourceUsage (const TraceRange::Iterator &pos, EResourceType type, ResourceID id, FrameID frameId, EResOp op)
+	void BufferAnalyzer::AddResourceUsage (const TraceRange::Iterator &pos, EResourceType type, ResourceID id, FrameID, EResOp op)
 	{
 		switch ( type )
 		{
-			case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT :		CHECK( _ProcessBufferUsage( pos, id, frameId, op ));		break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT :	CHECK( _ProcessBufferViewUsage( pos, id, frameId, op ));	break;
+			case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT :		CHECK( _ProcessBufferUsage( pos, id, op ));		break;
+			case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT :	CHECK( _ProcessBufferViewUsage( pos, id, op ));	break;
 		}
 	}
 	
@@ -76,13 +76,13 @@ namespace VTC
 	_ProcessBufferUsage
 =================================================
 */
-	bool BufferAnalyzer::_ProcessBufferUsage (const TraceRange::Iterator &pos, ResourceID id, FrameID frameId, EResOp op)
+	bool BufferAnalyzer::_ProcessBufferUsage (const TraceRange::Iterator &pos, ResourceID id, EResOp op)
 	{
 		if ( pos->packet_id == VKTRACE_TPI_VK_vkCreateBuffer )
-			return _OnCreateBuffer( pos, id, frameId );
+			return _OnCreateBuffer( pos, id );
 		
 		BuffersMap_t::iterator	buffer;
-		CHECK_ERR( _buffers.AddResourceUsage( OUT buffer, pos, id, frameId, op ));
+		CHECK_ERR( _buffers.AddResourceUsage( OUT buffer, pos, id, op ));
 
 		auto&	info = buffer->second.back();
 
@@ -100,15 +100,21 @@ namespace VTC
 				
 			case VKTRACE_TPI_VK_vkCmdBindIndexBuffer :
 			case VKTRACE_TPI_VK_vkCmdBindVertexBuffers :
-			case VKTRACE_TPI_VK_vkCmdDrawIndexed :
-			case VKTRACE_TPI_VK_vkCmdDrawIndirect :
-			case VKTRACE_TPI_VK_vkCmdDrawIndexedIndirect :
 			case VKTRACE_TPI_VK_vkCmdDispatchIndirect :
 			case VKTRACE_TPI_VK_vkCmdCopyBuffer :
 			case VKTRACE_TPI_VK_vkCmdCopyBufferToImage :
 			case VKTRACE_TPI_VK_vkCmdCopyImageToBuffer :
 			case VKTRACE_TPI_VK_vkCmdUpdateBuffer :
 			case VKTRACE_TPI_VK_vkCmdFillBuffer :
+				break;
+
+			// vertex / index / indirect buffer usage
+			case VKTRACE_TPI_VK_vkCmdDraw :
+			case VKTRACE_TPI_VK_vkCmdDrawIndirect :
+			case VKTRACE_TPI_VK_vkCmdDrawIndirectCountAMD :
+			case VKTRACE_TPI_VK_vkCmdDrawIndexed :
+			case VKTRACE_TPI_VK_vkCmdDrawIndexedIndirect :
+			case VKTRACE_TPI_VK_vkCmdDrawIndexedIndirectCountAMD :
 				break;
 
 			default :
@@ -123,7 +129,7 @@ namespace VTC
 	_OnCreateBuffer
 =================================================
 */
-	bool BufferAnalyzer::_OnCreateBuffer (const TraceRange::Iterator &pos, ResourceID id, FrameID frameId)
+	bool BufferAnalyzer::_OnCreateBuffer (const TraceRange::Iterator &pos, ResourceID id)
 	{
 		auto&	packet = pos.Cast< packet_vkCreateBuffer >();
 		CHECK_ERR( packet.pCreateInfo );
@@ -131,7 +137,7 @@ namespace VTC
 		ASSERT( packet.pCreateInfo->pNext == null );	// add support if triggered
 
 		BuffersMap_t::iterator	buffer;
-		CHECK_ERR( _buffers.AddResourceUsage( OUT buffer, pos, id, frameId, EResOp::Construct ));
+		CHECK_ERR( _buffers.AddResourceUsage( OUT buffer, pos, id, EResOp::Construct ));
 
 		auto&	info = buffer->second.back();
 
@@ -217,13 +223,13 @@ namespace VTC
 	_ProcessBufferViewUsage
 =================================================
 */
-	bool BufferAnalyzer::_ProcessBufferViewUsage (const TraceRange::Iterator &pos, ResourceID id, FrameID frameId, EResOp op)
+	bool BufferAnalyzer::_ProcessBufferViewUsage (const TraceRange::Iterator &pos, ResourceID id, EResOp op)
 	{
 		if ( pos->packet_id == VKTRACE_TPI_VK_vkCreateBufferView )
-			return _OnCreateBufferView( pos, id, frameId );
+			return _OnCreateBufferView( pos, id );
 		
 		BufferViewsMap_t::iterator	view;
-		CHECK_ERR( _bufferViews.AddResourceUsage( OUT view, pos, id, frameId, op ));
+		CHECK_ERR( _bufferViews.AddResourceUsage( OUT view, pos, id, op ));
 
 		auto&	info = view->second.back();
 
@@ -243,7 +249,7 @@ namespace VTC
 	_OnCreateBufferView
 =================================================
 */
-	bool BufferAnalyzer::_OnCreateBufferView (const TraceRange::Iterator &pos, ResourceID id, FrameID frameId)
+	bool BufferAnalyzer::_OnCreateBufferView (const TraceRange::Iterator &pos, ResourceID id)
 	{
 		auto&	packet = pos.Cast< packet_vkCreateBufferView >();
 		CHECK_ERR( packet.pCreateInfo );
@@ -254,7 +260,7 @@ namespace VTC
 		CHECK_ERR( buffer );
 
 		BufferViewsMap_t::iterator	view;
-		CHECK_ERR( _bufferViews.AddResourceUsage( OUT view, pos, id, frameId, EResOp::Construct ));
+		CHECK_ERR( _bufferViews.AddResourceUsage( OUT view, pos, id, EResOp::Construct ));
 
 		auto&	info = view->second.back();
 

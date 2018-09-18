@@ -13,9 +13,13 @@
 #include "stl/include/Math.h"
 #include "stl/include/StringUtils.h"
 #include "stl/include/TimeProfiler.h"
+#include "stl/include/File.h"
+
+#include <filesystem>
 
 namespace VTC
 {
 	using namespace FG;
+	namespace fs = std::filesystem;
 
 }	// VTC

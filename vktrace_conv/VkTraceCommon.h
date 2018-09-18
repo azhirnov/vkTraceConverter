@@ -16,7 +16,7 @@
 #include "vulkan/vulkan.h"
 #include "vktrace_trace_packet_identifiers.h"
 #include "vktrace_vk_vk_packets.h"		// only for packet_*** types
-#include "vktrace_filelike.h"
+//#include "vktrace_filelike.h"
 
 #ifdef _MSC_VER
 #	pragma warning (pop)
@@ -34,9 +34,14 @@ namespace VTC
 
 	enum class EResOp
 	{
-		Construct,
-		Access,
-		Destruct,
+		Construct,		// on resource constructor call
+
+		Access,			// resource specified in function arguments or in structure
+
+		IndirectAccess,	// resource dosn't specified, but used resource assotiated with current resource.
+						// for example: indirect access to image view when framebuffer binded.
+
+		Destruct,		// on direct/indirect desctructor call
 	};
 
 }	// VTC

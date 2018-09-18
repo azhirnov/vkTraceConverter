@@ -24,19 +24,19 @@ namespace VTC
 	GenEnumToString
 =================================================
 */
-	bool Generator::GenEnumToString (const fs::path &output) const
+	bool Generator::GenEnumToString (const fs::path &headerFile, const fs::path &sourceFile) const
 	{
-		String	str = "// auto-generated file\n\n";
+		String	header  = "// auto-generated file\n\n";
+		String	str		= "// auto-generated file\n\n";
 
 		for (auto& info : _enums)
 		{
 			if ( not info.data.required )
 				continue;
 
-			//if ( info.data.name.HasSubString( "FlagBits" ) )
-			//	continue;
+			header << "ND_ String  Serialize_" << info.data.name << " (" << info.data.name << ");\n";
 
-			str << "ND_ inline String  Serialize_" << info.data.name << " (" << info.data.name << " value)\n{\n"
+			str << "ND_ String  Serialize_" << info.data.name << " (" << info.data.name << " value)\n{\n"
 				<< "\tENABLE_ENUM_CHECKS();\n"
 				<< "\tswitch ( value )\n\t{\n";
 
@@ -66,12 +66,13 @@ namespace VTC
 		{
 			if ( not info.data.required )
 				continue;
+				
+			header << "ND_ String  Serialize_" << info.data.name << " (" << info.data.name << ");\n";
 
 			auto	iter = _enums.find( SearchableEnum{info.data.enumName} );
 
-			if ( iter == _enums.end() )
-			{
-				str << "ND_ inline String  Serialize_" << info.data.name << " (" << info.data.name << " bits)\n{\n"
+			if ( iter == _enums.end() ) {
+				str << "ND_ String  Serialize_" << info.data.name << " (" << info.data.name << " bits)\n{\n"
 					<< "\tASSERT( bits == 0 );\n"
 					<< "\treturn \"0\";\n"
 					<< "}\n\n";
@@ -93,7 +94,7 @@ namespace VTC
 			CHECK_ERR( not max_enum.empty() );
 
 
-			str << "ND_ inline String  Serialize_" << info.data.name << " (" << info.data.name << " bits)\n{\n"
+			str << "ND_ String  Serialize_" << info.data.name << " (" << info.data.name << " bits)\n{\n"
 				<< "\tif ( bits == 0 )\n"
 				<< "\t	return \"0\";\n"
 				<< "\tString  result;\n"
@@ -110,11 +111,18 @@ namespace VTC
 		}
 
 	
-		// store to file
-		WFile	file{ output };
-		CHECK_ERR( file.IsOpen() );
-		CHECK_ERR( file.Write( StringView(str) ));
-
+		// store header to file
+		{
+			HddWFile	file{ headerFile };
+			CHECK_ERR( file.IsOpen() );
+			CHECK_ERR( file.Write( StringView(header) ));
+		}
+		// store source to file
+		{
+			HddWFile	file{ sourceFile };
+			CHECK_ERR( file.IsOpen() );
+			CHECK_ERR( file.Write( StringView(str) ));
+		}
 		return true;
 	}
 

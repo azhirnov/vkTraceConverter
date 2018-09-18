@@ -3,6 +3,8 @@
 #pragma once
 
 #include "stl/include/Cast.h"
+#include "stl/include/Union.h"
+#include "stl/include/File.h"
 
 #include "framework/Vulkan/VulkanDeviceExt.h"
 #include "framework/Vulkan/VulkanSwapchain.h"

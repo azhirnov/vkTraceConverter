@@ -21,7 +21,8 @@ namespace VTC
 			String				name;
 			EResourceType		type		= VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT;
 			ResourceID			id			= 0;
-			uint				localIndex	= ~0u;
+			uint64_t			localIndex	= ~0ull;
+			uint64_t			uniqueIndex	= ~0ull;
 		};
 
 	public:
@@ -42,8 +43,9 @@ namespace VTC
 
 		//ND_ ResourceTypeMap_t const&	GetResourceGroups () const		{ return _resources; }
 		
-		ND_ uint					GetResourceCountByType (EResourceType type) const;
-		//ND_ uint					GetResourceCountByType (EResourceType type, ResourceID device) const;	// TODO
+		ND_ uint64_t  GetResourceCountByType (EResourceType type) const;
+		ND_ uint64_t  GetUniqueResourceCountByType (EResourceType type) const;
+		//ND_ uint64_t  GetResourceCountByType (EResourceType type, ResourceID device) const;	// TODO
 
 		ND_ ResourceMap_t const *	GetResourcesByType (EResourceType type) const;
 		ND_ ResourceInfo_t const *	GetResource (EResourceType type, ResourceID id, TraceRange::Bookmark pos) const;

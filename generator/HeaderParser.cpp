@@ -536,13 +536,13 @@ namespace VTC
 		for (auto& info : file_names)
 		{
 			const fs::path	path = folder / info.filename;
-			RFile			file{ path };
+			HddRFile			file{ path };
 			CHECK_ERR( file.IsOpen() );
 
 			_fileData.push_back({ "", info.disableIfdef.front() });
 
 			String&		buf = _fileData.back().data;
-			CHECK( file.Read( file.Size(), OUT buf ));
+			CHECK( file.Read( size_t(file.Size()), OUT buf ));
 
 			CHECK_ERR( _GenerateVK1( buf, uint(_fileData.size()-1), info.enableIfdef, info.disableIfdef, info.defaultSkip,
 									 INOUT _funcs, INOUT _enums, INOUT _structs, INOUT _bitfields ));
@@ -601,11 +601,11 @@ namespace VTC
 	{
 		CHECK_ERR( fs::exists( filename ));
 
-		RFile	file{ filename };
+		HddRFile	file{ filename };
 		CHECK_ERR( file.IsOpen() );
 
 		String	buf;
-		CHECK_ERR( file.Read( file.Size(), OUT buf ));
+		CHECK_ERR( file.Read( size_t(file.Size()), OUT buf ));
 		
 		_packetIDs.clear();
 		
@@ -1116,7 +1116,9 @@ namespace VTC
 		_alwaysSerialize = {
 				"VkQueueFlags"sv,
 				"VkShaderModuleCreateFlags"sv,
-				"VkMemoryMapFlags"sv
+				"VkMemoryMapFlags"sv,
+				//"VkMemoryPropertyFlagBits"sv,
+				"VkMemoryPropertyFlags"sv
 			};
 
 		return true;

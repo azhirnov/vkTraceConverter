@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Analyzer/old/AllResourcesBookmarks.h"
+#include "Analyzer/Default/AllResourcesBookmarks.h"
 #include "Converters/Utils/BasicTypesConverter.h"
 
 namespace VTC

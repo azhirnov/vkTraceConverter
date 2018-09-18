@@ -16,6 +16,9 @@ namespace VTC
 	{
 	// types
 	public:
+		using RFilePtr	= SharedPtr<HddRFile>;
+
+
 		struct Bookmark
 		{
 			friend class TraceRange;
@@ -24,12 +27,12 @@ namespace VTC
 
 		// variables
 		private:
-			uint64_t	_offset	= ~0ull;
+			BytesU		_offset	{ ~0ull };
 
 
 		// methods
 		private:
-			explicit Bookmark (uint64_t off) : _offset{off} {}
+			explicit Bookmark (BytesU off) : _offset{off} {}
 
 		public:
 			Bookmark () {}
@@ -50,21 +53,24 @@ namespace VTC
 
 		// variables
 		private:
+			Array<size_t>					_buffer;
 			vktrace_trace_packet_header*	_lastPacket		= null;
-			FileLike *						_file			= null;
-			uint64_t						_offset			= 0;
-			uint64_t						_nextOffset		= 0;
+			RFilePtr						_file			= null;
+			BytesU							_offset;
+			BytesU							_nextOffset;
+			
+			static constexpr uint64_t		_MaxBufferSize	= 1ull << 26;	// 64Mb
 
 
 		// methods
 		private:
-			Iterator (FileLike* file, uint64_t offset) : _file{file}, _offset{offset} { _ReadPacket(); }
+			Iterator (const RFilePtr &file, BytesU offset);
 
-			void _ReadPacket ();
+			bool _ReadPacket ();
 			void _ReleasePacket ();
 
 		public:
-			Iterator ()		{}
+			Iterator ();
 			~Iterator ()	{ _ReleasePacket(); }
 
 			Iterator (Iterator &&) = default;
@@ -95,18 +101,18 @@ namespace VTC
 
 	// variables
 	private:
-		FileLike *		_file				= null;
-		uint64_t		_firstPacketOffset	= 0;
-		uint64_t		_lastPacketOffset	= 0;
+		RFilePtr	_file				= null;
+		BytesU		_firstPacketOffset;
+		BytesU		_lastPacketOffset;
 
 
 	// methods
 	private:
-		TraceRange (FileLike* file, uint64_t first, uint64_t last);
+		TraceRange (const RFilePtr &file, BytesU first, BytesU last);
 
 	public:
 		TraceRange () {}
-		explicit TraceRange (FileLike* file);
+		explicit TraceRange (const RFilePtr &file);
 
 		ND_ Iterator	begin ()	const;
 		//ND_ Iterator	end ()		const;

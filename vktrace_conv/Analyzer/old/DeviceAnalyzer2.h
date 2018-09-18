@@ -12,7 +12,7 @@ namespace VTC
 	// Device Initialization Analyzer
 	//
 
-	class DeviceAnalyzer final : public IAnalyzer
+	class DeviceAnalyzer2 final : public IAnalyzer
 	{
 	// types
 	public:
@@ -139,18 +139,14 @@ namespace VTC
 
 	// methods
 	public:
-		DeviceAnalyzer ();
+		DeviceAnalyzer2 ();
 
-		ND_ InstanceInfo_t const*		GetInstanceInfo (ResourceID id, TraceRange::Bookmark pos) const;
-		ND_ PhysicalDeviceInfo_t const*	GetPhysicalDeviceInfo (ResourceID id, TraceRange::Bookmark pos) const;
-		ND_ LogicalDeviceInfo_t const*	GetLogicalDeviceInfo (ResourceID id, TraceRange::Bookmark pos) const;
-		ND_ QueueInfo_t const*			GetQueueInfo (ResourceID id, TraceRange::Bookmark pos) const;
+		ND_ InstanceInfo_t const*		GetInstanceInfo (ResourceID id, TraceRange::Bookmark pos)		const	{ return _instances.FindIn( id, pos, false ); }
+		ND_ PhysicalDeviceInfo_t const*	GetPhysicalDeviceInfo (ResourceID id, TraceRange::Bookmark pos)	const	{ return _physicalDevices.FindIn( id, pos, false ); }
+		ND_ LogicalDeviceInfo_t const*	GetLogicalDeviceInfo (ResourceID id, TraceRange::Bookmark pos)	const	{ return _logicalDevices.FindIn( id, pos, false ); }
+		ND_ QueueInfo_t const*			GetQueueInfo (ResourceID id, TraceRange::Bookmark pos)			const	{ return _queues.FindIn( id, pos, false ); }
 
-		//ND_ VkQueueFlags				GetQueueFamily (ResourceID queueId, TraceRange::Bookmark pos) const;
-		//ND_ VkQueueFlags				GetQueuesFamily (ArrayView<ResourceID> queueIds, TraceRange::Bookmark pos) const;
 		ND_ VkQueueFlags				GetCommandPoolQueueFamily (ResourceID commandPoolId, TraceRange::Bookmark pos) const;
-		//ND_ Array<VkQueueFlags>		GetBufferQueueFamily (ResourceID bufferId, TraceRange::Bookmark pos) const;
-		//ND_ Array<VkQueueFlags>		GetImageQueueFamily (ResourceID imageId, TraceRange::Bookmark pos) const;
 
 
 	// IAnalyzer implementation

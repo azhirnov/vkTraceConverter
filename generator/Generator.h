@@ -4,7 +4,6 @@
 
 #include "stl/include/ArrayView.h"
 #include "stl/include/FixedArray.h"
-#include "stl/include/FixedMap.h"
 #include "stl/include/DefaultType.h"
 #include "stl/include/StringUtils.h"
 #include "stl/include/File.h"
@@ -309,8 +308,8 @@ namespace VTC
 		bool MarkRequiredTypesForUnpack () const;
 		bool MarkRequiredTypesForSerializing () const;
 
-		bool GenEnumToString (const fs::path &output) const;
-		bool GenStructToString (const fs::path &output) const;
+		bool GenEnumToString (const fs::path &headerFile, const fs::path &sourceFile) const;
+		bool GenStructToString (const fs::path &headerFile, const fs::path &sourceFile) const;
 		bool GenStructTypeHelpers (const fs::path &output) const;
 
 		bool GenUnpacker (const fs::path &output) const;
