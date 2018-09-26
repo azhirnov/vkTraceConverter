@@ -2,6 +2,7 @@
 
 #include "Converters/CppVulkan/CppVulkanConverter.h"
 #include "extensions/vulkan_loader/VulkanCheckError.h"
+#include "Converters/Utils/BasicTypesConverter.h"
 
 namespace VTC
 {
@@ -22,7 +23,76 @@ namespace VTC
 #	pragma warning (pop)
 #endif
 
-	
+
+/*
+=================================================
+	_ConvertFunction
+=================================================
+*/
+	bool CppVulkanConverter::_ConvertFunction (const TraceRange::Iterator &iter, FrameID frameId, INOUT String &src)
+	{
+		_resRemapper->SetCurrentPos( iter.GetBookmark() );
+			
+		_tempStr1.clear();
+		_tempStr2.clear();
+		_nameSerializer.Clear();
+
+		switch ( iter->packet_id )
+		{
+			// skip some packets
+			case VKTRACE_TPI_VK_vkCreateSwapchainKHR :				break;
+			case VKTRACE_TPI_VK_vkCreateSharedSwapchainsKHR :		break;
+
+			// remap queue family index
+			/*case VKTRACE_TPI_VK_vkCreateCommandPool :				CHECK_ERR( _OnCreateCommandPool( iter, INOUT src ));			break;
+			case VKTRACE_TPI_VK_vkCreateBuffer :					CHECK_ERR( _OnCreateBuffer( iter, INOUT src ));					break;
+			case VKTRACE_TPI_VK_vkCreateImage :						CHECK_ERR( _OnCreateImage( iter, INOUT src ));					break;
+			case VKTRACE_TPI_VK_vkCmdWaitEvents :					CHECK_ERR( _OnCmdWaitEvents( iter, INOUT src ));				break;
+			case VKTRACE_TPI_VK_vkCmdPipelineBarrier :				CHECK_ERR( _OnCmdPipelineBarrier( iter, INOUT src ));			break;
+			*/
+			// load data from file and call function
+			case VKTRACE_TPI_VK_vkCreateShaderModule :				CHECK_ERR( _OnCreateShaderModule( iter, frameId, INOUT src ));	break;
+
+			// remap swapchain images
+			case VKTRACE_TPI_VK_vkAcquireNextImageKHR :				CHECK_ERR( _OnAcquireNextImage( iter, INOUT src ));				break;
+			case VKTRACE_TPI_VK_vkAcquireNextImage2KHR :			ASSERT(false);													break;	// TODO
+			case VKTRACE_TPI_VK_vkQueuePresentKHR :					CHECK_ERR( _OnQueuePresent( iter, INOUT src ));					break;
+
+
+			/*
+			//case VKTRACE_TPI_VK_vkGetDeviceMemoryCommitment :		CHECK_ERR( _OnGetDeviceMemoryCommitment( iter, INOUT src ));	break;
+					
+			case VKTRACE_TPI_VK_vkCreatePipelineCache :				CHECK_ERR( _OnCreatePipelineCache( iter, INOUT src ));			break;
+			case VKTRACE_TPI_VK_vkDestroyPipelineCache :			CHECK_ERR( _OnDestroyPipelineCache( iter, INOUT src ));			break;
+					
+					
+			case VKTRACE_TPI_VK_vkUpdateDescriptorSetWithTemplateKHR :	break;
+			case VKTRACE_TPI_VK_vkCmdPushDescriptorSetWithTemplateKHR : break;
+			case VKTRACE_TPI_VK_vkUpdateDescriptorSetWithTemplate : break;
+			*/
+
+			// remap memory
+			case VKTRACE_TPI_VK_vkAllocateMemory :					CHECK_ERR( _OnAllocateMemory( iter, INOUT src ));				break;
+			case VKTRACE_TPI_VK_vkFreeMemory :						CHECK_ERR( _OnFreeMemory( iter, INOUT src ));					break;
+			case VKTRACE_TPI_VK_vkMapMemory :						CHECK_ERR( _OnMapMemory( iter, INOUT src ));					break;
+			case VKTRACE_TPI_VK_vkUnmapMemory :						CHECK_ERR( _OnUnmapMemory( iter, INOUT src ));					break;
+			case VKTRACE_TPI_VK_vkFlushMappedMemoryRanges :			CHECK_ERR( _OnFlushMappedMemoryRanges( iter, frameId, INOUT src ));	break;
+			case VKTRACE_TPI_VK_vkInvalidateMappedMemoryRanges :	break;
+			case VKTRACE_TPI_VK_vkBindBufferMemory :				CHECK_ERR( _OnBindBufferMemory( iter, INOUT src ));				break;
+			case VKTRACE_TPI_VK_vkBindImageMemory :					CHECK_ERR( _OnBindImageMemory( iter, INOUT src ));				break;
+			case VKTRACE_TPI_VK_vkBindBufferMemory2 :
+			case VKTRACE_TPI_VK_vkBindBufferMemory2KHR :			CHECK_ERR( _OnBindBufferMemory2( iter, INOUT src ));			break;
+			case VKTRACE_TPI_VK_vkBindImageMemory2 :
+			case VKTRACE_TPI_VK_vkBindImageMemory2KHR :				CHECK_ERR( _OnBindImageMemory2( iter, INOUT src ));				break;
+			case VKTRACE_TPI_VK_vkDestroyBuffer :					CHECK_ERR( _OnDestroyBuffer( iter, INOUT src ));				break;
+			case VKTRACE_TPI_VK_vkDestroyImage :					CHECK_ERR( _OnDestroyImage( iter, INOUT src ));					break;
+
+			// use default serializer
+			default :												CHECK_ERR( _ConvertVkFunction( iter, INOUT src ));				break;
+		}
+		return true;
+	}
+
 /*
 =================================================
 	_ConvertVkFunction
@@ -63,145 +133,6 @@ namespace VTC
 		return true;
 	}
 	
-/*
-=================================================
-	_OnCreateCommandPool
-=================================================
-*/
-	bool CppVulkanConverter::_OnCreateCommandPool (const TraceRange::Iterator &iter, INOUT String &src) const
-	{
-		auto&	packet	= iter.Cast< packet_vkCreateCommandPool >();
-		CHECK_ERR( packet.pCreateInfo );
-
-		// remap queue family index
-		//const_cast<VkCommandPoolCreateInfo *>(packet.pCreateInfo)->queueFamilyIndex =
-		//	uint(_deviceAnalyzer->GetCommandPoolQueueFamily( ResourceID(*packet.pCommandPool), iter.GetBookmark() ));
-
-		return _ConvertVkFunction( iter, INOUT src );
-	}
-	
-/*
-=================================================
-	_OnCreateBuffer
-=================================================
-*
-	bool CppVulkanConverter::_OnCreateBuffer (const TraceRange::Iterator &iter, INOUT String &src) const
-	{
-		auto&	packet = iter.Cast< packet_vkCreateBuffer >();
-		CHECK_ERR( packet.pCreateInfo );
-		
-		Array<uint>	family_indices;
-
-		if ( packet.pCreateInfo->pQueueFamilyIndices )
-		{
-			auto*	family_indices = const_cast<uint *>(packet.pCreateInfo->pQueueFamilyIndices);
-
-			for (uint i = 0; i < packet.pCreateInfo->queueFamilyIndexCount; ++i)
-			{
-				family_indices[i] = _deviceAnalyzer->GetBufferQueueFamily( ResourceID(packet.pBuffer), iter.GetBookmark() );
-			}
-		}
-		
-		return _ConvertVkFunction( iter, INOUT src );
-	}
-	
-/*
-=================================================
-	_OnCreateImage
-=================================================
-*
-	bool CppVulkanConverter::_OnCreateImage (const TraceRange::Iterator &iter, INOUT String &src) const
-	{
-		auto&	packet = iter.Cast< packet_vkCreateImage >();
-		CHECK_ERR( packet.pCreateInfo );
-
-		Array<uint>	family_indices;
-
-		if ( packet.pCreateInfo->pQueueFamilyIndices )
-		{
-			auto*	family_indices = const_cast<uint *>(packet.pCreateInfo->pQueueFamilyIndices);
-
-			for (uint i = 0; i < packet.pCreateInfo->queueFamilyIndexCount; ++i)
-			{
-				family_indices[i] = _deviceAnalyzer->GetImageQueueFamily( ResourceID(packet.pImage), iter.GetBookmark() );
-			}
-		}
-
-		return _ConvertVkFunction( iter, INOUT src );
-	}
-	
-/*
-=================================================
-	_OnCmdWaitEvents
-=================================================
-*
-	bool CppVulkanConverter::_OnCmdWaitEvents (const TraceRange::Iterator &iter, INOUT String &src) const
-	{
-		auto&	packet = iter.Cast< packet_vkCmdWaitEvents >();
-
-		if ( packet.pBufferMemoryBarriers )
-		{
-			for (uint i = 0; i < packet.bufferMemoryBarrierCount; ++i)
-			{
-				auto&	src_family = const_cast<uint &>(packet.pBufferMemoryBarriers[i].srcQueueFamilyIndex);
-				auto&	dst_family = const_cast<uint &>(packet.pBufferMemoryBarriers[i].dstQueueFamilyIndex);
-
-				src_family = _GetBufferQueueFamily( ResourceID(packet.pBufferMemoryBarriers[i].buffer), src_family );
-				dst_family = _GetBufferQueueFamily( ResourceID(packet.pBufferMemoryBarriers[i].buffer), dst_family );
-			}
-		}
-
-		if ( packet.pImageMemoryBarriers )
-		{
-			for (uint i = 0; i < packet.imageMemoryBarrierCount; ++i)
-			{
-				auto&	src_family = const_cast<uint &>(packet.pImageMemoryBarriers[i].srcQueueFamilyIndex);
-				auto&	dst_family = const_cast<uint &>(packet.pImageMemoryBarriers[i].dstQueueFamilyIndex);
-
-				src_family = _GetImageQueueFamily( ResourceID(packet.pImageMemoryBarriers[i].image), src_family );
-				dst_family = _GetImageQueueFamily( ResourceID(packet.pImageMemoryBarriers[i].image), dst_family );
-			}
-		}
-
-		return _ConvertVkFunction( iter, INOUT src );
-	}
-	
-/*
-=================================================
-	_OnCmdPipelineBarrier
-=================================================
-*
-	bool CppVulkanConverter::_OnCmdPipelineBarrier (const TraceRange::Iterator &iter, INOUT String &src) const
-	{
-		auto&	packet = iter.Cast< packet_vkCmdPipelineBarrier >();
-
-		if ( packet.pBufferMemoryBarriers )
-		{
-			for (uint i = 0; i < packet.bufferMemoryBarrierCount; ++i)
-			{
-				auto&	src_family = const_cast<uint &>(packet.pBufferMemoryBarriers[i].srcQueueFamilyIndex);
-				auto&	dst_family = const_cast<uint &>(packet.pBufferMemoryBarriers[i].dstQueueFamilyIndex);
-
-				src_family = _GetBufferQueueFamily( ResourceID(packet.pBufferMemoryBarriers[i].buffer), src_family );
-				dst_family = _GetBufferQueueFamily( ResourceID(packet.pBufferMemoryBarriers[i].buffer), dst_family );
-			}
-		}
-
-		if ( packet.pImageMemoryBarriers )
-		{
-			for (uint i = 0; i < packet.imageMemoryBarrierCount; ++i)
-			{
-				auto&	src_family = const_cast<uint &>(packet.pImageMemoryBarriers[i].srcQueueFamilyIndex);
-				auto&	dst_family = const_cast<uint &>(packet.pImageMemoryBarriers[i].dstQueueFamilyIndex);
-
-				src_family = _GetImageQueueFamily( ResourceID(packet.pImageMemoryBarriers[i].image), src_family );
-				dst_family = _GetImageQueueFamily( ResourceID(packet.pImageMemoryBarriers[i].image), dst_family );
-			}
-		}
-
-		return _ConvertVkFunction( iter, INOUT src );
-	}
-
 /*
 =================================================
 	_OnCreateShaderModule

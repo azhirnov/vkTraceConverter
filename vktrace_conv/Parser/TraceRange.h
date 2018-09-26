@@ -44,6 +44,8 @@ namespace VTC
 			ND_ bool operator <  (Bookmark rhs) const	{ return _offset <  rhs._offset; }
 			ND_ bool operator >= (Bookmark rhs) const	{ return _offset >= rhs._offset; }
 			ND_ bool operator <= (Bookmark rhs) const	{ return _offset <= rhs._offset; }
+
+			ND_ BytesU	Value ()				const	{ return _offset; }
 		};
 
 
@@ -55,11 +57,11 @@ namespace VTC
 		private:
 			Array<size_t>					_buffer;
 			vktrace_trace_packet_header*	_lastPacket		= null;
-			RFilePtr						_file			= null;
+			RFilePtr						_file;
 			BytesU							_offset;
 			BytesU							_nextOffset;
 			
-			static constexpr uint64_t		_MaxBufferSize	= 1ull << 26;	// 64Mb
+			static constexpr uint64_t		_MaxBufferSize	= (64ull << 20) / sizeof(decltype(_buffer)::value_type);
 
 
 		// methods
@@ -73,10 +75,10 @@ namespace VTC
 			Iterator ();
 			~Iterator ()	{ _ReleasePacket(); }
 
-			Iterator (Iterator &&) = default;
+			Iterator (Iterator &&);
 			Iterator (const Iterator &) = delete;
 
-				Iterator&	operator = (Iterator &&) = default;
+				Iterator&	operator = (Iterator &&);
 				Iterator&	operator = (const Iterator &) = delete;
 
 				Iterator&	operator ++ ();
@@ -115,7 +117,7 @@ namespace VTC
 		explicit TraceRange (const RFilePtr &file);
 
 		ND_ Iterator	begin ()	const;
-		//ND_ Iterator	end ()		const;
+		//ND_ Iterator	end ()		const;		// use 'LastBookmark()' instead
 		ND_ bool		empty ()	const;
 
 		ND_ Bookmark	FirstBookmark ()	const		{ return Bookmark{ _firstPacketOffset }; }
@@ -179,6 +181,7 @@ namespace VTC
 
 
 }	// VTC
+
 
 namespace std
 {

@@ -16,7 +16,6 @@
 #include "vulkan/vulkan.h"
 #include "vktrace_trace_packet_identifiers.h"
 #include "vktrace_vk_vk_packets.h"		// only for packet_*** types
-//#include "vktrace_filelike.h"
 
 #ifdef _MSC_VER
 #	pragma warning (pop)

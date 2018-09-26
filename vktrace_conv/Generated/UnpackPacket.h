@@ -62,20 +62,28 @@ static void Unpack_VkClearColorValue (VkClearColorValue *, vktrace_trace_packet_
 static void Unpack_VkClearDepthStencilValue (VkClearDepthStencilValue *, vktrace_trace_packet_header *);
 static void Unpack_VkClearAttachment (VkClearAttachment *, vktrace_trace_packet_header *);
 static void Unpack_VkClearRect (VkClearRect *, vktrace_trace_packet_header *);
+static void Unpack_VkViewportSwizzleNV (VkViewportSwizzleNV *, vktrace_trace_packet_header *);
+static void Unpack_VkInputAttachmentAspectReference (VkInputAttachmentAspectReference *, vktrace_trace_packet_header *);
 static void Unpack_VkExternalMemoryProperties (VkExternalMemoryProperties *, vktrace_trace_packet_header *);
 static void Unpack_VkDisplayModeParametersKHR (VkDisplayModeParametersKHR *, vktrace_trace_packet_header *);
 static void Unpack_VkSurfaceCapabilitiesKHR (VkSurfaceCapabilitiesKHR *, vktrace_trace_packet_header *);
 static void Unpack_VkSurfaceFormatKHR (VkSurfaceFormatKHR *, vktrace_trace_packet_header *);
 static void Unpack_VkExternalImageFormatPropertiesNV (VkExternalImageFormatPropertiesNV *, vktrace_trace_packet_header *);
 static void Unpack_VkIndirectCommandsLayoutTokenNVX (VkIndirectCommandsLayoutTokenNVX *, vktrace_trace_packet_header *);
+static void Unpack_VkVertexInputBindingDivisorDescriptionEXT (VkVertexInputBindingDivisorDescriptionEXT *, vktrace_trace_packet_header *);
 static void Unpack_VkDisplayPropertiesKHR (VkDisplayPropertiesKHR *, vktrace_trace_packet_header *);
 static void Unpack_VkDisplayPlaneCapabilitiesKHR (VkDisplayPlaneCapabilitiesKHR *, vktrace_trace_packet_header *);
+static void Unpack_VkSubpassSampleLocationsEXT (VkSubpassSampleLocationsEXT *, vktrace_trace_packet_header *);
+static void Unpack_VkRectLayerKHR (VkRectLayerKHR *, vktrace_trace_packet_header *);
+static void Unpack_VkPresentRegionKHR (VkPresentRegionKHR *, vktrace_trace_packet_header *);
 static void Unpack_VkIndirectCommandsTokenNVX (VkIndirectCommandsTokenNVX *, vktrace_trace_packet_header *);
 static void Unpack_VkObjectTableEntryNVX (VkObjectTableEntryNVX *, vktrace_trace_packet_header *);
 static void Unpack_VkViewportWScalingNV (VkViewportWScalingNV *, vktrace_trace_packet_header *);
 static void Unpack_VkRefreshCycleDurationGOOGLE (VkRefreshCycleDurationGOOGLE *, vktrace_trace_packet_header *);
 static void Unpack_VkPastPresentationTimingGOOGLE (VkPastPresentationTimingGOOGLE *, vktrace_trace_packet_header *);
+static void Unpack_VkPresentTimeGOOGLE (VkPresentTimeGOOGLE *, vktrace_trace_packet_header *);
 static void Unpack_VkSampleLocationEXT (VkSampleLocationEXT *, vktrace_trace_packet_header *);
+static void Unpack_VkAttachmentSampleLocationsEXT (VkAttachmentSampleLocationsEXT *, vktrace_trace_packet_header *);
 //-----------------------------------------------------------------------------
 
 static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *header)
@@ -113,6 +121,12 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT : {
+			VkDebugUtilsObjectNameInfoEXT*  value = BitCast<VkDebugUtilsObjectNameInfoEXT*>( ptr );
+			UnpackPointer( INOUT value->pObjectName, header );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO : {
 			VkInstanceCreateInfo*  value = BitCast<VkInstanceCreateInfo*>( ptr );
 			UnpackPointer( INOUT value->pApplicationInfo, header );
@@ -134,6 +148,12 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_IMAGE_FORMAT_LIST_CREATE_INFO_KHR : {
+			VkImageFormatListCreateInfoKHR*  value = BitCast<VkImageFormatListCreateInfoKHR*>( ptr );
+			UnpackPointer( INOUT value->pViewFormats, header );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO : {
 			VkDeviceQueueCreateInfo*  value = BitCast<VkDeviceQueueCreateInfo*>( ptr );
 			UnpackPointer( INOUT value->pQueuePriorities, header );
@@ -152,6 +172,12 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 		case VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO : {
 			VkPipelineDynamicStateCreateInfo*  value = BitCast<VkPipelineDynamicStateCreateInfo*>( ptr );
 			UnpackPointer( INOUT value->pDynamicStates, header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_IMPORT_MEMORY_HOST_POINTER_INFO_EXT : {
+			VkImportMemoryHostPointerInfoEXT*  value = BitCast<VkImportMemoryHostPointerInfoEXT*>( ptr );
+			UnpackPointer( INOUT value->pHostPointer, header );
 			break;
 		}
 
@@ -200,6 +226,14 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_WIN32_HANDLE_INFO_KHR : {
+			#ifdef VULKAN_WIN32_H_
+			VkExportSemaphoreWin32HandleInfoKHR*  value = BitCast<VkExportSemaphoreWin32HandleInfoKHR*>( ptr );
+			UnpackPointer( INOUT value->pAttributes, header );
+			#endif
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO : {
 			VkRenderPassBeginInfo*  value = BitCast<VkRenderPassBeginInfo*>( ptr );
 			UnpackPointer( INOUT value->pClearValues, header );
@@ -233,6 +267,12 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO_EXT : {
+			VkDescriptorSetLayoutBindingFlagsCreateInfoEXT*  value = BitCast<VkDescriptorSetLayoutBindingFlagsCreateInfoEXT*>( ptr );
+			UnpackPointer( INOUT value->pBindingFlags, header );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO : {
 			VkPipelineCacheCreateInfo*  value = BitCast<VkPipelineCacheCreateInfo*>( ptr );
 			UnpackPointer( INOUT value->pInitialData, header );
@@ -244,6 +284,15 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			UnpackPointer( INOUT value->pName, header );
 			UnpackPointer( INOUT value->pSpecializationInfo, header );
 			Unpack_VkSpecializationInfo( PtrCast<VkSpecializationInfo>(value->pSpecializationInfo), header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PRESENT_TIMES_INFO_GOOGLE : {
+			VkPresentTimesInfoGOOGLE*  value = BitCast<VkPresentTimesInfoGOOGLE*>( ptr );
+			UnpackPointer( INOUT value->pTimes, header );
+			for (uint i = 0; (value->pTimes != null) and (i < value->swapchainCount); ++i) {
+				Unpack_VkPresentTimeGOOGLE( PtrCast<VkPresentTimeGOOGLE>(value->pTimes + i), header );
+			}
 			break;
 		}
 
@@ -325,6 +374,14 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_EXPORT_MEMORY_WIN32_HANDLE_INFO_NV : {
+			#ifdef VULKAN_WIN32_H_
+			VkExportMemoryWin32HandleInfoNV*  value = BitCast<VkExportMemoryWin32HandleInfoNV*>( ptr );
+			UnpackPointer( INOUT value->pAttributes, header );
+			#endif
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET : {
 			VkWriteDescriptorSet*  value = BitCast<VkWriteDescriptorSet*>( ptr );
 			UnpackPointer( INOUT value->pImageInfo, header );
@@ -369,12 +426,98 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR : {
+			#ifdef VULKAN_MIR_H_
+			VkMirSurfaceCreateInfoKHR*  value = BitCast<VkMirSurfaceCreateInfoKHR*>( ptr );
+			UnpackPointer( INOUT value->connection, header );
+			UnpackPointer( INOUT value->mirSurface, header );
+			#endif
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_DEVICE_GROUP_RENDER_PASS_BEGIN_INFO : {
+			VkDeviceGroupRenderPassBeginInfo*  value = BitCast<VkDeviceGroupRenderPassBeginInfo*>( ptr );
+			UnpackPointer( INOUT value->pDeviceRenderAreas, header );
+			for (uint i = 0; (value->pDeviceRenderAreas != null) and (i < value->deviceRenderAreaCount); ++i) {
+				Unpack_VkRect2D( PtrCast<VkRect2D>(value->pDeviceRenderAreas + i), header );
+			}
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_DEVICE_GROUP_SUBMIT_INFO : {
+			VkDeviceGroupSubmitInfo*  value = BitCast<VkDeviceGroupSubmitInfo*>( ptr );
+			UnpackPointer( INOUT value->pWaitSemaphoreDeviceIndices, header );
+			UnpackPointer( INOUT value->pCommandBufferDeviceMasks, header );
+			UnpackPointer( INOUT value->pSignalSemaphoreDeviceIndices, header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_DEVICE_GROUP_INFO : {
+			VkBindBufferMemoryDeviceGroupInfo*  value = BitCast<VkBindBufferMemoryDeviceGroupInfo*>( ptr );
+			UnpackPointer( INOUT value->pDeviceIndices, header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_DEVICE_GROUP_INFO : {
+			VkBindImageMemoryDeviceGroupInfo*  value = BitCast<VkBindImageMemoryDeviceGroupInfo*>( ptr );
+			UnpackPointer( INOUT value->pDeviceIndices, header );
+			UnpackPointer( INOUT value->pSplitInstanceBindRegions, header );
+			for (uint i = 0; (value->pSplitInstanceBindRegions != null) and (i < value->splitInstanceBindRegionCount); ++i) {
+				Unpack_VkRect2D( PtrCast<VkRect2D>(value->pSplitInstanceBindRegions + i), header );
+			}
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_DEVICE_GROUP_DEVICE_CREATE_INFO : {
+			VkDeviceGroupDeviceCreateInfo*  value = BitCast<VkDeviceGroupDeviceCreateInfo*>( ptr );
+			UnpackPointer( INOUT value->pPhysicalDevices, header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_RENDER_PASS_INPUT_ATTACHMENT_ASPECT_CREATE_INFO : {
+			VkRenderPassInputAttachmentAspectCreateInfo*  value = BitCast<VkRenderPassInputAttachmentAspectCreateInfo*>( ptr );
+			UnpackPointer( INOUT value->pAspectReferences, header );
+			for (uint i = 0; (value->pAspectReferences != null) and (i < value->aspectReferenceCount); ++i) {
+				Unpack_VkInputAttachmentAspectReference( PtrCast<VkInputAttachmentAspectReference>(value->pAspectReferences + i), header );
+			}
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_RENDER_PASS_MULTIVIEW_CREATE_INFO : {
+			VkRenderPassMultiviewCreateInfo*  value = BitCast<VkRenderPassMultiviewCreateInfo*>( ptr );
+			UnpackPointer( INOUT value->pViewMasks, header );
+			UnpackPointer( INOUT value->pViewOffsets, header );
+			UnpackPointer( INOUT value->pCorrelationMasks, header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_RENDER_PASS_SAMPLE_LOCATIONS_BEGIN_INFO_EXT : {
+			VkRenderPassSampleLocationsBeginInfoEXT*  value = BitCast<VkRenderPassSampleLocationsBeginInfoEXT*>( ptr );
+			UnpackPointer( INOUT value->pAttachmentInitialSampleLocations, header );
+			for (uint i = 0; (value->pAttachmentInitialSampleLocations != null) and (i < value->attachmentInitialSampleLocationsCount); ++i) {
+				Unpack_VkAttachmentSampleLocationsEXT( PtrCast<VkAttachmentSampleLocationsEXT>(value->pAttachmentInitialSampleLocations + i), header );
+			}
+			UnpackPointer( INOUT value->pPostSubpassSampleLocations, header );
+			for (uint i = 0; (value->pPostSubpassSampleLocations != null) and (i < value->postSubpassSampleLocationsCount); ++i) {
+				Unpack_VkSubpassSampleLocationsEXT( PtrCast<VkSubpassSampleLocationsEXT>(value->pPostSubpassSampleLocations + i), header );
+			}
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_CREATE_INFO : {
 			VkDescriptorUpdateTemplateCreateInfo*  value = BitCast<VkDescriptorUpdateTemplateCreateInfo*>( ptr );
 			UnpackPointer( INOUT value->pDescriptorUpdateEntries, header );
 			for (uint i = 0; (value->pDescriptorUpdateEntries != null) and (i < value->descriptorUpdateEntryCount); ++i) {
 				Unpack_VkDescriptorUpdateTemplateEntry( PtrCast<VkDescriptorUpdateTemplateEntry>(value->pDescriptorUpdateEntries + i), header );
 			}
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_EXPORT_MEMORY_WIN32_HANDLE_INFO_KHR : {
+			#ifdef VULKAN_WIN32_H_
+			VkExportMemoryWin32HandleInfoKHR*  value = BitCast<VkExportMemoryWin32HandleInfoKHR*>( ptr );
+			UnpackPointer( INOUT value->pAttributes, header );
+			#endif
 			break;
 		}
 
@@ -393,11 +536,82 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_WIN32_KEYED_MUTEX_ACQUIRE_RELEASE_INFO_NV : {
+			#ifdef VULKAN_WIN32_H_
+			VkWin32KeyedMutexAcquireReleaseInfoNV*  value = BitCast<VkWin32KeyedMutexAcquireReleaseInfoNV*>( ptr );
+			UnpackPointer( INOUT value->pAcquireSyncs, header );
+			UnpackPointer( INOUT value->pAcquireKeys, header );
+			UnpackPointer( INOUT value->pAcquireTimeoutMilliseconds, header );
+			UnpackPointer( INOUT value->pReleaseSyncs, header );
+			UnpackPointer( INOUT value->pReleaseKeys, header );
+			#endif
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_INFO_KHR : {
+			VkDeviceGroupPresentInfoKHR*  value = BitCast<VkDeviceGroupPresentInfoKHR*>( ptr );
+			UnpackPointer( INOUT value->pDeviceMasks, header );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR : {
 			#ifdef VULKAN_XCB_H_
 			VkXcbSurfaceCreateInfoKHR*  value = BitCast<VkXcbSurfaceCreateInfoKHR*>( ptr );
 			UnpackPointer( INOUT value->connection, header );
 			#endif
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PRESENT_REGIONS_KHR : {
+			VkPresentRegionsKHR*  value = BitCast<VkPresentRegionsKHR*>( ptr );
+			UnpackPointer( INOUT value->pRegions, header );
+			for (uint i = 0; (value->pRegions != null) and (i < value->swapchainCount); ++i) {
+				Unpack_VkPresentRegionKHR( PtrCast<VkPresentRegionKHR>(value->pRegions + i), header );
+			}
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_SUBPASS_DESCRIPTION_2_KHR : {
+			VkSubpassDescription2KHR*  value = BitCast<VkSubpassDescription2KHR*>( ptr );
+			UnpackPointer( INOUT value->pInputAttachments, header );
+			for (uint i = 0; (value->pInputAttachments != null) and (i < value->inputAttachmentCount); ++i) {
+				UnpackStruct( PtrCast<VkBaseOutStructure>(value->pInputAttachments + i), header );
+			}
+			UnpackPointer( INOUT value->pColorAttachments, header );
+			for (uint i = 0; (value->pColorAttachments != null) and (i < value->colorAttachmentCount); ++i) {
+				UnpackStruct( PtrCast<VkBaseOutStructure>(value->pColorAttachments + i), header );
+			}
+			UnpackPointer( INOUT value->pResolveAttachments, header );
+			for (uint i = 0; (value->pResolveAttachments != null) and (i < value->colorAttachmentCount); ++i) {
+				UnpackStruct( PtrCast<VkBaseOutStructure>(value->pResolveAttachments + i), header );
+			}
+			UnpackPointer( INOUT value->pDepthStencilAttachment, header );
+			UnpackStruct( PtrCast<VkBaseOutStructure>(value->pDepthStencilAttachment), header );
+			UnpackPointer( INOUT value->pPreserveAttachments, header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO_2_KHR : {
+			VkRenderPassCreateInfo2KHR*  value = BitCast<VkRenderPassCreateInfo2KHR*>( ptr );
+			UnpackPointer( INOUT value->pAttachments, header );
+			for (uint i = 0; (value->pAttachments != null) and (i < value->attachmentCount); ++i) {
+				UnpackStruct( PtrCast<VkBaseOutStructure>(value->pAttachments + i), header );
+			}
+			UnpackPointer( INOUT value->pSubpasses, header );
+			for (uint i = 0; (value->pSubpasses != null) and (i < value->subpassCount); ++i) {
+				UnpackStruct( PtrCast<VkBaseOutStructure>(value->pSubpasses + i), header );
+			}
+			UnpackPointer( INOUT value->pDependencies, header );
+			for (uint i = 0; (value->pDependencies != null) and (i < value->dependencyCount); ++i) {
+				UnpackStruct( PtrCast<VkBaseOutStructure>(value->pDependencies + i), header );
+			}
+			UnpackPointer( INOUT value->pCorrelatedViewMasks, header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO_EXT : {
+			VkDescriptorSetVariableDescriptorCountAllocateInfoEXT*  value = BitCast<VkDescriptorSetVariableDescriptorCountAllocateInfoEXT*>( ptr );
+			UnpackPointer( INOUT value->pDescriptorCounts, header );
 			break;
 		}
 
@@ -422,6 +636,21 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 		case VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT : {
 			VkDebugMarkerMarkerInfoEXT*  value = BitCast<VkDebugMarkerMarkerInfoEXT*>( ptr );
 			UnpackPointer( INOUT value->pMarkerName, header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_VALIDATION_FLAGS_EXT : {
+			VkValidationFlagsEXT*  value = BitCast<VkValidationFlagsEXT*>( ptr );
+			UnpackPointer( INOUT value->pDisabledValidationChecks, header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_D3D12_FENCE_SUBMIT_INFO_KHR : {
+			#ifdef VULKAN_WIN32_H_
+			VkD3D12FenceSubmitInfoKHR*  value = BitCast<VkD3D12FenceSubmitInfoKHR*>( ptr );
+			UnpackPointer( INOUT value->pWaitSemaphoreValues, header );
+			UnpackPointer( INOUT value->pSignalSemaphoreValues, header );
+			#endif
 			break;
 		}
 
@@ -451,12 +680,131 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_W_SCALING_STATE_CREATE_INFO_NV : {
+			VkPipelineViewportWScalingStateCreateInfoNV*  value = BitCast<VkPipelineViewportWScalingStateCreateInfoNV*>( ptr );
+			UnpackPointer( INOUT value->pViewportWScalings, header );
+			for (uint i = 0; (value->pViewportWScalings != null) and (i < value->viewportCount); ++i) {
+				Unpack_VkViewportWScalingNV( PtrCast<VkViewportWScalingNV>(value->pViewportWScalings + i), header );
+			}
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SWIZZLE_STATE_CREATE_INFO_NV : {
+			VkPipelineViewportSwizzleStateCreateInfoNV*  value = BitCast<VkPipelineViewportSwizzleStateCreateInfoNV*>( ptr );
+			UnpackPointer( INOUT value->pViewportSwizzles, header );
+			for (uint i = 0; (value->pViewportSwizzles != null) and (i < value->viewportCount); ++i) {
+				Unpack_VkViewportSwizzleNV( PtrCast<VkViewportSwizzleNV>(value->pViewportSwizzles + i), header );
+			}
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PIPELINE_DISCARD_RECTANGLE_STATE_CREATE_INFO_EXT : {
+			VkPipelineDiscardRectangleStateCreateInfoEXT*  value = BitCast<VkPipelineDiscardRectangleStateCreateInfoEXT*>( ptr );
+			UnpackPointer( INOUT value->pDiscardRectangles, header );
+			for (uint i = 0; (value->pDiscardRectangles != null) and (i < value->discardRectangleCount); ++i) {
+				Unpack_VkRect2D( PtrCast<VkRect2D>(value->pDiscardRectangles + i), header );
+			}
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_TAG_INFO_EXT : {
+			VkDebugUtilsObjectTagInfoEXT*  value = BitCast<VkDebugUtilsObjectTagInfoEXT*>( ptr );
+			UnpackPointer( INOUT value->pTag, header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT : {
+			VkDebugUtilsLabelEXT*  value = BitCast<VkDebugUtilsLabelEXT*>( ptr );
+			UnpackPointer( INOUT value->pLabelName, header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT : {
+			VkDebugUtilsMessengerCallbackDataEXT*  value = BitCast<VkDebugUtilsMessengerCallbackDataEXT*>( ptr );
+			UnpackPointer( INOUT value->pMessageIdName, header );
+			UnpackPointer( INOUT value->pMessage, header );
+			UnpackPointer( INOUT value->pQueueLabels, header );
+			for (uint i = 0; (value->pQueueLabels != null) and (i < value->queueLabelCount); ++i) {
+				UnpackStruct( PtrCast<VkBaseOutStructure>(value->pQueueLabels + i), header );
+			}
+			UnpackPointer( INOUT value->pCmdBufLabels, header );
+			for (uint i = 0; (value->pCmdBufLabels != null) and (i < value->cmdBufLabelCount); ++i) {
+				UnpackStruct( PtrCast<VkBaseOutStructure>(value->pCmdBufLabels + i), header );
+			}
+			UnpackPointer( INOUT value->pObjects, header );
+			for (uint i = 0; (value->pObjects != null) and (i < value->objectCount); ++i) {
+				UnpackStruct( PtrCast<VkBaseOutStructure>(value->pObjects + i), header );
+			}
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT : {
+			VkDebugUtilsMessengerCreateInfoEXT*  value = BitCast<VkDebugUtilsMessengerCreateInfoEXT*>( ptr );
+			UnpackPointer( INOUT value->pUserData, header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_INLINE_UNIFORM_BLOCK_EXT : {
+			VkWriteDescriptorSetInlineUniformBlockEXT*  value = BitCast<VkWriteDescriptorSetInlineUniformBlockEXT*>( ptr );
+			UnpackPointer( INOUT value->pData, header );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_SAMPLE_LOCATIONS_INFO_EXT : {
 			VkSampleLocationsInfoEXT*  value = BitCast<VkSampleLocationsInfoEXT*>( ptr );
 			UnpackPointer( INOUT value->pSampleLocations, header );
 			for (uint i = 0; (value->pSampleLocations != null) and (i < value->sampleLocationsCount); ++i) {
 				Unpack_VkSampleLocationEXT( PtrCast<VkSampleLocationEXT>(value->pSampleLocations + i), header );
 			}
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_MODULATION_STATE_CREATE_INFO_NV : {
+			VkPipelineCoverageModulationStateCreateInfoNV*  value = BitCast<VkPipelineCoverageModulationStateCreateInfoNV*>( ptr );
+			UnpackPointer( INOUT value->pCoverageModulationTable, header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_DIVISOR_STATE_CREATE_INFO_EXT : {
+			VkPipelineVertexInputDivisorStateCreateInfoEXT*  value = BitCast<VkPipelineVertexInputDivisorStateCreateInfoEXT*>( ptr );
+			UnpackPointer( INOUT value->pVertexBindingDivisors, header );
+			for (uint i = 0; (value->pVertexBindingDivisors != null) and (i < value->vertexBindingDivisorCount); ++i) {
+				Unpack_VkVertexInputBindingDivisorDescriptionEXT( PtrCast<VkVertexInputBindingDivisorDescriptionEXT>(value->pVertexBindingDivisors + i), header );
+			}
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_CHECKPOINT_DATA_NV : {
+			VkCheckpointDataNV*  value = BitCast<VkCheckpointDataNV*>( ptr );
+			UnpackPointer( INOUT value->pCheckpointMarker, header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_WIN32_KEYED_MUTEX_ACQUIRE_RELEASE_INFO_KHR : {
+			#ifdef VULKAN_WIN32_H_
+			VkWin32KeyedMutexAcquireReleaseInfoKHR*  value = BitCast<VkWin32KeyedMutexAcquireReleaseInfoKHR*>( ptr );
+			UnpackPointer( INOUT value->pAcquireSyncs, header );
+			UnpackPointer( INOUT value->pAcquireKeys, header );
+			UnpackPointer( INOUT value->pAcquireTimeouts, header );
+			UnpackPointer( INOUT value->pReleaseSyncs, header );
+			UnpackPointer( INOUT value->pReleaseKeys, header );
+			#endif
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_EXPORT_FENCE_WIN32_HANDLE_INFO_KHR : {
+			#ifdef VULKAN_WIN32_H_
+			VkExportFenceWin32HandleInfoKHR*  value = BitCast<VkExportFenceWin32HandleInfoKHR*>( ptr );
+			UnpackPointer( INOUT value->pAttributes, header );
+			#endif
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_IMPORT_ANDROID_HARDWARE_BUFFER_INFO_ANDROID : {
+			#ifdef VULKAN_ANDROID_H_
+			VkImportAndroidHardwareBufferInfoANDROID*  value = BitCast<VkImportAndroidHardwareBufferInfoANDROID*>( ptr );
+			UnpackPointer( INOUT value->buffer, header );
+			#endif
 			break;
 		}
 
@@ -479,144 +827,19 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 
 	case VK_STRUCTURE_TYPE_LOADER_INSTANCE_CREATE_INFO : break;
 	case VK_STRUCTURE_TYPE_LOADER_DEVICE_CREATE_INFO : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES : break;
-	case VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS : break;
-	case VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO : break;
-	case VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO : break;
-	case VK_STRUCTURE_TYPE_DEVICE_GROUP_RENDER_PASS_BEGIN_INFO : break;
-	case VK_STRUCTURE_TYPE_DEVICE_GROUP_COMMAND_BUFFER_BEGIN_INFO : break;
-	case VK_STRUCTURE_TYPE_DEVICE_GROUP_SUBMIT_INFO : break;
-	case VK_STRUCTURE_TYPE_DEVICE_GROUP_BIND_SPARSE_INFO : break;
-	case VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_DEVICE_GROUP_INFO : break;
-	case VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_DEVICE_GROUP_INFO : break;
-	case VK_STRUCTURE_TYPE_DEVICE_GROUP_DEVICE_CREATE_INFO : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_POINT_CLIPPING_PROPERTIES : break;
-	case VK_STRUCTURE_TYPE_RENDER_PASS_INPUT_ATTACHMENT_ASPECT_CREATE_INFO : break;
-	case VK_STRUCTURE_TYPE_IMAGE_VIEW_USAGE_CREATE_INFO : break;
-	case VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_DOMAIN_ORIGIN_STATE_CREATE_INFO : break;
-	case VK_STRUCTURE_TYPE_RENDER_PASS_MULTIVIEW_CREATE_INFO : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES : break;
-	case VK_STRUCTURE_TYPE_PROTECTED_SUBMIT_INFO : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROTECTED_MEMORY_FEATURES : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROTECTED_MEMORY_PROPERTIES : break;
-	case VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_INFO : break;
-	case VK_STRUCTURE_TYPE_BIND_IMAGE_PLANE_MEMORY_INFO : break;
-	case VK_STRUCTURE_TYPE_IMAGE_PLANE_MEMORY_REQUIREMENTS_INFO : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES : break;
-	case VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_IMAGE_FORMAT_PROPERTIES : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_IMAGE_FORMAT_INFO : break;
-	case VK_STRUCTURE_TYPE_EXTERNAL_IMAGE_FORMAT_PROPERTIES : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES : break;
-	case VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_BUFFER_CREATE_INFO : break;
-	case VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO : break;
-	case VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO : break;
-	case VK_STRUCTURE_TYPE_EXPORT_FENCE_CREATE_INFO : break;
-	case VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_3_PROPERTIES : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETER_FEATURES : break;
-	case VK_STRUCTURE_TYPE_IMAGE_SWAPCHAIN_CREATE_INFO_KHR : break;
-	case VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_SWAPCHAIN_INFO_KHR : break;
-	case VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_INFO_KHR : break;
-	case VK_STRUCTURE_TYPE_DEVICE_GROUP_SWAPCHAIN_CREATE_INFO_KHR : break;
-	case VK_STRUCTURE_TYPE_DISPLAY_PRESENT_INFO_KHR : break;
-	case VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR : break;
-	case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD : break;
-	case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_IMAGE_CREATE_INFO_NV : break;
-	case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_BUFFER_CREATE_INFO_NV : break;
-	case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV : break;
-	case VK_STRUCTURE_TYPE_TEXTURE_LOD_GATHER_FORMAT_PROPERTIES_AMD : break;
-	case VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO_NV : break;
-	case VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO_NV : break;
-	case VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_NV : break;
-	case VK_STRUCTURE_TYPE_EXPORT_MEMORY_WIN32_HANDLE_INFO_NV : break;
-	case VK_STRUCTURE_TYPE_WIN32_KEYED_MUTEX_ACQUIRE_RELEASE_INFO_NV : break;
-	case VK_STRUCTURE_TYPE_VALIDATION_FLAGS_EXT : break;
 	case VK_STRUCTURE_TYPE_VI_SURFACE_CREATE_INFO_NN : break;
-	case VK_STRUCTURE_TYPE_IMAGE_VIEW_ASTC_DECODE_MODE_EXT : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ASTC_DECODE_FEATURES_EXT : break;
-	case VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_KHR : break;
-	case VK_STRUCTURE_TYPE_EXPORT_MEMORY_WIN32_HANDLE_INFO_KHR : break;
-	case VK_STRUCTURE_TYPE_IMPORT_MEMORY_FD_INFO_KHR : break;
-	case VK_STRUCTURE_TYPE_WIN32_KEYED_MUTEX_ACQUIRE_RELEASE_INFO_KHR : break;
-	case VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_WIN32_HANDLE_INFO_KHR : break;
-	case VK_STRUCTURE_TYPE_D3D12_FENCE_SUBMIT_INFO_KHR : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR : break;
-	case VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_CONDITIONAL_RENDERING_INFO_EXT : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CONDITIONAL_RENDERING_FEATURES_EXT : break;
-	case VK_STRUCTURE_TYPE_CONDITIONAL_RENDERING_BEGIN_INFO_EXT : break;
-	case VK_STRUCTURE_TYPE_PRESENT_REGIONS_KHR : break;
-	case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_W_SCALING_STATE_CREATE_INFO_NV : break;
-	case VK_STRUCTURE_TYPE_SWAPCHAIN_COUNTER_CREATE_INFO_EXT : break;
-	case VK_STRUCTURE_TYPE_PRESENT_TIMES_INFO_GOOGLE : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_ATTRIBUTES_PROPERTIES_NVX : break;
-	case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SWIZZLE_STATE_CREATE_INFO_NV : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISCARD_RECTANGLE_PROPERTIES_EXT : break;
-	case VK_STRUCTURE_TYPE_PIPELINE_DISCARD_RECTANGLE_STATE_CREATE_INFO_EXT : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CONSERVATIVE_RASTERIZATION_PROPERTIES_EXT : break;
-	case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_CONSERVATIVE_STATE_CREATE_INFO_EXT : break;
-	case VK_STRUCTURE_TYPE_ATTACHMENT_DESCRIPTION_2_KHR : break;
-	case VK_STRUCTURE_TYPE_ATTACHMENT_REFERENCE_2_KHR : break;
-	case VK_STRUCTURE_TYPE_SUBPASS_DESCRIPTION_2_KHR : break;
-	case VK_STRUCTURE_TYPE_SUBPASS_DEPENDENCY_2_KHR : break;
-	case VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO_2_KHR : break;
-	case VK_STRUCTURE_TYPE_SUBPASS_BEGIN_INFO_KHR : break;
-	case VK_STRUCTURE_TYPE_SUBPASS_END_INFO_KHR : break;
-	case VK_STRUCTURE_TYPE_SHARED_PRESENT_SURFACE_CAPABILITIES_KHR : break;
-	case VK_STRUCTURE_TYPE_EXPORT_FENCE_WIN32_HANDLE_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_IOS_SURFACE_CREATE_INFO_MVK : break;
 	case VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK : break;
-	case VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT : break;
-	case VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_TAG_INFO_EXT : break;
-	case VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT : break;
-	case VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT : break;
-	case VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT : break;
-	case VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_USAGE_ANDROID : break;
-	case VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_PROPERTIES_ANDROID : break;
-	case VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_FORMAT_PROPERTIES_ANDROID : break;
-	case VK_STRUCTURE_TYPE_IMPORT_ANDROID_HARDWARE_BUFFER_INFO_ANDROID : break;
-	case VK_STRUCTURE_TYPE_MEMORY_GET_ANDROID_HARDWARE_BUFFER_INFO_ANDROID : break;
-	case VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_ANDROID : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_FILTER_MINMAX_PROPERTIES_EXT : break;
-	case VK_STRUCTURE_TYPE_SAMPLER_REDUCTION_MODE_CREATE_INFO_EXT : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_FEATURES_EXT : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_PROPERTIES_EXT : break;
-	case VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_INLINE_UNIFORM_BLOCK_EXT : break;
-	case VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_INLINE_UNIFORM_BLOCK_CREATE_INFO_EXT : break;
-	case VK_STRUCTURE_TYPE_RENDER_PASS_SAMPLE_LOCATIONS_BEGIN_INFO_EXT : break;
-	case VK_STRUCTURE_TYPE_PIPELINE_SAMPLE_LOCATIONS_STATE_CREATE_INFO_EXT : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLE_LOCATIONS_PROPERTIES_EXT : break;
-	case VK_STRUCTURE_TYPE_IMAGE_FORMAT_LIST_CREATE_INFO_KHR : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_FEATURES_EXT : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_PROPERTIES_EXT : break;
-	case VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_ADVANCED_STATE_CREATE_INFO_EXT : break;
-	case VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_TO_COLOR_STATE_CREATE_INFO_NV : break;
-	case VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_MODULATION_STATE_CREATE_INFO_NV : break;
-	case VK_STRUCTURE_TYPE_SHADER_MODULE_VALIDATION_CACHE_CREATE_INFO_EXT : break;
-	case VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO_EXT : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES_EXT : break;
-	case VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO_EXT : break;
-	case VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_LAYOUT_SUPPORT_EXT : break;
-	case VK_STRUCTURE_TYPE_DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_EXT : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR : break;
-	case VK_STRUCTURE_TYPE_IMPORT_MEMORY_HOST_POINTER_INFO_EXT : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_HOST_PROPERTIES_EXT : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_AMD : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_PROPERTIES_EXT : break;
-	case VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_DIVISOR_STATE_CREATE_INFO_EXT : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT : break;
-	case VK_STRUCTURE_TYPE_CHECKPOINT_DATA_NV : break;
-	case VK_STRUCTURE_TYPE_QUEUE_FAMILY_CHECKPOINT_PROPERTIES_NV : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES_KHR : break;
 	case VK_STRUCTURE_TYPE_RANGE_SIZE : break;
 	case VK_STRUCTURE_TYPE_MAX_ENUM : break;
+	case VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_BUFFER_CREATE_INFO : break;
 	case VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO : break;
+	case VK_STRUCTURE_TYPE_EXTERNAL_IMAGE_FORMAT_PROPERTIES : break;
+	case VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_DOMAIN_ORIGIN_STATE_CREATE_INFO : break;
 	case VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO : break;
 	case VK_STRUCTURE_TYPE_MEMORY_BARRIER : break;
 	case VK_STRUCTURE_TYPE_MEMORY_WIN32_HANDLE_PROPERTIES_KHR : break;
+	case VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_USAGE_ANDROID : break;
 	case VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO : break;
 	case VK_STRUCTURE_TYPE_DEVICE_EVENT_INFO_EXT : break;
 	case VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE : break;
@@ -626,10 +849,12 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_FORMAT_INFO_2 : break;
 	case VK_STRUCTURE_TYPE_SEMAPHORE_GET_WIN32_HANDLE_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHR : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROTECTED_MEMORY_PROPERTIES : break;
 	case VK_STRUCTURE_TYPE_FENCE_CREATE_INFO : break;
 	case VK_STRUCTURE_TYPE_EVENT_CREATE_INFO : break;
 	case VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO : break;
 	case VK_STRUCTURE_TYPE_DISPLAY_PLANE_INFO_2_KHR : break;
+	case VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_NV : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_BUFFER_INFO : break;
 	case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO : break;
 	case VK_STRUCTURE_TYPE_MEMORY_HOST_POINTER_PROPERTIES_EXT : break;
@@ -637,48 +862,97 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 	case VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO : break;
 	case VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO : break;
 	case VK_STRUCTURE_TYPE_IMPORT_FENCE_FD_INFO_KHR : break;
+	case VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_INFO : break;
 	case VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO : break;
 	case VK_STRUCTURE_TYPE_DISPLAY_PLANE_PROPERTIES_2_KHR : break;
+	case VK_STRUCTURE_TYPE_DISPLAY_PRESENT_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO : break;
 	case VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2 : break;
 	case VK_STRUCTURE_TYPE_HDR_METADATA_EXT : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_SEMAPHORE_INFO : break;
 	case VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_FILTER_MINMAX_PROPERTIES_EXT : break;
 	case VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO : break;
 	case VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO : break;
+	case VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_LAYOUT_SUPPORT_EXT : break;
 	case VK_STRUCTURE_TYPE_DEVICE_GENERATED_COMMANDS_LIMITS_NVX : break;
 	case VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER : break;
 	case VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER : break;
+	case VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_TO_COLOR_STATE_CREATE_INFO_NV : break;
 	case VK_STRUCTURE_TYPE_IMPORT_FENCE_WIN32_HANDLE_INFO_KHR : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_POINT_CLIPPING_PROPERTIES : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES : break;
 	case VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_INFO : break;
 	case VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO : break;
+	case VK_STRUCTURE_TYPE_SUBPASS_END_INFO_KHR : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES : break;
+	case VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS : break;
+	case VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO : break;
+	case VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO : break;
+	case VK_STRUCTURE_TYPE_DEVICE_GROUP_COMMAND_BUFFER_BEGIN_INFO : break;
+	case VK_STRUCTURE_TYPE_DEVICE_GROUP_BIND_SPARSE_INFO : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GROUP_PROPERTIES : break;
+	case VK_STRUCTURE_TYPE_SAMPLER_REDUCTION_MODE_CREATE_INFO_EXT : break;
 	case VK_STRUCTURE_TYPE_BUFFER_MEMORY_REQUIREMENTS_INFO_2 : break;
 	case VK_STRUCTURE_TYPE_IMAGE_SPARSE_MEMORY_REQUIREMENTS_INFO_2 : break;
+	case VK_STRUCTURE_TYPE_ATTACHMENT_REFERENCE_2_KHR : break;
 	case VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2 : break;
 	case VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_SUPPORT : break;
 	case VK_STRUCTURE_TYPE_SPARSE_IMAGE_MEMORY_REQUIREMENTS_2 : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2 : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2 : break;
 	case VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2 : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES : break;
 	case VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2 : break;
 	case VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2 : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_PROPERTIES_2 : break;
 	case VK_STRUCTURE_TYPE_SPARSE_IMAGE_FORMAT_PROPERTIES_2 : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SPARSE_IMAGE_FORMAT_INFO_2 : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ASTC_DECODE_FEATURES_EXT : break;
+	case VK_STRUCTURE_TYPE_IMAGE_VIEW_USAGE_CREATE_INFO : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES : break;
 	case VK_STRUCTURE_TYPE_DISPLAY_MODE_CREATE_INFO_KHR : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROTECTED_MEMORY_FEATURES : break;
 	case VK_STRUCTURE_TYPE_DEVICE_QUEUE_INFO_2 : break;
+	case VK_STRUCTURE_TYPE_PROTECTED_SUBMIT_INFO : break;
 	case VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_CREATE_INFO : break;
+	case VK_STRUCTURE_TYPE_BIND_IMAGE_PLANE_MEMORY_INFO : break;
+	case VK_STRUCTURE_TYPE_IMAGE_PLANE_MEMORY_REQUIREMENTS_INFO : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES : break;
+	case VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_IMAGE_FORMAT_PROPERTIES : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_IMAGE_FORMAT_INFO : break;
 	case VK_STRUCTURE_TYPE_EXTERNAL_BUFFER_PROPERTIES : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_PROPERTIES_EXT : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES : break;
+	case VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO : break;
+	case VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_FENCE_INFO : break;
 	case VK_STRUCTURE_TYPE_EXTERNAL_FENCE_PROPERTIES : break;
+	case VK_STRUCTURE_TYPE_EXPORT_FENCE_CREATE_INFO : break;
+	case VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO : break;
+	case VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO_NV : break;
 	case VK_STRUCTURE_TYPE_EXTERNAL_SEMAPHORE_PROPERTIES : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_3_PROPERTIES : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETER_FEATURES : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CONDITIONAL_RENDERING_FEATURES_EXT : break;
+	case VK_STRUCTURE_TYPE_IMPORT_MEMORY_FD_INFO_KHR : break;
+	case VK_STRUCTURE_TYPE_IMAGE_SWAPCHAIN_CREATE_INFO_KHR : break;
+	case VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_SWAPCHAIN_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_CAPABILITIES_KHR : break;
+	case VK_STRUCTURE_TYPE_DEVICE_GROUP_SWAPCHAIN_CREATE_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_MEMORY_FD_PROPERTIES_KHR : break;
 	case VK_STRUCTURE_TYPE_MEMORY_GET_FD_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_FD_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_SEMAPHORE_GET_FD_INFO_KHR : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR : break;
+	case VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_ADVANCED_STATE_CREATE_INFO_EXT : break;
+	case VK_STRUCTURE_TYPE_ATTACHMENT_DESCRIPTION_2_KHR : break;
+	case VK_STRUCTURE_TYPE_SUBPASS_DEPENDENCY_2_KHR : break;
+	case VK_STRUCTURE_TYPE_QUEUE_FAMILY_CHECKPOINT_PROPERTIES_NV : break;
+	case VK_STRUCTURE_TYPE_SUBPASS_BEGIN_INFO_KHR : break;
+	case VK_STRUCTURE_TYPE_SHARED_PRESENT_SURFACE_CAPABILITIES_KHR : break;
 	case VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_2_EXT : break;
 	case VK_STRUCTURE_TYPE_FENCE_GET_FD_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SURFACE_INFO_2_KHR : break;
@@ -688,13 +962,48 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 	case VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_WIN32_HANDLE_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_DISPLAY_MODE_PROPERTIES_2_KHR : break;
 	case VK_STRUCTURE_TYPE_DISPLAY_PLANE_CAPABILITIES_2_KHR : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES_KHR : break;
+	case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD : break;
+	case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_IMAGE_CREATE_INFO_NV : break;
+	case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_BUFFER_CREATE_INFO_NV : break;
+	case VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_ANDROID : break;
+	case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV : break;
+	case VK_STRUCTURE_TYPE_SHADER_MODULE_VALIDATION_CACHE_CREATE_INFO_EXT : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CONSERVATIVE_RASTERIZATION_PROPERTIES_EXT : break;
+	case VK_STRUCTURE_TYPE_TEXTURE_LOD_GATHER_FORMAT_PROPERTIES_AMD : break;
+	case VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO_NV : break;
+	case VK_STRUCTURE_TYPE_IMAGE_VIEW_ASTC_DECODE_MODE_EXT : break;
+	case VK_STRUCTURE_TYPE_CONDITIONAL_RENDERING_BEGIN_INFO_EXT : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISCARD_RECTANGLE_PROPERTIES_EXT : break;
+	case VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_CONDITIONAL_RENDERING_INFO_EXT : break;
 	case VK_STRUCTURE_TYPE_DISPLAY_EVENT_INFO_EXT : break;
 	case VK_STRUCTURE_TYPE_CMD_RESERVE_SPACE_FOR_COMMANDS_INFO_NVX : break;
 	case VK_STRUCTURE_TYPE_DISPLAY_POWER_INFO_EXT : break;
+	case VK_STRUCTURE_TYPE_SWAPCHAIN_COUNTER_CREATE_INFO_EXT : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_ATTRIBUTES_PROPERTIES_NVX : break;
+	case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_CONSERVATIVE_STATE_CREATE_INFO_EXT : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_HOST_PROPERTIES_EXT : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_FEATURES_EXT : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_PROPERTIES_EXT : break;
+	case VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_INLINE_UNIFORM_BLOCK_CREATE_INFO_EXT : break;
+	case VK_STRUCTURE_TYPE_PIPELINE_SAMPLE_LOCATIONS_STATE_CREATE_INFO_EXT : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLE_LOCATIONS_PROPERTIES_EXT : break;
 	case VK_STRUCTURE_TYPE_MULTISAMPLE_PROPERTIES_EXT : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_FEATURES_EXT : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT : break;
+	case VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_FORMAT_PROPERTIES_ANDROID : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES_EXT : break;
+	case VK_STRUCTURE_TYPE_DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_EXT : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_AMD : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_PROPERTIES_EXT : break;
 	case VK_STRUCTURE_TYPE_FENCE_GET_WIN32_HANDLE_INFO_KHR : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT : break;
 	case VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR : break;
+	case VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_MEMORY_GET_WIN32_HANDLE_INFO_KHR : break;
+	case VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_PROPERTIES_ANDROID : break;
+	case VK_STRUCTURE_TYPE_MEMORY_GET_ANDROID_HARDWARE_BUFFER_INFO_ANDROID : break;
 	}
 	DISABLE_ENUM_CHECKS();
 }
@@ -1039,6 +1348,16 @@ static void Unpack_VkClearRect (VkClearRect *ptr, vktrace_trace_packet_header *h
 	if ( ptr == null ) return;
 }
 
+static void Unpack_VkViewportSwizzleNV (VkViewportSwizzleNV *ptr, vktrace_trace_packet_header *header)
+{
+	if ( ptr == null ) return;
+}
+
+static void Unpack_VkInputAttachmentAspectReference (VkInputAttachmentAspectReference *ptr, vktrace_trace_packet_header *header)
+{
+	if ( ptr == null ) return;
+}
+
 static void Unpack_VkExternalMemoryProperties (VkExternalMemoryProperties *ptr, vktrace_trace_packet_header *header)
 {
 	if ( ptr == null ) return;
@@ -1069,6 +1388,11 @@ static void Unpack_VkIndirectCommandsLayoutTokenNVX (VkIndirectCommandsLayoutTok
 	if ( ptr == null ) return;
 }
 
+static void Unpack_VkVertexInputBindingDivisorDescriptionEXT (VkVertexInputBindingDivisorDescriptionEXT *ptr, vktrace_trace_packet_header *header)
+{
+	if ( ptr == null ) return;
+}
+
 static void Unpack_VkDisplayPropertiesKHR (VkDisplayPropertiesKHR *ptr, vktrace_trace_packet_header *header)
 {
 	if ( ptr == null ) return;
@@ -1078,6 +1402,25 @@ static void Unpack_VkDisplayPropertiesKHR (VkDisplayPropertiesKHR *ptr, vktrace_
 static void Unpack_VkDisplayPlaneCapabilitiesKHR (VkDisplayPlaneCapabilitiesKHR *ptr, vktrace_trace_packet_header *header)
 {
 	if ( ptr == null ) return;
+}
+
+static void Unpack_VkSubpassSampleLocationsEXT (VkSubpassSampleLocationsEXT *ptr, vktrace_trace_packet_header *header)
+{
+	if ( ptr == null ) return;
+}
+
+static void Unpack_VkRectLayerKHR (VkRectLayerKHR *ptr, vktrace_trace_packet_header *header)
+{
+	if ( ptr == null ) return;
+}
+
+static void Unpack_VkPresentRegionKHR (VkPresentRegionKHR *ptr, vktrace_trace_packet_header *header)
+{
+	if ( ptr == null ) return;
+	UnpackPointer( INOUT ptr->pRectangles, header );
+	for (uint i = 0; (ptr->pRectangles != null) and (i < ptr->rectangleCount); ++i) {
+		Unpack_VkRectLayerKHR( PtrCast<VkRectLayerKHR>(ptr->pRectangles + i), header );
+	}
 }
 
 static void Unpack_VkIndirectCommandsTokenNVX (VkIndirectCommandsTokenNVX *ptr, vktrace_trace_packet_header *header)
@@ -1105,7 +1448,17 @@ static void Unpack_VkPastPresentationTimingGOOGLE (VkPastPresentationTimingGOOGL
 	if ( ptr == null ) return;
 }
 
+static void Unpack_VkPresentTimeGOOGLE (VkPresentTimeGOOGLE *ptr, vktrace_trace_packet_header *header)
+{
+	if ( ptr == null ) return;
+}
+
 static void Unpack_VkSampleLocationEXT (VkSampleLocationEXT *ptr, vktrace_trace_packet_header *header)
+{
+	if ( ptr == null ) return;
+}
+
+static void Unpack_VkAttachmentSampleLocationsEXT (VkAttachmentSampleLocationsEXT *ptr, vktrace_trace_packet_header *header)
 {
 	if ( ptr == null ) return;
 }

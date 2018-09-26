@@ -1,4 +1,7 @@
 // Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
+/*
+	Converts vktrace to c++ code with raw vulkan api calls.
+*/
 
 #pragma once
 
@@ -8,22 +11,19 @@
 #include "Analyzer/Default/MemoryTransferAnalyzer.h"
 #include "Analyzer/Default/SwapchainAnalyzer.h"
 #include "Analyzer/Default/DeviceAnalyzer.h"
+#include "Analyzer/Default/QueueAnalyzer.h"
 #include "Analyzer/Default/AllResourcesBookmarks.h"
 
 #include "Converters/Converter.h"
 #include "Converters/Utils/ResRemapper.h"
 #include "Converters/Utils/NameSerializer.h"
 
-#include <filesystem>
 
 namespace VTC
 {
-	namespace fs = std::filesystem;
-
-
 
 	//
-	// CPP Vulkan API Converter
+	// C++ Vulkan Source Converter
 	//
 
 	class CppVulkanConverter
@@ -72,6 +72,7 @@ namespace VTC
 		MemoryTransferAnalyzer const*	_memTransferAnalyzer	= null;
 		SwapchainAnalyzer const*		_swapchainAnalyzer		= null;
 		DeviceAnalyzer const*			_deviceAnalyzer			= null;
+		QueueAnalyzer const*			_queueAnalyzer			= null;
 		
 		AllResourcesBookmarks const*	_resourcesBookmarks		= null;
 
@@ -95,7 +96,10 @@ namespace VTC
 
 
 	private:
-		bool _ConvertFrame (FrameID index, const TraceRange &trace);
+		bool _ConvertFrame1 (FrameID index, const TraceRange &trace);
+		bool _ConvertFrame2 (FrameID index, const TraceRange &trace);
+
+		bool _ConvertFunction (const TraceRange::Iterator &iter, FrameID frameId, INOUT String &src);
 		bool _ConvertVkFunction (const TraceRange::Iterator &iter, INOUT String &src) const;
 
 		bool _GenCommonFile (FrameID first, FrameID last) const;
@@ -116,11 +120,12 @@ namespace VTC
 		bool _SetupResourceFiles (INOUT String &str) const;
 		bool _SetupDrawFrames (FrameID first, FrameID last, INOUT String &str) const;
 
+		// remap queue family
 		bool _OnCreateCommandPool (const TraceRange::Iterator &iter, INOUT String &src) const;
-		//bool _OnCreateBuffer (const TraceRange::Iterator &iter, INOUT String &src) const;
-		//bool _OnCreateImage (const TraceRange::Iterator &iter, INOUT String &src) const;
-		//bool _OnCmdWaitEvents (const TraceRange::Iterator &iter, INOUT String &src) const;
-		//bool _OnCmdPipelineBarrier (const TraceRange::Iterator &iter, INOUT String &src);
+		bool _OnCreateBuffer (const TraceRange::Iterator &iter, INOUT String &src) const;
+		bool _OnCreateImage (const TraceRange::Iterator &iter, INOUT String &src) const;
+		bool _OnCmdWaitEvents (const TraceRange::Iterator &iter, INOUT String &src) const;
+		bool _OnCmdPipelineBarrier (const TraceRange::Iterator &iter, INOUT String &src);
 		
 		// remap memory
 		bool _OnBindBufferMemory (const TraceRange::Iterator &iter, INOUT String &src) const;
@@ -147,9 +152,11 @@ namespace VTC
 		bool _FreeImageMemory (const TraceRange::Iterator &iter, INOUT String &src) const;
 		bool _FreeBufferMemory (const TraceRange::Iterator &iter, INOUT String &src) const;
 
+
 		// remap swapchain images
 		bool _OnAcquireNextImage (const TraceRange::Iterator &iter, INOUT String &src) const;
 		bool _OnQueuePresent (const TraceRange::Iterator &iter, INOUT String &src) const;
+
 
 		// use loadable data
 		bool _OnCreateShaderModule (const TraceRange::Iterator &iter, FrameID frameId, INOUT String &src);

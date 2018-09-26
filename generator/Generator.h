@@ -281,10 +281,15 @@ namespace VTC
 		BasicTypeMap_t			_basicTypes;
 
 		HashSet<StringView>		_skipPackets;		// skip all vkGet*** functions
-		HashSet<StringView>		_alwaysSerialize;	// define any type name that be always stored
+		HashSet<StringView>		_alwaysSerialize;	// define any type name that be always serialized
+		HashSet<StringView>		_neverSerialize;
 
 		CounterMap_t			_funcArgCountOf;
+		CounterMap_t			_funcArgCounter;
+
 		CounterMap_t			_structFieldCountOf;
+		CounterMap_t			_structFieldCounter;
+
 		DestructorSet_t			_funcArgDestructors;
 
 
@@ -315,6 +320,12 @@ namespace VTC
 		bool GenUnpacker (const fs::path &output) const;
 
 		bool GenRawVulkanCalls (const fs::path &output) const;
+
+		bool GenVulkanTracePacker (const fs::path &packetIDsFile, const fs::path &structHeaderFile,
+								   const fs::path &structSourceFile, const fs::path &funcFile) const;
+
+		bool GenVulkanTracePlayer (const fs::path &structHeaderFile, const fs::path &structSourceFile,
+								   const fs::path &funcFile) const;
 
 
 	private:
@@ -350,14 +361,19 @@ namespace VTC
 		bool _GenRawVulkanCalls_ProcessPacket (const PacketInfo &packet, OUT String &str) const;
 	
 		bool _MarkRequiredTypes (bool forSerialization) const;
-		bool _MarkRequiredTypes_ProcessVar (ArrayView<StringView> type) const;
+		bool _MarkRequiredTypes_ProcessVar (ArrayView<StringView> type, bool forSerialization) const;
 
 		ND_ ResourceTypeInfo const*  _GetResourceType (StringView typeName) const;
 
 		ND_ StringView  _GetFuncArgCounterName (StringView func, StringView argName) const;
 		ND_ StringView  _GetStructFieldCounterName (StringView structType, StringView fieldName) const;
+		
+		ND_ bool  _IsFuncArgCounter (StringView func, StringView counterName) const;
+		ND_ bool  _IsStructFieldCounter (StringView structType, StringView counterName) const;
 
 		ND_ bool  _IsFuncArgWillBeDestroyed (StringView func, StringView argName) const;
+
+		ND_ static bool _HasSType (const VkStructInfo &st);
 
 		ND_ static bool _IsWord (StringView value);
 		ND_ static bool _IsTypeOrQual (StringView value);
@@ -372,6 +388,28 @@ namespace VTC
 								  INOUT EnumMap_t &outEnums,
 								  INOUT StructMap_t &outStructs,
 								  INOUT BitfieldMap_t &outBitfields);
+
+		ND_ static HashSet<StringView> const&  _GetRequiredForPackingFunctionsV1 ();
+		ND_ static HashSet<StringView> const&  _GetRequiredForPackingStructures ();	// only structures that used as pNext extension
+
+		ND_ static bool _IsRequiredForPackingFunction (StringView vkFunc);
+		
+		ND_ static String  _GenPacketIDName (StringView vkFunc);
+
+		bool _VulkanTracePacker_MarkRequiredTypes () const;
+		bool _VulkanTracePacker_MarkRequiredTypes (ArrayView<StringView> types) const;
+		bool _VulkanTracePacker_GenIDs (const fs::path &output) const;
+		bool _VulkanTracePacker_GenStructPacker (const fs::path &headerFile, const fs::path &sourceFile) const;
+		bool _VulkanTracePacker_GenFuncPacker (const fs::path &output) const;
+		bool _VulkanTracePacker_ProcessStruct (const VkStructInfo &info, StringView stype, OUT String &str) const;
+		bool _VulkanTracePacker_ProcessVar (StringView fieldName, ArrayView<StringView> fieldType, StringView indent,
+											StringView counterName, bool isField, INOUT String &str) const;
+		
+		bool _VulkanTracePlayer_GenStructUnpacker (const fs::path &headerFile, const fs::path &sourceFile) const;
+		bool _VulkanTracePlayer_GenFuncUnpacker (const fs::path &output) const;
+		bool _VulkanTracePlayer_ProcessStruct (const VkStructInfo &info, StringView stype, OUT String &str) const;
+		bool _VulkanTracePlayer_UnpackType (StringView parentName, StringView fieldName, ArrayView<StringView> typeParts,
+											StringView counterName, StringView indent, OUT String &str) const;
 	};
 
 }	// VTC

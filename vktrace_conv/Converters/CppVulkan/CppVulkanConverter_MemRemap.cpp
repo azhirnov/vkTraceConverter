@@ -2,6 +2,7 @@
 
 #include "Converters/CppVulkan/CppVulkanConverter.h"
 #include "extensions/vulkan_loader/VulkanCheckError.h"
+#include "Converters/Utils/BasicTypesConverter.h"
 
 namespace VTC
 {
@@ -206,9 +207,11 @@ namespace VTC
 	{
 		const StringView	indent = "\t\t";
 
-		auto&	before = _tempStr1;
-		auto&	result = _tempStr2;
-		auto&	packet = iter.Cast< packet_vkFlushMappedMemoryRanges >();
+		auto&			before		= _tempStr1;
+		auto&			result		= _tempStr2;
+		auto&			packet		= iter.Cast< packet_vkFlushMappedMemoryRanges >();
+		const size_t	initial_len	= src.length();
+		uint			range_count	= 0;
 
 		VK_CHECK( packet.result );
 		CHECK_ERR( packet.memoryRangeCount > 0 and packet.pMemoryRanges );
@@ -216,18 +219,20 @@ namespace VTC
 		src << "\t{\n";
 
 		const String arr_name = _nameSerializer.MakeUnique( &packet.pMemoryRanges, "memoryRanges"s, "mappedMemoryRange"s );
-
-		before << indent << "VkMappedMemoryRange  " << arr_name << "[" << IntToString( packet.memoryRangeCount ) << "] = {};\n";
 		
 		for (uint i = 0; i < packet.memoryRangeCount; ++i)
 		{
-			Serialize2_VkMappedMemoryRange( packet.pMemoryRanges + i, String(arr_name) << "[" << IntToString(i) << "]",
-										    _nameSerializer, *_resRemapper, indent, INOUT result, INOUT before );
-
 			auto	mem_id		= ResourceID(packet.pMemoryRanges[i].memory);
 			auto*	transfer	= _memTransferAnalyzer->GetTransfer( mem_id, iter.GetBookmark() );
 			CHECK_ERR( transfer );
-			
+
+			if ( transfer->blocks.empty() )
+				continue;
+
+			Serialize2_VkMappedMemoryRange( packet.pMemoryRanges + i, String(arr_name) << "[" << IntToString(range_count) << "]",
+										    _nameSerializer, *_resRemapper, indent, INOUT result, INOUT before );
+			++range_count;
+
 			for (auto& block : transfer->blocks)
 			{
 				DataID	data_id = _RequestData( _inputFile, block.fileOffset, block.dataSize, frameId );
@@ -239,13 +244,21 @@ namespace VTC
 					<< IntToString( block.dataSize ) << " );\n";
 			}
 		}
+		
+		if ( range_count == 0 )
+		{
+			// nothing to flush
+			src.resize( initial_len );
+			return true;
+		}
 
 		result << indent << "VK_CALL( app.vkFlushMappedMemoryRanges( \n";
 		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, packet.device ) << ")),\n";
-		result << indent << "		/*memoryRangeCount*/ " << IntToString( packet.memoryRangeCount ) << ",\n";
+		result << indent << "		/*memoryRangeCount*/ " << IntToString( range_count ) << ",\n";
 		result << indent << "		/*pMemoryRanges*/ " << _nameSerializer.Get( &packet.pMemoryRanges ) << " ));\n";
 
-		src << before << result << "\t}\n";
+		src << indent << "VkMappedMemoryRange  " << arr_name << "[" << IntToString( range_count ) << "] = {};\n"
+			<< before << result << "\t}\n";
 		return true;
 	}
 //-----------------------------------------------------------------------------
@@ -511,7 +524,6 @@ namespace VTC
 				}
 			}
 		}
-
 		return true;
 	}
 	

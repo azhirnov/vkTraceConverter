@@ -11,7 +11,7 @@ namespace VTC
 =================================================
 */
 	bool Generator::_GenUnpacker_UnpackType (StringView parentName, StringView fieldName, ArrayView<StringView> typeParts,
-														   StringView counterName, StringView indent, OUT String &str) const
+											 StringView counterName, StringView indent, OUT String &str) const
 	{
 		// count pointers
 		uint	num_pointers	= 0;
@@ -36,12 +36,7 @@ namespace VTC
 
 			if ( st_info != _structs.end() )
 			{
-				for (auto& field : st_info->data.fields) {
-					if ( field.name == "sType" ) {
-						has_stype = true;
-						break;
-					}
-				}
+				has_stype = _HasSType( st_info->data );
 				break;
 			}
 		}
@@ -278,15 +273,7 @@ namespace VTC
 			if ( not info.data.required )
 				continue;
 
-			bool	has_stype = false;
-
-			for (auto& field : info.data.fields)
-			{
-				if ( field.name == "sType" ) {
-					has_stype = true;
-					break;
-				}
-			}
+			const bool	has_stype = _HasSType( info.data );
 
 			if ( info.data.name == "VkBaseInStructure" or
 				 info.data.name == "VkBaseOutStructure" )

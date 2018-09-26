@@ -9,7 +9,7 @@ namespace VTC
 {
 
 	//
-	// Device Initialization Analyzer
+	// Device Analyzer
 	//
 
 	class DeviceAnalyzer final : public IAnalyzer
@@ -77,9 +77,9 @@ namespace VTC
 		};
 
 
-		using InstancesMap_t		= ResourceTracker< InstanceInfo >;
-		using PhysicalDevicesMap_t	= ResourceTracker< PhysicalDeviceInfo >;
-		using LogicalDevicesMap_t	= ResourceTracker< LogicalDeviceInfo >;
+		using InstancesMap_t		= ResourceTracker< InstanceInfo, DefaultBookmark, true >;
+		using PhysicalDevicesMap_t	= ResourceTracker< PhysicalDeviceInfo, DefaultBookmark, true >;
+		using LogicalDevicesMap_t	= ResourceTracker< LogicalDeviceInfo, DefaultBookmark, true >;
 
 		using InstanceInfo_t		= InstancesMap_t::Item_t;
 		using PhysicalDeviceInfo_t	= PhysicalDevicesMap_t::Item_t;

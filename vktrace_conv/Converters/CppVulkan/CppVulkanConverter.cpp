@@ -2,6 +2,7 @@
 
 #include "Converters/CppVulkan/CppVulkanConverter.h"
 #include "extensions/vulkan_loader/VulkanCheckError.h"
+#include "Converters/Utils/BasicTypesConverter.h"
 
 namespace VTC
 {
@@ -62,8 +63,9 @@ namespace VTC
 			_memoryObjAnalyzer		= appTrace.GetAnalyzer< MemoryObjAnalyzer >();
 			_imageAnalyzer			= appTrace.GetAnalyzer< ImageAnalyzer >();
 			_bufferAnalyzer			= appTrace.GetAnalyzer< BufferAnalyzer >();
+			_queueAnalyzer			= appTrace.GetAnalyzer< QueueAnalyzer >();
 
-			CHECK_ERR( _swapchainAnalyzer and _resourcesBookmarks and _deviceAnalyzer );
+			CHECK_ERR( _swapchainAnalyzer and _resourcesBookmarks and _deviceAnalyzer and _queueAnalyzer );
 			CHECK_ERR( _memTransferAnalyzer );
 			CHECK_ERR( _memoryObjAnalyzer and _imageAnalyzer and _bufferAnalyzer );
 
@@ -73,11 +75,18 @@ namespace VTC
 		const FrameID	last_frame	= Min( _config.lastFrame, appTrace.GetFrameCount() );
 
 		// convert packets
-		for (FrameID i = _config.firstFrame; i < last_frame; ++i)
+		if ( _config.divideByThreads or _config.divideByPasses )
 		{
-			CHECK_ERR( _ConvertFrame( i, appTrace.GetFrameTrace( i ) ));
+			for (FrameID i = _config.firstFrame; i < last_frame; ++i)
+			{
+				CHECK_ERR( _ConvertFrame2( i, appTrace.GetFrameTrace( i ) ));
+			}
+		}else{
+			for (FrameID i = _config.firstFrame; i < last_frame; ++i)
+			{
+				CHECK_ERR( _ConvertFrame1( i, appTrace.GetFrameTrace( i ) ));
+			}
 		}
-
 
 		CHECK_ERR( _GenCommonFile( _config.firstFrame, last_frame ));
 		CHECK_ERR( _GenCMakeFile( _config.firstFrame, last_frame ));
@@ -106,13 +115,36 @@ namespace VTC
 	{
 		return GetFrameThreadFuncName( frameIndex, threadId ) << "_Pass" << ToString( passId );
 	}
+	
+/*
+=================================================
+	_ConvertFrame1
+=================================================
+*/
+	bool CppVulkanConverter::_ConvertFrame1 (const FrameID frameIndex, const TraceRange &trace)
+	{
+		const fs::path	fname	= fs::path{_directory}.append( GetFrameFuncName( frameIndex ) << ".cpp" );
+		String			src		= "#include \"Common.h\"\n\n";
+
+		src << "void " << GetFrameFuncName( frameIndex ) << " (const VApp &app)\n{\n";
+
+		for (auto iter = trace.begin(); iter < trace.LastBookmark(); ++iter)
+		{
+			CHECK_ERR( _ConvertFunction( iter, frameIndex, INOUT src ));
+		}
+		
+		src << "}\n\n";
+
+		CHECK_ERR( _StoreFile( fname, src ));
+		return true;
+	}
 
 /*
 =================================================
-	_ConvertFrame
+	_ConvertFrame2
 =================================================
 */
-	bool CppVulkanConverter::_ConvertFrame (const FrameID frameIndex, const TraceRange &trace)
+	bool CppVulkanConverter::_ConvertFrame2 (const FrameID frameIndex, const TraceRange &trace)
 	{
 		struct PerThread
 		{
@@ -149,13 +181,6 @@ namespace VTC
 		for (auto iter = trace.begin(); iter < trace.LastBookmark(); ++iter)
 		{
 			PerThread &		thread	= per_thread_source[ iter->thread_id ];
-
-			_resRemapper->SetCurrentPos( iter.GetBookmark() );
-			
-			_tempStr1.clear();
-			_tempStr2.clear();
-			_nameSerializer.Clear();
-
 
 			// check if it is begiging of new pass
 			switch ( iter->packet_id )
@@ -201,59 +226,8 @@ namespace VTC
 
 			String &	src = thread.isRPActive ? thread.passes.back() : thread.source;
 
-			switch ( iter->packet_id )
-			{
-				// skip some packets
-				case VKTRACE_TPI_VK_vkCreateSwapchainKHR :				break;
-				case VKTRACE_TPI_VK_vkCreateSharedSwapchainsKHR :		break;
+			CHECK_ERR( _ConvertFunction( iter, frameIndex, INOUT src ));
 
-				// remap queue family index
-				//case VKTRACE_TPI_VK_vkCreateCommandPool :				CHECK( _OnCreateCommandPool( iter, INOUT src ));						break;
-				//case VKTRACE_TPI_VK_vkCreateBuffer :					CHECK( _OnCreateBuffer( iter, INOUT src ));								break;
-				//case VKTRACE_TPI_VK_vkCreateImage :						CHECK( _OnCreateImage( iter, INOUT src ));								break;
-				//case VKTRACE_TPI_VK_vkCmdWaitEvents :					CHECK( _OnCmdWaitEvents( iter, INOUT src ));							break;
-				//case VKTRACE_TPI_VK_vkCmdPipelineBarrier :				CHECK( _OnCmdPipelineBarrier( iter, INOUT src ));						break;
-
-				// load data from file and call function
-				case VKTRACE_TPI_VK_vkCreateShaderModule :				CHECK( _OnCreateShaderModule( iter, frameIndex, INOUT src ));			break;
-
-				// remap swapchain images
-				case VKTRACE_TPI_VK_vkAcquireNextImageKHR :				CHECK( _OnAcquireNextImage( iter, INOUT src ));				break;
-				case VKTRACE_TPI_VK_vkAcquireNextImage2KHR :			ASSERT(false);												break;		// TODO
-				case VKTRACE_TPI_VK_vkQueuePresentKHR :					CHECK( _OnQueuePresent( iter, INOUT src ));					break;
-
-
-				/*
-				//case VKTRACE_TPI_VK_vkGetDeviceMemoryCommitment :		CHECK( _OnGetDeviceMemoryCommitment( iter, INOUT src ));	break;
-					
-				case VKTRACE_TPI_VK_vkCreatePipelineCache :				CHECK( _OnCreatePipelineCache( iter, INOUT src ));			break;
-				case VKTRACE_TPI_VK_vkDestroyPipelineCache :			CHECK( _OnDestroyPipelineCache( iter, INOUT src ));			break;
-					
-					
-				case VKTRACE_TPI_VK_vkUpdateDescriptorSetWithTemplateKHR :	break;
-				case VKTRACE_TPI_VK_vkCmdPushDescriptorSetWithTemplateKHR : break;
-				case VKTRACE_TPI_VK_vkUpdateDescriptorSetWithTemplate : break;
-				*/
-
-				// remap memory
-				case VKTRACE_TPI_VK_vkAllocateMemory :					CHECK( _OnAllocateMemory( iter, INOUT src ));				break;
-				case VKTRACE_TPI_VK_vkFreeMemory :						CHECK( _OnFreeMemory( iter, INOUT src ));					break;
-				case VKTRACE_TPI_VK_vkMapMemory :						CHECK( _OnMapMemory( iter, INOUT src ));					break;
-				case VKTRACE_TPI_VK_vkUnmapMemory :						CHECK( _OnUnmapMemory( iter, INOUT src ));					break;
-				case VKTRACE_TPI_VK_vkFlushMappedMemoryRanges :			CHECK( _OnFlushMappedMemoryRanges( iter, frameIndex, INOUT src ));	break;
-				case VKTRACE_TPI_VK_vkInvalidateMappedMemoryRanges :	break;
-				case VKTRACE_TPI_VK_vkBindBufferMemory :				CHECK( _OnBindBufferMemory( iter, INOUT src ));				break;
-				case VKTRACE_TPI_VK_vkBindImageMemory :					CHECK( _OnBindImageMemory( iter, INOUT src ));				break;
-				case VKTRACE_TPI_VK_vkBindBufferMemory2 :
-				case VKTRACE_TPI_VK_vkBindBufferMemory2KHR :			CHECK( _OnBindBufferMemory2( iter, INOUT src ));			break;
-				case VKTRACE_TPI_VK_vkBindImageMemory2 :
-				case VKTRACE_TPI_VK_vkBindImageMemory2KHR :				CHECK( _OnBindImageMemory2( iter, INOUT src ));				break;
-				case VKTRACE_TPI_VK_vkDestroyBuffer :					CHECK( _OnDestroyBuffer( iter, INOUT src ));				break;
-				case VKTRACE_TPI_VK_vkDestroyImage :					CHECK( _OnDestroyImage( iter, INOUT src ));					break;
-
-				// use default serializer
-				default :												_ConvertVkFunction( iter, INOUT src );						break;
-			}
 
 			// check if it is ending of current pass
 			switch ( iter->packet_id )
@@ -334,37 +308,37 @@ namespace VTC
 			<< "project( \"" << _projName << "\" LANGUAGES C CXX )\n"
 			<< "set_property( GLOBAL PROPERTY USE_FOLDERS ON )\n\n";
 
-		str << "include( \"" VT_FRAMEGRAPH_SOURCE_PATH "/cmake/compilers.cmake\" )\n\n"
-			<< "set( FG_EXTERNALS_PATH \"" VT_FRAMEGRAPH_EXTERNAL_PATH "\" )\n"
-			<< "include( \"" VT_FRAMEGRAPH_SOURCE_PATH "/cmake/download_vk.cmake\" )\n\n";
+        str << "include( \"" VTC_FRAMEGRAPH_SOURCE_PATH "/cmake/compilers.cmake\" )\n\n"
+            << "set( FG_EXTERNALS_PATH \"" VTC_FRAMEGRAPH_EXTERNAL_PATH "\" )\n"
+            << "include( \"" VTC_FRAMEGRAPH_SOURCE_PATH "/cmake/download_vk.cmake\" )\n\n";
 
 #		if 0 //def FG_ENABLE_SDL2
-		str << "set( VT_ENABLE_SDL2 ON CACHE BOOL \"\" )\n";
+        str << "set( VTC_ENABLE_SDL2 ON CACHE BOOL \"\" )\n";
 #		endif
 
 #		ifdef FG_ENABLE_GLFW
-		str << "set( VT_ENABLE_GLFW ON CACHE BOOL \"\" )\n";
+        str << "set( VTC_ENABLE_GLFW ON CACHE BOOL \"\" )\n";
 #		endif
 
-		str << "link_directories( \"" VT_FRAMEGRAPH_LIBRARY_PATH "\" )\n\n";
+        str << "link_directories( \"" VTC_FRAMEGRAPH_LIBRARY_PATH "\" )\n\n";
 
 		str << "set( SOURCES ";
 
 		for (FrameID i = first; i < last; ++i) {
 			str << "\n\t\t\"" << GetFrameFuncName( i ) << "\"";
 		}
-		str << "\n\t\t\"" VT_APPLICATION_SOURCE_PATH "/engine/Application.h\""
-			<< "\n\t\t\"" VT_APPLICATION_SOURCE_PATH "/engine/Application.cpp\""
+        str << "\n\t\t\"" VTC_APPLICATION_SOURCE_PATH "/engine/Application.h\""
+            << "\n\t\t\"" VTC_APPLICATION_SOURCE_PATH "/engine/Application.cpp\""
 			<< "\n\t\t\"Common.h\""
 			<< "\n\t\t\"main.cpp\" )\n"
 			<< "add_executable( \"" << _projName << "\" ${SOURCES} )\n\n";
 
 		//str << "target_include_directories( \"" << _projName << "\" PRIVATE \"\" )\n";
-		str << "target_include_directories( \"" << _projName << "\" PRIVATE \"" VT_FRAMEGRAPH_SOURCE_PATH "\" )\n"
-			<< "target_include_directories( \"" << _projName << "\" PRIVATE \"" VT_FRAMEGRAPH_SOURCE_PATH "/extensions\" )\n"
-			<< "target_include_directories( \"" << _projName << "\" PRIVATE \"" VT_FRAMEGRAPH_EXTERNAL_PATH "\" )\n"
+        str << "target_include_directories( \"" << _projName << "\" PRIVATE \"" VTC_FRAMEGRAPH_SOURCE_PATH "\" )\n"
+            << "target_include_directories( \"" << _projName << "\" PRIVATE \"" VTC_FRAMEGRAPH_SOURCE_PATH "/extensions\" )\n"
+            << "target_include_directories( \"" << _projName << "\" PRIVATE \"" VTC_FRAMEGRAPH_EXTERNAL_PATH "\" )\n"
 			<< "target_include_directories( \"" << _projName << "\" PRIVATE \"${Vulkan_INCLUDE_DIRS}\" )\n"
-			<< "target_include_directories( \"" << _projName << "\" PRIVATE \"" VT_APPLICATION_SOURCE_PATH "\" )\n\n";
+            << "target_include_directories( \"" << _projName << "\" PRIVATE \"" VTC_APPLICATION_SOURCE_PATH "\" )\n\n";
 		
 		str << "target_compile_definitions( \"" << _projName << "\" PRIVATE $<$<CONFIG:Debug>: ${PROJECTS_SHARED_DEFINES_DEBUG}> )\n"
 			<< "set_target_properties( \"" << _projName << "\" PROPERTIES LINK_FLAGS_DEBUG ${PROJECTS_SHARED_LINKER_FLAGS_DEBUG} )\n"
@@ -377,10 +351,10 @@ namespace VTC
 			<< "set_target_properties( \"" << _projName << "\" PROPERTIES LINK_FLAGS_PROFILE ${PROJECTS_SHARED_LINKER_FLAGS_PROFILE} )\n\n";
 
 		str << "target_link_libraries( \"" << _projName << "\" \"STL\" \"VulkanLoader\" \"Framework\" )\n"
-			<< "if (${VT_ENABLE_SDL2})\n"
+            << "if (${VTC_ENABLE_SDL2})\n"
 			<< "	target_link_libraries( \"" << _projName << "\" \"SDL2\" )\n"
 			<< "endif ()\n"
-			<< "if (${VT_ENABLE_GLFW})\n"
+            << "if (${VTC_ENABLE_GLFW})\n"
 			<< "	target_link_libraries( \"" << _projName << "\" \"glfw3\" )\n"
 			<< "endif ()\n\n";
 
@@ -575,14 +549,7 @@ namespace VTC
 */
 	bool CppVulkanConverter::_SetupSwapchain (const SwapchainAnalyzer::SwapchainInfo_t &swapchain, INOUT String &str) const
 	{
-		CHECK_ERR( swapchain.semaphores.size() == 2 );
-
-		auto&	semaphore1	= *swapchain.semaphores.begin();
-		auto&	semaphore2	= *(++swapchain.semaphores.begin());
-		auto&	images		= swapchain.images;
-
-		CHECK_ERR(  semaphore1.second.usedInAcquire != semaphore2.second.usedInAcquire and
-					semaphore1.second.usedInPresent != semaphore2.second.usedInPresent );
+		auto&	images = swapchain.images;
 
 		str << "	CHECK_ERR( app.CreateSwapchain(\n";
 		str << "			/*swapchain*/ SwapchainKHRID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT, swapchain.id ) << "),\n";
@@ -596,9 +563,7 @@ namespace VTC
 		}
 		str << " },\n";
 
-		str << "\t\t\t/*imageAvailableSemaphore*/ SemaphoreID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, semaphore1.second.usedInAcquire ? semaphore1.first : semaphore2.first ) << "),\n"
-			<< "\t\t\t/*renderFinishedSemaphore*/ SemaphoreID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, semaphore1.second.usedInPresent ? semaphore1.first : semaphore2.first ) << "),\n"
-			<< "\t\t\t/*colorFormat*/ " << Serialize_VkFormat( swapchain.createInfo.imageFormat ) << ",\n"
+		str << "\t\t\t/*colorFormat*/ " << Serialize_VkFormat( swapchain.createInfo.imageFormat ) << ",\n"
 			<< "\t\t\t/*colorSpace*/ " << Serialize_VkColorSpaceKHR( swapchain.createInfo.imageColorSpace ) << ",\n"
 			<< "\t\t\t/*minImageCount*/ " << ToString( swapchain.createInfo.minImageCount ) << ",\n"
 			<< "\t\t\t/*imageArrayLayers*/ " << ToString( swapchain.createInfo.imageArrayLayers ) << ",\n"
@@ -705,7 +670,7 @@ namespace VTC
 		}
 
 		str << "\n	};\n\n";
-		str << "	CHECK_ERR( app.Run( frames ));\n";
+		str << "	CHECK_ERR( app.Run( FrameID(" << IntToString(first) << "), frames ));\n";
 			
 		return true;
 	}

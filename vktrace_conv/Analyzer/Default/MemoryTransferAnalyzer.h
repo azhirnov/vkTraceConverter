@@ -68,6 +68,9 @@ namespace VTC
 	private:
 		bool _OnFlushMappedMemoryRanges (const TraceRange::Iterator &);
 		bool _OnInvalidateMappedMemoryRanges (const TraceRange::Iterator &);
+		// TODO:
+		// update buffer
+		// push constants
 	};
 
 

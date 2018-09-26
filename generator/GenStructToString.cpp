@@ -572,12 +572,7 @@ namespace VTC
 
 		if ( t.structInfo != _structs.end() )
 		{
-			for (auto& st_field : t.structInfo->data.fields) {
-				if ( st_field.name == "sType" ) {
-					t.hasSType = true;
-					break;
-				}
-			}
+			t.hasSType = _HasSType( t.structInfo->data );
 		}
 
 
@@ -709,7 +704,8 @@ namespace VTC
 			{
 				str << "	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );\n"
 					<< "	result << indent << name << \".pNext = \" << nameSer.GetPtr( obj->pNext ) << \";\\n\";\n"
-					<< "	result << indent << name << \".sType = " << stype << ";\\n\";\n";
+					<< "	result << indent << name << \".sType = " << stype << ";\\n\";\n"
+					<< "	ASSERT( obj->sType == " << stype << " );\n";
 			}
 	
 			for (auto& field : info.fields)
@@ -727,7 +723,7 @@ namespace VTC
 				<< afterFields;
 		}
 
-		str << "}\n\n";
+		str << "}\n";
 		return true;
 	}
 
@@ -764,20 +760,15 @@ namespace VTC
 			if ( not info.data.required )
 				continue;
 
-			bool	has_stype = false;
-
-			for (auto& field : info.data.fields)
-			{
-				if ( field.name == "sType" ) {
-					has_stype = true;
-					break;
-				}
-			}
+			const bool	has_stype = _HasSType( info.data );
 
 			if ( info.data.name == "VkBaseInStructure" or
 				 info.data.name == "VkBaseOutStructure" )
 				continue;
 		
+			if ( info.data.fileIndex > 0 )
+				header << "#ifdef " << _fileData[info.data.fileIndex].macro << "\n";
+
 			header << "    void    Serialize2_" << info.data.name << " (const " << info.data.name
 					<< "*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);\n";
 
@@ -788,11 +779,12 @@ namespace VTC
 				CHECK_ERR( _GenStructToString_ProcessStruct( info.data, "", OUT temp ));
 			
 				if ( info.data.fileIndex > 0 )
-				{
-					str2 << "#ifdef "s << _fileData[info.data.fileIndex].macro << "\n" << temp << "#endif\n\n";
-				}else
+					str2 << "#ifdef " << _fileData[info.data.fileIndex].macro << "\n" << temp << "#endif\n\n";
+				else
 					str2 << temp << "\n";
 
+				if ( info.data.fileIndex > 0 )
+					header << "#endif\n";
 				continue;
 			}
 		
@@ -805,16 +797,16 @@ namespace VTC
 		
 			if ( info.data.fileIndex > 0 )
 			{
-				str1 << "\t\t\t#ifdef "s << _fileData[info.data.fileIndex].macro << "\n";
+				str1 << "\t\t\t#ifdef " << _fileData[info.data.fileIndex].macro << "\n";
 
-				str2 << "#ifdef "s << _fileData[info.data.fileIndex].macro << "\n"
-					 << temp << "#endif\n";
+				str2 << "#ifdef " << _fileData[info.data.fileIndex].macro << "\n"
+					 << temp << "#endif\n\n";
 
 				temp = "\t\t\t#endif\n";
 			}
 			else
 			{
-				str2 << temp;
+				str2 << temp << "\n";
 				temp.clear();
 			}
 
@@ -825,6 +817,9 @@ namespace VTC
 				<< temp
 				<< "\t\t\tbreak;\n"
 				<< "\t\t}\n\n";
+			
+			if ( info.data.fileIndex > 0 )
+				header << "#endif\n";
 		}
 	
 
@@ -833,7 +828,7 @@ namespace VTC
 			if ( not _IsNumber( field.value ) and field.name != "VK_STRUCTURE_TYPE_RANGE_SIZE" )
 				continue;	// skip aliases
 
-			str1 << "\t\tcase " << field.name << " : break;\n";
+			str1 << "\t\tcase " << field.name << " : ASSERT(false); break;\n";
 		}
 
 		str1 << "	}\n"

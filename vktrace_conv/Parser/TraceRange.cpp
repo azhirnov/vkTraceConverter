@@ -213,6 +213,53 @@ namespace VTC
 		_buffer.reserve( _MaxBufferSize );
 		STATIC_ASSERT( alignof(vktrace_trace_packet_header) <= sizeof(_buffer[0]) );
 	}
+	
+/*
+=================================================
+	constructor
+=================================================
+*/
+	TraceRange::Iterator::Iterator (Iterator &&other) :
+		_buffer{ std::move(other._buffer) },
+		_file{ std::move(other._file) },
+		_offset{ other._offset },
+		_nextOffset{ other._nextOffset }
+	{
+		if ( other._lastPacket )
+		{
+			_lastPacket			= BitCast<vktrace_trace_packet_header *>(_buffer.data());
+			other._lastPacket	= null;
+		}
+
+		other._file			= null;
+		other._offset		= Default;
+		other._nextOffset	= Default;
+	}
+	
+/*
+=================================================
+	operator =
+=================================================
+*/
+	TraceRange::Iterator&  TraceRange::Iterator::operator = (Iterator &&rhs)
+	{
+		_buffer		= std::move(rhs._buffer);
+		_file		= std::move(rhs._file);
+		_offset		= rhs._offset;
+		_nextOffset	= rhs._nextOffset;
+		
+		if ( rhs._lastPacket )
+		{
+			_lastPacket		= BitCast<vktrace_trace_packet_header *>(_buffer.data());
+			rhs._lastPacket	= null;
+		}
+
+		rhs._file		= null;
+		rhs._offset		= Default;
+		rhs._nextOffset	= Default;
+
+		return *this;
+	}
 
 /*
 =================================================

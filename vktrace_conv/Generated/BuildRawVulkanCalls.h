@@ -55,20 +55,7 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCreateDebugReportCallbackEXT : break;
 	case VKTRACE_TPI_VK_vkDestroyDebugReportCallbackEXT : break;
 	case VKTRACE_TPI_VK_vkDebugReportMessageEXT : break;
-	case VKTRACE_TPI_VK_vkDebugMarkerSetObjectTagEXT : {
-		auto const*  obj = iter.Cast< packet_vkDebugMarkerSetObjectTagEXT *>();
-		if ( obj->pTagInfo ) {
-			before << SerializeStruct( BitCast<VkBaseInStructure const*>(obj->pTagInfo), nameSer, remapper, indent );
-		}
-		VK_CALL( obj->result );
-		result << indent << "VK_CALL( app.vkDebugMarkerSetObjectTagEXT( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
-		result << ",\n";
-		result << indent << "		/*pTagInfo*/ " << nameSer.GetPtr( obj->pTagInfo );
-		result << " ));\n";
-		break;
-	}
-
+	case VKTRACE_TPI_VK_vkDebugMarkerSetObjectTagEXT : break;
 	case VKTRACE_TPI_VK_vkDebugMarkerSetObjectNameEXT : {
 		auto const*  obj = iter.Cast< packet_vkDebugMarkerSetObjectNameEXT *>();
 		if ( obj->pNameInfo ) {
@@ -2659,7 +2646,24 @@ switch ( iter->packet_id )
 
 	case VKTRACE_TPI_VK_vkGetSemaphoreWin32HandleKHR : break;
 	case VKTRACE_TPI_VK_vkGetMemoryHostPointerPropertiesEXT : break;
-	case VKTRACE_TPI_VK_vkCreateValidationCacheEXT : break;
+	case VKTRACE_TPI_VK_vkCreateValidationCacheEXT : {
+		auto const*  obj = iter.Cast< packet_vkCreateValidationCacheEXT *>();
+		if ( obj->pCreateInfo ) {
+			before << SerializeStruct( BitCast<VkBaseInStructure const*>(obj->pCreateInfo), nameSer, remapper, indent );
+		}
+		VK_CALL( obj->result );
+		result << indent << "VK_CALL( app.vkCreateValidationCacheEXT( \n";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << ",\n";
+		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
+		result << ",\n";
+		result << indent << "		/*pAllocator*/ " << "null";
+		result << ",\n";
+		result << indent << "		/*pValidationCache*/ " << "&app.EditResource(ValidationCacheEXTID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT, *obj->pValidationCache ) << "))";
+		result << " ));\n";
+		break;
+	}
+
 	case VKTRACE_TPI_VK_vkDestroyValidationCacheEXT : {
 		auto const*  obj = iter.Cast< packet_vkDestroyValidationCacheEXT *>();
 		result << indent << "app.vkDestroyValidationCacheEXT( \n";

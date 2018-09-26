@@ -106,6 +106,8 @@ namespace VTC
 		ND_ auto	find (ResourceID id)	const	{ return _items.find( id ); }
 		ND_ auto	find (ResourceID id)			{ return _items.find( id ); }
 
+			void	clear ()						{ _items.clear(); }
+
 		
 		ND_ Item_t const*	FindIn (const_iterator item, TraceRange::Bookmark pos, bool strict = true) const;
 		ND_ Item_t *		FindIn (iterator item, TraceRange::Bookmark pos, bool strict = true);

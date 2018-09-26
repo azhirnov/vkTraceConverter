@@ -92,12 +92,12 @@ namespace VTC
 			case VKTRACE_TPI_VK_vkBindBufferMemory :				CHECK( _OnBindBufferMemory( pos, info ));				break;
 			case VKTRACE_TPI_VK_vkBindBufferMemory2 :
 			case VKTRACE_TPI_VK_vkBindBufferMemory2KHR :			CHECK( _OnBindBufferMemory2( pos, info ));				break;
-			case VKTRACE_TPI_VK_vkDestroyBuffer :					break;
 
 			case VKTRACE_TPI_VK_vkGetBufferMemoryRequirements :		CHECK( _OnGetBufferMemoryRequirements( pos, info ));	break;
 			case VKTRACE_TPI_VK_vkGetBufferMemoryRequirements2 :
 			case VKTRACE_TPI_VK_vkGetBufferMemoryRequirements2KHR :	CHECK( _OnGetBufferMemoryRequirements2( pos, info ));	break;
 				
+			case VKTRACE_TPI_VK_vkDestroyBuffer :
 			case VKTRACE_TPI_VK_vkCmdBindIndexBuffer :
 			case VKTRACE_TPI_VK_vkCmdBindVertexBuffers :
 			case VKTRACE_TPI_VK_vkCmdDispatchIndirect :
@@ -106,6 +106,10 @@ namespace VTC
 			case VKTRACE_TPI_VK_vkCmdCopyImageToBuffer :
 			case VKTRACE_TPI_VK_vkCmdUpdateBuffer :
 			case VKTRACE_TPI_VK_vkCmdFillBuffer :
+			case VKTRACE_TPI_VK_vkAllocateMemory :
+			case VKTRACE_TPI_VK_vkUpdateDescriptorSets :
+			case VKTRACE_TPI_VK_vkCmdPipelineBarrier :
+			case VKTRACE_TPI_VK_vkCmdWaitEvents :
 				break;
 
 			// vertex / index / indirect buffer usage
@@ -134,7 +138,7 @@ namespace VTC
 		auto&	packet = pos.Cast< packet_vkCreateBuffer >();
 		CHECK_ERR( packet.pCreateInfo );
 		CHECK_ERR( id == ResourceID(*packet.pBuffer) );
-		ASSERT( packet.pCreateInfo->pNext == null );	// add support if triggered
+		//ASSERT( packet.pCreateInfo->pNext == null );	// add support if triggered
 
 		BuffersMap_t::iterator	buffer;
 		CHECK_ERR( _buffers.AddResourceUsage( OUT buffer, pos, id, EResOp::Construct ));

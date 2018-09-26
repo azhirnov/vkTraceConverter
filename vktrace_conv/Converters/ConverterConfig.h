@@ -19,8 +19,12 @@ namespace VTC
 			bool		isEnabled				= false;
 			//bool		isMultithreaded			= false;
 			//bool		isAsyncLoadEnabled		= false;
-			bool		remapMemory				= true;
+			bool		remapMemory				= false;
 			bool		remapQueueFamily		= false;
+
+			bool		divideByThreads			= false;
+			bool		divideByPasses			= false;
+
 			FrameID		firstFrame				= 0;
 			FrameID		lastFrame				= ~FrameID(0);
 		};
@@ -28,7 +32,10 @@ namespace VTC
 
 		struct VulkanTrace
 		{
-			bool		isEnabled		= false;
+			bool		isEnabled				= false;
+			bool		remapMemory				= false;
+			bool		remapQueueFamily		= false;
+			FrameID		lastFrame				= ~FrameID(0);
 		};
 
 
@@ -53,6 +60,9 @@ namespace VTC
 		struct GraphViz
 		{
 			bool		isEnabled		= false;
+			bool		showSync		= false;	// build sync usage graph
+			FrameID		firstFrame		= 0;
+			FrameID		lastFrame		= ~FrameID(0);
 		};
 
 

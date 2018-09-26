@@ -165,8 +165,6 @@ namespace VTC
 */
 	bool VApp::CreateSwapchain (SwapchainKHRID						swapchain,
 								ArrayView<ImageID>					swapchainImages,
-								SemaphoreID							, //imageAvailableSemaphore,
-								SemaphoreID							, //renderFinishedSemaphore,
 								VkFormat							colorFormat,
 								VkColorSpaceKHR						colorSpace,
 								const uint							minImageCount,
@@ -202,11 +200,6 @@ namespace VTC
 		}
 
 		EditResource( swapchain ) = _swapchain->GetVkSwapchain();
-
-		//CHECK_ERR( imageAvailableSemaphore != renderFinishedSemaphore );
-		//EditResource( imageAvailableSemaphore )	= _swapchain->GetImageAvailableSemaphore();
-		//EditResource( renderFinishedSemaphore ) = _swapchain->GetRenderFinishedSemaphore();
-
 		return true;
 	}
 	
@@ -215,7 +208,7 @@ namespace VTC
 	Run
 =================================================
 */
-	bool VApp::Run (ArrayView<VDrawFrame_t> frames)
+	bool VApp::Run (const FrameID firstFrameId, ArrayView<VDrawFrame_t> frames)
 	{
 		CHECK_ERR( _window and _swapchain and _vulkan.GetVkDevice() );
 
@@ -226,7 +219,7 @@ namespace VTC
 
 			_window->SetTitle( _windowTitle + "[FPS: "s + ToString(uint(_swapchain->GetFramesPerSecond())) + "]"s );
 
-			_PrepareData( FrameID(i) );
+			_PrepareData( FrameID(size_t(firstFrameId) + i) );
 
 			frames[i]( *this );
 		}
@@ -255,8 +248,6 @@ namespace VTC
 	bool VApp::AcquireImage (ImageID image, SemaphoreID imageAvailableSemaphore) const
 	{
 		CHECK_ERR( _swapchain );
-		//CHECK_ERR( GetResource(imageAvailableSemaphore) == _swapchain->GetImageAvailableSemaphore() );
-		
 		VK_CHECK( _swapchain->AcquireNextImage( GetResource(imageAvailableSemaphore) ));		// TODO: handle errors
 
 		ASSERT( GetResource(image) == _swapchain->GetCurrentImage() );
@@ -271,7 +262,6 @@ namespace VTC
 	bool VApp::Present (QueueID queue, ImageID image, SemaphoreID renderFinishedSemaphore) const
 	{
 		CHECK_ERR( _swapchain );
-		//CHECK_ERR( GetResource(renderFinishedSemaphore) == _swapchain->GetRenderFinishedSemaphore() );
 		ASSERT( GetResource(image) == _swapchain->GetCurrentImage() );
 		
 		CHECK_ERR( _swapchain->Present( GetResource(queue), GetResource(renderFinishedSemaphore) ));

@@ -33,12 +33,19 @@ namespace VTC
 		{
 			if ( not info.data.required )
 				continue;
+			
+			if ( info.data.fileIndex > 0 ) {
+				header	<< "#ifdef "s << _fileData[info.data.fileIndex].macro << "\n";
+				str		<< "#ifdef "s << _fileData[info.data.fileIndex].macro << "\n";
+			}
 
-			header << "ND_ String  Serialize_" << info.data.name << " (" << info.data.name << ");\n";
+			header << "\tND_ String  Serialize_" << info.data.name << " (" << info.data.name << ");\n";
 
-			str << "ND_ String  Serialize_" << info.data.name << " (" << info.data.name << " value)\n{\n"
-				<< "\tENABLE_ENUM_CHECKS();\n"
-				<< "\tswitch ( value )\n\t{\n";
+			str << "\tND_ String  Serialize_" << info.data.name << " (" << info.data.name << " value)\n"
+				<< "\t{\n"
+				<< "\t	ENABLE_ENUM_CHECKS();\n"
+				<< "\t	switch ( value )\n"
+				<< "\t	{\n";
 
 			for (auto& field : info.data.fields)
 			{
@@ -47,35 +54,56 @@ namespace VTC
 
 				if ( HasSubString( field.name, "_MAX_ENUM" ) or HasSubString( field.name, "_RANGE_SIZE" ) )
 				{
-					str << "\t\tcase " << field.name << " : break;\n";
+					str << "\t\t\tcase " << field.name << " : break;\n";
 				}
 				else
 				{
 					if ( not _IsNumber( field.value ) )
 						continue;	// skip aliases
 
-					str << "\t\tcase " << field.name << " : return \"" << field.name << "\";\n";
+					str << "\t\t\tcase " << field.name << " : return \"" << field.name << "\";\n";
 				}
 			}
 
-			str << "\t}\n\tDISABLE_ENUM_CHECKS();\n"
-				<< "\tRETURN_ERR( \"unsupported value: \"s << EnumToString( value ), \"<unknown>\" );\n}\n\n";
+			str << "\t	}\n"
+				<< "\t	DISABLE_ENUM_CHECKS();\n"
+				<< "\t	RETURN_ERR( \"unsupported value: \"s << EnumToString( value ), \"<unknown>\" );\n"
+				<< "\t}\n";
+			
+			if ( info.data.fileIndex > 0 ) {
+				header	<< "#endif\n";
+				str		<< "#endif\n";
+			}
+			str << '\n';
 		}
+
 
 		for (auto& info : _bitfields)
 		{
 			if ( not info.data.required )
 				continue;
 				
-			header << "ND_ String  Serialize_" << info.data.name << " (" << info.data.name << ");\n";
+			if ( info.data.fileIndex > 0 ) {
+				header	<< "#ifdef "s << _fileData[info.data.fileIndex].macro << "\n";
+				str		<< "#ifdef "s << _fileData[info.data.fileIndex].macro << "\n";
+			}
+
+			header << "\tND_ String  Serialize_" << info.data.name << " (" << info.data.name << ");\n";
 
 			auto	iter = _enums.find( SearchableEnum{info.data.enumName} );
-
-			if ( iter == _enums.end() ) {
-				str << "ND_ String  Serialize_" << info.data.name << " (" << info.data.name << " bits)\n{\n"
-					<< "\tASSERT( bits == 0 );\n"
-					<< "\treturn \"0\";\n"
-					<< "}\n\n";
+			if ( iter == _enums.end() )
+			{
+				str << "\tND_ String  Serialize_" << info.data.name << " (" << info.data.name << " bits)\n"
+					<< "\t{\n"
+					<< "\t	ASSERT( bits == 0 );\n"
+					<< "\t	return \"0\";\n"
+					<< "\t}\n";
+				
+				if ( info.data.fileIndex > 0 ) {
+					header	<< "#endif\n";
+					str		<< "#endif\n";
+				}
+				str << '\n';
 				continue;
 			}
 
@@ -94,20 +122,27 @@ namespace VTC
 			CHECK_ERR( not max_enum.empty() );
 
 
-			str << "ND_ String  Serialize_" << info.data.name << " (" << info.data.name << " bits)\n{\n"
-				<< "\tif ( bits == 0 )\n"
-				<< "\t	return \"0\";\n"
-				<< "\tString  result;\n"
-				<< "\tfor (" << info.data.name << " t = 1; t < " << max_enum << "; t <<= 1)\n"
+			str << "\tND_ String  Serialize_" << info.data.name << " (" << info.data.name << " bits)\n"
 				<< "\t{\n"
-				<< "\t	if ( not EnumEq( bits, t ) )\n"
-				<< "\t		continue;\n\n"
-				<< "\t	if ( not result.empty() )\n"
-				<< "\t		result << \" | \";\n\n"
-				<< "\t	result << Serialize_" << info.data.enumName << "( " << info.data.enumName << "(t) );\n"
-				<< "\t}\n"
-				<< "\treturn result;\n"
-				<< "}\n\n";
+				<< "\t	if ( bits == 0 )\n"
+				<< "\t		return \"0\";\n"
+				<< "\t	String  result;\n"
+				<< "\t	for (" << info.data.name << " t = 1; t < " << max_enum << "; t <<= 1)\n"
+				<< "\t	{\n"
+				<< "\t		if ( not EnumEq( bits, t ) )\n"
+				<< "\t			continue;\n\n"
+				<< "\t		if ( not result.empty() )\n"
+				<< "\t			result << \" | \";\n\n"
+				<< "\t		result << Serialize_" << info.data.enumName << "( " << info.data.enumName << "(t) );\n"
+				<< "\t	}\n"
+				<< "\t	return result;\n"
+				<< "\t}\n";
+			
+			if ( info.data.fileIndex > 0 ) {
+				header	<< "#endif\n";
+				str		<< "#endif\n";
+			}
+			str << '\n';
 		}
 
 	

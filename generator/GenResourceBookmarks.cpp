@@ -435,15 +435,7 @@ namespace VTC
 
 		for (auto& info : _structs)
 		{
-			bool	has_stype = false;
-
-			for (auto& field : info.data.fields)
-			{
-				if ( field.name == "sType" ) {
-					has_stype = true;
-					break;
-				}
-			}
+			const bool	has_stype = _HasSType( info.data );
 
 			if ( not has_stype or
 				 info.data.name == "VkBaseInStructure" or

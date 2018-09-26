@@ -3,13 +3,12 @@
 #pragma once
 
 #include "Common.h"
+#include "../engine/FIValue.h"
 #include "vulkan/vulkan.h"
 #include <sstream>
-#include "../engine/FIValue.h"
 
 namespace VTC
 {
-	using namespace std::string_literals;
 
 /*
 =================================================

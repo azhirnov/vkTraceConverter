@@ -6,7 +6,7 @@
 #include "engine/ResourceIDs.h"
 #include "engine/FIValue.h"
 
-#define VTC_MEMORY_REMAPPING	1
+//#define VTC_MEMORY_REMAPPING	1
 
 #ifndef VTC_MEMORY_REMAPPING
 #	error VTC_MEMORY_REMAPPING must be defined
@@ -50,41 +50,6 @@ namespace VTC
 
 	private:
 		#if VTC_MEMORY_REMAPPING
-		/*using BufImgUnion = Union< BufferID, ImageID >;
-
-		struct MemBindingRange
-		{
-			BufImgUnion		id;
-			VkDeviceSize	offset	= 0;
-			VkDeviceSize	size	= 0;
-		};
-
-		struct MemRange
-		{
-			void *					mappedPtr		= null;
-			VkDeviceSize			mappingOffset	= 0;
-			VkDeviceSize			mappingSize		= 0;
-
-			Array< BufImgUnion >	resources;			// buffer and image IDs that binded to memory
-			VkDeviceSize			srcSize			= 0;
-			VkDeviceSize			dstSize			= 0;
-			VkDeviceSize			dstOffset		= 0;
-		};
-		
-		struct MemRemappingInfo
-		{
-			// before remapping
-			VkDeviceSize			srcOffset	= 0;
-			VkDeviceSize			srcSize		= 0;
-			// after remapping
-			VkDeviceSize			dstOffset	= 0;
-			VkDeviceSize			dstSize		= 0;
-		};
-
-		using MappedMemory_t		= HashMap< DeviceMemoryID, MemRange >;
-		using ImageMemInfoMap_t		= Array< MemRemappingInfo >;
-		using BufferMemInfoMap_t	= Array< MemRemappingInfo >;*/
-
 		struct MemAllocationInfo
 		{
 			VmaAllocation		alloc		= null;
@@ -171,8 +136,6 @@ namespace VTC
 
 		bool CreateSwapchain (SwapchainKHRID						swapchain,
 							  ArrayView<ImageID>					swapchainImages,
-							  SemaphoreID							imageAvailableSemaphore,
-							  SemaphoreID							renderFinishedSemaphore,
 							  const VkFormat						colorFormat			= VK_FORMAT_B8G8R8A8_UNORM,
 							  const VkColorSpaceKHR					colorSpace			= VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
 							  const uint							minImageCount		= 2,
@@ -188,7 +151,7 @@ namespace VTC
 		bool AddExternalData (const String &filename, ArrayView<FilePart> parts);
 		bool PreloadAllData ();
 
-		bool Run (ArrayView<VDrawFrame_t> frames);
+		bool Run (FrameID firstFrameId, ArrayView<VDrawFrame_t> frames);
 
 
 		bool AcquireImage (ImageID image, SemaphoreID imageAvailableSemaphore) const;

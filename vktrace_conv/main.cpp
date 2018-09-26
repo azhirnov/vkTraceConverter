@@ -7,10 +7,14 @@
 #include "Analyzer/Default/ImageAnalyzer.h"
 #include "Analyzer/Default/BufferAnalyzer.h"
 #include "Analyzer/Default/MemoryObjAnalyzer.h"
+#include "Analyzer/Default/RenderPassAnalyzer.h"
 #include "Analyzer/Default/SwapchainAnalyzer.h"
-#include "Analyzer/Default/AllResourcesBookmarks.h"
 #include "Analyzer/Default/DeviceAnalyzer.h"
+#include "Analyzer/Default/QueueAnalyzer.h"
 #include "Analyzer/Default/MemoryTransferAnalyzer.h"
+#include "Analyzer/Default/AllResourcesBookmarks.h"
+#include "Analyzer/Ext/ExtensionAnalyzer.h"
+#include "Analyzer/Ext/SynchronizationsAnalyzer.h"
 
 #include <iostream>
 
@@ -58,6 +62,9 @@ static const char	s_Help[] = R"#(
 							remap-queue=[true/false] -- enable this for portability.
 
 --cfg-vk-trace			configure 'vk-trace' converter:
+							end=[N] -- stop converting on N frame, default is -1.
+							remap-mem=[true/false] -- enable this for portability.
+							remap-queue=[true/false] -- enable this for portability.
 
 --cfg-vez-trace			configure 'vez-trace' converter:
 
@@ -66,6 +73,9 @@ static const char	s_Help[] = R"#(
 --cfg-gl-cpp			configure 'gl-cpp' converter:
 
 --cfg-graphviz			configure 'graphviz' converter:
+							begin=[N] -- start converting on N frame, default is 0.
+							end=[N] -- stop converting on N frame, default is -1.
+							show-sync=[true/false] -- show/hide barriers, events, semaphores, fences, subpass dependencies.
 
 --cfg-screenshot		configure 'screenshot' converter:
 							freq=[1..N] -- make screenshot every N frames, default is 30.
@@ -113,47 +123,13 @@ static bool ParseConverters (const int argc, const char** argv, INOUT int &i, IN
 		if ( name.length() > 0 and name[0] == '-' )
 			return true;
 
-		if ( name == "vk-cpp" or name == "all" )
-		{
-			config.vulkanCppSource.isEnabled = true;
-			match = true;
-		}
-
-		if ( name == "vk-trace" or name == "all" )
-		{
-			config.vulkanTrace.isEnabled = true;
-			match = true;
-		}
-
-		if ( name == "vez-trace" or name == "all" )
-		{
-			config.vulkanEZTrace.isEnabled = true;
-			match = true;
-		}
-
-		if ( name == "fg-trace" or name == "all" )
-		{
-			config.frameGraphTrace.isEnabled = true;
-			match = true;
-		}
-
-		if ( name == "gl-trace" or name == "all" )
-		{
-			config.openGLTrace.isEnabled = true;
-			match = true;
-		}
-
-		if ( name == "graphviz" or name == "all" )
-		{
-			config.graphviz.isEnabled = true;
-			match = true;
-		}
-
-		if ( name == "screenshot" or name == "all" )
-		{
-			config.screenshot.isEnabled = true;
-			match = true;
-		}
+		if ( name == "vk-cpp" or name == "all" )		{ config.vulkanCppSource.isEnabled = true;	match = true; }
+		if ( name == "vk-trace" or name == "all" )		{ config.vulkanTrace.isEnabled = true;  	match = true; }
+		if ( name == "vez-trace" or name == "all" )		{ config.vulkanEZTrace.isEnabled = true;	match = true; }
+		if ( name == "fg-trace" or name == "all" )		{ config.frameGraphTrace.isEnabled = true;	match = true; }
+		if ( name == "gl-trace" or name == "all" )		{ config.openGLTrace.isEnabled = true;		match = true; }
+		if ( name == "graphviz" or name == "all" )		{ config.graphviz.isEnabled = true;			match = true; }
+		if ( name == "screenshot" or name == "all" )	{ config.screenshot.isEnabled = true;		match = true; }
 
 		if ( not match ) {
 			FG_LOGE( "unknown converter type: \""s << name << '"' );
@@ -178,47 +154,13 @@ static bool ParseExtensionPasses (const int argc, const char** argv, INOUT int &
 		if ( name.length() > 0 and name[0] == '-' )
 			return true;
 
-		if ( name == "rem-redundant" or name == "all" )
-		{
-			config.remRedundant.isEnabled = true;
-			match = true;
-		}
-
-		if ( name == "opt-renderpass" or name == "all" )
-		{
-			config.optRenderpass.isEnabled = true;
-			match = true;
-		}
-
-		if ( name == "opt-dedicated" or name == "all" )
-		{
-			config.optDedicated.isEnabled = true;
-			match = true;
-		}
-
-		if ( name == "opt-mem" or name == "all" )
-		{
-			config.optMemory.isEnabled = true;
-			match = true;
-		}
-
-		if ( name == "opt-barrier" or name == "all" )
-		{
-			config.optBarrier.isEnabled = true;
-			match = true;
-		}
-
-		if ( name == "gpu-bench" or name == "all" )
-		{
-			config.gpuBench.isEnabled = true;
-			match = true;
-		}
-
-		if ( name == "cpu-bench" or name == "all" )
-		{
-			config.cpuBench.isEnabled = true;
-			match = true;
-		}
+		if ( name == "rem-redundant" or name == "all" )		{ config.remRedundant.isEnabled = true;		match = true; }
+		if ( name == "opt-renderpass" or name == "all" )	{ config.optRenderpass.isEnabled = true;	match = true; }
+		if ( name == "opt-dedicated" or name == "all" )		{ config.optDedicated.isEnabled = true;		match = true; }
+		if ( name == "opt-mem" or name == "all" )			{ config.optMemory.isEnabled = true;		match = true; }
+		if ( name == "opt-barrier" or name == "all" )		{ config.optBarrier.isEnabled = true;		match = true; }
+		if ( name == "gpu-bench" or name == "all" )			{ config.gpuBench.isEnabled = true;			match = true; }
+		if ( name == "cpu-bench" or name == "all" )			{ config.cpuBench.isEnabled = true;			match = true; }
 		
 		if ( not match ) {
 			FG_LOGE( "unknown extension pass: \""s << name << '"' );
@@ -237,37 +179,48 @@ static bool ParseVkCppConfig (StringView param, StringView value, INOUT Converte
 {
 	auto&	cfg = mainConfig.conveters.vulkanCppSource;
 
-	if ( param == "begin" ) {
-		cfg.firstFrame = FrameID(std::stoll( String(value) ));
-		return true;
-	}
-	
-	if ( param == "end" ) {
-		cfg.lastFrame = FrameID(std::stoll( String(value) ));
-		return true;
-	}
-
-	if ( param == "remap-mem" ) {
-		cfg.remapMemory = (value == "true");
-		return true;
-	}
-
-	if ( param == "remap-queue" ) {
-		cfg.remapQueueFamily = (value == "true");
-		return true;
-	}
-
-	if ( param == "multithreaded" ) {
-		//cfg.isMultithreaded = (value == "true");
-		return true;
-	}
-
-	if ( param == "async-load" ) {
-		//cfg.isAsyncLoadEnabled = (value == "true");
-		return true;
-	}
+	if ( param == "begin" )				{ cfg.firstFrame = FrameID(std::stoll( String(value) ));	return true; }
+	if ( param == "end" )				{ cfg.lastFrame = FrameID(std::stoll( String(value) ));		return true; }
+	if ( param == "remap-mem" )			{ cfg.remapMemory = (value == "true");						return true; }
+	if ( param == "remap-queue" )		{ cfg.remapQueueFamily = (value == "true");					return true; }
+	if ( param == "multithreaded" )		{ /*cfg.isMultithreaded = (value == "true");*/				return true; }
+	if ( param == "async-load" )		{ /*cfg.isAsyncLoadEnabled = (value == "true");*/			return true; }
 
 	RETURN_ERR( "unknown parameter for --cfg-vk-cpp: \""s << param << '"' );
+}
+
+/*
+=================================================
+	ParseVkTraceConfig
+=================================================
+*/
+static bool ParseVkTraceConfig (StringView param, StringView value, INOUT ConverterConfig &mainConfig)
+{
+	auto&	cfg = mainConfig.conveters.vulkanTrace;
+
+	if ( param == "end" )				{ cfg.lastFrame = FrameID(std::stoll( String(value) ));		return true; }
+	if ( param == "remap-mem" )			{ cfg.remapMemory = (value == "true");						return true; }
+	if ( param == "remap-queue" )		{ cfg.remapQueueFamily = (value == "true");					return true; }
+	if ( param == "multithreaded" )		{ /*cfg.isMultithreaded = (value == "true");*/				return true; }
+	if ( param == "async-load" )		{ /*cfg.isAsyncLoadEnabled = (value == "true");*/			return true; }
+
+	RETURN_ERR( "unknown parameter for --cfg-vk-trace: \""s << param << '"' );
+}
+
+/*
+=================================================
+	ParseGraphVizConfig
+=================================================
+*/
+static bool ParseGraphVizConfig (StringView param, StringView value, INOUT ConverterConfig &mainConfig)
+{
+	auto&	cfg = mainConfig.conveters.graphviz;
+	
+	if ( param == "begin" )				{ cfg.firstFrame = FrameID(std::stoll( String(value) ));	return true; }
+	if ( param == "end" )				{ cfg.lastFrame = FrameID(std::stoll( String(value) ));		return true; }
+	if ( param == "show-sync" )			{ cfg.showSync = (value == "true");							return true; }
+
+	RETURN_ERR( "unknown parameter for --cfg-graphviz: \""s << param << '"' );
 }
 
 /*
@@ -281,11 +234,11 @@ static bool ParseAdditionalConfig (const int argc, const char** argv, StringView
 
 	const Pair< String, ParserFn_t>	 cfg_parsers[] = {
 		{ "--cfg-vk-cpp",			&ParseVkCppConfig },
-		{ "--cfg-vk-trace",			[] (StringView, StringView, ConverterConfig &) { return false; } },
+		{ "--cfg-vk-trace",			&ParseVkTraceConfig },
 		{ "--cfg-vez-trace",		[] (StringView, StringView, ConverterConfig &) { return false; } },
 		{ "--cfg-fg-trace",			[] (StringView, StringView, ConverterConfig &) { return false; } },
 		{ "--cfg-gl-trace",			[] (StringView, StringView, ConverterConfig &) { return false; } },
-		{ "--cfg-graphviz",			[] (StringView, StringView, ConverterConfig &) { return false; } },
+		{ "--cfg-graphviz",			&ParseGraphVizConfig },
 		{ "--cfg-screenshot",		[] (StringView, StringView, ConverterConfig &) { return false; } },
 		{ "--cfg-rem-redundant",	[] (StringView, StringView, ConverterConfig &) { return false; } },
 		{ "--cfg-opt-renderpass",	[] (StringView, StringView, ConverterConfig &) { return false; } },
@@ -341,12 +294,12 @@ int main (int argc, const char** argv)
 {
 	ConverterConfig		config;
 
-	// test
+	// temp
 	#if 1
 		const char*	test_commands[] = {
 			"TODO: path to exe",
-			"--convert",	"vk-cpp",
-			"--cfg-vk-cpp",	"end=20",
+			//"--convert",		"vk-cpp",	"--cfg-vk-cpp",		"begin=0", "end=3",
+			"--convert",		"graphviz",	"--cfg-graphviz",	"begin=0", "end=3", "show-sync=true",
 			#if 0
 				"--open",		R"(D:\VkTraceOutput\doom1.vktrace)",
 				"--output-dir",	R"(D:\VkTraceOutput\converted\doom1)",
@@ -451,12 +404,14 @@ int main (int argc, const char** argv)
 	
 	app_trace.AddAnalyzer(AnalyzerPtr{ new AllResourcesBookmarks() });
 	app_trace.AddAnalyzer(AnalyzerPtr{ new DeviceAnalyzer() });
+	app_trace.AddAnalyzer(AnalyzerPtr{ new QueueAnalyzer() });
 	app_trace.AddAnalyzer(AnalyzerPtr{ new SwapchainAnalyzer() });
 	app_trace.AddAnalyzer(AnalyzerPtr{ new ImageAnalyzer() });
 	app_trace.AddAnalyzer(AnalyzerPtr{ new BufferAnalyzer() });
 	app_trace.AddAnalyzer(AnalyzerPtr{ new MemoryObjAnalyzer() });
+	app_trace.AddAnalyzer(AnalyzerPtr{ new RenderPassAnalyzer() });
 	app_trace.AddAnalyzer(AnalyzerPtr{ new MemoryTransferAnalyzer() });
-
+	app_trace.AddAnalyzer(AnalyzerPtr{ new SynchronizationsAnalyzer() });
 
 	// load vktrace
 	CHECK_ERR( app_trace.Open( StringView(config.inputTraceFile) ), -120 );
@@ -465,7 +420,15 @@ int main (int argc, const char** argv)
 	// run converters
 	if ( config.conveters.vulkanCppSource.isEnabled )
 	{
-		CHECK_ERR( RunConverter_VulkanCppSource( app_trace, config ));
+		CHECK_ERR( RunConverter_VulkanCppSource( app_trace, config ), -130 );
+	}
+	if ( config.conveters.vulkanTrace.isEnabled )
+	{
+		CHECK_ERR( RunConverter_VulkanPlayer( app_trace, config ), -131 );
+	}
+	if ( config.conveters.graphviz.isEnabled )
+	{
+		CHECK_ERR( RunConverter_GraphViz( app_trace, config ), -132 );
 	}
 
 	return 0;

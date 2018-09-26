@@ -28,14 +28,14 @@ namespace VTC
 			<< "\t\tresult << indent << \""
 			<< (returns_vkresult ? "VK_CALL( " : "")
 			<< (func_info->data.scope == EFuncScope::Device ? "app." : "") << packet.vkFunc << "( \\n\";\n";
-
-		for (auto arg = func_info->data.args.begin(); arg != func_info->data.args.end(); ++arg)
+		
+		for (auto& arg : func_info->data.args)
 		{
-			CHECK_ERR( _GenStructToString_ProcessVar( arg->name, arg->type, "\t\t",
-													  _GetFuncArgCounterName( packet.vkFunc, arg->name ), false,
+			CHECK_ERR( _GenStructToString_ProcessVar( arg.name, arg.type, "\t\t",
+													  _GetFuncArgCounterName( packet.vkFunc, arg.name ), false,
 													  INOUT call, INOUT str, INOUT after ));
-
-			if ( arg != func_info->data.args.end()-1 )
+			
+			if ( &arg != &func_info->data.args.back() )
 				call << "\t\tresult << \",\\n\";\n";
 			else
 				call << "\t\tresult << \" " << (returns_vkresult ? ")" : "") << ");\\n\";\n";

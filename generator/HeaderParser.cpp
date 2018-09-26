@@ -536,7 +536,7 @@ namespace VTC
 		for (auto& info : file_names)
 		{
 			const fs::path	path = folder / info.filename;
-			HddRFile			file{ path };
+			HddRFile		file{ path };
 			CHECK_ERR( file.IsOpen() );
 
 			_fileData.push_back({ "", info.disableIfdef.front() });
@@ -805,26 +805,35 @@ namespace VTC
 */
 	bool Generator::BuildFuncArgCountOfMap ()
 	{
+		const auto	AddCounter = [this] (StringView funcName, StringView arrayName, StringView counterName)
+		{
+			_funcArgCounter.insert({ {funcName, counterName}, arrayName });
+			_funcArgCountOf.insert({ {funcName, arrayName}, counterName });
+		};
+
 		_funcArgCountOf.clear();
-		_funcArgCountOf.insert({{ "vkUpdateDescriptorSets",			"pDescriptorCopies" },		"descriptorCopyCount" });
-		_funcArgCountOf.insert({{ "vkCmdBindVertexBuffers",			"pBuffers" },				"bindingCount" });
-		_funcArgCountOf.insert({{ "vkCmdBindVertexBuffers",			"pOffsets" },				"bindingCount" });
-		_funcArgCountOf.insert({{ "vkCreateSharedSwapchainsKHR",	"pCreateInfos" },			"swapchainCount" });
-		_funcArgCountOf.insert({{ "vkRegisterObjectsNVX",			"ppObjectTableEntries" },	"objectCount" });
-		_funcArgCountOf.insert({{ "vkRegisterObjectsNVX",			"pObjectIndices" },			"objectCount" });
-		_funcArgCountOf.insert({{ "vkUnregisterObjectsNVX",			"ppObjectTableEntries" },	"objectCount" });
-		_funcArgCountOf.insert({{ "vkUnregisterObjectsNVX",			"pObjectIndices" },			"objectCount" });
-		_funcArgCountOf.insert({{ "vkSetHdrMetadataEXT",			"pSwapchains" },			"swapchainCount" });
-		_funcArgCountOf.insert({{ "vkSetHdrMetadataEXT",			"pMetadata" },				"swapchainCount" });
-		_funcArgCountOf.insert({{ "vkAllocateCommandBuffers",		"pCommandBuffers" },		"pAllocateInfo->commandBufferCount" });
-		_funcArgCountOf.insert({{ "vkAllocateDescriptorSets",		"pDescriptorSets" },		"pAllocateInfo->descriptorSetCount" });
-		_funcArgCountOf.insert({{ "vkCmdUpdateBuffer",				"pData" },					"dataSize" });
-		_funcArgCountOf.insert({{ "vkCmdPushConstants",				"pValues" },				"size" });
-		_funcArgCountOf.insert({{ "vkGetSwapchainImagesKHR",		"pSwapchainImages" },		"pSwapchainImageCount[0]" });
-		_funcArgCountOf.insert({{ "vkCreateSharedSwapchainsKHR",	"pSwapchains" },			"swapchainCount" });
-		_funcArgCountOf.insert({{ "vkEnumeratePhysicalDevices",		"pPhysicalDevices" },		"pPhysicalDeviceCount[0]" });
-		_funcArgCountOf.insert({{ "vkCreateGraphicsPipelines",		"pPipelines" },				"createInfoCount" });
-		_funcArgCountOf.insert({{ "vkCreateComputePipelines",		"pPipelines" },				"createInfoCount" });
+		_funcArgCounter.clear();
+
+		AddCounter( "vkUpdateDescriptorSets",		"pDescriptorCopies",		"descriptorCopyCount" );
+		AddCounter( "vkCmdBindVertexBuffers",		"pBuffers",					"bindingCount" );
+		AddCounter( "vkCmdBindVertexBuffers",		"pOffsets",					"bindingCount" );
+		AddCounter( "vkCreateSharedSwapchainsKHR",	"pCreateInfos",				"swapchainCount" );
+		AddCounter( "vkRegisterObjectsNVX",			"ppObjectTableEntries",		"objectCount" );
+		AddCounter( "vkRegisterObjectsNVX",			"pObjectIndices",			"objectCount" );
+		AddCounter( "vkUnregisterObjectsNVX",		"ppObjectTableEntries",		"objectCount" );
+		AddCounter( "vkUnregisterObjectsNVX",		"pObjectIndices",			"objectCount" );
+		AddCounter( "vkSetHdrMetadataEXT",			"pSwapchains",				"swapchainCount" );
+		AddCounter( "vkSetHdrMetadataEXT",			"pMetadata",				"swapchainCount" );
+		AddCounter( "vkAllocateCommandBuffers",		"pCommandBuffers",			"pAllocateInfo->commandBufferCount" );
+		AddCounter( "vkAllocateDescriptorSets",		"pDescriptorSets",			"pAllocateInfo->descriptorSetCount" );
+		AddCounter( "vkCmdUpdateBuffer",			"pData",					"dataSize" );
+		AddCounter( "vkCmdPushConstants",			"pValues",					"size" );
+		AddCounter( "vkGetSwapchainImagesKHR",		"pSwapchainImages",			"pSwapchainImageCount[0]" );
+		AddCounter( "vkCreateSharedSwapchainsKHR",	"pSwapchains",				"swapchainCount" );
+		AddCounter( "vkEnumeratePhysicalDevices",	"pPhysicalDevices",			"pPhysicalDeviceCount[0]" );
+		AddCounter( "vkCreateGraphicsPipelines",	"pPipelines",				"createInfoCount" );
+		AddCounter( "vkCreateComputePipelines",		"pPipelines",				"createInfoCount" );
+		AddCounter( "vkCmdPushDescriptorSetKHR",	"pDescriptorWrites",		"descriptorWriteCount" );
 
 
 		for (const auto& func : _funcs)
@@ -847,7 +856,7 @@ namespace VTC
 
 				if ( HasSubStringIC( arg.name, name ) )
 				{
-					_funcArgCountOf.insert({{ func.data.name, arg.name }, other.name });
+					AddCounter( func.data.name, arg.name, other.name );
 				}else{
 					ASSERT( _funcArgCountOf.find({ func.data.name, arg.name }) != _funcArgCountOf.end() );
 					//ASSERT(false);	// previous arg ends with 'size' but not match with array name
@@ -873,6 +882,16 @@ namespace VTC
 
 		return {};
 	}
+	
+/*
+=================================================
+	_IsFuncArgCounter
+=================================================
+*/
+	bool  Generator::_IsFuncArgCounter (StringView func, StringView counterName) const
+	{
+		return _funcArgCounter.find( {func, counterName} ) != _funcArgCounter.end();
+	}
 
 /*
 =================================================
@@ -881,42 +900,52 @@ namespace VTC
 */
 	bool Generator::BuildStructFieldCountOfMap ()
 	{
+		const auto	AddCounter = [this] (StringView structName, StringView arrayName, StringView counterName)
+		{
+			_structFieldCounter.insert({ {structName, counterName}, arrayName });
+			_structFieldCountOf.insert({ {structName, arrayName}, counterName });
+		};
+
+		_structFieldCounter.clear();
 		_structFieldCountOf.clear();
-		_structFieldCountOf.insert({{ "VkDeviceQueueCreateInfo",				"pQueuePriorities" },			"queueCount" });
-		_structFieldCountOf.insert({{ "VkSubmitInfo",							"pWaitDstStageMask" },			"waitSemaphoreCount" });
-		_structFieldCountOf.insert({{ "VkBufferCreateInfo",						"pQueueFamilyIndices" },		"queueFamilyIndexCount" });
-		_structFieldCountOf.insert({{ "VkImageCreateInfo",						"pQueueFamilyIndices" },		"queueFamilyIndexCount" });
-		_structFieldCountOf.insert({{ "VkDescriptorSetLayoutBinding",			"pImmutableSamplers" },			"descriptorCount" });
-		_structFieldCountOf.insert({{ "VkDescriptorSetAllocateInfo",			"pSetLayouts" },				"descriptorSetCount" });
-		_structFieldCountOf.insert({{ "VkWriteDescriptorSet",					"pImageInfo" },					"descriptorCount" });
-		_structFieldCountOf.insert({{ "VkWriteDescriptorSet",					"pBufferInfo" },				"descriptorCount" });
-		_structFieldCountOf.insert({{ "VkWriteDescriptorSet",					"pTexelBufferView" },			"descriptorCount" });
-		_structFieldCountOf.insert({{ "VkSubpassDescription",					"pResolveAttachments" },		"colorAttachmentCount" });
-		_structFieldCountOf.insert({{ "VkRenderPassCreateInfo",					"pDependencies" },				"dependencyCount" });
-		_structFieldCountOf.insert({{ "VkBindBufferMemoryDeviceGroupInfo",		"pDeviceIndices" },				"deviceIndexCount" });
-		_structFieldCountOf.insert({{ "VkBindImageMemoryDeviceGroupInfo",		"pDeviceIndices" },				"deviceIndexCount" });
-		_structFieldCountOf.insert({{ "VkRenderPassMultiviewCreateInfo",		"pViewMasks" },					"subpassCount" });
-		_structFieldCountOf.insert({{ "VkRenderPassMultiviewCreateInfo",		"pViewOffsets" },				"dependencyCount" });
-		_structFieldCountOf.insert({{ "VkRenderPassMultiviewCreateInfo",		"pCorrelationMasks" },			"correlationMaskCount" });
-		_structFieldCountOf.insert({{ "VkDescriptorUpdateTemplateCreateInfo",	"pDescriptorUpdateEntries" },	"descriptorUpdateEntryCount" });
-		_structFieldCountOf.insert({{ "VkPresentInfoKHR",						"pImageIndices" },				"swapchainCount" });
-		_structFieldCountOf.insert({{ "VkDeviceGroupPresentInfoKHR",			"pDeviceMasks" },				"swapchainCount" });
-		_structFieldCountOf.insert({{ "VkPresentRegionsKHR",					"pRegions" },					"swapchainCount" });
-		_structFieldCountOf.insert({{ "VkSubpassDescription2KHR",				"pResolveAttachments" },		"colorAttachmentCount" });
-		_structFieldCountOf.insert({{ "VkRenderPassCreateInfo2KHR",				"pDependencies" },				"dependencyCount" });
-		_structFieldCountOf.insert({{ "VkObjectTableCreateInfoNVX",				"pObjectEntryTypes" },			"objectCount" });
-		_structFieldCountOf.insert({{ "VkObjectTableCreateInfoNVX",				"pObjectEntryCounts" },			"objectCount" });
-		_structFieldCountOf.insert({{ "VkObjectTableCreateInfoNVX",				"pObjectEntryUsageFlags" },		"objectCount" });
-		_structFieldCountOf.insert({{ "VkPresentTimesInfoGOOGLE",				"pTimes" },						"swapchainCount" });
-		_structFieldCountOf.insert({{ "VkSpecializationInfo",					"pMapEntries" },				"mapEntryCount" });
-		_structFieldCountOf.insert({{ "VkSpecializationInfo",					"pData" },						"dataSize" });
-		_structFieldCountOf.insert({{ "VkSwapchainCreateInfoKHR",				"pQueueFamilyIndices" },		"queueFamilyIndexCount" });
-		_structFieldCountOf.insert({{ "VkDebugMarkerObjectTagInfoEXT",			"pTag" },						"tagSize" });
-		//_structFieldCountOf.insert({{ "VkPipelineCacheCreateInfo",			"pInitialData" },				"initialDataSize" });
-		//_structFieldCountOf.insert({{ "VkValidationCacheCreateInfoEXT",		"pInitialData" },				"initialDataSize" });
-		//_structFieldCountOf.insert({{ "VkShaderModuleCreateInfo",				"pCode" },						"codeSize" });
-		_structFieldCountOf.insert({{ "VkPipelineMultisampleStateCreateInfo",					"pSampleMask" },				"((uint(obj->rasterizationSamples) + 31) / 32)" });
-		_structFieldCountOf.insert({{ "VkDescriptorSetVariableDescriptorCountAllocateInfoEXT",	"pDescriptorCounts" },			"descriptorSetCount" });
+
+		AddCounter( "VkDeviceQueueCreateInfo",				"pQueuePriorities",				"queueCount" );
+		AddCounter( "VkSubmitInfo",							"pWaitDstStageMask",			"waitSemaphoreCount" );
+		AddCounter( "VkBufferCreateInfo",					"pQueueFamilyIndices",			"queueFamilyIndexCount" );
+		AddCounter( "VkImageCreateInfo",					"pQueueFamilyIndices",			"queueFamilyIndexCount" );
+		AddCounter( "VkDescriptorSetLayoutBinding",			"pImmutableSamplers",			"descriptorCount" );
+		AddCounter( "VkDescriptorSetAllocateInfo",			"pSetLayouts",					"descriptorSetCount" );
+		AddCounter( "VkWriteDescriptorSet",					"pImageInfo",					"descriptorCount" );
+		AddCounter( "VkWriteDescriptorSet",					"pBufferInfo",					"descriptorCount" );
+		AddCounter( "VkWriteDescriptorSet",					"pTexelBufferView",				"descriptorCount" );
+		AddCounter( "VkSubpassDescription",					"pResolveAttachments",			"colorAttachmentCount" );
+		AddCounter( "VkRenderPassCreateInfo",				"pDependencies",				"dependencyCount" );
+		AddCounter( "VkBindBufferMemoryDeviceGroupInfo",	"pDeviceIndices",				"deviceIndexCount" );
+		AddCounter( "VkBindImageMemoryDeviceGroupInfo",		"pDeviceIndices",				"deviceIndexCount" );
+		AddCounter( "VkRenderPassMultiviewCreateInfo",		"pViewMasks",					"subpassCount" );
+		AddCounter( "VkRenderPassMultiviewCreateInfo",		"pViewOffsets",					"dependencyCount" );
+		AddCounter( "VkRenderPassMultiviewCreateInfo",		"pCorrelationMasks",			"correlationMaskCount" );
+		AddCounter( "VkDescriptorUpdateTemplateCreateInfo",	"pDescriptorUpdateEntries",		"descriptorUpdateEntryCount" );
+		AddCounter( "VkPresentInfoKHR",						"pImageIndices",				"swapchainCount" );
+		AddCounter( "VkPresentInfoKHR",						"pResults",						"swapchainCount" );
+		AddCounter( "VkDeviceGroupPresentInfoKHR",			"pDeviceMasks",					"swapchainCount" );
+		AddCounter( "VkPresentRegionsKHR",					"pRegions",						"swapchainCount" );
+		AddCounter( "VkSubpassDescription2KHR",				"pResolveAttachments",			"colorAttachmentCount" );
+		AddCounter( "VkRenderPassCreateInfo2KHR",			"pDependencies",				"dependencyCount" );
+		AddCounter( "VkObjectTableCreateInfoNVX",			"pObjectEntryTypes",			"objectCount" );
+		AddCounter( "VkObjectTableCreateInfoNVX",			"pObjectEntryCounts",			"objectCount" );
+		AddCounter( "VkObjectTableCreateInfoNVX",			"pObjectEntryUsageFlags",		"objectCount" );
+		AddCounter( "VkPresentTimesInfoGOOGLE",				"pTimes",						"swapchainCount" );
+		AddCounter( "VkSpecializationInfo",					"pMapEntries",					"mapEntryCount" );
+		AddCounter( "VkSpecializationInfo",					"pData",						"dataSize" );
+		AddCounter( "VkSwapchainCreateInfoKHR",				"pQueueFamilyIndices",			"queueFamilyIndexCount" );
+		AddCounter( "VkDebugMarkerObjectTagInfoEXT",		"pTag",							"tagSize" );
+		//AddCounter( "VkPipelineCacheCreateInfo",			"pInitialData",					"initialDataSize" );
+		//AddCounter( "VkValidationCacheCreateInfoEXT",		"pInitialData",					"initialDataSize" );
+		//AddCounter( "VkShaderModuleCreateInfo",			"pCode",						"codeSize" );
+		AddCounter( "VkPipelineMultisampleStateCreateInfo",						"pSampleMask",			"((uint(obj->rasterizationSamples) + 31) / 32)" );
+		AddCounter( "VkDescriptorSetVariableDescriptorCountAllocateInfoEXT",	"pDescriptorCounts",	"descriptorSetCount" );
+		AddCounter( "VkWriteDescriptorSetInlineUniformBlockEXT",				"pData",				"dataSize" );
 
 		for (const auto& info : _structs)
 		{
@@ -938,7 +967,7 @@ namespace VTC
 
 				if ( HasSubStringIC( field.name, name ) )
 				{
-					_structFieldCountOf.insert({{ info.data.name, field.name }, other.name });
+					AddCounter( info.data.name, field.name, other.name );
 				}else{
 					ASSERT( _structFieldCountOf.find({ info.data.name, field.name }) != _structFieldCountOf.end() );
 					//ASSERT(false);	// previous field ends with 'size' but not match with array name
@@ -963,6 +992,16 @@ namespace VTC
 			return iter->second;
 
 		return {};
+	}
+	
+/*
+=================================================
+	_IsStructFieldCounter
+=================================================
+*/
+	bool  Generator::_IsStructFieldCounter (StringView structType, StringView counterName) const
+	{
+		return _structFieldCounter.find( {structType, counterName} ) != _structFieldCounter.end();
 	}
 
 /*
@@ -1007,7 +1046,6 @@ namespace VTC
 				"VKTRACE_TPI_VK_vkGetPhysicalDeviceSparseImageFormatProperties"sv,
 				"VKTRACE_TPI_VK_vkGetFenceStatus"sv,
 				"VKTRACE_TPI_VK_vkGetEventStatus"sv,
-				"VKTRACE_TPI_VK_vkGetQueryPoolResults"sv,
 				"VKTRACE_TPI_VK_vkGetImageSubresourceLayout"sv,
 				"VKTRACE_TPI_VK_vkGetPipelineCacheData"sv,
 				"VKTRACE_TPI_VK_vkGetRenderAreaGranularity"sv,
@@ -1099,7 +1137,7 @@ namespace VTC
 				"VKTRACE_TPI_VK_vkUpdateDescriptorSetWithTemplate"sv,
 				//"VKTRACE_TPI_VK_vkCreatePipelineCache"sv,
 				"VKTRACE_TPI_VK_vkDestroyPipelineCache"sv,
-				"VKTRACE_TPI_VK_vkCreateValidationCacheEXT"sv,
+				//"VKTRACE_TPI_VK_vkCreateValidationCacheEXT"sv,
 				"VKTRACE_TPI_VK_vkCreateWin32SurfaceKHR"sv,
 				"VKTRACE_TPI_VK_vkDestroySurfaceKHR"sv,
 				"VKTRACE_TPI_VK_vkCreateXlibSurfaceKHR"sv,
@@ -1110,15 +1148,36 @@ namespace VTC
 				"VKTRACE_TPI_VK_vkReleaseDisplayEXT"sv,
 				"VKTRACE_TPI_VK_vkCreateDisplayPlaneSurfaceKHR"sv,
 				"VKTRACE_TPI_VK_vkDestroySwapchainKHR"sv,
-				"VKTRACE_TPI_VK_vkGetSwapchainImagesKHR"sv
+				"VKTRACE_TPI_VK_vkGetSwapchainImagesKHR"sv,
+				"VKTRACE_TPI_VK_vkDebugMarkerSetObjectTagEXT"sv,
+				"VKTRACE_TPI_VK_vkGetQueryPoolResults"sv
 			};
 	
 		_alwaysSerialize = {
 				"VkQueueFlags"sv,
 				"VkShaderModuleCreateFlags"sv,
 				"VkMemoryMapFlags"sv,
-				//"VkMemoryPropertyFlagBits"sv,
 				"VkMemoryPropertyFlags"sv
+			};
+
+		_neverSerialize = {
+				"VkShaderModuleCreateInfo"sv,
+				//"VkAllocationCallbacks"sv,
+				"VkDebugReportCallbackCreateInfoEXT"sv,
+				"VkDebugUtilsMessengerCreateInfoEXT"sv,
+				"VkDebugMarkerObjectTagInfoEXT"sv,
+				//"VkPipelineCacheCreateInfo"sv,
+				//"VkValidationCacheCreateInfoEXT"sv,
+				"VkInstanceCreateInfo"sv,
+				"VkApplicationInfo"sv,
+				"VkDeviceCreateInfo"sv,
+				"VkImportMemoryHostPointerInfoEXT"sv,
+				"VkMemoryHostPointerPropertiesEXT"sv,
+				"VkWin32KeyedMutexAcquireReleaseInfoKHR"sv,
+				"VkWin32KeyedMutexAcquireReleaseInfoNV"sv,
+				"VkDebugUtilsObjectTagInfoEXT"sv,
+				"VkWriteDescriptorSetInlineUniformBlockEXT"sv,
+				"VkCheckpointDataNV"sv
 			};
 
 		return true;

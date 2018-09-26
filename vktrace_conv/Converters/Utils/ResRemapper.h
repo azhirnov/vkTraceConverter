@@ -3,7 +3,6 @@
 #pragma once
 
 #include "Analyzer/Default/AllResourcesBookmarks.h"
-#include "Converters/Utils/BasicTypesConverter.h"
 
 namespace VTC
 {

@@ -4,7 +4,7 @@
 # Vulkan-EZ
 if (FALSE)
 	ExternalProject_Add( "External.Vulkan-EZ"
-		LIST_SEPARATOR		"${VT_LIST_SEPARATOR}"
+        LIST_SEPARATOR        "${VTC_LIST_SEPARATOR}"
 		# download
 		GIT_REPOSITORY		https://github.com/GPUOpen-LibrariesAndSDKs/V-EZ.git
 		GIT_TAG				master
@@ -14,14 +14,14 @@ if (FALSE)
 		PATCH_COMMAND		""
 		UPDATE_DISCONNECTED	1
 		# configure
-		SOURCE_DIR			"${VT_EXTERNALS_PATH}/Vulkan-EZ"
+        SOURCE_DIR            "${VTC_EXTERNALS_PATH}/Vulkan-EZ"
 		CMAKE_GENERATOR		"${CMAKE_GENERATOR}"
 		CMAKE_GENERATOR_TOOLSET	"${CMAKE_GENERATOR_TOOLSET}"
-		CMAKE_ARGS			"-DCMAKE_CONFIGURATION_TYPES=${VT_EXTERNAL_CONFIGURATION_TYPES}"
+        CMAKE_ARGS            "-DCMAKE_CONFIGURATION_TYPES=${VTC_EXTERNAL_CONFIGURATION_TYPES}"
 							"-DCMAKE_SYSTEM_VERSION=${CMAKE_SYSTEM_VERSION}"
 							"-DCMAKE_DEBUG_POSTFIX="
 							"-DCMAKE_RELEASE_POSTFIX="
-							${VT_BUILD_TARGET_FLAGS}
+                            ${VTC_BUILD_TARGET_FLAGS}
 		LOG_CONFIGURE 		1
 		# build
 		BINARY_DIR			"${CMAKE_BINARY_DIR}/build-Vulkan-EZ"
@@ -43,11 +43,11 @@ endif ()
 
 
 #[[ brotli
-if (FALSE)
+if (TRUE)
 	FetchContent_Declare( ExternalDownloadBrotli
 		GIT_REPOSITORY		https://github.com/google/brotli.git
 		GIT_TAG				master
-		SOURCE_DIR			"${VT_EXTERNALS_PATH}/brotli"
+        SOURCE_DIR            "${VTC_EXTERNALS_PATH}/brotli"
 	)
 	
 	FetchContent_GetProperties( ExternalDownloadBrotli )
@@ -55,16 +55,16 @@ if (FALSE)
 		FetchContent_Populate( ExternalDownloadBrotli )
 	endif ()
 	
-	add_subdirectory( "${VT_EXTERNALS_PATH}/brotli" "brotli" )
+    add_subdirectory( "${VTC_EXTERNALS_PATH}/brotli" "brotli" )
 endif ()]]
 
 
 # brotli
-if (FALSE)
-	set( BROTLI_INSTALL_DIR "${VT_EXTERNAL_INSTALL_DIR}/brotli" CACHE INTERNAL "" FORCE )
+if (TRUE)
+    set( BROTLI_INSTALL_DIR "${VTC_EXTERNAL_INSTALL_DIR}/brotli" CACHE INTERNAL "" FORCE )
 
 	ExternalProject_Add( "External.brotli"
-		LIST_SEPARATOR		"${VT_LIST_SEPARATOR}"
+        LIST_SEPARATOR        "${VTC_LIST_SEPARATOR}"
 		# download
 		GIT_REPOSITORY		https://github.com/google/brotli.git
 		GIT_TAG				master
@@ -74,15 +74,15 @@ if (FALSE)
 		PATCH_COMMAND		""
 		UPDATE_DISCONNECTED	1
 		# configure
-		SOURCE_DIR			"${VT_EXTERNALS_PATH}/brotli"
+        SOURCE_DIR            "${VTC_EXTERNALS_PATH}/brotli"
 		CMAKE_GENERATOR		"${CMAKE_GENERATOR}"
 		CMAKE_GENERATOR_TOOLSET	"${CMAKE_GENERATOR_TOOLSET}"
-		CMAKE_ARGS			"-DCMAKE_CONFIGURATION_TYPES=${VT_EXTERNAL_CONFIGURATION_TYPES}"
+        CMAKE_ARGS            "-DCMAKE_CONFIGURATION_TYPES=${VTC_EXTERNAL_CONFIGURATION_TYPES}"
 							"-DCMAKE_SYSTEM_VERSION=${CMAKE_SYSTEM_VERSION}"
 							"-DCMAKE_DEBUG_POSTFIX="
 							"-DCMAKE_RELEASE_POSTFIX="
 							"-DCMAKE_INSTALL_PREFIX=${BROTLI_INSTALL_DIR}"
-							${VT_BUILD_TARGET_FLAGS}
+                            ${VTC_BUILD_TARGET_FLAGS}
 		LOG_CONFIGURE 		1
 		# build
 		BINARY_DIR			"${CMAKE_BINARY_DIR}/build-brotli"
@@ -100,16 +100,16 @@ if (FALSE)
 	)
 	
 	set_property( TARGET "External.brotli" PROPERTY FOLDER "External" )
-	set( VT_BUILD_TARGET_FLAGS "${VT_BUILD_TARGET_FLAGS}" "-DBROTLI_INSTALL_DIR=${BROTLI_INSTALL_DIR}" )
+    set( VTC_BUILD_TARGET_FLAGS "${VTC_BUILD_TARGET_FLAGS}" "-DBROTLI_INSTALL_DIR=${BROTLI_INSTALL_DIR}" )
 	
-	set( VT_CONVERTER_INCLUDE_DIRS "${VT_CONVERTER_INCLUDE_DIRS}" "${BROTLI_INSTALL_DIR}/include" )
-	set( VT_CONVERTER_LIBRARIES "${VT_CONVERTER_LIBRARIES}" "brotlidec-static" "brotlienc-static" "brotlicommon-static" )
-	set( VT_CONVERTER_DEPENDENCIES "${VT_CONVERTER_DEPENDENCIES}" "External.brotli" )
+    set( VTC_CONVERTER_INCLUDE_DIRS "${VTC_CONVERTER_INCLUDE_DIRS}" "${BROTLI_INSTALL_DIR}/include" )
+    set( VTC_CONVERTER_LIBRARIES "${VTC_CONVERTER_LIBRARIES}" "brotlidec-static" "brotlienc-static" "brotlicommon-static" )
+    set( VTC_CONVERTER_DEPENDENCIES "${VTC_CONVERTER_DEPENDENCIES}" "External.brotli" )
 endif ()
 
 
 # blake2
-if (FALSE)
+if (TRUE)
 	add_library( "External.blake2" STATIC
 			"BLAKE2/sse/blake2.h"
 			"BLAKE2/sse/blake2b.c"
@@ -123,6 +123,6 @@ if (FALSE)
 
 	set_property( TARGET "External.blake2" PROPERTY FOLDER "External" )
 	
-	set( VT_CONVERTER_LIBRARIES "${VT_CONVERTER_LIBRARIES}" "External.blake2" )
+    set( VTC_CONVERTER_LIBRARIES "${VTC_CONVERTER_LIBRARIES}" "External.blake2" )
 endif ()
 

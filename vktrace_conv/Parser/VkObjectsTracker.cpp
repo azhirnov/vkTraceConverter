@@ -563,6 +563,8 @@ namespace VTC
 			{
 				auto&	packet = pos.Cast< packet_vkQueuePresentKHR >();
 				CHECK_ERR( packet.pPresentInfo );
+				
+				_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT, id, pos, frameId, EResOp::Access, analyzers );
 
 				for (uint i = 0; i < packet.pPresentInfo->swapchainCount; ++i)
 				{
@@ -596,6 +598,10 @@ namespace VTC
 				}
 				break;
 			}
+
+			default :
+				_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT, id, pos, frameId, EResOp::Access, analyzers );
+				break;
 		}
 		return true;
 	}

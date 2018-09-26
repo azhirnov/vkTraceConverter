@@ -29,7 +29,7 @@ namespace VTC
 
 			for (auto& res : res_type.second)
 			{
-			#if 0
+			#if 1
 				// unique indices
 				for (auto& inst : res.second) {
 					inst.uniqueIndex = unique_index++;
@@ -129,6 +129,20 @@ namespace VTC
 			return arr.back().uniqueIndex+1;
 		}
 		return 0;
+	}
+	
+/*
+=================================================
+	IsSame
+=================================================
+*/
+	bool AllResourcesBookmarks::IsSame (EResourceType type, ResourceID id, TraceRange::Bookmark pos1, TraceRange::Bookmark pos2) const
+	{
+		auto*	info1 = GetResource( type, id, pos1 );
+		auto*	info2 = GetResource( type, id, pos2 );
+		CHECK_ERR( info1 and info2 );
+
+		return info1 == info2;
 	}
 
 /*

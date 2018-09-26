@@ -51,6 +51,8 @@ namespace VTC
 		ND_ ResourceInfo_t const *	GetResource (EResourceType type, ResourceID id, TraceRange::Bookmark pos) const;
 		ND_ ResourceInfo_t const *	GetResource (ResourceID id, TraceRange::Bookmark pos) const;
 
+		ND_ bool	IsSame (EResourceType type, ResourceID id, TraceRange::Bookmark pos1, TraceRange::Bookmark pos2) const;
+
 		bool GetResourcesInPos (TraceRange::Bookmark pos, OUT Array<Resource_t> &outResources) const;
 		bool GetResourcesInPos (TraceRange::Bookmark pos, EResourceType type, OUT Array<Resource_t> &outResources) const;
 

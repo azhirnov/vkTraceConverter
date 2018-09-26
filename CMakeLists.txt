@@ -28,6 +28,8 @@ add_subdirectory( "vktrace_conv" "vktrace_conv" )
 
 add_subdirectory( "engine" "engine" )
 
+add_subdirectory( "player" "player" )
+
 message( STATUS "project 'VkTraceConverter' generation ended" )
 message( STATUS "\n==========================================================================" )
 

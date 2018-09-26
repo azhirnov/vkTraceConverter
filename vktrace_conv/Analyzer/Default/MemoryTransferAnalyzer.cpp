@@ -76,7 +76,8 @@ namespace VTC
 							 const MemoryTransferAnalyzer::BlockInfo &block)
 	{
 		if ( not info.blocks.empty() and
-			 info.blocks.back().fileOffset + info.blocks.back().dataSize == block.fileOffset )
+			 info.blocks.back().fileOffset + info.blocks.back().dataSize == block.fileOffset and
+			 info.blocks.back().memOffset + info.blocks.back().dataSize == block.memOffset )
 		{
 			ASSERT( info.blocks.back().memOffset + info.blocks.back().dataSize == block.memOffset );
 
@@ -112,6 +113,8 @@ namespace VTC
 
 			auto	result	= _memTransfer.insert({ {ResourceID(packet.pMemoryRanges[i].memory), pos.GetBookmark()}, {} });
 			auto&	info	= result.first->second;
+			auto*	mem_obj	= _memObjAnalyzer->GetMemoryObj( ResourceID(packet.pMemoryRanges[i].memory), pos.GetBookmark() );
+			CHECK_ERR( mem_obj );
 
 
 			// add memory blocks
@@ -125,23 +128,23 @@ namespace VTC
 				const void*	src_data	= packet.ppData[i] + (BytesU::SizeOf<PageGuardChangedBlockInfo>() * (changed_info[0].offset+1));
 				BytesU		curr_offset;
 
-				// TODO: replace j+1 by j
-				for (size_t j = 0; j < changed_info[0].offset; ++j)
+				for (size_t j = 1; j <= changed_info[0].offset; ++j)
 				{
-					if ( changed_info[j+1].length == 0 )
+					if ( changed_info[j].length == 0 )
 						continue;
 					
 					BlockInfo		block;
-					block.memOffset		= changed_info[j+1].offset;
+					block.memOffset		= changed_info[j].offset;
 					block.fileOffset	= _fullTrace->GetPositionInFile( pos, packet.header, src_data + curr_offset );
-					block.dataSize		= changed_info[j+1].length;
+					block.dataSize		= changed_info[j].length;
 
 					MergeBlocks( INOUT info, block );
 
-					CHECK_ERR( changed_info[j+1].offset >= packet.pMemoryRanges[i].offset );
-					CHECK_ERR( (changed_info[j+1].offset + changed_info[j+1].length) <= (packet.pMemoryRanges[i].offset + packet.pMemoryRanges[i].size) );
+					ASSERT( changed_info[j].offset >= packet.pMemoryRanges[i].offset );
+					//ASSERT( (changed_info[j].offset + changed_info[j].length) <= (packet.pMemoryRanges[i].offset + packet.pMemoryRanges[i].size) );
+					ASSERT( (changed_info[j].offset + changed_info[j].length) <= mem_obj->size );	// TODO: use mapped size
 
-					curr_offset += changed_info[j+1].length;
+					curr_offset += changed_info[j].length;
 				}
 			}
 			else
@@ -164,7 +167,7 @@ namespace VTC
 */
 	bool MemoryTransferAnalyzer::_OnInvalidateMappedMemoryRanges (const TraceRange::Iterator &)
 	{
-
+		// TODO
 		return true;
 	}
 	

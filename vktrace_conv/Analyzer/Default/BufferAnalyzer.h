@@ -65,9 +65,7 @@ namespace VTC
 	// IAnalyzer implementation
 	public:
 		void PreProcess (const class AppTrace &) override;
-
 		void Process (const TraceRange::Iterator &) override;
-		
 		void PostProcess () override {}
 
 		void AddResourceUsage (const TraceRange::Iterator &, EResourceType, ResourceID, FrameID, EResOp) override;

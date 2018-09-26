@@ -112,6 +112,7 @@ namespace VTC
 			case VKTRACE_TPI_VK_vkBindImageMemory2KHR :						CHECK( _OnBindImageMemory2( pos, info ));				break;
 
 			case VKTRACE_TPI_VK_vkDestroyImage :
+			case VKTRACE_TPI_VK_vkAllocateMemory :
 			case VKTRACE_TPI_VK_vkAcquireNextImageKHR :
 			case VKTRACE_TPI_VK_vkAcquireNextImage2KHX :
 			case VKTRACE_TPI_VK_vkAcquireNextImage2KHR :
@@ -139,7 +140,7 @@ namespace VTC
 		auto&	packet = pos.Cast<packet_vkCreateImage>();
 		CHECK_ERR( packet.pCreateInfo );
 		CHECK_ERR( id == ResourceID(*packet.pImage) );
-		ASSERT( packet.pCreateInfo->pNext == null );	// add support if assert triggered
+		//ASSERT( packet.pCreateInfo->pNext == null );	// add support if assert triggered
 
 		ImagesMap_t::iterator	image;
 		CHECK_ERR( _images.AddResourceUsage( OUT image, pos, ResourceID(*packet.pImage), EResOp::Construct ));
