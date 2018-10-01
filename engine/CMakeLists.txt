@@ -18,7 +18,6 @@ target_include_directories( "Engine" PRIVATE "${VTC_FRAMEGRAPH_EXTERNAL_PATH}" )
 target_include_directories( "Engine" PRIVATE "${FRAMEGRAPH_INCLUDE_DIR}" )
 target_include_directories( "Engine" PRIVATE ".." )
 target_include_directories( "Engine" PRIVATE "${VULKAN_HEADERS_INSTALL_DIR}/include" )
-target_link_libraries( "Engine" "Framework" )
 target_compile_definitions( "Engine" PUBLIC "${VTC_CONVERTER_DEFINES}" )
 # compiler
 target_compile_definitions( "Engine" PRIVATE $<$<CONFIG:Debug>: ${PROJECTS_SHARED_DEFINES_DEBUG}> )

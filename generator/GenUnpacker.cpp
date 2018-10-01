@@ -48,8 +48,17 @@ namespace VTC
 			return true;
 		}
 
+		// unpack struct
+		if ( num_pointers == 0 and not is_array and st_info != _structs.end() )
+		{
+			if ( has_stype )
+				str << indent << "UnpackStruct( BitCast<VkBaseOutStructure*>(&" << parentName << "->" << fieldName << "), header );\n";
+			else
+				str << indent << "Unpack_" << st_info->data.name << "( &" << parentName << "->" << fieldName << ", header );\n";
+		}
+
 		// unpack first pointer
-		if ( num_pointers > 0 )
+		if ( num_pointers == 1 )
 		{
 			str << indent << "UnpackPointer( INOUT " << parentName << "->" << fieldName << ", header );\n";
 		
@@ -58,18 +67,18 @@ namespace VTC
 				if ( counterName.empty() )
 				{
 					if ( has_stype )
-						str << indent << "UnpackStruct( PtrCast<VkBaseOutStructure>(" << parentName << "->" << fieldName << "), header );\n";
+						str << indent << "UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<" << st_info->data.name << "*>(" << parentName << "->" << fieldName << ")), header );\n";
 					else
-						str << indent << "Unpack_" << st_info->data.name << "( PtrCast<" << st_info->data.name << ">(" << parentName << "->" << fieldName << "), header );\n";
+						str << indent << "Unpack_" << st_info->data.name << "( const_cast<" << st_info->data.name << "*>(" << parentName << "->" << fieldName << "), header );\n";
 				}
 				else
 				{
 					str << indent << "for (uint i = 0; (" << parentName << "->" << fieldName << " != null) and (i < " << parentName << "->" << counterName << "); ++i) {\n";
 				
 					if ( has_stype )
-						str << indent << "	UnpackStruct( PtrCast<VkBaseOutStructure>(" << parentName << "->" << fieldName << " + i), header );\n";
+						str << indent << "	UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<" << st_info->data.name << "*>(" << parentName << "->" << fieldName << " + i)), header );\n";
 					else
-						str << indent << "	Unpack_" << st_info->data.name << "( PtrCast<" << st_info->data.name << ">(" << parentName << "->" << fieldName << " + i), header );\n";
+						str << indent << "	Unpack_" << st_info->data.name << "( const_cast<" << st_info->data.name << "*>(" << parentName << "->" << fieldName << " + i), header );\n";
 				
 					str	<< indent << "}\n";
 				}
@@ -77,20 +86,32 @@ namespace VTC
 		}
 
 		// unpack second pointer
-		if ( num_pointers > 1 )
+		if ( num_pointers == 2 )
 		{
+			str << indent << "UnpackPointer( INOUT " << parentName << "->" << fieldName << ", header );\n";
+
 			if ( counterName.empty() )
 			{
 				str << indent << "if ( " << parentName << "->" << fieldName << " != null ) {\n"
-					<< indent << "	UnpackPointer( INOUT *" << parentName << "->" << fieldName << ", header );\n"
-					<< indent << "}\n";
+					<< indent << "	UnpackPointer( INOUT *" << parentName << "->" << fieldName << ", header );\n";
 			}
 			else
 			{
 				str << indent << "for (uint i = 0; (" << parentName << "->" << fieldName << " != null) and (i < " << parentName << "->" << counterName << "); ++i) {\n"
-					<< indent << "	UnpackPointer( INOUT " << parentName << "->" << fieldName << "[i], header );\n"
-					<< indent << "}\n";
+					<< indent << "	UnpackPointer( INOUT " << parentName << "->" << fieldName << "[i], header );\n";
 			}
+			
+			if ( st_info != _structs.end() )
+			{
+				if ( has_stype )
+					str << indent << "\t\tUnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<" << st_info->data.name << "*>(" << parentName << "->" << fieldName
+								<< (counterName.empty() ? "" : "[i]") << ")), header );\n";
+				else
+					str << indent << "\t\tUnpack_" << st_info->data.name << "( const_cast<" << st_info->data.name << "*>(" << parentName << "->" << fieldName
+								<< (counterName.empty() ? "" : "[i]") << "), header );\n";
+			}				
+
+			str << indent << "}\n";
 		}
 
 		CHECK_ERR( num_pointers <= 2 );
@@ -256,7 +277,7 @@ namespace VTC
 			<< "{\n"
 			<< "	if ( ptr == null ) return;\n"
 			<< "	UnpackPointer( INOUT ptr->pNext, header );\n"
-			<< "	UnpackStruct( PtrCast<VkBaseOutStructure>(ptr->pNext), header );\n\n"
+			<< "	UnpackStruct( ptr->pNext, header );\n\n"
 			<< "	ENABLE_ENUM_CHECKS();\n"
 			<< "	switch ( ptr->sType )\n"
 			<< "	{\n";

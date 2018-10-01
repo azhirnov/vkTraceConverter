@@ -1,7 +1,7 @@
 // Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
-#include "stl/include/StringUtils.h"
-#include "stl/include/EnumUtils.h"
+#include "stl/Algorithms/StringUtils.h"
+#include "stl/Algorithms/EnumUtils.h"
 #include "engine/Application.h"
 #include "framework/Window/WindowGLFW.h"
 #include "framework/Window/WindowSDL2.h"
@@ -17,15 +17,18 @@ namespace VTC
 */
 	VApp::VApp ()
 	{
-#	if defined(FG_ENABLE_GLFW)
+#	 if defined(FG_ENABLE_GLFW)
 		_window.reset( new WindowGLFW() );
 
-#	elif defined(FG_ENABLE_SDL2)
+#	 elif defined(FG_ENABLE_SDL2)
 		_window.reset( new WindowSDL2() );
+		
+#	 elif defined(FG_ENABLE_SFML)
+		_window.reset( new WindowSFML() );
 
-#	else
+#	 else
 #		error unknown window library!
-#	endif
+#	 endif
 
 		VulkanDeviceFn_Init( _vulkan );
 	}
@@ -107,7 +110,8 @@ namespace VTC
 	{
 		CHECK_ERR( _window );
 
-		CHECK_ERR( _window->Create( uint2{width, height}, title, this ));
+		CHECK_ERR( _window->Create( uint2{width, height}, title ));
+		_window->AddListener( this );
 
 		_windowTitle	= title;
 		_surfaceSize	= uint2{width, height};
@@ -306,10 +310,9 @@ namespace VTC
 			if ( load_ev == _loadEvents.end() ) {
 				load_ev = _loadEvents.insert({ first_frame, {} }).first;
 			}
-
-			// add 'unload' event
 			load_ev->second.push_back(FilePartExt{ part, file_iter->second });
 
+			// add 'unload' event
 			auto	unload_ev = _unloadEvents.find( part.lastFrame );
 
 			if ( unload_ev == _unloadEvents.end() ) {

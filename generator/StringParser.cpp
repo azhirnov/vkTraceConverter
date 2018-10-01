@@ -1,8 +1,8 @@
 // Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #include "StringParser.h"
-#include "stl/include/StringUtils.h"
-#include "stl/include/DefaultType.h"
+#include "stl/Algorithms/StringUtils.h"
+#include "stl/CompileTime/DefaultType.h"
 
 namespace VTC
 {

@@ -2,11 +2,13 @@
 
 #pragma once
 
-#include "stl/include/ArrayView.h"
-#include "stl/include/FixedArray.h"
-#include "stl/include/DefaultType.h"
-#include "stl/include/StringUtils.h"
-#include "stl/include/File.h"
+#include "stl/CompileTime/DefaultType.h"
+#include "stl/Containers/ArrayView.h"
+#include "stl/Containers/FixedArray.h"
+#include "stl/Algorithms/StringUtils.h"
+#include "stl/File/File.h"
+#include "stl/File/HddFile.h"
+#include "stl/File/MemFile.h"
 
 #define VK_NO_PROTOTYPES
 #include "vulkan/vulkan.h"
@@ -390,6 +392,7 @@ namespace VTC
 								  INOUT BitfieldMap_t &outBitfields);
 
 		ND_ static HashSet<StringView> const&  _GetRequiredForPackingFunctionsV1 ();
+		ND_ static HashSet<StringView> const&  _GetRequiredForPackingFunctionsV2 ();
 		ND_ static HashSet<StringView> const&  _GetRequiredForPackingStructures ();	// only structures that used as pNext extension
 
 		ND_ static bool _IsRequiredForPackingFunction (StringView vkFunc);

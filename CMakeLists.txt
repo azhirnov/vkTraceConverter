@@ -16,6 +16,9 @@ add_subdirectory( "external" "external" )
 
 
 set( VTC_STABLE OFF CACHE BOOL "disable code generation and some external projects" )
+set( VTC_ENABLE_GLFW ON CACHE BOOL "use GLFW" )
+set( VTC_ENABLE_SDL2 OFF CACHE BOOL "use SDL2" )
+
 set( MAIN_BINARY_DIR "${CMAKE_BINARY_DIR}/bin" CACHE INTERNAL "" FORCE )
 set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${MAIN_BINARY_DIR}" )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY "${MAIN_BINARY_DIR}" )
@@ -24,11 +27,12 @@ set( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${MAIN_BINARY_DIR}" )
 link_directories( "${LUNARG_VULKANTOOLS_INSTALL_DIR}" )
 link_directories( "${FRAMEGRAPH_INSTALL_DIR}/lib" )
 link_directories( "${BROTLI_INSTALL_DIR}/lib" )
-add_subdirectory( "vktrace_conv" "vktrace_conv" )
+add_subdirectory( "converter" "converter" )
 
 add_subdirectory( "engine" "engine" )
 
 add_subdirectory( "player" "player" )
+add_subdirectory( "player_exe" "player_exe" )
 
 message( STATUS "project 'VkTraceConverter' generation ended" )
 message( STATUS "\n==========================================================================" )

@@ -1,5 +1,7 @@
 // Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -56,22 +58,23 @@ namespace VTPlayer
 		const char *			windowTitle;
 		uint32_t				windowFPSinTitle : 1;
 		uint32_t				windowFullscreen : 1;
+		uint32_t				windowResizable : 1;
 
 		// vulkan instance
-		uint32_t				instanceApiVersion;			// the current api version will be calculated as 'Max( settings.instanceApiVersion, trace.apiVersion )'
-		const char * const*		instanceLayers;				// you can specify validation layers, by default all layers are disable.
-		uint32_t				instanceLayerCount;
-		const char * const*		instanceExtensions;			// additional extensions for user code, all required by trace extensions will be enable anyway.
-		uint32_t				instanceExtensionCount;
+		uint32_t				instanceVkApiVersion;		// the current api version will be calculated as 'Max( settings.instanceApiVersion, trace.apiVersion )'
+		const char * const*		instanceVkLayers;			// you can specify validation layers, by default all layers are disable.
+		uint32_t				instanceVkLayerCount;
+		const char * const*		instanceVkExtensions;		// additional extensions for user code, all required by trace extensions will be enable anyway.
+		uint32_t				instanceVkExtensionCount;
 
 		// physical device
-		const char *			preferredGPUName;			// recomendations for physical device slector.
+		const char *			preferredGPUName;			// recomendations for physical device selector.
 		uint32_t				preferDescreteGPU : 1;
 		uint32_t				preferIntegratedGPU : 1;
 
 		// vulkan device
-		const char * const*		deviceExtensions;			// additional extensions for user code, all required by trace extensions will be enable anyway.
-		uint32_t				deviceExtensionCount;
+		const char * const*		deviceVkExtensions;			// additional extensions for user code, all required by trace extensions will be enable anyway.
+		uint32_t				deviceVkExtensionCount;
 
 		// vulkan swapchain
 		uint32_t				swapchainVkColorFormat;		// VkFormat
@@ -131,7 +134,10 @@ namespace VTPlayer
 
 	typedef int  (VTPLAYER_CALL *PFN_SetPlayerVulkanEventListener) (VTPlayerInstance, const struct VulkanEventListener *);
 	typedef int  (VTPLAYER_CALL *PFN_SetFileReader) (VTPlayerInstance, const struct FileReader *);
+
 	typedef int  (VTPLAYER_CALL *PFN_AddPipelineCache) (VTPlayerInstance, const void*, size_t);
+	typedef int  (VTPLAYER_CALL *PFN_GetPipelineCache) (VTPlayerInstance, OUT void const**, OUT size_t *);
+	
 
 }	// VTPlayer
 
@@ -139,3 +145,10 @@ namespace VTPlayer
 #ifdef __cplusplus
 } // extern "C"
 #endif
+
+namespace VTPlayer
+{
+	int  CreateVTPlayer (const struct VTPlayerSettings *settings, OUT VTPlayerInstance *outInstance);
+	void DestroyVTPlayer (VTPlayerInstance instance);
+	int  PlayerStart (VTPlayerInstance instance);
+}

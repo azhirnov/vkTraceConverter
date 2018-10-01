@@ -33,9 +33,9 @@ namespace VTC
 	public:
 		struct QueueInfo
 		{
-			QueueID				id;
-			VkQueueFlags		flags;
-			float				priority;
+			QueueID			id;
+			VkQueueFlags	flags;
+			float			priority;
 		};
 
 		struct FilePart

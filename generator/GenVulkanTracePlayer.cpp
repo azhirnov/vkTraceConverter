@@ -14,31 +14,32 @@ namespace VTC
 												   StringView counterName, StringView indent, OUT String &str) const
 	{
 		// count pointers
+		StructMap_t::const_iterator			st_info		= _structs.end();
+		ResourceTypes_t::const_iterator		res_info	= _resourceTypes.end();
+		bool								has_stype	= false;
+
 		uint	num_pointers	= 0;
 		bool	is_array		= false;
 		bool	is_const		= false;
 
 		for (auto& type : typeParts)
 		{
+			if ( not (st_info  != _structs.end() or
+					  res_info != _resourceTypes.end()) )
+			{
+				st_info		= _structs.find( SearchableStruct{type} );
+				res_info	= _resourceTypes.find( type );
+			}
+
 			num_pointers += uint( type == "*" );
 
 			is_array     |= ( type == "[" or type == "]" );
 			is_const	 |= (type == "const");
 		}
 
-		// search structure type
-		StructMap_t::const_iterator		st_info		= _structs.end();
-		bool							has_stype	= false;
-
-		for (auto& type : typeParts)
+		if ( st_info != _structs.end() )
 		{
-			st_info = _structs.find( SearchableStruct{type} );
-
-			if ( st_info != _structs.end() )
-			{
-				has_stype = _HasSType( st_info->data );
-				break;
-			}
+			has_stype = _HasSType( st_info->data );
 		}
 
 		if ( st_info != _structs.end() and
@@ -48,49 +49,88 @@ namespace VTC
 			return true;
 		}
 
-		// unpack first pointer
-		if ( num_pointers > 0 )
+		
+		// unpack struct
+		if ( num_pointers == 0 and not is_array )
 		{
-			str << indent << "VUnpackPointer( INOUT " << parentName << "->" << fieldName << ", start );\n";
+			if ( st_info != _structs.end() )
+			{
+				if ( has_stype )
+					str << indent << "VUnpackStruct( BitCast<VkBaseOutStructure*>(&" << parentName << "->" << fieldName << "), unpacker );\n";
+				else
+					str << indent << "VUnpack_" << st_info->data.name << "( &" << parentName << "->" << fieldName << ", unpacker );\n";
+			}
+
+			if ( res_info != _resourceTypes.end() )
+			{
+				str << indent << "unpacker.RemapVkResources( INOUT &" << parentName << "->" << fieldName << ", 1 );\n";
+			}
+		}
+
+		// unpack first pointer
+		if ( num_pointers == 1 )
+		{
+			str << indent << "unpacker.UnpackPtr( INOUT " << parentName << "->" << fieldName << " );\n";
 		
 			if ( st_info != _structs.end() )
 			{
 				if ( counterName.empty() )
 				{
 					if ( has_stype )
-						str << indent << "VUnpackStruct( PtrCast<VkBaseOutStructure>(" << parentName << "->" << fieldName << "), start );\n";
+						str << indent << "VUnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<" << st_info->data.name << "*>(" << parentName << "->" << fieldName << ")), unpacker );\n";
 					else
-						str << indent << "VUnpack_" << st_info->data.name << "( PtrCast<" << st_info->data.name << ">(" << parentName << "->" << fieldName << "), start );\n";
+						str << indent << "VUnpack_" << st_info->data.name << "( const_cast<" << st_info->data.name << "*>(" << parentName << "->" << fieldName << "), unpacker );\n";
 				}
 				else
 				{
 					str << indent << "for (uint i = 0; (" << parentName << "->" << fieldName << " != null) and (i < " << parentName << "->" << counterName << "); ++i) {\n";
 				
 					if ( has_stype )
-						str << indent << "	VUnpackStruct( PtrCast<VkBaseOutStructure>(" << parentName << "->" << fieldName << " + i), start );\n";
+						str << indent << "	VUnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<" << st_info->data.name << "*>(" << parentName << "->" << fieldName << " + i)), unpacker );\n";
 					else
-						str << indent << "	VUnpack_" << st_info->data.name << "( PtrCast<" << st_info->data.name << ">(" << parentName << "->" << fieldName << " + i), start );\n";
+						str << indent << "	VUnpack_" << st_info->data.name << "( const_cast<" << st_info->data.name << "*>(" << parentName << "->" << fieldName << " + i), unpacker );\n";
 				
 					str	<< indent << "}\n";
 				}
 			}
+			
+			if ( res_info != _resourceTypes.end() )
+			{
+				str << indent << "unpacker.RemapVkResources( INOUT " << parentName << "->" << fieldName << ", "
+					<< (counterName.empty() ? "1"s : String(parentName) << "->" << counterName) << " );\n";
+			}
 		}
 
 		// unpack second pointer
-		if ( num_pointers > 1 )
+		if ( num_pointers == 2 )
 		{
+			str << indent << "unpacker.UnpackPtr( INOUT " << parentName << "->" << fieldName << " );\n";
+
 			if ( counterName.empty() )
 			{
 				str << indent << "if ( " << parentName << "->" << fieldName << " != null ) {\n"
-					<< indent << "	VUnpackPointer( INOUT *" << parentName << "->" << fieldName << ", start );\n"
-					<< indent << "}\n";
+					<< indent << "	unpacker.UnpackPtr( INOUT *" << parentName << "->" << fieldName << " );\n";
 			}
 			else
 			{
 				str << indent << "for (uint i = 0; (" << parentName << "->" << fieldName << " != null) and (i < " << parentName << "->" << counterName << "); ++i) {\n"
-					<< indent << "	VUnpackPointer( INOUT " << parentName << "->" << fieldName << "[i], start );\n"
-					<< indent << "}\n";
+					<< indent << "	unpacker.UnpackPtr( INOUT " << parentName << "->" << fieldName << "[i] );\n";
 			}
+			
+			if ( st_info != _structs.end() )
+			{
+				if ( has_stype )
+					str << indent << "\t\tVUnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<" << st_info->data.name << "*>(" << parentName << "->" << fieldName
+								<< (counterName.empty() ? "" : "[i]") << ")), unpacker );\n";
+				else
+					str << indent << "\t\tVUnpack_" << st_info->data.name << "( const_cast<" << st_info->data.name << "*>(" << parentName << "->" << fieldName
+								<< (counterName.empty() ? "" : "[i]") << "), unpacker );\n";
+			}				
+			
+			if ( res_info != _resourceTypes.end() )
+				ASSERT(false);
+
+			str << indent << "}\n";
 		}
 
 		CHECK_ERR( num_pointers <= 2 );
@@ -105,7 +145,7 @@ namespace VTC
 	bool Generator::_VulkanTracePlayer_ProcessStruct (const VkStructInfo &info, StringView stype, OUT String &str) const
 	{
 		str.clear();
-		str << "void VUnpack_" << info.name << " (" << info.name << " *ptr, void *start)\n"
+		str << "void VUnpack_" << info.name << " (" << info.name << " *ptr, const VUnpacker &unpacker)\n"
 			<< "{\n"
 			<< "	if ( ptr == null ) return;\n";
 
@@ -115,7 +155,10 @@ namespace VTC
 													  _GetStructFieldCounterName( info.name, field.name ), "\t",
 													  INOUT str ));
 		}
-		
+
+		if ( _HasSType( info ) )
+			str << "\tVUnpackStruct( Cast<VkBaseOutStructure>(const_cast<void*>(ptr->pNext)), unpacker );\n";
+
 		str << "}\n\n";
 		return true;
 	}
@@ -131,10 +174,10 @@ namespace VTC
 		String	header2 = "\n\n";
 		String	str1, str2;
 	
-		header << "void VUnpackStruct (VkBaseOutStructure*, void*);\n";
+		header << "void VUnpackStruct (VkBaseOutStructure*, const VUnpacker&);\n";
 
 		str1 << "// auto-generated file\n\n"
-			<< "void VUnpackStruct (VkBaseOutStructure *ptr, void *start)\n"
+			<< "void VUnpackStruct (VkBaseOutStructure *ptr, const VUnpacker &unpacker)\n"
 			<< "{\n"
 			<< "	if ( ptr == null ) return;\n"
 			<< "	switch ( ptr->sType )\n"
@@ -156,11 +199,11 @@ namespace VTC
 
 			const bool	has_stype = _HasSType( info.data );
 		
-			header << "void VUnpack_" << info.data.name << " (" << info.data.name << "*, void*);\n";
+			header << "void VUnpack_" << info.data.name << " (" << info.data.name << "*, const VUnpacker&);\n";
 
-			header2 << "template <> inline VUnpacker::Get<" << info.data.name << "> () { VUnpack_" << info.data.name << "(...); }\n";
-			header2 << "template <> inline VUnpacker::Get<" << info.data.name << "*> () { VUnpack_" << info.data.name << "(...); }\n";
-			header2 << "template <> inline VUnpacker::Get<" << info.data.name << " const*> () { VUnpack_" << info.data.name << "(...); }\n\n";
+			header2 << "template <> inline " << info.data.name << "*  VUnpacker::_GetPtr<> (" << info.data.name << " *ptr, uint count) "
+					<< "{ for (uint i = 0; i < count; ++i) VUnpack_" << info.data.name << "( &ptr[i], *this );  return ptr; }\n";
+
 
 			if ( not has_stype )
 			{
@@ -179,7 +222,7 @@ namespace VTC
 
 			str1 << "\t\tcase " << enum_name << " : {\n"
 				<< "\t\t\t" << info.data.name << "*  obj = BitCast<" << info.data.name << "*>( ptr );\n"
-				<< "\t\t\tVUnpack_" << info.data.name << "( obj, start );\n"
+				<< "\t\t\tVUnpack_" << info.data.name << "( obj, unpacker );\n"
 				<< "\t\t\tbreak;\n"
 				<< "\t\t}\n\n";
 		}
@@ -212,18 +255,9 @@ namespace VTC
 */
 	bool Generator::_VulkanTracePlayer_GenFuncUnpacker (const fs::path &output) const
 	{
-		const auto	TypeToString = [] (ArrayView<StringView> types)
-		{
-			String	result;
-			for (auto& type : types) {
-				result << type << ' ';
-			}
-			return result;
-		};
-
-
 		String	str = "// auto-generated file\n\n";
-		String	temp;
+		String	temp1;
+		String	temp2;
 
 		for (auto& vk_func : _GetRequiredForPackingFunctionsV1())
 		{
@@ -233,19 +267,33 @@ namespace VTC
 			const bool	returns_vkresult = (func->data.result.type.size() == 1 and func->data.result.type[0] == "VkResult");
 
 			str << "case EPacketID::" << _GenPacketIDName( func->data.name ) << " : {\n";
-			temp.clear();
+			temp1.clear();
+			temp2.clear();
 
-			temp << (returns_vkresult ? "\tVK_CALL( " : "\t") << "app." << func->data.name << "( ";
+			temp2 << (returns_vkresult ? "\tVK_CALL( " : "\t") << func->data.name << "( ";
 
 			for (auto& arg : func->data.args)
 			{
-				temp << (&arg == &func->data.args.front() ? "\n" : ",\n") << "\t\t\t\t"
-					<< "/*" << arg.name << "*/ unpacker.Get<" << TypeToString( arg.type ) << ">()";
+				String	counter { _GetFuncArgCounterName( func->data.name, arg.name )};
+				String	arg_type;
+				
+				for (auto& type : arg.type) {
+					arg_type << (&type == arg.type.data() ?  "" : " ") << type;
+				}
+
+				temp1 << "\tauto const&  " << arg.name << " = unpacker.Get<" << arg_type << ">(";
+
+				if ( not counter.empty() )
+					temp1 << counter;
+
+				temp1 << ");\n";
+
+				temp2 << (&arg == &func->data.args.front() ? "" : ", ") << arg.name;
 			}
 
-			temp << " )" << (returns_vkresult ? ")" : "") << ";\n";
+			temp2 << " )" << (returns_vkresult ? ")" : "") << ";\n";
 
-			str << temp
+			str << temp1 << temp2
 				<< "\tbreak;\n"
 				<< "}\n\n";
 		}

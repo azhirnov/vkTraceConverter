@@ -44,6 +44,7 @@ endif ()
 
 include( "${CMAKE_SOURCE_DIR}/cmake/download_other.cmake" )
 include( "${CMAKE_SOURCE_DIR}/cmake/download_fg.cmake" )
+include( "${CMAKE_SOURCE_DIR}/cmake/download_vez.cmake" )
 include( "${CMAKE_SOURCE_DIR}/cmake/graphviz.cmake" )
 include( "${CMAKE_SOURCE_DIR}/cmake/vktrace_defines.cmake" )
 include( "${CMAKE_SOURCE_DIR}/cmake/app_defines.cmake" )

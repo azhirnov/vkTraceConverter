@@ -15,8 +15,7 @@ int main (int argc, const char** argv)
 	
 	StringView	vulkan_headers;
 	StringView	vktrace_ids;
-	StringView	output1;
-	StringView	output2;
+	StringView	output;
 
 	for (int i = 1; i < argc; ++i)
 	{
@@ -33,10 +32,7 @@ int main (int argc, const char** argv)
 			vktrace_ids = value;
 		else
 		if ( key == "-output" )
-			output1 = value;
-		else
-		if ( key == "-player-output" )
-			output2 = value;
+			output = value;
 		else
 			RETURN_ERR( "unsupported command arg: "s << key, 1 );
 	}
@@ -45,12 +41,10 @@ int main (int argc, const char** argv)
 #if 1
 	vulkan_headers = "C:/Projects/VkTraceConvertor/build/install/Vulkan-Headers/include/vulkan";
 	vktrace_ids = "C:/Projects/VkTraceConvertor/external/LunarG-VulkanTools/vktrace/vktrace_common/vktrace_trace_packet_identifiers.h";
-	output1 = "C:/Projects/VkTraceConvertor/vktrace_conv/Generated";
-	output2 = "C:/Projects/VkTraceConvertor/player/Generated";
+	output = "C:/Projects/VkTraceConvertor/shared/Generated";
 	FG_LOGI( "vulkan_headers: "s << vulkan_headers );
 	FG_LOGI( "vktrace_ids: "s << vktrace_ids );
-	FG_LOGI( "output1: "s << output1 );
-	FG_LOGI( "output2: "s << output2 );
+	FG_LOGI( "output: "s << output );
 #endif
 
 	
@@ -66,26 +60,26 @@ int main (int argc, const char** argv)
 	CHECK_ERR( generator.BuildSkipPacketsMap(), -8 );
 	CHECK_ERR( generator.SetFunctionsScope(), -9 );
 	
-	CHECK_ERR( generator.GenBookmarksForFunc( fs::path(output1).append( "BuildFunctionResourceBookmarks.h" )), -9 );
-	CHECK_ERR( generator.GenBookmarksForStruct( fs::path(output1).append( "BuildStructResourceBookmarks.h" )), -10 );
+	CHECK_ERR( generator.GenBookmarksForFunc( fs::path(output).append( "BuildFunctionResourceBookmarks.h" )), -9 );
+	CHECK_ERR( generator.GenBookmarksForStruct( fs::path(output).append( "BuildStructResourceBookmarks.h" )), -10 );
 
 	CHECK_ERR( generator.MarkRequiredTypesForUnpack(), -11 );
-	CHECK_ERR( generator.GenUnpacker( fs::path(output1).append( "UnpackPacket.h" )), -12 );
+	CHECK_ERR( generator.GenUnpacker( fs::path(output).append( "UnpackPacket.h" )), -12 );
 	
 	CHECK_ERR( generator.MarkRequiredTypesForSerializing(), -14 );
-	CHECK_ERR( generator.GenRawVulkanCalls( fs::path(output1).append( "BuildRawVulkanCalls.h" )), -15 );
-	CHECK_ERR( generator.GenEnumToString( fs::path(output1).append( "VkEnumToString.h" ), fs::path(output1).append( "VkEnumToStringImpl.h" )), -16 );
-	CHECK_ERR( generator.GenStructToString( fs::path(output1).append( "VkStructToString.h" ), fs::path(output1).append( "VkStructToStringImpl.h" )), -17 );
-	CHECK_ERR( generator.GenStructTypeHelpers( fs::path(output1).append( "VkStructTypes.h" )), -18 );
+	CHECK_ERR( generator.GenRawVulkanCalls( fs::path(output).append( "BuildRawVulkanCalls.h" )), -15 );
+	CHECK_ERR( generator.GenEnumToString( fs::path(output).append( "VkEnumToString.h" ), fs::path(output).append( "VkEnumToStringImpl.h" )), -16 );
+	CHECK_ERR( generator.GenStructToString( fs::path(output).append( "VkStructToString.h" ), fs::path(output).append( "VkStructToStringImpl.h" )), -17 );
+	CHECK_ERR( generator.GenStructTypeHelpers( fs::path(output).append( "VkStructTypes.h" )), -18 );
 
-	CHECK_ERR( generator.GenVulkanTracePacker( fs::path(output1).append( "VulkanTracePacketIDs.h" ),
-											   fs::path(output1).append( "VulkanTraceStructPacker.h" ),
-											   fs::path(output1).append( "VulkanTraceStructPackerImpl.h" ),
-											   fs::path(output1).append( "VulkanTraceFuncPacker.h" )), -19 );
+	CHECK_ERR( generator.GenVulkanTracePacker( fs::path(output).append( "VulkanTracePacketIDs.h" ),
+											   fs::path(output).append( "VulkanTraceStructPacker.h" ),
+											   fs::path(output).append( "VulkanTraceStructPackerImpl.h" ),
+											   fs::path(output).append( "VulkanTraceFuncPacker.h" )), -19 );
 	
-	CHECK_ERR( generator.GenVulkanTracePlayer( fs::path(output2).append( "VulkanTraceStructUnpacker.h" ),
-											   fs::path(output2).append( "VulkanTraceStructUnpackerImpl.h" ),
-											   fs::path(output2).append( "VulkanTraceFuncUnpacker.h" )), -20 );
+	CHECK_ERR( generator.GenVulkanTracePlayer( fs::path(output).append( "VulkanTraceStructUnpacker.h" ),
+											   fs::path(output).append( "VulkanTraceStructUnpackerImpl.h" ),
+											   fs::path(output).append( "VulkanTraceFuncUnpacker.h" )), -20 );
 
 	return 0;
 }

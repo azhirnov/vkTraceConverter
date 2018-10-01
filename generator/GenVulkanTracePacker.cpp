@@ -131,19 +131,6 @@ namespace VTC
 			"vkCmdEndRenderPass2KHR"sv,
 			"vkCmdDrawIndirectCountKHR"sv,			// and vkCmdDrawIndirectCountAMD
 			"vkCmdDrawIndexedIndirectCountKHR"sv,	// and vkCmdDrawIndexedIndirectCountAMD
-			"vkCmdBeginConditionalRenderingEXT"sv,
-			"vkCmdEndConditionalRenderingEXT"sv,
-			"vkCmdProcessCommandsNVX"sv,
-			"vkCmdReserveSpaceForCommandsNVX"sv,
-			"vkCreateIndirectCommandsLayoutNVX"sv,
-			"vkDestroyIndirectCommandsLayoutNVX"sv,
-			"vkCreateObjectTableNVX"sv,
-			"vkDestroyObjectTableNVX"sv,
-			"vkRegisterObjectsNVX"sv,
-			"vkUnregisterObjectsNVX"sv,
-			"vkCmdSetViewportWScalingNV"sv,
-			"vkCmdSetDiscardRectangleEXT"sv,
-			"vkCmdSetSampleLocationsEXT"sv,
 			"vkDebugMarkerSetObjectNameEXT"sv,
 			"vkCmdDebugMarkerBeginEXT"sv,
 			"vkCmdDebugMarkerEndEXT"sv,
@@ -167,6 +154,31 @@ namespace VTC
 		return requiredVkFunctions;
 	}
 	
+/*
+=================================================
+	_GetRequiredForPackingFunctionsV2
+=================================================
+*
+	HashSet<StringView> const&  Generator::_GetRequiredForPackingFunctionsV2 ()
+	{
+		static const HashSet<StringView> requiredVkFunctions = {
+			"vkCmdBeginConditionalRenderingEXT"sv,
+			"vkCmdEndConditionalRenderingEXT"sv,
+			"vkCmdProcessCommandsNVX"sv,
+			"vkCmdReserveSpaceForCommandsNVX"sv,
+			"vkCreateIndirectCommandsLayoutNVX"sv,
+			"vkDestroyIndirectCommandsLayoutNVX"sv,
+			"vkCreateObjectTableNVX"sv,
+			"vkDestroyObjectTableNVX"sv,
+			"vkRegisterObjectsNVX"sv,
+			"vkUnregisterObjectsNVX"sv,
+			"vkCmdSetViewportWScalingNV"sv,
+			"vkCmdSetDiscardRectangleEXT"sv,
+			"vkCmdSetSampleLocationsEXT"sv,
+		};
+		return requiredVkFunctions;
+	}
+
 /*
 =================================================
 	_GetRequiredForPackingStructures
@@ -221,8 +233,10 @@ namespace VTC
 			"VkImageViewUsageCreateInfo"sv,
 			"VkSamplerYcbcrConversionInfo"sv,
 		// VkShaderModuleCreateInfo :
+			"VkShaderModuleCreateInfo"sv,
 			//"VkShaderModuleValidationCacheCreateInfoEXT"sv,
 		// VkPipelineCacheCreateInfo :
+			"VkPipelineCacheCreateInfo"sv,
 		// VkGraphicsPipelineCreateInfo :
 			"VkPipelineDiscardRectangleStateCreateInfoEXT"sv,
 			"VkPipelineRepresentativeFragmentTestStateCreateInfoNV"sv,
@@ -318,7 +332,8 @@ namespace VTC
 */
 	bool Generator::_IsRequiredForPackingFunction (StringView vkFunc)
 	{
-		return _GetRequiredForPackingFunctionsV1().find( vkFunc ) != _GetRequiredForPackingFunctionsV1().end();
+		return	_GetRequiredForPackingFunctionsV1().find( vkFunc ) != _GetRequiredForPackingFunctionsV1().end() /*or
+				_GetRequiredForPackingFunctionsV2().find( vkFunc ) != _GetRequiredForPackingFunctionsV2().end()*/;
 	}
 
 /*
@@ -397,13 +412,14 @@ namespace VTC
 	
 /*
 =================================================
-	_VulkanTracePacker_ProcessVar
+	_VulkanTracePacker_ProcessField
 =================================================
 */
 	bool Generator::_VulkanTracePacker_ProcessVar (StringView fieldName, ArrayView<StringView> fieldType, StringView indent,
 												   StringView counterName, bool isField, INOUT String &str) const
 	{
 		StructMap_t::const_iterator		struct_info		= _structs.end();
+		ResourceTypes_t::const_iterator	res_info		= _resourceTypes.end();
 		uint							num_pointers	= 0;
 		bool							is_array		= false;
 		bool							is_const		= false;
@@ -413,9 +429,11 @@ namespace VTC
 		{
 			auto&	type = fieldType[i];
 
-			if ( struct_info == _structs.end() )
+			if ( not (struct_info != _structs.end() or
+					  res_info    != _resourceTypes.end()) )
 			{
 				struct_info = _structs.find( SearchableStruct{type} );
+				res_info	= _resourceTypes.find( type );
 			}
 
 			num_pointers += uint(type == "*");
@@ -434,7 +452,6 @@ namespace VTC
 		if ( struct_info != _structs.end() )
 		{
 			ASSERT( struct_info->data.required );
-
 			has_stype = _HasSType( struct_info->data );
 		}
 		
@@ -451,32 +468,38 @@ namespace VTC
 				counter << "obj->" << counterName;
 		}
 		
-
+		
 		// pack output parameter(s)
-		/*if ( not is_const and num_pointers > 0 and not isField )
+		if ( not is_const and num_pointers > 0 and not isField )
 		{
 			ASSERT( struct_info == _structs.end() );
+			
+			str << indent << "packer.Push( obj->" << fieldName << " );\n";
 
 			if ( counterName.empty() )
-				str << indent << "packer.SetOutput( obj->" << fieldName << " );\n";
+				str << indent << " packer << (*obj->" << fieldName << ");\n";
 			else
-				str << indent << "packer.SetOutput( obj->" << fieldName << ", " << counter << " );\n";
+				str << indent << " for (uint i = 0; i < " << counter << "; ++i) {\n"
+					<< indent << "	packer << (obj->" << fieldName << "[i]);\n"
+					<< indent << " }\n";
+
+			str << indent << "packer.PopAndStore( obj->" << fieldName << " );\n";
 		}
-		else*/
-		
+		else
+
 		// pack arrays of pointers to objects
 		if ( num_pointers == 2 and not counterName.empty() and struct_info != _structs.end() )
 		{
 			str << indent << "packer.Push( obj->" << fieldName << " );\n"
-				<< indent << "for (uint i = 0; obj->" << fieldName << " and i < " << counter << "; ++i) {\n";
+				<< indent << " for (uint i = 0; obj->" << fieldName << " and i < " << counter << "; ++i) {\n";
 		
 			if ( has_stype )
 				str << indent << "\tVPackStruct( BitCast<VkBaseInStructure const*>(obj->" << fieldName << "[i]), packer );\n";
 			else
 				str << indent << "\tVPack_" << struct_info->data.name << "( obj->" << fieldName << "[i], packer );\n";
 
-			str << indent << "}\n"
-				<< indent << "packer.Pop( obj->" << fieldName << " );\n";
+			str << indent << " }\n"
+				<< indent << "packer." << (isField ? "Pop( OUT" : "PopAndStore(") << " obj->" << fieldName << " );\n";
 		}
 		else
 
@@ -486,7 +509,7 @@ namespace VTC
 			ASSERT(false);
 		}
 		else
-			
+
 		// special cases
 		if ( num_pointers == 1 and struct_info != _structs.end() and
 			 struct_info->data.name == "VkAllocationCallbacks" )
@@ -502,15 +525,28 @@ namespace VTC
 		{
 			CHECK_ERR( not counter.empty() );
 
-			str << indent << "packer.SetArray( obj->" << fieldName << ", " << counter << " );\n";
+			str << indent << "packer.Push( obj->" << fieldName << " );\n"
+				<< indent << " packer.AddArray( obj->" << fieldName << ", " << counter << " );\n"
+				<< indent << "packer." << (isField ? "Pop( OUT" : "PopAndStore(") << " obj->" << fieldName << " );\n";
+		}
+		else
+
+		// pack 'const char *'
+		if ( fieldType.size() == 3 and fieldType[0] == "const" and fieldType[1] == "char" and fieldType[2] == "*" )
+		{
+			CHECK_ERR( counter.empty() );
+
+			str << indent << "packer.Push( obj->" << fieldName << " );\n"
+				<< indent << " packer.AddString( obj->" << fieldName << " );\n"
+				<< indent << "packer." << (isField ? "Pop( OUT" : "PopAndStore(") << " obj->" << fieldName << " );\n";
 		}
 		else
 
 		// pack arrays
-		if ( (num_pointers == 1 or is_array) and not counterName.empty() )
+		if ( num_pointers == 1 and not counterName.empty() )
 		{
-			str << indent << "packer.Push( obj->" << fieldName << ", " << counter << " );\n"
-				<< indent << "for (uint i = 0; obj->" << fieldName << " and i < " << counter << "; ++i) {\n";
+			str << indent << "packer.Push( obj->" << fieldName << " );\n"
+				<< indent << " for (uint i = 0; obj->" << fieldName << " and i < " << counter << "; ++i) {\n";
 		
 			if ( struct_info != _structs.end() and has_stype )
 				str << indent << "\tVPackStruct( BitCast<VkBaseInStructure const*>(obj->" << fieldName << " + i), packer );\n";
@@ -520,8 +556,22 @@ namespace VTC
 			else
 				str << indent << "\tpacker << (obj->" << fieldName << "[i]);\n";
 
-			str << indent << "}\n"
-				<< indent << "packer.Pop( obj->" << fieldName << " );\n";
+			str << indent << " }\n"
+				<< indent << "packer." << (isField ? "Pop( OUT" : "PopAndStore(") << " obj->" << fieldName << " );\n";
+		}
+		else
+
+		// pack static arrays
+		if ( is_array and struct_info != _structs.end() and not counterName.empty() and not isField )
+		{
+			str << indent << "for (uint i = 0; obj->" << fieldName << " and i < " << counter << "; ++i) {\n";
+			
+			if ( has_stype )
+				str << indent << "\tVPackStruct( BitCast<VkBaseInStructure const*>(&obj->" << fieldName << "[i]), packer );\n";
+			else
+				str << indent << "\tVPack_" << struct_info->data.name << "( &obj->" << fieldName << "[i], packer );\n";
+
+			str << indent << "}\n";
 		}
 		else
 
@@ -533,30 +583,16 @@ namespace VTC
 			str << indent << "packer.Push( obj->" << fieldName << " );\n";
 
 			if ( has_stype )
-				str << indent << "VPackStruct( BitCast<VkBaseInStructure const*>(obj->" << fieldName << "), packer );\n";
+				str << indent << " VPackStruct( BitCast<VkBaseInStructure const*>(obj->" << fieldName << "), packer );\n";
 			else
-				str << indent << "VPack_" << struct_info->data.name << "( obj->" << fieldName << ", packer );\n";
+				str << indent << " VPack_" << struct_info->data.name << "( obj->" << fieldName << ", packer );\n";
 
-			str << indent << "packer.Pop( obj->" << fieldName << " );\n";
-		}
-		else
-
-		// pack pointer to basic type
-		if ( num_pointers == 1 )
-		{
-			CHECK_ERR( counterName.empty() );
-
-			if ( fieldName == "pUserData" ) {
-				str << indent << "packer << static_cast<const void *>(null); // pUserData\n";
-				return true;
-			}
-
-			str << indent << "packer << (obj->" << fieldName << ");\n";
+			str << indent << "packer." << (isField ? "Pop( OUT" : "PopAndStore(") << " obj->" << fieldName << " );\n";
 		}
 		else
 
 		// pack single object
-		if ( num_pointers == 0 and struct_info != _structs.end() )
+		if ( num_pointers == 0 and struct_info != _structs.end() and not isField )
 		{
 			CHECK_ERR( counterName.empty() );
 
@@ -567,12 +603,30 @@ namespace VTC
 		}
 		else
 
-		// pack basic type
-		if ( num_pointers == 0 )
+		// pack resource
+		if ( num_pointers == 0 and res_info != _resourceTypes.end() and isField )
 		{
 			CHECK_ERR( counterName.empty() );
 
-			str << indent << "packer << (obj->" << fieldName << ");\n";
+			str << indent << "packer.RemapVkResource( INOUT &obj->" << fieldName << " );\n";
+		}
+		else
+
+		// pack basic type
+		if ( num_pointers == 0 )
+		{
+			CHECK_ERR( is_array or counterName.empty() );
+			CHECK_ERR( isField or struct_info == _structs.end() );
+
+			if ( isField ) {
+				CHECK_ERR( res_info == _resourceTypes.end() );
+			}else
+			if ( is_array ) {
+				str << indent << "for (uint i = 0; i < " << counterName << "; ++i) {\n"
+					<< indent << "	packer << (obj->" << fieldName << "[i]);\n"
+					<< indent << "}\n";
+			}else
+				str << indent << "packer << (obj->" << fieldName << ");\n";
 		}
 		else
 
@@ -594,32 +648,30 @@ namespace VTC
 
 		str << "void VPack_" << info.name << " (const " << info.name << " *obj, VPacker &packer)\n"
 			<< "{\n"
-			<< "	if ( obj == null ) return;\n"
-			<< "	packer.BeginStruct( obj );\n";
+			<< "	if ( obj == null ) return;\n";
 		
 		String	fields;
 
 		if ( not stype.empty() )
 		{
 			str << "	ASSERT( obj->sType == " << stype << " );\n"
-				<< "	packer << obj->sType;\n"
 				<< "	packer.Push( obj->pNext );\n"
-				<< "	VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );\n"
-				<< "	packer.Pop( obj->pNext );\n";
+				<< "	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );\n"
+				<< "	packer.Pop( OUT obj->pNext );\n";
 		}
 	
 		for (auto& field : info.fields)
 		{
 			if ( field.name == "pNext" or field.name == "sType" )
 				continue;
-
+			
 			CHECK_ERR( _VulkanTracePacker_ProcessVar( field.name, field.type, "\t",
 													  _GetStructFieldCounterName( info.name, field.name ), true,
 													  INOUT fields ));
 		}
 
 		str	<< fields
-			<< "	packer.EndStruct( obj );\n"
+			<< "	packer.AddStruct( *obj );\n"
 			<< "}\n\n";
 
 		return true;
@@ -647,20 +699,35 @@ namespace VTC
 
 		// version 1.0
 		{
-			for (auto& func : _GetRequiredForPackingFunctionsV1())
-			{
+			for (auto& func : _GetRequiredForPackingFunctionsV1()) {
 				sorted.push_back( func );
 			}
-
 			std::sort( sorted.begin(), sorted.end() );
 
-			uint	id = 0x1001;
+			uint	id = 1;
 
-			for (auto& func : sorted)
-			{
-				str << "\t" << _GenPacketIDName( func ) << " = " << ToString<16>( id++ ) << ",\n";
+			for (auto& func : sorted) {
+				str << "\t" << _GenPacketIDName( func ) << " = 0x" << ToString<16>( id++ ) << " | _VulkanApi | _V100,\n";
 			}
 		}
+		sorted.clear();
+
+
+		// version 1.1
+		/*{
+			for (auto& func : _GetRequiredForPackingFunctionsV2()) {
+				sorted.push_back( func );
+			}
+			std::sort( sorted.begin(), sorted.end() );
+			
+			uint	id = 1;
+
+			for (auto& func : sorted) {
+				str << "\t" << _GenPacketIDName( func ) << " = 0x" << ToString<16>( id++ ) << " | _VulkanApi | _V110,\n";
+			}
+		}
+		sorted.clear();*/
+
 
 		// TODO: add other versions
 
@@ -708,7 +775,8 @@ namespace VTC
 			const bool	has_stype = _HasSType( info.data );
 
 			if ( info.data.name == "VkBaseInStructure" or
-				 info.data.name == "VkBaseOutStructure" )
+				 info.data.name == "VkBaseOutStructure" or
+				 info.data.name == "VkAllocationCallbacks" )
 				continue;
 		
 			header << "void VPack_" << info.data.name << " (const " << info.data.name << "*, VPacker&);\n";
@@ -801,6 +869,7 @@ namespace VTC
 
 			str	<< temp
 				<< "\t\tpacker.End( EPacketID::" << _GenPacketIDName( func->data.name ) << " );\n"
+				<< "\t\tbreak;\n"
 				<< "\t}\n\n";
 		}
 		

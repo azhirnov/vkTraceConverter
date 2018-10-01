@@ -940,9 +940,9 @@ namespace VTC
 		AddCounter( "VkSpecializationInfo",					"pData",						"dataSize" );
 		AddCounter( "VkSwapchainCreateInfoKHR",				"pQueueFamilyIndices",			"queueFamilyIndexCount" );
 		AddCounter( "VkDebugMarkerObjectTagInfoEXT",		"pTag",							"tagSize" );
-		//AddCounter( "VkPipelineCacheCreateInfo",			"pInitialData",					"initialDataSize" );
+		AddCounter( "VkPipelineCacheCreateInfo",			"pInitialData",					"initialDataSize" );
 		//AddCounter( "VkValidationCacheCreateInfoEXT",		"pInitialData",					"initialDataSize" );
-		//AddCounter( "VkShaderModuleCreateInfo",			"pCode",						"codeSize" );
+		AddCounter( "VkShaderModuleCreateInfo",				"pCode",						"codeSize" );
 		AddCounter( "VkPipelineMultisampleStateCreateInfo",						"pSampleMask",			"((uint(obj->rasterizationSamples) + 31) / 32)" );
 		AddCounter( "VkDescriptorSetVariableDescriptorCountAllocateInfoEXT",	"pDescriptorCounts",	"descriptorSetCount" );
 		AddCounter( "VkWriteDescriptorSetInlineUniformBlockEXT",				"pData",				"dataSize" );

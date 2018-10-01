@@ -8,3 +8,5 @@
 /external/brotli
 /external/cryptopp
 /external/BLAKE2
+/player_exe
+/tests/player/*.vktrace
