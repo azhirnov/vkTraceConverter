@@ -256,7 +256,8 @@ namespace VTC
 
 		if ( op == EResOp::Destruct )
 		{
-			CHECK_ERR( pos->packet_id == VKTRACE_TPI_VK_vkFreeCommandBuffers );
+			CHECK_ERR(	pos->packet_id == VKTRACE_TPI_VK_vkFreeCommandBuffers or
+						pos->packet_id == VKTRACE_TPI_VK_vkDestroyCommandPool );
 
 			CHECK( _cmdBuffers.erase( id ) == 1 );
 			return true;
@@ -489,20 +490,16 @@ namespace VTC
 		queueIDs.clear();
 
 		for (auto& q : _queues)
+		for (auto& q_inst : q.second)
 		{
-			for (auto& q_inst : q.second)
-			{
-				// check intersection
-				if ( q_inst.FirstBookmark().pos > end or
-					 q_inst.LastBookmark().pos  < begin )
-					continue;
+			if ( IsIntersects( q_inst.FirstBookmark().pos, q_inst.LastBookmark().pos, begin, end ))
+				continue;
 				
-				auto	pool = q_inst.commandPools.find( id );
-				if ( pool == q_inst.commandPools.end() )
-					continue;
+			auto	pool = q_inst.commandPools.find( id );
+			if ( pool == q_inst.commandPools.end() )
+				continue;
 
-				AddQueueID( queueIDs, q_inst.id );
-			}
+			AddQueueID( queueIDs, q_inst.id );
 		}
 	}
 	
@@ -516,20 +513,16 @@ namespace VTC
 		queueIDs.clear();
 
 		for (auto& q : _queues)
+		for (auto& q_inst : q.second)
 		{
-			for (auto& q_inst : q.second)
-			{
-				// check intersection
-				if ( q_inst.FirstBookmark().pos > end or
-					 q_inst.LastBookmark().pos  < begin )
-					continue;
+			if ( IsIntersects( q_inst.FirstBookmark().pos, q_inst.LastBookmark().pos, begin, end ))
+				continue;
 				
-				auto	img = q_inst.imageUsage.find( id );
-				if ( img == q_inst.imageUsage.end() )
-					continue;
+			auto	img = q_inst.imageUsage.find( id );
+			if ( img == q_inst.imageUsage.end() )
+				continue;
 
-				AddQueueID( queueIDs, q_inst.id );
-			}
+			AddQueueID( queueIDs, q_inst.id );
 		}
 	}
 	
@@ -543,20 +536,16 @@ namespace VTC
 		queueIDs.clear();
 
 		for (auto& q : _queues)
+		for (auto& q_inst : q.second)
 		{
-			for (auto& q_inst : q.second)
-			{
-				// check intersection
-				if ( q_inst.FirstBookmark().pos > end or
-					 q_inst.LastBookmark().pos  < begin )
-					continue;
+			if ( IsIntersects( q_inst.FirstBookmark().pos, q_inst.LastBookmark().pos, begin, end ))
+				continue;
 				
-				auto	buf = q_inst.bufferUsage.find( id );
-				if ( buf == q_inst.bufferUsage.end() )
-					continue;
+			auto	buf = q_inst.bufferUsage.find( id );
+			if ( buf == q_inst.bufferUsage.end() )
+				continue;
 
-				AddQueueID( queueIDs, q_inst.id );
-			}
+			AddQueueID( queueIDs, q_inst.id );
 		}
 	}
 	
@@ -573,17 +562,15 @@ namespace VTC
 		CHECK_ERR( dev_info );
 
 		for (auto& q : _queues)
+		for (auto& q_inst : q.second)
 		{
-			for (auto& q_inst : q.second)
+			if ( IsIntersects( q_inst.FirstBookmark().pos, q_inst.LastBookmark().pos,
+							   dev_info->FirstBookmark().pos, dev_info->LastBookmark().pos ))
 			{
-				// check intersection
-				if ( q_inst.FirstBookmark().pos < dev_info->LastBookmark().pos and
-					 q_inst.LastBookmark().pos  > dev_info->FirstBookmark().pos )
-				{
-					result.push_back( &q_inst );
-				}
+				result.push_back( &q_inst );
 			}
 		}
+
 		return result;
 	}
 

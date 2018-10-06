@@ -13,7 +13,7 @@
 #include "stl/Algorithms/StringUtils.h"
 #include "stl/Math/Math.h"
 #include "stl/Log/TimeProfiler.h"
-#include "stl/File/HddFile.h"
+#include "stl/Stream/FileStream.h"
 
 #include <filesystem>
 

@@ -64,7 +64,100 @@ namespace VTC
 		{
 			case VKTRACE_TPI_VK_vkFlushMappedMemoryRanges :			CHECK( _OnFlushMappedMemoryRanges( pos ));		break;
 			case VKTRACE_TPI_VK_vkInvalidateMappedMemoryRanges :	CHECK( _OnInvalidateMappedMemoryRanges( pos ));	break;
+
+			case VKTRACE_TPI_VK_vkCreateDevice :
+			case VKTRACE_TPI_VK_vkQueueSubmit :
+			case VKTRACE_TPI_VK_vkQueueWaitIdle :
+			case VKTRACE_TPI_VK_vkDeviceWaitIdle :
+			case VKTRACE_TPI_VK_vkWaitForFences :
+				_hostSyncBookmarks.push_back( pos.GetBookmark() );
+				break;
 		}
+	}
+	
+/*
+=================================================
+	PostProcess
+=================================================
+*/
+	void MemoryTransferAnalyzer::PostProcess ()
+	{
+		CHECK( _SearchResourceBlocks() );
+	}
+	
+/*
+=================================================
+	_SearchResourceBlocks
+=================================================
+*/
+	bool MemoryTransferAnalyzer::_SearchResourceBlocks ()
+	{
+		for (auto& item : _memTransfer)
+		{
+			auto	pos	= item.first.second;
+			auto*	mem	= _memObjAnalyzer->GetMemoryObj( item.first.first, pos );
+			CHECK_ERR( mem );
+
+			for (auto& block : item.second.blocks)
+			{
+				// search in buffer bindings
+				for (auto& buffer : mem->bufferBindings)
+				{
+					auto*	info = _bufferAnalyzer->GetBuffer( buffer.id, buffer.pos );
+					CHECK_ERR( info );
+
+					// buffer was destroyed or not yet created
+					if ( pos > info->LastBookmark().pos or
+						 pos < info->FirstBookmark().pos )
+						continue;
+
+					if ( not IsIntersects( buffer.offset, (buffer.offset + info->createInfo.size), block.memOffset, (block.memOffset + block.dataSize) ))
+						continue;
+
+					ASSERT( not buffer.aliased );
+
+					ResDataInfo		res_data;
+					res_data.memOffset	= Max( buffer.offset, block.memOffset );
+					res_data.resOffset	= res_data.memOffset - buffer.offset;
+					res_data.dataSize	= Min( buffer.offset + info->createInfo.size, block.memOffset + block.dataSize ) - res_data.memOffset;
+					res_data.fileOffset	= block.fileOffset + (block.memOffset - res_data.memOffset);
+					res_data.id			= buffer.id;
+					res_data.pos		= buffer.pos;
+					res_data.type		= VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT;
+
+					item.second.resources.push_back( std::move(res_data) );
+				}
+				
+				// search in image bindings
+				for (auto& image : mem->imageBindings)
+				{
+					auto*	info = _imageAnalyzer->GetImage( image.id, image.pos );
+					CHECK_ERR( info );
+
+					// image was destroyed or not yet created
+					if ( pos > info->LastBookmark().pos or
+						 pos < info->FirstBookmark().pos )
+						continue;
+
+					if ( not IsIntersects( image.offset, (image.offset + image.size), block.memOffset, (block.memOffset + block.dataSize) ))
+						continue;
+					
+					ASSERT( not image.aliased );
+
+					ResDataInfo		res_data;
+					res_data.memOffset	= Max( image.offset, block.memOffset );
+					res_data.resOffset	= res_data.memOffset - image.offset;
+					res_data.dataSize	= Min( image.offset + image.size, block.memOffset + block.dataSize ) - res_data.memOffset;
+					res_data.fileOffset	= block.fileOffset + (block.memOffset - res_data.memOffset);
+					res_data.id			= image.id;
+					res_data.pos		= image.pos;
+					res_data.type		= VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT;
+
+					item.second.resources.push_back( std::move(res_data) );
+				}
+			}
+		}
+		return true;
 	}
 
 /*
@@ -116,6 +209,7 @@ namespace VTC
 			auto*	mem_obj	= _memObjAnalyzer->GetMemoryObj( ResourceID(packet.pMemoryRanges[i].memory), pos.GetBookmark() );
 			CHECK_ERR( mem_obj );
 
+			info.hostSyncIndex = _hostSyncBookmarks.size()-1;
 
 			// add memory blocks
 			if ( pageguard_speedup and _traceFileVersion >= VKTRACE_TRACE_FILE_VERSION_5 )

@@ -118,10 +118,10 @@ namespace VTPlayer
 
 /*
 =================================================
-	CreateVTPlayer
+	CreatePlayer
 =================================================
 */
-	int  CreateVTPlayer (const struct VTPlayerSettings *settings, OUT VTPlayerInstance *outInstance)
+	extern "C" FG_DLL_EXPORT int VTPLAYER_CALL  CreatePlayer (const struct VTPlayerSettings *settings, OUT VTPlayerInstance *outInstance)
 	{
 		if ( settings )
 		{
@@ -144,10 +144,10 @@ namespace VTPlayer
 	
 /*
 =================================================
-	DestroyVTPlayer
+	DestroyPlayer
 =================================================
 */
-	void  DestroyVTPlayer (VTPlayerInstance instance)
+	extern "C" FG_DLL_EXPORT void VTPLAYER_CALL  DestroyPlayer (VTPlayerInstance instance)
 	{
 		CHECK_ERR( instance, void() );
 
@@ -159,7 +159,7 @@ namespace VTPlayer
 	PlayerStart
 =================================================
 */
-	int  PlayerStart (VTPlayerInstance instance)
+	extern "C" FG_DLL_EXPORT int VTPLAYER_CALL  PlayerStart (VTPlayerInstance instance)
 	{
 		CHECK_ERR( instance );
 
@@ -167,6 +167,18 @@ namespace VTPlayer
 		return true;
 	}
 	
+/*
+=================================================
+	PlayerIsActive
+=================================================
+*/
+	extern "C" FG_DLL_EXPORT int VTPLAYER_CALL  PlayerIsActive (VTPlayerInstance instance)
+	{
+		CHECK_ERR( instance );
+
+		return BitCast<IPlayerInstance *>( instance )->IsRunning();
+	}
+
 /*
 =================================================
 	PlayerPause
@@ -241,13 +253,14 @@ namespace VTPlayer
 	validation
 =================================================
 */
-	STATIC_ASSERT( std::is_same_v<decltype(&CreateVTPlayer), PFN_CreateVTPlayer> );
-	STATIC_ASSERT( std::is_same_v<decltype(&DestroyVTPlayer), PFN_DestroyVTPlayer> );
-	STATIC_ASSERT( std::is_same_v<decltype(&PlayerStart), PFN_PlayerStart> );
-	STATIC_ASSERT( std::is_same_v<decltype(&PlayerPause), PFN_PlayerPause> );
-	STATIC_ASSERT( std::is_same_v<decltype(&SetPlayerVulkanEventListener), PFN_SetPlayerVulkanEventListener> );
-	STATIC_ASSERT( std::is_same_v<decltype(&SetFileReader), PFN_SetFileReader> );
-	STATIC_ASSERT( std::is_same_v<decltype(&AddPipelineCache), PFN_AddPipelineCache> );
-	STATIC_ASSERT( std::is_same_v<decltype(&GetPipelineCache), PFN_GetPipelineCache> );
+	STATIC_ASSERT( IsSameTypes<decltype(&CreatePlayer), PFN_CreatePlayer> );
+	STATIC_ASSERT( IsSameTypes<decltype(&DestroyPlayer), PFN_DestroyPlayer> );
+	STATIC_ASSERT( IsSameTypes<decltype(&PlayerStart), PFN_PlayerStart> );
+	STATIC_ASSERT( IsSameTypes<decltype(&PlayerPause), PFN_PlayerPause> );
+	STATIC_ASSERT( IsSameTypes<decltype(&PlayerIsActive), PFN_PlayerIsActive> );
+	STATIC_ASSERT( IsSameTypes<decltype(&SetPlayerVulkanEventListener), PFN_SetPlayerVulkanEventListener> );
+	STATIC_ASSERT( IsSameTypes<decltype(&SetFileReader), PFN_SetFileReader> );
+	STATIC_ASSERT( IsSameTypes<decltype(&AddPipelineCache), PFN_AddPipelineCache> );
+	STATIC_ASSERT( IsSameTypes<decltype(&GetPipelineCache), PFN_GetPipelineCache> );
 
 }	// VTPlayer

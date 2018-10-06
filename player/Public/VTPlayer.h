@@ -6,6 +6,9 @@
 extern "C" {
 #endif
 	
+// temp
+#define VTPLAYER_STATIC
+
 #if defined(_WIN32)
 #	define VTPLAYER_CALL	__stdcall
 #else
@@ -126,8 +129,9 @@ namespace VTPlayer
 	
 	typedef struct VTPlayerInstance_t*  VTPlayerInstance;
 
-	typedef int  (VTPLAYER_CALL *PFN_CreateVTPlayer) (const struct VTPlayerSettings *, OUT VTPlayerInstance *);
-	typedef void (VTPLAYER_CALL *PFN_DestroyVTPlayer) (VTPlayerInstance);
+	typedef int  (VTPLAYER_CALL *PFN_CreatePlayer) (const struct VTPlayerSettings *, OUT VTPlayerInstance *);
+	typedef void (VTPLAYER_CALL *PFN_DestroyPlayer) (VTPlayerInstance);
+	typedef int  (VTPLAYER_CALL *PFN_PlayerIsActive) (VTPlayerInstance);
 
 	typedef int  (VTPLAYER_CALL *PFN_PlayerStart) (VTPlayerInstance);
 	typedef int  (VTPLAYER_CALL *PFN_PlayerPause) (VTPlayerInstance);
@@ -139,16 +143,17 @@ namespace VTPlayer
 	typedef int  (VTPLAYER_CALL *PFN_GetPipelineCache) (VTPlayerInstance, OUT void const**, OUT size_t *);
 	
 
+# ifdef VTPLAYER_STATIC
+	int  VTPLAYER_CALL  CreatePlayer (const struct VTPlayerSettings *, OUT VTPlayerInstance *);
+	void VTPLAYER_CALL  DestroyPlayer (VTPlayerInstance);
+	int  VTPLAYER_CALL  PlayerIsActive (VTPlayerInstance);
+	int  VTPLAYER_CALL  PlayerStart (VTPlayerInstance);
+	int  VTPLAYER_CALL  PlayerPause (VTPlayerInstance);
+# endif
+
 }	// VTPlayer
 
 
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
-namespace VTPlayer
-{
-	int  CreateVTPlayer (const struct VTPlayerSettings *settings, OUT VTPlayerInstance *outInstance);
-	void DestroyVTPlayer (VTPlayerInstance instance);
-	int  PlayerStart (VTPlayerInstance instance);
-}

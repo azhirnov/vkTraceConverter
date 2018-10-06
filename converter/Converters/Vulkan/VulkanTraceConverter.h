@@ -103,6 +103,7 @@ namespace VTC
 		bool _ConvertVkFunction (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
 
 		bool _AfterConverting ();
+		bool _CheckPacketErrors (const TraceRange::Iterator &iter) const;
 
 		void _InitializeResources (INOUT TracePacker &packer) const;
 		bool _PackVulkanCreateInfo (INOUT TracePacker &packer) const;
@@ -116,47 +117,54 @@ namespace VTC
 		ND_ DataID  _RequestData (const TraceRange::Iterator &iter, const void* hdr, const void *member, uint64_t size, FrameID frameId);
 
 		// remap queue family
-		bool _OnCreateCommandPool (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _OnCreateBuffer (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _OnCreateImage (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _OnCmdWaitEvents (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _OnCmdPipelineBarrier (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
+		bool _OnCreateCommandPool (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _OnCreateBuffer (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _OnCreateImage (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _OnWaitEvents3 (const TraceRange::Iterator &) const;
+		bool _OnPipelineBarrier3 (const TraceRange::Iterator &) const;
+		
+		// remap swapchain images adn queue family index
+		bool _OnCmdWaitEvents (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _OnCmdPipelineBarrier (const TraceRange::Iterator &, INOUT TracePacker &) const;
 		
 		// remap memory
-		bool _OnBindBufferMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _OnBindImageMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _OnBindBufferMemory2 (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _OnBindImageMemory2 (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _OnAllocateMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _OnFreeMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _OnMapMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _OnUnmapMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _OnFlushMappedMemoryRanges (const TraceRange::Iterator &iter, FrameID frameId, INOUT TracePacker &packer);
-		bool _OnDestroyImage (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _OnDestroyBuffer (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
+		bool _OnBindBufferMemory (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _OnBindImageMemory (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _OnBindBufferMemory2 (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _OnBindImageMemory2 (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _OnAllocateMemory (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _OnFreeMemory (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _OnMapMemory (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _OnUnmapMemory (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _OnFlushMappedMemoryRanges (const TraceRange::Iterator &, FrameID, INOUT TracePacker &);
+		bool _OnDestroyImage (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _OnDestroyBuffer (const TraceRange::Iterator &, INOUT TracePacker &) const;
 		
-		bool _OverrideMapMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _OverrideUnmapMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _OverrideFlushMappedMemoryRanges (const TraceRange::Iterator &iter, FrameID frameId, INOUT TracePacker &packer);
+		bool _OverrideMapMemory (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _OverrideUnmapMemory (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _OverrideFlushMappedMemoryRanges (const TraceRange::Iterator &, FrameID, INOUT TracePacker &);
 
-		bool _RemapBufferMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _RemapImageMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _RemapBufferMemory2 (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _RemapImageMemory2 (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _RemapFlushMemoryRanges (const TraceRange::Iterator &iter, FrameID frameId, INOUT TracePacker &packer);
-		bool _FreeImageMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _FreeBufferMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
+		bool _RemapBufferMemory (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _RemapImageMemory (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _RemapBufferMemory2 (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _RemapImageMemory2 (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _RemapFlushMemoryRanges (const TraceRange::Iterator &, FrameID, INOUT TracePacker &);
+		bool _FreeImageMemory (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _FreeBufferMemory (const TraceRange::Iterator &, INOUT TracePacker &) const;
 
 		// remap swapchain images
-		bool _OnAcquireNextImage (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
-		bool _OnQueuePresent (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const;
+		bool _OnAcquireNextImage (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _OnQueuePresent (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _OnCreateRenderPass (const TraceRange::Iterator &, INOUT TracePacker &) const;
+		bool _OnWaitEvents2 (const TraceRange::Iterator &) const;
+		bool _OnPipelineBarrier2 (const TraceRange::Iterator &) const;
 
 		// use loadable data
-		bool _OnCreateShaderModule (const TraceRange::Iterator &iter, FrameID frameId, INOUT TracePacker &packer);
-		bool _OnCreatePipelineCache (const TraceRange::Iterator &iter, FrameID frameId, INOUT TracePacker &packer);
-		bool _OnCmdUpdateBuffer (const TraceRange::Iterator &iter, FrameID frameId, INOUT TracePacker &packer);
-		bool _OnCmdPushDescriptorSetWithTemplate (const TraceRange::Iterator &iter, FrameID frameId, INOUT TracePacker &packer);
-		bool _OnUpdateDescriptorSetWithTemplate (const TraceRange::Iterator &iter, FrameID frameId, INOUT TracePacker &packer);
+		bool _OnCreateShaderModule (const TraceRange::Iterator &, FrameID, INOUT TracePacker &);
+		bool _OnCreatePipelineCache (const TraceRange::Iterator &, FrameID, INOUT TracePacker &);
+		bool _OnCmdUpdateBuffer (const TraceRange::Iterator &, FrameID, INOUT TracePacker &);
+		bool _OnCmdPushDescriptorSetWithTemplate (const TraceRange::Iterator &, FrameID, INOUT TracePacker &);
+		bool _OnUpdateDescriptorSetWithTemplate (const TraceRange::Iterator &, FrameID, INOUT TracePacker &);
 	};
 
 

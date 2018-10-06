@@ -440,87 +440,50 @@ namespace VTC
 
 			auto*	mem			= _memoryObjAnalyzer->GetMemoryObj( ResourceID(flush_range.memory), iter.GetBookmark() );
 			CHECK_ERR( mem );
-
-			for (auto& block : transfer->blocks)
+			
+			for (auto& res : transfer->resources)
 			{
-				// search in buffer bindings
-				for (auto& buffer : mem->bufferBindings)
+				if ( res.type == VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT )
 				{
-					auto*	info = _bufferAnalyzer->GetBuffer( buffer.id, buffer.pos );
-					CHECK_ERR( info );
-
-					// buffer was destroyed or not yet created
-					if ( iter.GetBookmark() > info->LastBookmark().pos or
-						 iter.GetBookmark() < info->FirstBookmark().pos )
-						continue;
-
-					// check intersection
-					if ( buffer.offset >= (block.memOffset + block.dataSize) or
-						 block.memOffset >= (buffer.offset + buffer.size) )
-						continue;
-
 					// initialize buffer memory
-					if ( _initializedResources.insert( buffer.id ).second )
+					if ( _initializedResources.insert( res.id ).second )
 					{
-						ASSERT( iter.GetBookmark() < buffer.pos );
+						ASSERT( iter.GetBookmark() < res.pos );
 						
 						src << "\tapp.AllocateBufferMemory( "
-							<< "BufferID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, buffer.id ) << "), "
+							<< "BufferID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, res.id ) << "), "
 							<< ConvertVmaAllocationCreateFlagsAndMemoryUsage( mem->propertyFlags, mem->usage ) << " );\n";
 					}
-
-					// intersect
-					VkDeviceSize	offset		= Max( buffer.offset, block.memOffset );
-					VkDeviceSize	size		= Min( buffer.offset + buffer.size, block.memOffset + block.dataSize ) - offset;
-					uint64_t		file_pos	= block.fileOffset + (block.memOffset - offset);
-
-					DataID	data_id = _RequestData( _inputFile, file_pos, size, frameId );
+					
+					DataID	data_id = _RequestData( _inputFile, res.fileOffset, res.dataSize, frameId );
 					CHECK_ERR( data_id != ~DataID(0) );
 
-					src << "\tapp.LoadDataToBuffer( BufferID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, buffer.id ) << "), "
+					src << "\tapp.LoadDataToBuffer( BufferID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, res.id ) << "), "
 						<< "DataID(" << IntToString( data_id ) << "), "
-						<< IntToString( offset ) << ", "
-						<< IntToString( size ) << " );\n";
+						<< IntToString( res.resOffset ) << ", "
+						<< IntToString( res.dataSize ) << " );\n";
 				}
-
-				// search in image bindings
-				for (auto& image : mem->imageBindings)
+				else
 				{
-					auto*	info = _imageAnalyzer->GetImage( image.id, image.pos );
-					CHECK_ERR( info );
-
-					// image was destroyed or not yet created
-					if ( iter.GetBookmark() > info->LastBookmark().pos or
-						 iter.GetBookmark() < info->FirstBookmark().pos )
-						continue;
-
-					// check intersection
-					if ( image.offset >= (block.memOffset + block.dataSize) or
-						 block.memOffset >= (image.offset + image.size) )
-						continue;
+					ASSERT( res.type == VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT );
 					
 					// initialize buffer memory
-					if ( _initializedResources.insert( image.id ).second )
+					if ( _initializedResources.insert( res.id ).second )
 					{
-						ASSERT( iter.GetBookmark() < image.pos );
+						ASSERT( iter.GetBookmark() < res.pos );
 
 						src << "\tapp.AllocateImageMemory( "
-							<< "ImageID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, image.id ) << "), "
+							<< "ImageID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, res.id ) << "), "
 							<< ConvertVmaAllocationCreateFlagsAndMemoryUsage( mem->propertyFlags, mem->usage ) << " );\n";
 					}
 
-					// intersect
-					VkDeviceSize	offset		= Max( image.offset, block.memOffset );
-					VkDeviceSize	size		= Min( image.offset + image.size, block.memOffset + block.dataSize ) - offset;
-					uint64_t		file_pos	= block.fileOffset + (block.memOffset - offset);
-
-					DataID	data_id = _RequestData( _inputFile, file_pos, size, frameId );
+					DataID	data_id = _RequestData( _inputFile, res.fileOffset, res.dataSize, frameId );
 					CHECK_ERR( data_id != ~DataID(0) );
 
-					src << "\tapp.LoadDataToImage( ImageID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, image.id ) << "), "
+					src << "\tapp.LoadDataToImage( ImageID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, res.id ) << "), "
 						<< "DataID(" << IntToString( data_id ) << "), "
-						<< IntToString( offset ) << ", "
-						<< IntToString( size ) << " );\n";
+						<< IntToString( res.resOffset ) << ", "
+						<< IntToString( res.dataSize ) << " );\n";
 				}
 			}
 		}

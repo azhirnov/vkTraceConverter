@@ -63,8 +63,10 @@ static void Unpack_VkClearDepthStencilValue (VkClearDepthStencilValue *, vktrace
 static void Unpack_VkClearAttachment (VkClearAttachment *, vktrace_trace_packet_header *);
 static void Unpack_VkClearRect (VkClearRect *, vktrace_trace_packet_header *);
 static void Unpack_VkViewportSwizzleNV (VkViewportSwizzleNV *, vktrace_trace_packet_header *);
+static void Unpack_VkShadingRatePaletteNV (VkShadingRatePaletteNV *, vktrace_trace_packet_header *);
 static void Unpack_VkInputAttachmentAspectReference (VkInputAttachmentAspectReference *, vktrace_trace_packet_header *);
 static void Unpack_VkExternalMemoryProperties (VkExternalMemoryProperties *, vktrace_trace_packet_header *);
+static void Unpack_VkCoarseSampleLocationNV (VkCoarseSampleLocationNV *, vktrace_trace_packet_header *);
 static void Unpack_VkDisplayModeParametersKHR (VkDisplayModeParametersKHR *, vktrace_trace_packet_header *);
 static void Unpack_VkSurfaceCapabilitiesKHR (VkSurfaceCapabilitiesKHR *, vktrace_trace_packet_header *);
 static void Unpack_VkSurfaceFormatKHR (VkSurfaceFormatKHR *, vktrace_trace_packet_header *);
@@ -76,6 +78,7 @@ static void Unpack_VkDisplayPlaneCapabilitiesKHR (VkDisplayPlaneCapabilitiesKHR 
 static void Unpack_VkSubpassSampleLocationsEXT (VkSubpassSampleLocationsEXT *, vktrace_trace_packet_header *);
 static void Unpack_VkRectLayerKHR (VkRectLayerKHR *, vktrace_trace_packet_header *);
 static void Unpack_VkPresentRegionKHR (VkPresentRegionKHR *, vktrace_trace_packet_header *);
+static void Unpack_VkCoarseSampleOrderCustomNV (VkCoarseSampleOrderCustomNV *, vktrace_trace_packet_header *);
 static void Unpack_VkIndirectCommandsTokenNVX (VkIndirectCommandsTokenNVX *, vktrace_trace_packet_header *);
 static void Unpack_VkObjectTableEntryNVX (VkObjectTableEntryNVX *, vktrace_trace_packet_header *);
 static void Unpack_VkViewportWScalingNV (VkViewportWScalingNV *, vktrace_trace_packet_header *);
@@ -84,6 +87,7 @@ static void Unpack_VkPastPresentationTimingGOOGLE (VkPastPresentationTimingGOOGL
 static void Unpack_VkPresentTimeGOOGLE (VkPresentTimeGOOGLE *, vktrace_trace_packet_header *);
 static void Unpack_VkSampleLocationEXT (VkSampleLocationEXT *, vktrace_trace_packet_header *);
 static void Unpack_VkAttachmentSampleLocationsEXT (VkAttachmentSampleLocationsEXT *, vktrace_trace_packet_header *);
+static void Unpack_VkGeometryDataNVX (VkGeometryDataNVX *, vktrace_trace_packet_header *);
 //-----------------------------------------------------------------------------
 
 static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *header)
@@ -117,6 +121,15 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 		case VK_STRUCTURE_TYPE_EXTERNAL_IMAGE_FORMAT_PROPERTIES : {
 			VkExternalImageFormatProperties*  value = BitCast<VkExternalImageFormatProperties*>( ptr );
 			Unpack_VkExternalMemoryProperties( &value->externalMemoryProperties, header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_COARSE_SAMPLE_ORDER_STATE_CREATE_INFO_NV : {
+			VkPipelineViewportCoarseSampleOrderStateCreateInfoNV*  value = BitCast<VkPipelineViewportCoarseSampleOrderStateCreateInfoNV*>( ptr );
+			UnpackPointer( INOUT value->pCustomSampleOrders, header );
+			for (uint i = 0; (value->pCustomSampleOrders != null) and (i < value->customSampleOrderCount); ++i) {
+				Unpack_VkCoarseSampleOrderCustomNV( const_cast<VkCoarseSampleOrderCustomNV*>(value->pCustomSampleOrders + i), header );
+			}
 			break;
 		}
 
@@ -400,6 +413,15 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NVX : {
+			VkAccelerationStructureCreateInfoNVX*  value = BitCast<VkAccelerationStructureCreateInfoNVX*>( ptr );
+			UnpackPointer( INOUT value->pGeometries, header );
+			for (uint i = 0; (value->pGeometries != null) and (i < value->geometryCount); ++i) {
+				UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkGeometryNVX*>(value->pGeometries + i)), header );
+			}
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO : {
 			VkDescriptorPoolCreateInfo*  value = BitCast<VkDescriptorPoolCreateInfo*>( ptr );
 			UnpackPointer( INOUT value->pPoolSizes, header );
@@ -488,6 +510,12 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 		case VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER : {
 			VkImageMemoryBarrier*  value = BitCast<VkImageMemoryBarrier*>( ptr );
 			Unpack_VkImageSubresourceRange( &value->subresourceRange, header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_PROPERTIES_NV : {
+			VkPhysicalDeviceShadingRateImagePropertiesNV*  value = BitCast<VkPhysicalDeviceShadingRateImagePropertiesNV*>( ptr );
+			Unpack_VkExtent2D( &value->shadingRateTexelSize, header );
 			break;
 		}
 
@@ -794,6 +822,12 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_GEOMETRY_NVX : {
+			VkGeometryNVX*  value = BitCast<VkGeometryNVX*>( ptr );
+			Unpack_VkGeometryDataNVX( &value->geometry, header );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT : {
 			VkDebugMarkerObjectNameInfoEXT*  value = BitCast<VkDebugMarkerObjectNameInfoEXT*>( ptr );
 			UnpackPointer( INOUT value->pObjectName, header );
@@ -853,6 +887,15 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_EXCLUSIVE_SCISSOR_STATE_CREATE_INFO_NV : {
+			VkPipelineViewportExclusiveScissorStateCreateInfoNV*  value = BitCast<VkPipelineViewportExclusiveScissorStateCreateInfoNV*>( ptr );
+			UnpackPointer( INOUT value->pExclusiveScissors, header );
+			for (uint i = 0; (value->pExclusiveScissors != null) and (i < value->exclusiveScissorCount); ++i) {
+				Unpack_VkRect2D( const_cast<VkRect2D*>(value->pExclusiveScissors + i), header );
+			}
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_W_SCALING_STATE_CREATE_INFO_NV : {
 			VkPipelineViewportWScalingStateCreateInfoNV*  value = BitCast<VkPipelineViewportWScalingStateCreateInfoNV*>( ptr );
 			UnpackPointer( INOUT value->pViewportWScalings, header );
@@ -877,6 +920,16 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			for (uint i = 0; (value->pDiscardRectangles != null) and (i < value->discardRectangleCount); ++i) {
 				Unpack_VkRect2D( const_cast<VkRect2D*>(value->pDiscardRectangles + i), header );
 			}
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_RAYTRACING_PIPELINE_CREATE_INFO_NVX : {
+			VkRaytracingPipelineCreateInfoNVX*  value = BitCast<VkRaytracingPipelineCreateInfoNVX*>( ptr );
+			UnpackPointer( INOUT value->pStages, header );
+			for (uint i = 0; (value->pStages != null) and (i < value->stageCount); ++i) {
+				UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPipelineShaderStageCreateInfo*>(value->pStages + i)), header );
+			}
+			UnpackPointer( INOUT value->pGroupNumbers, header );
 			break;
 		}
 
@@ -923,6 +976,13 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SHADING_RATE_IMAGE_STATE_CREATE_INFO_NV : {
+			VkPipelineViewportShadingRateImageStateCreateInfoNV*  value = BitCast<VkPipelineViewportShadingRateImageStateCreateInfoNV*>( ptr );
+			UnpackPointer( INOUT value->pShadingRatePalettes, header );
+			Unpack_VkShadingRatePaletteNV( const_cast<VkShadingRatePaletteNV*>(value->pShadingRatePalettes), header );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_SAMPLE_LOCATIONS_INFO_EXT : {
 			VkSampleLocationsInfoEXT*  value = BitCast<VkSampleLocationsInfoEXT*>( ptr );
 			Unpack_VkExtent2D( &value->sampleLocationGridSize, header );
@@ -962,6 +1022,18 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			VkAndroidHardwareBufferFormatPropertiesANDROID*  value = BitCast<VkAndroidHardwareBufferFormatPropertiesANDROID*>( ptr );
 			Unpack_VkComponentMapping( &value->samplerYcbcrConversionComponents, header );
 			#endif
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NVX : {
+			VkBindAccelerationStructureMemoryInfoNVX*  value = BitCast<VkBindAccelerationStructureMemoryInfoNVX*>( ptr );
+			UnpackPointer( INOUT value->pDeviceIndices, header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_DESCRIPTOR_ACCELERATION_STRUCTURE_INFO_NVX : {
+			VkDescriptorAccelerationStructureInfoNVX*  value = BitCast<VkDescriptorAccelerationStructureInfoNVX*>( ptr );
+			UnpackPointer( INOUT value->pAccelerationStructures, header );
 			break;
 		}
 
@@ -1030,6 +1102,8 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 	case VK_STRUCTURE_TYPE_VI_SURFACE_CREATE_INFO_NN : break;
 	case VK_STRUCTURE_TYPE_IOS_SURFACE_CREATE_INFO_MVK : break;
 	case VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK : break;
+	case VK_STRUCTURE_TYPE_GEOMETRY_INSTANCE_NVX : break;
+	case VK_STRUCTURE_TYPE_HIT_SHADER_MODULE_CREATE_INFO_NVX : break;
 	case VK_STRUCTURE_TYPE_RANGE_SIZE : break;
 	case VK_STRUCTURE_TYPE_MAX_ENUM : break;
 	case VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_BUFFER_CREATE_INFO : break;
@@ -1065,6 +1139,7 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_SEMAPHORE_INFO : break;
 	case VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_FILTER_MINMAX_PROPERTIES_EXT : break;
+	case VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NVX : break;
 	case VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO : break;
 	case VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO : break;
 	case VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_LAYOUT_SUPPORT_EXT : break;
@@ -1106,7 +1181,9 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_PROPERTIES_EXT : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES : break;
 	case VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CORNER_SAMPLED_IMAGE_FEATURES_NV : break;
 	case VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_REPRESENTATIVE_FRAGMENT_TEST_FEATURES_NV : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_FENCE_INFO : break;
 	case VK_STRUCTURE_TYPE_EXTERNAL_FENCE_PROPERTIES : break;
 	case VK_STRUCTURE_TYPE_EXPORT_FENCE_CREATE_INFO : break;
@@ -1136,6 +1213,7 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SURFACE_INFO_2_KHR : break;
 	case VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_WIN32_HANDLE_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR : break;
+	case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NVX : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES_KHR : break;
 	case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD : break;
 	case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_IMAGE_CREATE_INFO_NV : break;
@@ -1152,6 +1230,7 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 	case VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_CONDITIONAL_RENDERING_INFO_EXT : break;
 	case VK_STRUCTURE_TYPE_DISPLAY_EVENT_INFO_EXT : break;
 	case VK_STRUCTURE_TYPE_CMD_RESERVE_SPACE_FOR_COMMANDS_INFO_NVX : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXCLUSIVE_SCISSOR_FEATURES_NV : break;
 	case VK_STRUCTURE_TYPE_DISPLAY_POWER_INFO_EXT : break;
 	case VK_STRUCTURE_TYPE_SWAPCHAIN_COUNTER_CREATE_INFO_EXT : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_ATTRIBUTES_PROPERTIES_NVX : break;
@@ -1160,14 +1239,23 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_FEATURES_EXT : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_PROPERTIES_EXT : break;
 	case VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_INLINE_UNIFORM_BLOCK_CREATE_INFO_EXT : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_FEATURES_NV : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_FEATURES_EXT : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES_EXT : break;
+	case VK_STRUCTURE_TYPE_GEOMETRY_AABB_NVX : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAYTRACING_PROPERTIES_NVX : break;
+	case VK_STRUCTURE_TYPE_PIPELINE_REPRESENTATIVE_FRAGMENT_TEST_STATE_CREATE_INFO_NV : break;
 	case VK_STRUCTURE_TYPE_DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_EXT : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_AMD : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_PROPERTIES_EXT : break;
 	case VK_STRUCTURE_TYPE_FENCE_GET_WIN32_HANDLE_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMPUTE_SHADER_DERIVATIVES_FEATURES_NV : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_NV : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_FEATURES_NV : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_IMAGE_FOOTPRINT_FEATURES_NV : break;
 	case VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_MEMORY_GET_WIN32_HANDLE_INFO_KHR : break;
@@ -1553,12 +1641,23 @@ static void Unpack_VkViewportSwizzleNV (VkViewportSwizzleNV *ptr, vktrace_trace_
 	if ( ptr == null ) return;
 }
 
+static void Unpack_VkShadingRatePaletteNV (VkShadingRatePaletteNV *ptr, vktrace_trace_packet_header *header)
+{
+	if ( ptr == null ) return;
+	UnpackPointer( INOUT ptr->pShadingRatePaletteEntries, header );
+}
+
 static void Unpack_VkInputAttachmentAspectReference (VkInputAttachmentAspectReference *ptr, vktrace_trace_packet_header *header)
 {
 	if ( ptr == null ) return;
 }
 
 static void Unpack_VkExternalMemoryProperties (VkExternalMemoryProperties *ptr, vktrace_trace_packet_header *header)
+{
+	if ( ptr == null ) return;
+}
+
+static void Unpack_VkCoarseSampleLocationNV (VkCoarseSampleLocationNV *ptr, vktrace_trace_packet_header *header)
 {
 	if ( ptr == null ) return;
 }
@@ -1641,6 +1740,15 @@ static void Unpack_VkPresentRegionKHR (VkPresentRegionKHR *ptr, vktrace_trace_pa
 	}
 }
 
+static void Unpack_VkCoarseSampleOrderCustomNV (VkCoarseSampleOrderCustomNV *ptr, vktrace_trace_packet_header *header)
+{
+	if ( ptr == null ) return;
+	UnpackPointer( INOUT ptr->pSampleLocations, header );
+	for (uint i = 0; (ptr->pSampleLocations != null) and (i < ptr->sampleLocationCount); ++i) {
+		Unpack_VkCoarseSampleLocationNV( const_cast<VkCoarseSampleLocationNV*>(ptr->pSampleLocations + i), header );
+	}
+}
+
 static void Unpack_VkIndirectCommandsTokenNVX (VkIndirectCommandsTokenNVX *ptr, vktrace_trace_packet_header *header)
 {
 	if ( ptr == null ) return;
@@ -1682,6 +1790,13 @@ static void Unpack_VkAttachmentSampleLocationsEXT (VkAttachmentSampleLocationsEX
 	UnpackStruct( BitCast<VkBaseOutStructure*>(&ptr->sampleLocationsInfo), header );
 }
 
+static void Unpack_VkGeometryDataNVX (VkGeometryDataNVX *ptr, vktrace_trace_packet_header *header)
+{
+	if ( ptr == null ) return;
+	UnpackStruct( BitCast<VkBaseOutStructure*>(&ptr->triangles), header );
+	UnpackStruct( BitCast<VkBaseOutStructure*>(&ptr->aabbs), header );
+}
+
 //-----------------------------------------------------------------------------
 
 static void UnpackPacket (vktrace_trace_packet_header *header)
@@ -1703,7 +1818,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 			break;
 		}
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceExternalImageFormatPropertiesNV : {
-			packet_vkGetPhysicalDeviceExternalImageFormatPropertiesNV*  packet = BitCast<packet_vkGetPhysicalDeviceExternalImageFormatPropertiesNV*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceExternalImageFormatPropertiesNV*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pExternalImageFormatProperties, header );
 			Unpack_VkExternalImageFormatPropertiesNV( const_cast<VkExternalImageFormatPropertiesNV*>(packet->pExternalImageFormatProperties), header );
@@ -1711,19 +1826,19 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdDrawIndirectCountAMD : {
-			packet_vkCmdDrawIndirectCountAMD*  packet = BitCast<packet_vkCmdDrawIndirectCountAMD*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdDrawIndirectCountAMD*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdDrawIndexedIndirectCountAMD : {
-			packet_vkCmdDrawIndexedIndirectCountAMD*  packet = BitCast<packet_vkCmdDrawIndexedIndirectCountAMD*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdDrawIndexedIndirectCountAMD*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateDebugReportCallbackEXT : {
-			packet_vkCreateDebugReportCallbackEXT*  packet = BitCast<packet_vkCreateDebugReportCallbackEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateDebugReportCallbackEXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDebugReportCallbackCreateInfoEXT*>(packet->pCreateInfo)), header );
@@ -1733,14 +1848,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyDebugReportCallbackEXT : {
-			packet_vkDestroyDebugReportCallbackEXT*  packet = BitCast<packet_vkDestroyDebugReportCallbackEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyDebugReportCallbackEXT*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkDebugReportMessageEXT : {
-			packet_vkDebugReportMessageEXT*  packet = BitCast<packet_vkDebugReportMessageEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDebugReportMessageEXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pLayerPrefix, header );
 			UnpackPointer( INOUT packet->pMessage, header );
@@ -1748,7 +1863,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDebugMarkerSetObjectTagEXT : {
-			packet_vkDebugMarkerSetObjectTagEXT*  packet = BitCast<packet_vkDebugMarkerSetObjectTagEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDebugMarkerSetObjectTagEXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pTagInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDebugMarkerObjectTagInfoEXT*>(packet->pTagInfo)), header );
@@ -1756,7 +1871,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDebugMarkerSetObjectNameEXT : {
-			packet_vkDebugMarkerSetObjectNameEXT*  packet = BitCast<packet_vkDebugMarkerSetObjectNameEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDebugMarkerSetObjectNameEXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pNameInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDebugMarkerObjectNameInfoEXT*>(packet->pNameInfo)), header );
@@ -1764,7 +1879,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdDebugMarkerBeginEXT : {
-			packet_vkCmdDebugMarkerBeginEXT*  packet = BitCast<packet_vkCmdDebugMarkerBeginEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdDebugMarkerBeginEXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pMarkerInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDebugMarkerMarkerInfoEXT*>(packet->pMarkerInfo)), header );
@@ -1772,13 +1887,13 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdDebugMarkerEndEXT : {
-			packet_vkCmdDebugMarkerEndEXT*  packet = BitCast<packet_vkCmdDebugMarkerEndEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdDebugMarkerEndEXT*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdDebugMarkerInsertEXT : {
-			packet_vkCmdDebugMarkerInsertEXT*  packet = BitCast<packet_vkCmdDebugMarkerInsertEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdDebugMarkerInsertEXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pMarkerInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDebugMarkerMarkerInfoEXT*>(packet->pMarkerInfo)), header );
@@ -1786,7 +1901,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCreateInstance : {
-			packet_vkCreateInstance*  packet = BitCast<packet_vkCreateInstance*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateInstance*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkInstanceCreateInfo*>(packet->pCreateInfo)), header );
@@ -1796,14 +1911,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyInstance : {
-			packet_vkDestroyInstance*  packet = BitCast<packet_vkDestroyInstance*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyInstance*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkEnumeratePhysicalDevices : {
-			packet_vkEnumeratePhysicalDevices*  packet = BitCast<packet_vkEnumeratePhysicalDevices*>(header->pBody);
+			auto*  packet = BitCast<packet_vkEnumeratePhysicalDevices*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pPhysicalDeviceCount, header );
 			UnpackPointer( INOUT packet->pPhysicalDevices, header );
@@ -1811,7 +1926,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceFeatures : {
-			packet_vkGetPhysicalDeviceFeatures*  packet = BitCast<packet_vkGetPhysicalDeviceFeatures*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceFeatures*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pFeatures, header );
 			Unpack_VkPhysicalDeviceFeatures( const_cast<VkPhysicalDeviceFeatures*>(packet->pFeatures), header );
@@ -1819,7 +1934,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceFormatProperties : {
-			packet_vkGetPhysicalDeviceFormatProperties*  packet = BitCast<packet_vkGetPhysicalDeviceFormatProperties*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceFormatProperties*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pFormatProperties, header );
 			Unpack_VkFormatProperties( const_cast<VkFormatProperties*>(packet->pFormatProperties), header );
@@ -1827,7 +1942,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceImageFormatProperties : {
-			packet_vkGetPhysicalDeviceImageFormatProperties*  packet = BitCast<packet_vkGetPhysicalDeviceImageFormatProperties*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceImageFormatProperties*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pImageFormatProperties, header );
 			Unpack_VkImageFormatProperties( const_cast<VkImageFormatProperties*>(packet->pImageFormatProperties), header );
@@ -1835,7 +1950,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceProperties : {
-			packet_vkGetPhysicalDeviceProperties*  packet = BitCast<packet_vkGetPhysicalDeviceProperties*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceProperties*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pProperties, header );
 			Unpack_VkPhysicalDeviceProperties( const_cast<VkPhysicalDeviceProperties*>(packet->pProperties), header );
@@ -1843,7 +1958,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceQueueFamilyProperties : {
-			packet_vkGetPhysicalDeviceQueueFamilyProperties*  packet = BitCast<packet_vkGetPhysicalDeviceQueueFamilyProperties*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceQueueFamilyProperties*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pQueueFamilyPropertyCount, header );
 			UnpackPointer( INOUT packet->pQueueFamilyProperties, header );
@@ -1852,7 +1967,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceMemoryProperties : {
-			packet_vkGetPhysicalDeviceMemoryProperties*  packet = BitCast<packet_vkGetPhysicalDeviceMemoryProperties*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceMemoryProperties*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pMemoryProperties, header );
 			Unpack_VkPhysicalDeviceMemoryProperties( const_cast<VkPhysicalDeviceMemoryProperties*>(packet->pMemoryProperties), header );
@@ -1860,21 +1975,21 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetInstanceProcAddr : {
-			packet_vkGetInstanceProcAddr*  packet = BitCast<packet_vkGetInstanceProcAddr*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetInstanceProcAddr*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pName, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkGetDeviceProcAddr : {
-			packet_vkGetDeviceProcAddr*  packet = BitCast<packet_vkGetDeviceProcAddr*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetDeviceProcAddr*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pName, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateDevice : {
-			packet_vkCreateDevice*  packet = BitCast<packet_vkCreateDevice*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateDevice*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDeviceCreateInfo*>(packet->pCreateInfo)), header );
@@ -1884,14 +1999,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyDevice : {
-			packet_vkDestroyDevice*  packet = BitCast<packet_vkDestroyDevice*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyDevice*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkEnumerateInstanceExtensionProperties : {
-			packet_vkEnumerateInstanceExtensionProperties*  packet = BitCast<packet_vkEnumerateInstanceExtensionProperties*>(header->pBody);
+			auto*  packet = BitCast<packet_vkEnumerateInstanceExtensionProperties*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pLayerName, header );
 			UnpackPointer( INOUT packet->pPropertyCount, header );
@@ -1901,7 +2016,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkEnumerateDeviceExtensionProperties : {
-			packet_vkEnumerateDeviceExtensionProperties*  packet = BitCast<packet_vkEnumerateDeviceExtensionProperties*>(header->pBody);
+			auto*  packet = BitCast<packet_vkEnumerateDeviceExtensionProperties*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pLayerName, header );
 			UnpackPointer( INOUT packet->pPropertyCount, header );
@@ -1911,7 +2026,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkEnumerateInstanceLayerProperties : {
-			packet_vkEnumerateInstanceLayerProperties*  packet = BitCast<packet_vkEnumerateInstanceLayerProperties*>(header->pBody);
+			auto*  packet = BitCast<packet_vkEnumerateInstanceLayerProperties*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pPropertyCount, header );
 			UnpackPointer( INOUT packet->pProperties, header );
@@ -1920,7 +2035,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkEnumerateDeviceLayerProperties : {
-			packet_vkEnumerateDeviceLayerProperties*  packet = BitCast<packet_vkEnumerateDeviceLayerProperties*>(header->pBody);
+			auto*  packet = BitCast<packet_vkEnumerateDeviceLayerProperties*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pPropertyCount, header );
 			UnpackPointer( INOUT packet->pProperties, header );
@@ -1929,14 +2044,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetDeviceQueue : {
-			packet_vkGetDeviceQueue*  packet = BitCast<packet_vkGetDeviceQueue*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetDeviceQueue*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pQueue, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkQueueSubmit : {
-			packet_vkQueueSubmit*  packet = BitCast<packet_vkQueueSubmit*>(header->pBody);
+			auto*  packet = BitCast<packet_vkQueueSubmit*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pSubmits, header );
 			for (uint i = 0; (packet->pSubmits != null) and (i < packet->submitCount); ++i) {
@@ -1946,19 +2061,19 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkQueueWaitIdle : {
-			packet_vkQueueWaitIdle*  packet = BitCast<packet_vkQueueWaitIdle*>(header->pBody);
+			auto*  packet = BitCast<packet_vkQueueWaitIdle*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkDeviceWaitIdle : {
-			packet_vkDeviceWaitIdle*  packet = BitCast<packet_vkDeviceWaitIdle*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDeviceWaitIdle*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkAllocateMemory : {
-			packet_vkAllocateMemory*  packet = BitCast<packet_vkAllocateMemory*>(header->pBody);
+			auto*  packet = BitCast<packet_vkAllocateMemory*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pAllocateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkMemoryAllocateInfo*>(packet->pAllocateInfo)), header );
@@ -1968,28 +2083,28 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkFreeMemory : {
-			packet_vkFreeMemory*  packet = BitCast<packet_vkFreeMemory*>(header->pBody);
+			auto*  packet = BitCast<packet_vkFreeMemory*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkMapMemory : {
-			packet_vkMapMemory*  packet = BitCast<packet_vkMapMemory*>(header->pBody);
+			auto*  packet = BitCast<packet_vkMapMemory*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->ppData, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkUnmapMemory : {
-			packet_vkUnmapMemory*  packet = BitCast<packet_vkUnmapMemory*>(header->pBody);
+			auto*  packet = BitCast<packet_vkUnmapMemory*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pData, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkFlushMappedMemoryRanges : {
-			packet_vkFlushMappedMemoryRanges*  packet = BitCast<packet_vkFlushMappedMemoryRanges*>(header->pBody);
+			auto*  packet = BitCast<packet_vkFlushMappedMemoryRanges*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pMemoryRanges, header );
 			UnpackPointer( INOUT packet->ppData, header );
@@ -2000,7 +2115,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkInvalidateMappedMemoryRanges : {
-			packet_vkInvalidateMappedMemoryRanges*  packet = BitCast<packet_vkInvalidateMappedMemoryRanges*>(header->pBody);
+			auto*  packet = BitCast<packet_vkInvalidateMappedMemoryRanges*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pMemoryRanges, header );
 			UnpackPointer( INOUT packet->ppData, header );
@@ -2011,26 +2126,26 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetDeviceMemoryCommitment : {
-			packet_vkGetDeviceMemoryCommitment*  packet = BitCast<packet_vkGetDeviceMemoryCommitment*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetDeviceMemoryCommitment*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCommittedMemoryInBytes, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkBindBufferMemory : {
-			packet_vkBindBufferMemory*  packet = BitCast<packet_vkBindBufferMemory*>(header->pBody);
+			auto*  packet = BitCast<packet_vkBindBufferMemory*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkBindImageMemory : {
-			packet_vkBindImageMemory*  packet = BitCast<packet_vkBindImageMemory*>(header->pBody);
+			auto*  packet = BitCast<packet_vkBindImageMemory*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkGetBufferMemoryRequirements : {
-			packet_vkGetBufferMemoryRequirements*  packet = BitCast<packet_vkGetBufferMemoryRequirements*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetBufferMemoryRequirements*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pMemoryRequirements, header );
 			Unpack_VkMemoryRequirements( const_cast<VkMemoryRequirements*>(packet->pMemoryRequirements), header );
@@ -2038,7 +2153,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetImageMemoryRequirements : {
-			packet_vkGetImageMemoryRequirements*  packet = BitCast<packet_vkGetImageMemoryRequirements*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetImageMemoryRequirements*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pMemoryRequirements, header );
 			Unpack_VkMemoryRequirements( const_cast<VkMemoryRequirements*>(packet->pMemoryRequirements), header );
@@ -2046,7 +2161,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetImageSparseMemoryRequirements : {
-			packet_vkGetImageSparseMemoryRequirements*  packet = BitCast<packet_vkGetImageSparseMemoryRequirements*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetImageSparseMemoryRequirements*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pSparseMemoryRequirementCount, header );
 			UnpackPointer( INOUT packet->pSparseMemoryRequirements, header );
@@ -2055,7 +2170,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceSparseImageFormatProperties : {
-			packet_vkGetPhysicalDeviceSparseImageFormatProperties*  packet = BitCast<packet_vkGetPhysicalDeviceSparseImageFormatProperties*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceSparseImageFormatProperties*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pPropertyCount, header );
 			UnpackPointer( INOUT packet->pProperties, header );
@@ -2064,7 +2179,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkQueueBindSparse : {
-			packet_vkQueueBindSparse*  packet = BitCast<packet_vkQueueBindSparse*>(header->pBody);
+			auto*  packet = BitCast<packet_vkQueueBindSparse*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pBindInfo, header );
 			for (uint i = 0; (packet->pBindInfo != null) and (i < packet->bindInfoCount); ++i) {
@@ -2074,7 +2189,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCreateFence : {
-			packet_vkCreateFence*  packet = BitCast<packet_vkCreateFence*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateFence*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkFenceCreateInfo*>(packet->pCreateInfo)), header );
@@ -2084,34 +2199,34 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyFence : {
-			packet_vkDestroyFence*  packet = BitCast<packet_vkDestroyFence*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyFence*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkResetFences : {
-			packet_vkResetFences*  packet = BitCast<packet_vkResetFences*>(header->pBody);
+			auto*  packet = BitCast<packet_vkResetFences*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pFences, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkGetFenceStatus : {
-			packet_vkGetFenceStatus*  packet = BitCast<packet_vkGetFenceStatus*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetFenceStatus*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkWaitForFences : {
-			packet_vkWaitForFences*  packet = BitCast<packet_vkWaitForFences*>(header->pBody);
+			auto*  packet = BitCast<packet_vkWaitForFences*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pFences, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateSemaphore : {
-			packet_vkCreateSemaphore*  packet = BitCast<packet_vkCreateSemaphore*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateSemaphore*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkSemaphoreCreateInfo*>(packet->pCreateInfo)), header );
@@ -2121,14 +2236,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroySemaphore : {
-			packet_vkDestroySemaphore*  packet = BitCast<packet_vkDestroySemaphore*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroySemaphore*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateEvent : {
-			packet_vkCreateEvent*  packet = BitCast<packet_vkCreateEvent*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateEvent*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkEventCreateInfo*>(packet->pCreateInfo)), header );
@@ -2138,32 +2253,32 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyEvent : {
-			packet_vkDestroyEvent*  packet = BitCast<packet_vkDestroyEvent*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyEvent*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkGetEventStatus : {
-			packet_vkGetEventStatus*  packet = BitCast<packet_vkGetEventStatus*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetEventStatus*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkSetEvent : {
-			packet_vkSetEvent*  packet = BitCast<packet_vkSetEvent*>(header->pBody);
+			auto*  packet = BitCast<packet_vkSetEvent*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkResetEvent : {
-			packet_vkResetEvent*  packet = BitCast<packet_vkResetEvent*>(header->pBody);
+			auto*  packet = BitCast<packet_vkResetEvent*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateQueryPool : {
-			packet_vkCreateQueryPool*  packet = BitCast<packet_vkCreateQueryPool*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateQueryPool*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkQueryPoolCreateInfo*>(packet->pCreateInfo)), header );
@@ -2173,21 +2288,21 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyQueryPool : {
-			packet_vkDestroyQueryPool*  packet = BitCast<packet_vkDestroyQueryPool*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyQueryPool*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkGetQueryPoolResults : {
-			packet_vkGetQueryPoolResults*  packet = BitCast<packet_vkGetQueryPoolResults*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetQueryPoolResults*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pData, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateBuffer : {
-			packet_vkCreateBuffer*  packet = BitCast<packet_vkCreateBuffer*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateBuffer*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkBufferCreateInfo*>(packet->pCreateInfo)), header );
@@ -2197,14 +2312,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyBuffer : {
-			packet_vkDestroyBuffer*  packet = BitCast<packet_vkDestroyBuffer*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyBuffer*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateBufferView : {
-			packet_vkCreateBufferView*  packet = BitCast<packet_vkCreateBufferView*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateBufferView*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkBufferViewCreateInfo*>(packet->pCreateInfo)), header );
@@ -2214,14 +2329,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyBufferView : {
-			packet_vkDestroyBufferView*  packet = BitCast<packet_vkDestroyBufferView*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyBufferView*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateImage : {
-			packet_vkCreateImage*  packet = BitCast<packet_vkCreateImage*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateImage*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkImageCreateInfo*>(packet->pCreateInfo)), header );
@@ -2231,14 +2346,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyImage : {
-			packet_vkDestroyImage*  packet = BitCast<packet_vkDestroyImage*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyImage*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkGetImageSubresourceLayout : {
-			packet_vkGetImageSubresourceLayout*  packet = BitCast<packet_vkGetImageSubresourceLayout*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetImageSubresourceLayout*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pSubresource, header );
 			Unpack_VkImageSubresource( const_cast<VkImageSubresource*>(packet->pSubresource), header );
@@ -2248,7 +2363,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCreateImageView : {
-			packet_vkCreateImageView*  packet = BitCast<packet_vkCreateImageView*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateImageView*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkImageViewCreateInfo*>(packet->pCreateInfo)), header );
@@ -2258,14 +2373,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyImageView : {
-			packet_vkDestroyImageView*  packet = BitCast<packet_vkDestroyImageView*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyImageView*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateShaderModule : {
-			packet_vkCreateShaderModule*  packet = BitCast<packet_vkCreateShaderModule*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateShaderModule*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkShaderModuleCreateInfo*>(packet->pCreateInfo)), header );
@@ -2275,14 +2390,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyShaderModule : {
-			packet_vkDestroyShaderModule*  packet = BitCast<packet_vkDestroyShaderModule*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyShaderModule*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreatePipelineCache : {
-			packet_vkCreatePipelineCache*  packet = BitCast<packet_vkCreatePipelineCache*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreatePipelineCache*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPipelineCacheCreateInfo*>(packet->pCreateInfo)), header );
@@ -2292,14 +2407,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyPipelineCache : {
-			packet_vkDestroyPipelineCache*  packet = BitCast<packet_vkDestroyPipelineCache*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyPipelineCache*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkGetPipelineCacheData : {
-			packet_vkGetPipelineCacheData*  packet = BitCast<packet_vkGetPipelineCacheData*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPipelineCacheData*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pDataSize, header );
 			UnpackPointer( INOUT packet->pData, header );
@@ -2307,14 +2422,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkMergePipelineCaches : {
-			packet_vkMergePipelineCaches*  packet = BitCast<packet_vkMergePipelineCaches*>(header->pBody);
+			auto*  packet = BitCast<packet_vkMergePipelineCaches*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pSrcCaches, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateGraphicsPipelines : {
-			packet_vkCreateGraphicsPipelines*  packet = BitCast<packet_vkCreateGraphicsPipelines*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateGraphicsPipelines*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfos, header );
 			for (uint i = 0; (packet->pCreateInfos != null) and (i < packet->createInfoCount); ++i) {
@@ -2326,7 +2441,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCreateComputePipelines : {
-			packet_vkCreateComputePipelines*  packet = BitCast<packet_vkCreateComputePipelines*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateComputePipelines*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfos, header );
 			for (uint i = 0; (packet->pCreateInfos != null) and (i < packet->createInfoCount); ++i) {
@@ -2338,14 +2453,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyPipeline : {
-			packet_vkDestroyPipeline*  packet = BitCast<packet_vkDestroyPipeline*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyPipeline*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreatePipelineLayout : {
-			packet_vkCreatePipelineLayout*  packet = BitCast<packet_vkCreatePipelineLayout*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreatePipelineLayout*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPipelineLayoutCreateInfo*>(packet->pCreateInfo)), header );
@@ -2355,14 +2470,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyPipelineLayout : {
-			packet_vkDestroyPipelineLayout*  packet = BitCast<packet_vkDestroyPipelineLayout*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyPipelineLayout*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateSampler : {
-			packet_vkCreateSampler*  packet = BitCast<packet_vkCreateSampler*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateSampler*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkSamplerCreateInfo*>(packet->pCreateInfo)), header );
@@ -2372,14 +2487,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroySampler : {
-			packet_vkDestroySampler*  packet = BitCast<packet_vkDestroySampler*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroySampler*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateDescriptorSetLayout : {
-			packet_vkCreateDescriptorSetLayout*  packet = BitCast<packet_vkCreateDescriptorSetLayout*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateDescriptorSetLayout*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDescriptorSetLayoutCreateInfo*>(packet->pCreateInfo)), header );
@@ -2389,14 +2504,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyDescriptorSetLayout : {
-			packet_vkDestroyDescriptorSetLayout*  packet = BitCast<packet_vkDestroyDescriptorSetLayout*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyDescriptorSetLayout*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateDescriptorPool : {
-			packet_vkCreateDescriptorPool*  packet = BitCast<packet_vkCreateDescriptorPool*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateDescriptorPool*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDescriptorPoolCreateInfo*>(packet->pCreateInfo)), header );
@@ -2406,20 +2521,20 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyDescriptorPool : {
-			packet_vkDestroyDescriptorPool*  packet = BitCast<packet_vkDestroyDescriptorPool*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyDescriptorPool*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkResetDescriptorPool : {
-			packet_vkResetDescriptorPool*  packet = BitCast<packet_vkResetDescriptorPool*>(header->pBody);
+			auto*  packet = BitCast<packet_vkResetDescriptorPool*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkAllocateDescriptorSets : {
-			packet_vkAllocateDescriptorSets*  packet = BitCast<packet_vkAllocateDescriptorSets*>(header->pBody);
+			auto*  packet = BitCast<packet_vkAllocateDescriptorSets*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pAllocateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDescriptorSetAllocateInfo*>(packet->pAllocateInfo)), header );
@@ -2428,14 +2543,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkFreeDescriptorSets : {
-			packet_vkFreeDescriptorSets*  packet = BitCast<packet_vkFreeDescriptorSets*>(header->pBody);
+			auto*  packet = BitCast<packet_vkFreeDescriptorSets*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pDescriptorSets, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkUpdateDescriptorSets : {
-			packet_vkUpdateDescriptorSets*  packet = BitCast<packet_vkUpdateDescriptorSets*>(header->pBody);
+			auto*  packet = BitCast<packet_vkUpdateDescriptorSets*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pDescriptorWrites, header );
 			for (uint i = 0; (packet->pDescriptorWrites != null) and (i < packet->descriptorWriteCount); ++i) {
@@ -2449,7 +2564,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCreateFramebuffer : {
-			packet_vkCreateFramebuffer*  packet = BitCast<packet_vkCreateFramebuffer*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateFramebuffer*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkFramebufferCreateInfo*>(packet->pCreateInfo)), header );
@@ -2459,14 +2574,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyFramebuffer : {
-			packet_vkDestroyFramebuffer*  packet = BitCast<packet_vkDestroyFramebuffer*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyFramebuffer*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateRenderPass : {
-			packet_vkCreateRenderPass*  packet = BitCast<packet_vkCreateRenderPass*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateRenderPass*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkRenderPassCreateInfo*>(packet->pCreateInfo)), header );
@@ -2476,14 +2591,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyRenderPass : {
-			packet_vkDestroyRenderPass*  packet = BitCast<packet_vkDestroyRenderPass*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyRenderPass*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkGetRenderAreaGranularity : {
-			packet_vkGetRenderAreaGranularity*  packet = BitCast<packet_vkGetRenderAreaGranularity*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetRenderAreaGranularity*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pGranularity, header );
 			Unpack_VkExtent2D( const_cast<VkExtent2D*>(packet->pGranularity), header );
@@ -2491,7 +2606,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCreateCommandPool : {
-			packet_vkCreateCommandPool*  packet = BitCast<packet_vkCreateCommandPool*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateCommandPool*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkCommandPoolCreateInfo*>(packet->pCreateInfo)), header );
@@ -2501,20 +2616,20 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyCommandPool : {
-			packet_vkDestroyCommandPool*  packet = BitCast<packet_vkDestroyCommandPool*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyCommandPool*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkResetCommandPool : {
-			packet_vkResetCommandPool*  packet = BitCast<packet_vkResetCommandPool*>(header->pBody);
+			auto*  packet = BitCast<packet_vkResetCommandPool*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkAllocateCommandBuffers : {
-			packet_vkAllocateCommandBuffers*  packet = BitCast<packet_vkAllocateCommandBuffers*>(header->pBody);
+			auto*  packet = BitCast<packet_vkAllocateCommandBuffers*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pAllocateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkCommandBufferAllocateInfo*>(packet->pAllocateInfo)), header );
@@ -2523,14 +2638,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkFreeCommandBuffers : {
-			packet_vkFreeCommandBuffers*  packet = BitCast<packet_vkFreeCommandBuffers*>(header->pBody);
+			auto*  packet = BitCast<packet_vkFreeCommandBuffers*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCommandBuffers, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkBeginCommandBuffer : {
-			packet_vkBeginCommandBuffer*  packet = BitCast<packet_vkBeginCommandBuffer*>(header->pBody);
+			auto*  packet = BitCast<packet_vkBeginCommandBuffer*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pBeginInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkCommandBufferBeginInfo*>(packet->pBeginInfo)), header );
@@ -2538,25 +2653,25 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkEndCommandBuffer : {
-			packet_vkEndCommandBuffer*  packet = BitCast<packet_vkEndCommandBuffer*>(header->pBody);
+			auto*  packet = BitCast<packet_vkEndCommandBuffer*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkResetCommandBuffer : {
-			packet_vkResetCommandBuffer*  packet = BitCast<packet_vkResetCommandBuffer*>(header->pBody);
+			auto*  packet = BitCast<packet_vkResetCommandBuffer*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdBindPipeline : {
-			packet_vkCmdBindPipeline*  packet = BitCast<packet_vkCmdBindPipeline*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdBindPipeline*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdSetViewport : {
-			packet_vkCmdSetViewport*  packet = BitCast<packet_vkCmdSetViewport*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdSetViewport*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pViewports, header );
 			for (uint i = 0; (packet->pViewports != null) and (i < packet->viewportCount); ++i) {
@@ -2566,7 +2681,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdSetScissor : {
-			packet_vkCmdSetScissor*  packet = BitCast<packet_vkCmdSetScissor*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdSetScissor*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pScissors, header );
 			for (uint i = 0; (packet->pScissors != null) and (i < packet->scissorCount); ++i) {
@@ -2576,49 +2691,49 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdSetLineWidth : {
-			packet_vkCmdSetLineWidth*  packet = BitCast<packet_vkCmdSetLineWidth*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdSetLineWidth*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdSetDepthBias : {
-			packet_vkCmdSetDepthBias*  packet = BitCast<packet_vkCmdSetDepthBias*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdSetDepthBias*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdSetBlendConstants : {
-			packet_vkCmdSetBlendConstants*  packet = BitCast<packet_vkCmdSetBlendConstants*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdSetBlendConstants*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdSetDepthBounds : {
-			packet_vkCmdSetDepthBounds*  packet = BitCast<packet_vkCmdSetDepthBounds*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdSetDepthBounds*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdSetStencilCompareMask : {
-			packet_vkCmdSetStencilCompareMask*  packet = BitCast<packet_vkCmdSetStencilCompareMask*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdSetStencilCompareMask*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdSetStencilWriteMask : {
-			packet_vkCmdSetStencilWriteMask*  packet = BitCast<packet_vkCmdSetStencilWriteMask*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdSetStencilWriteMask*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdSetStencilReference : {
-			packet_vkCmdSetStencilReference*  packet = BitCast<packet_vkCmdSetStencilReference*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdSetStencilReference*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdBindDescriptorSets : {
-			packet_vkCmdBindDescriptorSets*  packet = BitCast<packet_vkCmdBindDescriptorSets*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdBindDescriptorSets*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pDescriptorSets, header );
 			UnpackPointer( INOUT packet->pDynamicOffsets, header );
@@ -2626,13 +2741,13 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdBindIndexBuffer : {
-			packet_vkCmdBindIndexBuffer*  packet = BitCast<packet_vkCmdBindIndexBuffer*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdBindIndexBuffer*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdBindVertexBuffers : {
-			packet_vkCmdBindVertexBuffers*  packet = BitCast<packet_vkCmdBindVertexBuffers*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdBindVertexBuffers*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pBuffers, header );
 			UnpackPointer( INOUT packet->pOffsets, header );
@@ -2640,43 +2755,43 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdDraw : {
-			packet_vkCmdDraw*  packet = BitCast<packet_vkCmdDraw*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdDraw*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdDrawIndexed : {
-			packet_vkCmdDrawIndexed*  packet = BitCast<packet_vkCmdDrawIndexed*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdDrawIndexed*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdDrawIndirect : {
-			packet_vkCmdDrawIndirect*  packet = BitCast<packet_vkCmdDrawIndirect*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdDrawIndirect*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdDrawIndexedIndirect : {
-			packet_vkCmdDrawIndexedIndirect*  packet = BitCast<packet_vkCmdDrawIndexedIndirect*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdDrawIndexedIndirect*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdDispatch : {
-			packet_vkCmdDispatch*  packet = BitCast<packet_vkCmdDispatch*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdDispatch*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdDispatchIndirect : {
-			packet_vkCmdDispatchIndirect*  packet = BitCast<packet_vkCmdDispatchIndirect*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdDispatchIndirect*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdCopyBuffer : {
-			packet_vkCmdCopyBuffer*  packet = BitCast<packet_vkCmdCopyBuffer*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdCopyBuffer*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pRegions, header );
 			for (uint i = 0; (packet->pRegions != null) and (i < packet->regionCount); ++i) {
@@ -2686,7 +2801,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdCopyImage : {
-			packet_vkCmdCopyImage*  packet = BitCast<packet_vkCmdCopyImage*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdCopyImage*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pRegions, header );
 			for (uint i = 0; (packet->pRegions != null) and (i < packet->regionCount); ++i) {
@@ -2696,7 +2811,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdBlitImage : {
-			packet_vkCmdBlitImage*  packet = BitCast<packet_vkCmdBlitImage*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdBlitImage*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pRegions, header );
 			for (uint i = 0; (packet->pRegions != null) and (i < packet->regionCount); ++i) {
@@ -2706,7 +2821,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdCopyBufferToImage : {
-			packet_vkCmdCopyBufferToImage*  packet = BitCast<packet_vkCmdCopyBufferToImage*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdCopyBufferToImage*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pRegions, header );
 			for (uint i = 0; (packet->pRegions != null) and (i < packet->regionCount); ++i) {
@@ -2716,7 +2831,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdCopyImageToBuffer : {
-			packet_vkCmdCopyImageToBuffer*  packet = BitCast<packet_vkCmdCopyImageToBuffer*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdCopyImageToBuffer*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pRegions, header );
 			for (uint i = 0; (packet->pRegions != null) and (i < packet->regionCount); ++i) {
@@ -2726,20 +2841,20 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdUpdateBuffer : {
-			packet_vkCmdUpdateBuffer*  packet = BitCast<packet_vkCmdUpdateBuffer*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdUpdateBuffer*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pData, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdFillBuffer : {
-			packet_vkCmdFillBuffer*  packet = BitCast<packet_vkCmdFillBuffer*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdFillBuffer*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdClearColorImage : {
-			packet_vkCmdClearColorImage*  packet = BitCast<packet_vkCmdClearColorImage*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdClearColorImage*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pColor, header );
 			Unpack_VkClearColorValue( const_cast<VkClearColorValue*>(packet->pColor), header );
@@ -2751,7 +2866,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdClearDepthStencilImage : {
-			packet_vkCmdClearDepthStencilImage*  packet = BitCast<packet_vkCmdClearDepthStencilImage*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdClearDepthStencilImage*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pDepthStencil, header );
 			Unpack_VkClearDepthStencilValue( const_cast<VkClearDepthStencilValue*>(packet->pDepthStencil), header );
@@ -2763,7 +2878,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdClearAttachments : {
-			packet_vkCmdClearAttachments*  packet = BitCast<packet_vkCmdClearAttachments*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdClearAttachments*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pAttachments, header );
 			for (uint i = 0; (packet->pAttachments != null) and (i < packet->attachmentCount); ++i) {
@@ -2777,7 +2892,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdResolveImage : {
-			packet_vkCmdResolveImage*  packet = BitCast<packet_vkCmdResolveImage*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdResolveImage*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pRegions, header );
 			for (uint i = 0; (packet->pRegions != null) and (i < packet->regionCount); ++i) {
@@ -2787,19 +2902,19 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdSetEvent : {
-			packet_vkCmdSetEvent*  packet = BitCast<packet_vkCmdSetEvent*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdSetEvent*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdResetEvent : {
-			packet_vkCmdResetEvent*  packet = BitCast<packet_vkCmdResetEvent*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdResetEvent*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdWaitEvents : {
-			packet_vkCmdWaitEvents*  packet = BitCast<packet_vkCmdWaitEvents*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdWaitEvents*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pEvents, header );
 			UnpackPointer( INOUT packet->pMemoryBarriers, header );
@@ -2818,7 +2933,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdPipelineBarrier : {
-			packet_vkCmdPipelineBarrier*  packet = BitCast<packet_vkCmdPipelineBarrier*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdPipelineBarrier*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pMemoryBarriers, header );
 			for (uint i = 0; (packet->pMemoryBarriers != null) and (i < packet->memoryBarrierCount); ++i) {
@@ -2836,44 +2951,44 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdBeginQuery : {
-			packet_vkCmdBeginQuery*  packet = BitCast<packet_vkCmdBeginQuery*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdBeginQuery*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdEndQuery : {
-			packet_vkCmdEndQuery*  packet = BitCast<packet_vkCmdEndQuery*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdEndQuery*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdResetQueryPool : {
-			packet_vkCmdResetQueryPool*  packet = BitCast<packet_vkCmdResetQueryPool*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdResetQueryPool*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdWriteTimestamp : {
-			packet_vkCmdWriteTimestamp*  packet = BitCast<packet_vkCmdWriteTimestamp*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdWriteTimestamp*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdCopyQueryPoolResults : {
-			packet_vkCmdCopyQueryPoolResults*  packet = BitCast<packet_vkCmdCopyQueryPoolResults*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdCopyQueryPoolResults*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdPushConstants : {
-			packet_vkCmdPushConstants*  packet = BitCast<packet_vkCmdPushConstants*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdPushConstants*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pValues, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdBeginRenderPass : {
-			packet_vkCmdBeginRenderPass*  packet = BitCast<packet_vkCmdBeginRenderPass*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdBeginRenderPass*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pRenderPassBegin, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkRenderPassBeginInfo*>(packet->pRenderPassBegin)), header );
@@ -2881,40 +2996,40 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdNextSubpass : {
-			packet_vkCmdNextSubpass*  packet = BitCast<packet_vkCmdNextSubpass*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdNextSubpass*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdEndRenderPass : {
-			packet_vkCmdEndRenderPass*  packet = BitCast<packet_vkCmdEndRenderPass*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdEndRenderPass*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdExecuteCommands : {
-			packet_vkCmdExecuteCommands*  packet = BitCast<packet_vkCmdExecuteCommands*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdExecuteCommands*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCommandBuffers, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkDestroySurfaceKHR : {
-			packet_vkDestroySurfaceKHR*  packet = BitCast<packet_vkDestroySurfaceKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroySurfaceKHR*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceSurfaceSupportKHR : {
-			packet_vkGetPhysicalDeviceSurfaceSupportKHR*  packet = BitCast<packet_vkGetPhysicalDeviceSurfaceSupportKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceSurfaceSupportKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pSupported, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceSurfaceCapabilitiesKHR : {
-			packet_vkGetPhysicalDeviceSurfaceCapabilitiesKHR*  packet = BitCast<packet_vkGetPhysicalDeviceSurfaceCapabilitiesKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceSurfaceCapabilitiesKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pSurfaceCapabilities, header );
 			Unpack_VkSurfaceCapabilitiesKHR( const_cast<VkSurfaceCapabilitiesKHR*>(packet->pSurfaceCapabilities), header );
@@ -2922,7 +3037,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceSurfaceFormatsKHR : {
-			packet_vkGetPhysicalDeviceSurfaceFormatsKHR*  packet = BitCast<packet_vkGetPhysicalDeviceSurfaceFormatsKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceSurfaceFormatsKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pSurfaceFormatCount, header );
 			UnpackPointer( INOUT packet->pSurfaceFormats, header );
@@ -2931,7 +3046,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceSurfacePresentModesKHR : {
-			packet_vkGetPhysicalDeviceSurfacePresentModesKHR*  packet = BitCast<packet_vkGetPhysicalDeviceSurfacePresentModesKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceSurfacePresentModesKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pPresentModeCount, header );
 			UnpackPointer( INOUT packet->pPresentModes, header );
@@ -2939,7 +3054,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCreateSwapchainKHR : {
-			packet_vkCreateSwapchainKHR*  packet = BitCast<packet_vkCreateSwapchainKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateSwapchainKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkSwapchainCreateInfoKHR*>(packet->pCreateInfo)), header );
@@ -2949,14 +3064,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroySwapchainKHR : {
-			packet_vkDestroySwapchainKHR*  packet = BitCast<packet_vkDestroySwapchainKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroySwapchainKHR*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkGetSwapchainImagesKHR : {
-			packet_vkGetSwapchainImagesKHR*  packet = BitCast<packet_vkGetSwapchainImagesKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetSwapchainImagesKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pSwapchainImageCount, header );
 			UnpackPointer( INOUT packet->pSwapchainImages, header );
@@ -2964,14 +3079,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkAcquireNextImageKHR : {
-			packet_vkAcquireNextImageKHR*  packet = BitCast<packet_vkAcquireNextImageKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkAcquireNextImageKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pImageIndex, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkQueuePresentKHR : {
-			packet_vkQueuePresentKHR*  packet = BitCast<packet_vkQueuePresentKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkQueuePresentKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pPresentInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPresentInfoKHR*>(packet->pPresentInfo)), header );
@@ -2979,7 +3094,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCreateSharedSwapchainsKHR : {
-			packet_vkCreateSharedSwapchainsKHR*  packet = BitCast<packet_vkCreateSharedSwapchainsKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateSharedSwapchainsKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfos, header );
 			for (uint i = 0; (packet->pCreateInfos != null) and (i < packet->swapchainCount); ++i) {
@@ -2991,7 +3106,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCreateWin32SurfaceKHR : {
-			packet_vkCreateWin32SurfaceKHR*  packet = BitCast<packet_vkCreateWin32SurfaceKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateWin32SurfaceKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkWin32SurfaceCreateInfoKHR*>(packet->pCreateInfo)), header );
@@ -3001,13 +3116,13 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceWin32PresentationSupportKHR : {
-			packet_vkGetPhysicalDeviceWin32PresentationSupportKHR*  packet = BitCast<packet_vkGetPhysicalDeviceWin32PresentationSupportKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceWin32PresentationSupportKHR*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateXlibSurfaceKHR : {
-			packet_vkCreateXlibSurfaceKHR*  packet = BitCast<packet_vkCreateXlibSurfaceKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateXlibSurfaceKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkXlibSurfaceCreateInfoKHR*>(packet->pCreateInfo)), header );
@@ -3017,14 +3132,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceXlibPresentationSupportKHR : {
-			packet_vkGetPhysicalDeviceXlibPresentationSupportKHR*  packet = BitCast<packet_vkGetPhysicalDeviceXlibPresentationSupportKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceXlibPresentationSupportKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->dpy, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateXcbSurfaceKHR : {
-			packet_vkCreateXcbSurfaceKHR*  packet = BitCast<packet_vkCreateXcbSurfaceKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateXcbSurfaceKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkXcbSurfaceCreateInfoKHR*>(packet->pCreateInfo)), header );
@@ -3034,14 +3149,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceXcbPresentationSupportKHR : {
-			packet_vkGetPhysicalDeviceXcbPresentationSupportKHR*  packet = BitCast<packet_vkGetPhysicalDeviceXcbPresentationSupportKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceXcbPresentationSupportKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->connection, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateAndroidSurfaceKHR : {
-			packet_vkCreateAndroidSurfaceKHR*  packet = BitCast<packet_vkCreateAndroidSurfaceKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateAndroidSurfaceKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkAndroidSurfaceCreateInfoKHR*>(packet->pCreateInfo)), header );
@@ -3051,14 +3166,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetMemoryWin32HandleNV : {
-			packet_vkGetMemoryWin32HandleNV*  packet = BitCast<packet_vkGetMemoryWin32HandleNV*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetMemoryWin32HandleNV*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pHandle, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateDescriptorUpdateTemplateKHR : {
-			packet_vkCreateDescriptorUpdateTemplateKHR*  packet = BitCast<packet_vkCreateDescriptorUpdateTemplateKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateDescriptorUpdateTemplateKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDescriptorUpdateTemplateCreateInfo*>(packet->pCreateInfo)), header );
@@ -3068,28 +3183,28 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyDescriptorUpdateTemplateKHR : {
-			packet_vkDestroyDescriptorUpdateTemplateKHR*  packet = BitCast<packet_vkDestroyDescriptorUpdateTemplateKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyDescriptorUpdateTemplateKHR*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkUpdateDescriptorSetWithTemplateKHR : {
-			packet_vkUpdateDescriptorSetWithTemplateKHR*  packet = BitCast<packet_vkUpdateDescriptorSetWithTemplateKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkUpdateDescriptorSetWithTemplateKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pData, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdPushDescriptorSetWithTemplateKHR : {
-			packet_vkCmdPushDescriptorSetWithTemplateKHR*  packet = BitCast<packet_vkCmdPushDescriptorSetWithTemplateKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdPushDescriptorSetWithTemplateKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pData, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateWaylandSurfaceKHR : {
-			packet_vkCreateWaylandSurfaceKHR*  packet = BitCast<packet_vkCreateWaylandSurfaceKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateWaylandSurfaceKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkWaylandSurfaceCreateInfoKHR*>(packet->pCreateInfo)), header );
@@ -3099,14 +3214,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceWaylandPresentationSupportKHR : {
-			packet_vkGetPhysicalDeviceWaylandPresentationSupportKHR*  packet = BitCast<packet_vkGetPhysicalDeviceWaylandPresentationSupportKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceWaylandPresentationSupportKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->display, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceFeatures2KHR : {
-			packet_vkGetPhysicalDeviceFeatures2KHR*  packet = BitCast<packet_vkGetPhysicalDeviceFeatures2KHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceFeatures2KHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pFeatures, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPhysicalDeviceFeatures2*>(packet->pFeatures)), header );
@@ -3114,7 +3229,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceProperties2KHR : {
-			packet_vkGetPhysicalDeviceProperties2KHR*  packet = BitCast<packet_vkGetPhysicalDeviceProperties2KHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceProperties2KHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pProperties, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPhysicalDeviceProperties2*>(packet->pProperties)), header );
@@ -3122,7 +3237,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceFormatProperties2KHR : {
-			packet_vkGetPhysicalDeviceFormatProperties2KHR*  packet = BitCast<packet_vkGetPhysicalDeviceFormatProperties2KHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceFormatProperties2KHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pFormatProperties, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkFormatProperties2*>(packet->pFormatProperties)), header );
@@ -3130,7 +3245,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceImageFormatProperties2KHR : {
-			packet_vkGetPhysicalDeviceImageFormatProperties2KHR*  packet = BitCast<packet_vkGetPhysicalDeviceImageFormatProperties2KHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceImageFormatProperties2KHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pImageFormatInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPhysicalDeviceImageFormatInfo2*>(packet->pImageFormatInfo)), header );
@@ -3140,7 +3255,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceQueueFamilyProperties2KHR : {
-			packet_vkGetPhysicalDeviceQueueFamilyProperties2KHR*  packet = BitCast<packet_vkGetPhysicalDeviceQueueFamilyProperties2KHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceQueueFamilyProperties2KHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pQueueFamilyPropertyCount, header );
 			UnpackPointer( INOUT packet->pQueueFamilyProperties, header );
@@ -3149,7 +3264,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceMemoryProperties2KHR : {
-			packet_vkGetPhysicalDeviceMemoryProperties2KHR*  packet = BitCast<packet_vkGetPhysicalDeviceMemoryProperties2KHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceMemoryProperties2KHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pMemoryProperties, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPhysicalDeviceMemoryProperties2*>(packet->pMemoryProperties)), header );
@@ -3157,7 +3272,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceSparseImageFormatProperties2KHR : {
-			packet_vkGetPhysicalDeviceSparseImageFormatProperties2KHR*  packet = BitCast<packet_vkGetPhysicalDeviceSparseImageFormatProperties2KHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceSparseImageFormatProperties2KHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pFormatInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPhysicalDeviceSparseImageFormatInfo2*>(packet->pFormatInfo)), header );
@@ -3168,7 +3283,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetImageMemoryRequirements2KHR : {
-			packet_vkGetImageMemoryRequirements2KHR*  packet = BitCast<packet_vkGetImageMemoryRequirements2KHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetImageMemoryRequirements2KHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkImageMemoryRequirementsInfo2*>(packet->pInfo)), header );
@@ -3178,7 +3293,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetBufferMemoryRequirements2KHR : {
-			packet_vkGetBufferMemoryRequirements2KHR*  packet = BitCast<packet_vkGetBufferMemoryRequirements2KHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetBufferMemoryRequirements2KHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkBufferMemoryRequirementsInfo2*>(packet->pInfo)), header );
@@ -3188,7 +3303,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetImageSparseMemoryRequirements2KHR : {
-			packet_vkGetImageSparseMemoryRequirements2KHR*  packet = BitCast<packet_vkGetImageSparseMemoryRequirements2KHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetImageSparseMemoryRequirements2KHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkImageSparseMemoryRequirementsInfo2*>(packet->pInfo)), header );
@@ -3199,7 +3314,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceSurfaceCapabilities2KHR : {
-			packet_vkGetPhysicalDeviceSurfaceCapabilities2KHR*  packet = BitCast<packet_vkGetPhysicalDeviceSurfaceCapabilities2KHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceSurfaceCapabilities2KHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pSurfaceInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPhysicalDeviceSurfaceInfo2KHR*>(packet->pSurfaceInfo)), header );
@@ -3209,7 +3324,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceSurfaceFormats2KHR : {
-			packet_vkGetPhysicalDeviceSurfaceFormats2KHR*  packet = BitCast<packet_vkGetPhysicalDeviceSurfaceFormats2KHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceSurfaceFormats2KHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pSurfaceInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPhysicalDeviceSurfaceInfo2KHR*>(packet->pSurfaceInfo)), header );
@@ -3220,7 +3335,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceDisplayPropertiesKHR : {
-			packet_vkGetPhysicalDeviceDisplayPropertiesKHR*  packet = BitCast<packet_vkGetPhysicalDeviceDisplayPropertiesKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceDisplayPropertiesKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pPropertyCount, header );
 			UnpackPointer( INOUT packet->pProperties, header );
@@ -3229,7 +3344,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceDisplayPlanePropertiesKHR : {
-			packet_vkGetPhysicalDeviceDisplayPlanePropertiesKHR*  packet = BitCast<packet_vkGetPhysicalDeviceDisplayPlanePropertiesKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceDisplayPlanePropertiesKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pPropertyCount, header );
 			UnpackPointer( INOUT packet->pProperties, header );
@@ -3238,7 +3353,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetDisplayModePropertiesKHR : {
-			packet_vkGetDisplayModePropertiesKHR*  packet = BitCast<packet_vkGetDisplayModePropertiesKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetDisplayModePropertiesKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pPropertyCount, header );
 			UnpackPointer( INOUT packet->pProperties, header );
@@ -3247,7 +3362,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCreateDisplayModeKHR : {
-			packet_vkCreateDisplayModeKHR*  packet = BitCast<packet_vkCreateDisplayModeKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateDisplayModeKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDisplayModeCreateInfoKHR*>(packet->pCreateInfo)), header );
@@ -3257,7 +3372,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetDisplayPlaneCapabilitiesKHR : {
-			packet_vkGetDisplayPlaneCapabilitiesKHR*  packet = BitCast<packet_vkGetDisplayPlaneCapabilitiesKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetDisplayPlaneCapabilitiesKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCapabilities, header );
 			Unpack_VkDisplayPlaneCapabilitiesKHR( const_cast<VkDisplayPlaneCapabilitiesKHR*>(packet->pCapabilities), header );
@@ -3265,7 +3380,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCreateDisplayPlaneSurfaceKHR : {
-			packet_vkCreateDisplayPlaneSurfaceKHR*  packet = BitCast<packet_vkCreateDisplayPlaneSurfaceKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateDisplayPlaneSurfaceKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDisplaySurfaceCreateInfoKHR*>(packet->pCreateInfo)), header );
@@ -3275,13 +3390,13 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkTrimCommandPoolKHR : {
-			packet_vkTrimCommandPoolKHR*  packet = BitCast<packet_vkTrimCommandPoolKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkTrimCommandPoolKHR*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceExternalBufferPropertiesKHR : {
-			packet_vkGetPhysicalDeviceExternalBufferPropertiesKHR*  packet = BitCast<packet_vkGetPhysicalDeviceExternalBufferPropertiesKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceExternalBufferPropertiesKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pExternalBufferInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPhysicalDeviceExternalBufferInfo*>(packet->pExternalBufferInfo)), header );
@@ -3291,7 +3406,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetMemoryFdKHR : {
-			packet_vkGetMemoryFdKHR*  packet = BitCast<packet_vkGetMemoryFdKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetMemoryFdKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pGetFdInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkMemoryGetFdInfoKHR*>(packet->pGetFdInfo)), header );
@@ -3300,7 +3415,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetMemoryFdPropertiesKHR : {
-			packet_vkGetMemoryFdPropertiesKHR*  packet = BitCast<packet_vkGetMemoryFdPropertiesKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetMemoryFdPropertiesKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pMemoryFdProperties, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkMemoryFdPropertiesKHR*>(packet->pMemoryFdProperties)), header );
@@ -3308,7 +3423,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceExternalSemaphorePropertiesKHR : {
-			packet_vkGetPhysicalDeviceExternalSemaphorePropertiesKHR*  packet = BitCast<packet_vkGetPhysicalDeviceExternalSemaphorePropertiesKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceExternalSemaphorePropertiesKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pExternalSemaphoreInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPhysicalDeviceExternalSemaphoreInfo*>(packet->pExternalSemaphoreInfo)), header );
@@ -3318,7 +3433,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkImportSemaphoreFdKHR : {
-			packet_vkImportSemaphoreFdKHR*  packet = BitCast<packet_vkImportSemaphoreFdKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkImportSemaphoreFdKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pImportSemaphoreFdInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkImportSemaphoreFdInfoKHR*>(packet->pImportSemaphoreFdInfo)), header );
@@ -3326,7 +3441,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetSemaphoreFdKHR : {
-			packet_vkGetSemaphoreFdKHR*  packet = BitCast<packet_vkGetSemaphoreFdKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetSemaphoreFdKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pGetFdInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkSemaphoreGetFdInfoKHR*>(packet->pGetFdInfo)), header );
@@ -3335,7 +3450,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdPushDescriptorSetKHR : {
-			packet_vkCmdPushDescriptorSetKHR*  packet = BitCast<packet_vkCmdPushDescriptorSetKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdPushDescriptorSetKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pDescriptorWrites, header );
 			for (uint i = 0; (packet->pDescriptorWrites != null) and (i < packet->descriptorWriteCount); ++i) {
@@ -3345,13 +3460,13 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetSwapchainStatusKHR : {
-			packet_vkGetSwapchainStatusKHR*  packet = BitCast<packet_vkGetSwapchainStatusKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetSwapchainStatusKHR*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceExternalFencePropertiesKHR : {
-			packet_vkGetPhysicalDeviceExternalFencePropertiesKHR*  packet = BitCast<packet_vkGetPhysicalDeviceExternalFencePropertiesKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceExternalFencePropertiesKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pExternalFenceInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPhysicalDeviceExternalFenceInfo*>(packet->pExternalFenceInfo)), header );
@@ -3362,7 +3477,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 
 		case VKTRACE_TPI_VK_vkGetDeviceGroupPeerMemoryFeaturesKHX : break;
 		case VKTRACE_TPI_VK_vkBindBufferMemory2KHR : {
-			packet_vkBindBufferMemory2KHR*  packet = BitCast<packet_vkBindBufferMemory2KHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkBindBufferMemory2KHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pBindInfos, header );
 			for (uint i = 0; (packet->pBindInfos != null) and (i < packet->bindInfoCount); ++i) {
@@ -3372,7 +3487,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkBindImageMemory2KHR : {
-			packet_vkBindImageMemory2KHR*  packet = BitCast<packet_vkBindImageMemory2KHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkBindImageMemory2KHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pBindInfos, header );
 			for (uint i = 0; (packet->pBindInfos != null) and (i < packet->bindInfoCount); ++i) {
@@ -3389,7 +3504,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		case VKTRACE_TPI_VK_vkGetPhysicalDevicePresentRectanglesKHX : break;
 		case VKTRACE_TPI_VK_vkEnumeratePhysicalDeviceGroupsKHX : break;
 		case VKTRACE_TPI_VK_vkCmdProcessCommandsNVX : {
-			packet_vkCmdProcessCommandsNVX*  packet = BitCast<packet_vkCmdProcessCommandsNVX*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdProcessCommandsNVX*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pProcessCommandsInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkCmdProcessCommandsInfoNVX*>(packet->pProcessCommandsInfo)), header );
@@ -3397,7 +3512,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdReserveSpaceForCommandsNVX : {
-			packet_vkCmdReserveSpaceForCommandsNVX*  packet = BitCast<packet_vkCmdReserveSpaceForCommandsNVX*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdReserveSpaceForCommandsNVX*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pReserveSpaceInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkCmdReserveSpaceForCommandsInfoNVX*>(packet->pReserveSpaceInfo)), header );
@@ -3405,7 +3520,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCreateIndirectCommandsLayoutNVX : {
-			packet_vkCreateIndirectCommandsLayoutNVX*  packet = BitCast<packet_vkCreateIndirectCommandsLayoutNVX*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateIndirectCommandsLayoutNVX*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkIndirectCommandsLayoutCreateInfoNVX*>(packet->pCreateInfo)), header );
@@ -3415,14 +3530,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyIndirectCommandsLayoutNVX : {
-			packet_vkDestroyIndirectCommandsLayoutNVX*  packet = BitCast<packet_vkDestroyIndirectCommandsLayoutNVX*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyIndirectCommandsLayoutNVX*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateObjectTableNVX : {
-			packet_vkCreateObjectTableNVX*  packet = BitCast<packet_vkCreateObjectTableNVX*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateObjectTableNVX*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkObjectTableCreateInfoNVX*>(packet->pCreateInfo)), header );
@@ -3432,14 +3547,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyObjectTableNVX : {
-			packet_vkDestroyObjectTableNVX*  packet = BitCast<packet_vkDestroyObjectTableNVX*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyObjectTableNVX*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkRegisterObjectsNVX : {
-			packet_vkRegisterObjectsNVX*  packet = BitCast<packet_vkRegisterObjectsNVX*>(header->pBody);
+			auto*  packet = BitCast<packet_vkRegisterObjectsNVX*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->ppObjectTableEntries, header );
 			for (uint i = 0; (packet->ppObjectTableEntries != null) and (i < packet->objectCount); ++i) {
@@ -3451,7 +3566,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkUnregisterObjectsNVX : {
-			packet_vkUnregisterObjectsNVX*  packet = BitCast<packet_vkUnregisterObjectsNVX*>(header->pBody);
+			auto*  packet = BitCast<packet_vkUnregisterObjectsNVX*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pObjectEntryTypes, header );
 			UnpackPointer( INOUT packet->pObjectIndices, header );
@@ -3459,7 +3574,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX : {
-			packet_vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX*  packet = BitCast<packet_vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pFeatures, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDeviceGeneratedCommandsFeaturesNVX*>(packet->pFeatures)), header );
@@ -3469,7 +3584,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdSetViewportWScalingNV : {
-			packet_vkCmdSetViewportWScalingNV*  packet = BitCast<packet_vkCmdSetViewportWScalingNV*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdSetViewportWScalingNV*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pViewportWScalings, header );
 			for (uint i = 0; (packet->pViewportWScalings != null) and (i < packet->viewportCount); ++i) {
@@ -3479,13 +3594,13 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkReleaseDisplayEXT : {
-			packet_vkReleaseDisplayEXT*  packet = BitCast<packet_vkReleaseDisplayEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkReleaseDisplayEXT*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceSurfaceCapabilities2EXT : {
-			packet_vkGetPhysicalDeviceSurfaceCapabilities2EXT*  packet = BitCast<packet_vkGetPhysicalDeviceSurfaceCapabilities2EXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceSurfaceCapabilities2EXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pSurfaceCapabilities, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkSurfaceCapabilities2EXT*>(packet->pSurfaceCapabilities)), header );
@@ -3493,7 +3608,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetRefreshCycleDurationGOOGLE : {
-			packet_vkGetRefreshCycleDurationGOOGLE*  packet = BitCast<packet_vkGetRefreshCycleDurationGOOGLE*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetRefreshCycleDurationGOOGLE*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pDisplayTimingProperties, header );
 			Unpack_VkRefreshCycleDurationGOOGLE( const_cast<VkRefreshCycleDurationGOOGLE*>(packet->pDisplayTimingProperties), header );
@@ -3501,7 +3616,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPastPresentationTimingGOOGLE : {
-			packet_vkGetPastPresentationTimingGOOGLE*  packet = BitCast<packet_vkGetPastPresentationTimingGOOGLE*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPastPresentationTimingGOOGLE*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pPresentationTimingCount, header );
 			UnpackPointer( INOUT packet->pPresentationTimings, header );
@@ -3510,7 +3625,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCmdSetDiscardRectangleEXT : {
-			packet_vkCmdSetDiscardRectangleEXT*  packet = BitCast<packet_vkCmdSetDiscardRectangleEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdSetDiscardRectangleEXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pDiscardRectangles, header );
 			for (uint i = 0; (packet->pDiscardRectangles != null) and (i < packet->discardRectangleCount); ++i) {
@@ -3520,7 +3635,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkSetHdrMetadataEXT : {
-			packet_vkSetHdrMetadataEXT*  packet = BitCast<packet_vkSetHdrMetadataEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkSetHdrMetadataEXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pSwapchains, header );
 			UnpackPointer( INOUT packet->pMetadata, header );
@@ -3531,14 +3646,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkAcquireXlibDisplayEXT : {
-			packet_vkAcquireXlibDisplayEXT*  packet = BitCast<packet_vkAcquireXlibDisplayEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkAcquireXlibDisplayEXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->dpy, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkGetRandROutputDisplayEXT : {
-			packet_vkGetRandROutputDisplayEXT*  packet = BitCast<packet_vkGetRandROutputDisplayEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetRandROutputDisplayEXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->dpy, header );
 			UnpackPointer( INOUT packet->pDisplay, header );
@@ -3546,7 +3661,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDisplayPowerControlEXT : {
-			packet_vkDisplayPowerControlEXT*  packet = BitCast<packet_vkDisplayPowerControlEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDisplayPowerControlEXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pDisplayPowerInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDisplayPowerInfoEXT*>(packet->pDisplayPowerInfo)), header );
@@ -3554,7 +3669,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkRegisterDeviceEventEXT : {
-			packet_vkRegisterDeviceEventEXT*  packet = BitCast<packet_vkRegisterDeviceEventEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkRegisterDeviceEventEXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pDeviceEventInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDeviceEventInfoEXT*>(packet->pDeviceEventInfo)), header );
@@ -3564,7 +3679,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkRegisterDisplayEventEXT : {
-			packet_vkRegisterDisplayEventEXT*  packet = BitCast<packet_vkRegisterDisplayEventEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkRegisterDisplayEventEXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pDisplayEventInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDisplayEventInfoEXT*>(packet->pDisplayEventInfo)), header );
@@ -3574,14 +3689,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetSwapchainCounterEXT : {
-			packet_vkGetSwapchainCounterEXT*  packet = BitCast<packet_vkGetSwapchainCounterEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetSwapchainCounterEXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCounterValue, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdSetSampleLocationsEXT : {
-			packet_vkCmdSetSampleLocationsEXT*  packet = BitCast<packet_vkCmdSetSampleLocationsEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdSetSampleLocationsEXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pSampleLocationsInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkSampleLocationsInfoEXT*>(packet->pSampleLocationsInfo)), header );
@@ -3589,7 +3704,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceMultisamplePropertiesEXT : {
-			packet_vkGetPhysicalDeviceMultisamplePropertiesEXT*  packet = BitCast<packet_vkGetPhysicalDeviceMultisamplePropertiesEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceMultisamplePropertiesEXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pMultisampleProperties, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkMultisamplePropertiesEXT*>(packet->pMultisampleProperties)), header );
@@ -3597,7 +3712,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCreateSamplerYcbcrConversionKHR : {
-			packet_vkCreateSamplerYcbcrConversionKHR*  packet = BitCast<packet_vkCreateSamplerYcbcrConversionKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateSamplerYcbcrConversionKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkSamplerYcbcrConversionCreateInfo*>(packet->pCreateInfo)), header );
@@ -3607,14 +3722,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroySamplerYcbcrConversionKHR : {
-			packet_vkDestroySamplerYcbcrConversionKHR*  packet = BitCast<packet_vkDestroySamplerYcbcrConversionKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroySamplerYcbcrConversionKHR*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkGetDisplayPlaneSupportedDisplaysKHR : {
-			packet_vkGetDisplayPlaneSupportedDisplaysKHR*  packet = BitCast<packet_vkGetDisplayPlaneSupportedDisplaysKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetDisplayPlaneSupportedDisplaysKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pDisplayCount, header );
 			UnpackPointer( INOUT packet->pDisplays, header );
@@ -3622,7 +3737,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkImportFenceFdKHR : {
-			packet_vkImportFenceFdKHR*  packet = BitCast<packet_vkImportFenceFdKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkImportFenceFdKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pImportFenceFdInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkImportFenceFdInfoKHR*>(packet->pImportFenceFdInfo)), header );
@@ -3630,7 +3745,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetFenceFdKHR : {
-			packet_vkGetFenceFdKHR*  packet = BitCast<packet_vkGetFenceFdKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetFenceFdKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pGetFdInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkFenceGetFdInfoKHR*>(packet->pGetFdInfo)), header );
@@ -3639,7 +3754,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkImportFenceWin32HandleKHR : {
-			packet_vkImportFenceWin32HandleKHR*  packet = BitCast<packet_vkImportFenceWin32HandleKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkImportFenceWin32HandleKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pImportFenceWin32HandleInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkImportFenceWin32HandleInfoKHR*>(packet->pImportFenceWin32HandleInfo)), header );
@@ -3647,7 +3762,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetFenceWin32HandleKHR : {
-			packet_vkGetFenceWin32HandleKHR*  packet = BitCast<packet_vkGetFenceWin32HandleKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetFenceWin32HandleKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pGetWin32HandleInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkFenceGetWin32HandleInfoKHR*>(packet->pGetWin32HandleInfo)), header );
@@ -3656,7 +3771,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetMemoryWin32HandleKHR : {
-			packet_vkGetMemoryWin32HandleKHR*  packet = BitCast<packet_vkGetMemoryWin32HandleKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetMemoryWin32HandleKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pGetWin32HandleInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkMemoryGetWin32HandleInfoKHR*>(packet->pGetWin32HandleInfo)), header );
@@ -3665,7 +3780,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetMemoryWin32HandlePropertiesKHR : {
-			packet_vkGetMemoryWin32HandlePropertiesKHR*  packet = BitCast<packet_vkGetMemoryWin32HandlePropertiesKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetMemoryWin32HandlePropertiesKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pMemoryWin32HandleProperties, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkMemoryWin32HandlePropertiesKHR*>(packet->pMemoryWin32HandleProperties)), header );
@@ -3673,7 +3788,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkImportSemaphoreWin32HandleKHR : {
-			packet_vkImportSemaphoreWin32HandleKHR*  packet = BitCast<packet_vkImportSemaphoreWin32HandleKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkImportSemaphoreWin32HandleKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pImportSemaphoreWin32HandleInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkImportSemaphoreWin32HandleInfoKHR*>(packet->pImportSemaphoreWin32HandleInfo)), header );
@@ -3681,7 +3796,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetSemaphoreWin32HandleKHR : {
-			packet_vkGetSemaphoreWin32HandleKHR*  packet = BitCast<packet_vkGetSemaphoreWin32HandleKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetSemaphoreWin32HandleKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pGetWin32HandleInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkSemaphoreGetWin32HandleInfoKHR*>(packet->pGetWin32HandleInfo)), header );
@@ -3690,7 +3805,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetMemoryHostPointerPropertiesEXT : {
-			packet_vkGetMemoryHostPointerPropertiesEXT*  packet = BitCast<packet_vkGetMemoryHostPointerPropertiesEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetMemoryHostPointerPropertiesEXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pHostPointer, header );
 			UnpackPointer( INOUT packet->pMemoryHostPointerProperties, header );
@@ -3699,7 +3814,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkCreateValidationCacheEXT : {
-			packet_vkCreateValidationCacheEXT*  packet = BitCast<packet_vkCreateValidationCacheEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateValidationCacheEXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkValidationCacheCreateInfoEXT*>(packet->pCreateInfo)), header );
@@ -3709,21 +3824,21 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyValidationCacheEXT : {
-			packet_vkDestroyValidationCacheEXT*  packet = BitCast<packet_vkDestroyValidationCacheEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyValidationCacheEXT*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkMergeValidationCachesEXT : {
-			packet_vkMergeValidationCachesEXT*  packet = BitCast<packet_vkMergeValidationCachesEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkMergeValidationCachesEXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pSrcCaches, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkGetValidationCacheDataEXT : {
-			packet_vkGetValidationCacheDataEXT*  packet = BitCast<packet_vkGetValidationCacheDataEXT*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetValidationCacheDataEXT*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pDataSize, header );
 			UnpackPointer( INOUT packet->pData, header );
@@ -3731,7 +3846,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetShaderInfoAMD : {
-			packet_vkGetShaderInfoAMD*  packet = BitCast<packet_vkGetShaderInfoAMD*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetShaderInfoAMD*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pInfoSize, header );
 			UnpackPointer( INOUT packet->pInfo, header );
@@ -3739,7 +3854,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetDeviceQueue2 : {
-			packet_vkGetDeviceQueue2*  packet = BitCast<packet_vkGetDeviceQueue2*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetDeviceQueue2*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pQueueInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDeviceQueueInfo2*>(packet->pQueueInfo)), header );
@@ -3749,7 +3864,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 
 		case VKTRACE_TPI_VK_vkEnumerateInstanceVersion : break;
 		case VKTRACE_TPI_VK_vkGetDescriptorSetLayoutSupport : {
-			packet_vkGetDescriptorSetLayoutSupport*  packet = BitCast<packet_vkGetDescriptorSetLayoutSupport*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetDescriptorSetLayoutSupport*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDescriptorSetLayoutCreateInfo*>(packet->pCreateInfo)), header );
@@ -3759,7 +3874,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetDeviceGroupPresentCapabilitiesKHR : {
-			packet_vkGetDeviceGroupPresentCapabilitiesKHR*  packet = BitCast<packet_vkGetDeviceGroupPresentCapabilitiesKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetDeviceGroupPresentCapabilitiesKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pDeviceGroupPresentCapabilities, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDeviceGroupPresentCapabilitiesKHR*>(packet->pDeviceGroupPresentCapabilities)), header );
@@ -3767,14 +3882,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetDeviceGroupSurfacePresentModesKHR : {
-			packet_vkGetDeviceGroupSurfacePresentModesKHR*  packet = BitCast<packet_vkGetDeviceGroupSurfacePresentModesKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetDeviceGroupSurfacePresentModesKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pModes, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDevicePresentRectanglesKHR : {
-			packet_vkGetPhysicalDevicePresentRectanglesKHR*  packet = BitCast<packet_vkGetPhysicalDevicePresentRectanglesKHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDevicePresentRectanglesKHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pRectCount, header );
 			UnpackPointer( INOUT packet->pRects, header );
@@ -3783,7 +3898,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkAcquireNextImage2KHR : {
-			packet_vkAcquireNextImage2KHR*  packet = BitCast<packet_vkAcquireNextImage2KHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkAcquireNextImage2KHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pAcquireInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkAcquireNextImageInfoKHR*>(packet->pAcquireInfo)), header );
@@ -3792,7 +3907,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkBindBufferMemory2 : {
-			packet_vkBindBufferMemory2*  packet = BitCast<packet_vkBindBufferMemory2*>(header->pBody);
+			auto*  packet = BitCast<packet_vkBindBufferMemory2*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pBindInfos, header );
 			for (uint i = 0; (packet->pBindInfos != null) and (i < packet->bindInfoCount); ++i) {
@@ -3802,7 +3917,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkBindImageMemory2 : {
-			packet_vkBindImageMemory2*  packet = BitCast<packet_vkBindImageMemory2*>(header->pBody);
+			auto*  packet = BitCast<packet_vkBindImageMemory2*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pBindInfos, header );
 			for (uint i = 0; (packet->pBindInfos != null) and (i < packet->bindInfoCount); ++i) {
@@ -3812,26 +3927,26 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetDeviceGroupPeerMemoryFeatures : {
-			packet_vkGetDeviceGroupPeerMemoryFeatures*  packet = BitCast<packet_vkGetDeviceGroupPeerMemoryFeatures*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetDeviceGroupPeerMemoryFeatures*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pPeerMemoryFeatures, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdSetDeviceMask : {
-			packet_vkCmdSetDeviceMask*  packet = BitCast<packet_vkCmdSetDeviceMask*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdSetDeviceMask*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCmdDispatchBase : {
-			packet_vkCmdDispatchBase*  packet = BitCast<packet_vkCmdDispatchBase*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCmdDispatchBase*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkEnumeratePhysicalDeviceGroups : {
-			packet_vkEnumeratePhysicalDeviceGroups*  packet = BitCast<packet_vkEnumeratePhysicalDeviceGroups*>(header->pBody);
+			auto*  packet = BitCast<packet_vkEnumeratePhysicalDeviceGroups*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pPhysicalDeviceGroupCount, header );
 			UnpackPointer( INOUT packet->pPhysicalDeviceGroupProperties, header );
@@ -3840,7 +3955,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetImageMemoryRequirements2 : {
-			packet_vkGetImageMemoryRequirements2*  packet = BitCast<packet_vkGetImageMemoryRequirements2*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetImageMemoryRequirements2*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkImageMemoryRequirementsInfo2*>(packet->pInfo)), header );
@@ -3850,7 +3965,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetBufferMemoryRequirements2 : {
-			packet_vkGetBufferMemoryRequirements2*  packet = BitCast<packet_vkGetBufferMemoryRequirements2*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetBufferMemoryRequirements2*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkBufferMemoryRequirementsInfo2*>(packet->pInfo)), header );
@@ -3860,7 +3975,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetImageSparseMemoryRequirements2 : {
-			packet_vkGetImageSparseMemoryRequirements2*  packet = BitCast<packet_vkGetImageSparseMemoryRequirements2*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetImageSparseMemoryRequirements2*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkImageSparseMemoryRequirementsInfo2*>(packet->pInfo)), header );
@@ -3871,7 +3986,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceFeatures2 : {
-			packet_vkGetPhysicalDeviceFeatures2*  packet = BitCast<packet_vkGetPhysicalDeviceFeatures2*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceFeatures2*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pFeatures, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPhysicalDeviceFeatures2*>(packet->pFeatures)), header );
@@ -3879,7 +3994,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceProperties2 : {
-			packet_vkGetPhysicalDeviceProperties2*  packet = BitCast<packet_vkGetPhysicalDeviceProperties2*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceProperties2*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pProperties, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPhysicalDeviceProperties2*>(packet->pProperties)), header );
@@ -3887,7 +4002,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceFormatProperties2 : {
-			packet_vkGetPhysicalDeviceFormatProperties2*  packet = BitCast<packet_vkGetPhysicalDeviceFormatProperties2*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceFormatProperties2*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pFormatProperties, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkFormatProperties2*>(packet->pFormatProperties)), header );
@@ -3895,7 +4010,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceImageFormatProperties2 : {
-			packet_vkGetPhysicalDeviceImageFormatProperties2*  packet = BitCast<packet_vkGetPhysicalDeviceImageFormatProperties2*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceImageFormatProperties2*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pImageFormatInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPhysicalDeviceImageFormatInfo2*>(packet->pImageFormatInfo)), header );
@@ -3905,7 +4020,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceQueueFamilyProperties2 : {
-			packet_vkGetPhysicalDeviceQueueFamilyProperties2*  packet = BitCast<packet_vkGetPhysicalDeviceQueueFamilyProperties2*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceQueueFamilyProperties2*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pQueueFamilyPropertyCount, header );
 			UnpackPointer( INOUT packet->pQueueFamilyProperties, header );
@@ -3914,7 +4029,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceMemoryProperties2 : {
-			packet_vkGetPhysicalDeviceMemoryProperties2*  packet = BitCast<packet_vkGetPhysicalDeviceMemoryProperties2*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceMemoryProperties2*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pMemoryProperties, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPhysicalDeviceMemoryProperties2*>(packet->pMemoryProperties)), header );
@@ -3922,7 +4037,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceSparseImageFormatProperties2 : {
-			packet_vkGetPhysicalDeviceSparseImageFormatProperties2*  packet = BitCast<packet_vkGetPhysicalDeviceSparseImageFormatProperties2*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceSparseImageFormatProperties2*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pFormatInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPhysicalDeviceSparseImageFormatInfo2*>(packet->pFormatInfo)), header );
@@ -3933,13 +4048,13 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkTrimCommandPool : {
-			packet_vkTrimCommandPool*  packet = BitCast<packet_vkTrimCommandPool*>(header->pBody);
+			auto*  packet = BitCast<packet_vkTrimCommandPool*>(header->pBody);
 			packet->header = header;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateSamplerYcbcrConversion : {
-			packet_vkCreateSamplerYcbcrConversion*  packet = BitCast<packet_vkCreateSamplerYcbcrConversion*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateSamplerYcbcrConversion*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkSamplerYcbcrConversionCreateInfo*>(packet->pCreateInfo)), header );
@@ -3949,14 +4064,14 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroySamplerYcbcrConversion : {
-			packet_vkDestroySamplerYcbcrConversion*  packet = BitCast<packet_vkDestroySamplerYcbcrConversion*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroySamplerYcbcrConversion*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkCreateDescriptorUpdateTemplate : {
-			packet_vkCreateDescriptorUpdateTemplate*  packet = BitCast<packet_vkCreateDescriptorUpdateTemplate*>(header->pBody);
+			auto*  packet = BitCast<packet_vkCreateDescriptorUpdateTemplate*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pCreateInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDescriptorUpdateTemplateCreateInfo*>(packet->pCreateInfo)), header );
@@ -3966,21 +4081,21 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkDestroyDescriptorUpdateTemplate : {
-			packet_vkDestroyDescriptorUpdateTemplate*  packet = BitCast<packet_vkDestroyDescriptorUpdateTemplate*>(header->pBody);
+			auto*  packet = BitCast<packet_vkDestroyDescriptorUpdateTemplate*>(header->pBody);
 			packet->header = header;
 			packet->pAllocator = null;
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkUpdateDescriptorSetWithTemplate : {
-			packet_vkUpdateDescriptorSetWithTemplate*  packet = BitCast<packet_vkUpdateDescriptorSetWithTemplate*>(header->pBody);
+			auto*  packet = BitCast<packet_vkUpdateDescriptorSetWithTemplate*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pData, header );
 			break;
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceExternalBufferProperties : {
-			packet_vkGetPhysicalDeviceExternalBufferProperties*  packet = BitCast<packet_vkGetPhysicalDeviceExternalBufferProperties*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceExternalBufferProperties*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pExternalBufferInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPhysicalDeviceExternalBufferInfo*>(packet->pExternalBufferInfo)), header );
@@ -3990,7 +4105,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceExternalFenceProperties : {
-			packet_vkGetPhysicalDeviceExternalFenceProperties*  packet = BitCast<packet_vkGetPhysicalDeviceExternalFenceProperties*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceExternalFenceProperties*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pExternalFenceInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPhysicalDeviceExternalFenceInfo*>(packet->pExternalFenceInfo)), header );
@@ -4000,7 +4115,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceExternalSemaphoreProperties : {
-			packet_vkGetPhysicalDeviceExternalSemaphoreProperties*  packet = BitCast<packet_vkGetPhysicalDeviceExternalSemaphoreProperties*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceExternalSemaphoreProperties*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pExternalSemaphoreInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPhysicalDeviceExternalSemaphoreInfo*>(packet->pExternalSemaphoreInfo)), header );
@@ -4010,7 +4125,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceDisplayProperties2KHR : {
-			packet_vkGetPhysicalDeviceDisplayProperties2KHR*  packet = BitCast<packet_vkGetPhysicalDeviceDisplayProperties2KHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceDisplayProperties2KHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pPropertyCount, header );
 			UnpackPointer( INOUT packet->pProperties, header );
@@ -4019,7 +4134,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetPhysicalDeviceDisplayPlaneProperties2KHR : {
-			packet_vkGetPhysicalDeviceDisplayPlaneProperties2KHR*  packet = BitCast<packet_vkGetPhysicalDeviceDisplayPlaneProperties2KHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetPhysicalDeviceDisplayPlaneProperties2KHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pPropertyCount, header );
 			UnpackPointer( INOUT packet->pProperties, header );
@@ -4028,7 +4143,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetDisplayModeProperties2KHR : {
-			packet_vkGetDisplayModeProperties2KHR*  packet = BitCast<packet_vkGetDisplayModeProperties2KHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetDisplayModeProperties2KHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pPropertyCount, header );
 			UnpackPointer( INOUT packet->pProperties, header );
@@ -4037,7 +4152,7 @@ static void UnpackPacket (vktrace_trace_packet_header *header)
 		}
 
 		case VKTRACE_TPI_VK_vkGetDisplayPlaneCapabilities2KHR : {
-			packet_vkGetDisplayPlaneCapabilities2KHR*  packet = BitCast<packet_vkGetDisplayPlaneCapabilities2KHR*>(header->pBody);
+			auto*  packet = BitCast<packet_vkGetDisplayPlaneCapabilities2KHR*>(header->pBody);
 			packet->header = header;
 			UnpackPointer( INOUT packet->pDisplayPlaneInfo, header );
 			UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkDisplayPlaneInfo2KHR*>(packet->pDisplayPlaneInfo)), header );

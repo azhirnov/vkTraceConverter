@@ -44,6 +44,7 @@ if (TRUE)
     set( VTC_BUILD_TARGET_FLAGS "${VTC_BUILD_TARGET_FLAGS}" "-DVULKAN_HEADERS_INSTALL_DIR=${VULKAN_HEADERS_INSTALL_DIR}" )
 	
     set( VTC_CONVERTER_INCLUDE_DIRS "${VTC_CONVERTER_INCLUDE_DIRS}" "${VULKAN_HEADERS_INSTALL_DIR}/include" )
+    set( VTC_PLAYER_INCLUDE_DIRS "${VTC_PLAYER_INCLUDE_DIRS}" "${VULKAN_HEADERS_INSTALL_DIR}/include" )
 endif ()
 
 
@@ -103,6 +104,7 @@ if (TRUE)
 		# download
 		GIT_REPOSITORY		https://github.com/KhronosGroup/glslang.git
 		GIT_TAG				master
+		GIT_PROGRESS		1
 		EXCLUDE_FROM_ALL	1
 		LOG_DOWNLOAD		1
 		# update
@@ -124,6 +126,7 @@ if (TRUE)
 		# download
 		GIT_REPOSITORY		https://github.com/KhronosGroup/SPIRV-Tools.git
 		GIT_TAG				master
+		GIT_PROGRESS		1
 		EXCLUDE_FROM_ALL	1
 		LOG_DOWNLOAD		1
 		# update
@@ -146,6 +149,7 @@ if (TRUE)
 		# download
 		GIT_REPOSITORY		https://github.com/KhronosGroup/SPIRV-Headers.git
 		GIT_TAG				master
+		GIT_PROGRESS		1
 		EXCLUDE_FROM_ALL	1
 		LOG_DOWNLOAD		1
 		# update
@@ -242,6 +246,7 @@ if (TRUE)
 		# download
 		GIT_REPOSITORY		https://github.com/KhronosGroup/Vulkan-ValidationLayers.git
 		GIT_TAG				master
+		GIT_PROGRESS		1
 		EXCLUDE_FROM_ALL	1
 		LOG_DOWNLOAD		1
 		# update
@@ -290,6 +295,7 @@ if (TRUE)
 		# download
 		GIT_REPOSITORY		https://github.com/KhronosGroup/Vulkan-Tools.git
 		GIT_TAG				master
+		GIT_PROGRESS		1
 		EXCLUDE_FROM_ALL	1
 		LOG_DOWNLOAD		1
 		# update
@@ -345,6 +351,7 @@ if (TRUE)
 		# download
 		GIT_REPOSITORY		https://github.com/LunarG/VulkanTools.git
 		GIT_TAG				master
+		GIT_PROGRESS		1
 		EXCLUDE_FROM_ALL	1
 		LOG_DOWNLOAD		1
 		# update

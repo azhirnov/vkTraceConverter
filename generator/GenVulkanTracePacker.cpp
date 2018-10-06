@@ -463,7 +463,7 @@ namespace VTC
 				counter = counterName;
 			else
 			if ( _IsNumber( counterName ) or is_array )
-				counter = "std::size(obj->"s << fieldName << ")";
+				counter = "CountOf(obj->"s << fieldName << ")";
 			else
 				counter << "obj->" << counterName;
 		}
@@ -562,7 +562,7 @@ namespace VTC
 		else
 
 		// pack static arrays
-		if ( is_array and struct_info != _structs.end() and not counterName.empty() and not isField )
+		if ( is_array and struct_info != _structs.end() and not counterName.empty() /*and not isField*/ )
 		{
 			str << indent << "for (uint i = 0; obj->" << fieldName << " and i < " << counter << "; ++i) {\n";
 			
@@ -592,7 +592,7 @@ namespace VTC
 		else
 
 		// pack single object
-		if ( num_pointers == 0 and struct_info != _structs.end() and not isField )
+		if ( num_pointers == 0 and struct_info != _structs.end() /*and not isField*/ )
 		{
 			CHECK_ERR( counterName.empty() );
 
@@ -648,7 +648,8 @@ namespace VTC
 
 		str << "void VPack_" << info.name << " (const " << info.name << " *obj, VPacker &packer)\n"
 			<< "{\n"
-			<< "	if ( obj == null ) return;\n";
+			<< "	if ( obj == null ) return;\n"
+			<< "	packer.BeginStruct();\n";
 		
 		String	fields;
 
@@ -671,7 +672,7 @@ namespace VTC
 		}
 
 		str	<< fields
-			<< "	packer.AddStruct( *obj );\n"
+			<< "	packer.EndStruct( *obj );\n"
 			<< "}\n\n";
 
 		return true;
@@ -731,7 +732,7 @@ namespace VTC
 
 		// TODO: add other versions
 
-		HddWFile	file{ output };
+		FileWStream		file{ output };
 		CHECK_ERR( file.IsOpen() );	
 		CHECK_ERR( file.Write( StringView(str) ));
 
@@ -819,13 +820,13 @@ namespace VTC
 
 		// store header to file
 		{
-			HddWFile	file{ headerFile };
+			FileWStream		file{ headerFile };
 			CHECK_ERR( file.IsOpen() );
 			CHECK_ERR( file.Write( StringView(header) ));
 		}
 		// store source to file
 		{
-			HddWFile	file{ sourceFile };
+			FileWStream		file{ sourceFile };
 			CHECK_ERR( file.IsOpen() );
 			CHECK_ERR( file.Write( StringView(str1) ));
 			CHECK_ERR( file.Write( StringView(str2) ));
@@ -876,7 +877,7 @@ namespace VTC
 		str << "}\nDISABLE_ENUM_CHECKS();\n";
 		
 
-		HddWFile	file{ output };
+		FileWStream		file{ output };
 		CHECK_ERR( file.IsOpen() );	
 		CHECK_ERR( file.Write( StringView(str) ));
 

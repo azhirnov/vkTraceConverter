@@ -33,6 +33,14 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_COARSE_SAMPLE_ORDER_STATE_CREATE_INFO_NV : {
+			VkPipelineViewportCoarseSampleOrderStateCreateInfoNV const *  obj = BitCast<VkPipelineViewportCoarseSampleOrderStateCreateInfoNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "pipelineViewportCoarseSampleOrderStateCreateInfoNV"s, "createInfo"s );
+			result << indent << "VkPipelineViewportCoarseSampleOrderStateCreateInfoNV  " << name << " = {};\n";
+			Serialize2_VkPipelineViewportCoarseSampleOrderStateCreateInfoNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_DOMAIN_ORIGIN_STATE_CREATE_INFO : {
 			VkPipelineTessellationDomainOriginStateCreateInfo const *  obj = BitCast<VkPipelineTessellationDomainOriginStateCreateInfo const *>( ptr );
 			const String  name = nameSer.MakeUnique( obj, "pipelineTessellationDomainOriginStateCreateInfo"s, "createInfo"s );
@@ -477,6 +485,14 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NVX : {
+			VkAccelerationStructureCreateInfoNVX const *  obj = BitCast<VkAccelerationStructureCreateInfoNVX const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "accelerationStructureCreateInfoNVX"s, "createInfo"s );
+			result << indent << "VkAccelerationStructureCreateInfoNVX  " << name << " = {};\n";
+			Serialize2_VkAccelerationStructureCreateInfoNVX( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO : {
 			VkDescriptorPoolCreateInfo const *  obj = BitCast<VkDescriptorPoolCreateInfo const *>( ptr );
 			const String  name = nameSer.MakeUnique( obj, "descriptorPoolCreateInfo"s, "createInfo"s );
@@ -556,6 +572,14 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			const String  name = nameSer.MakeUnique( obj, "framebufferCreateInfo"s, "createInfo"s );
 			result << indent << "VkFramebufferCreateInfo  " << name << " = {};\n";
 			Serialize2_VkFramebufferCreateInfo( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NVX : {
+			VkGeometryTrianglesNVX const *  obj = BitCast<VkGeometryTrianglesNVX const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "geometryTrianglesNVX"s );
+			result << indent << "VkGeometryTrianglesNVX  " << name << " = {};\n";
+			Serialize2_VkGeometryTrianglesNVX( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
@@ -704,6 +728,14 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			const String  name = nameSer.MakeUnique( obj, "memoryDedicatedRequirements"s, "requirements"s );
 			result << indent << "VkMemoryDedicatedRequirements  " << name << " = {};\n";
 			Serialize2_VkMemoryDedicatedRequirements( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_PROPERTIES_NV : {
+			VkPhysicalDeviceShadingRateImagePropertiesNV const *  obj = BitCast<VkPhysicalDeviceShadingRateImagePropertiesNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceShadingRateImagePropertiesNV"s, "properties"s );
+			result << indent << "VkPhysicalDeviceShadingRateImagePropertiesNV  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceShadingRateImagePropertiesNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
@@ -1091,11 +1123,27 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CORNER_SAMPLED_IMAGE_FEATURES_NV : {
+			VkPhysicalDeviceCornerSampledImageFeaturesNV const *  obj = BitCast<VkPhysicalDeviceCornerSampledImageFeaturesNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceCornerSampledImageFeaturesNV"s, "features"s );
+			result << indent << "VkPhysicalDeviceCornerSampledImageFeaturesNV  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceCornerSampledImageFeaturesNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO : {
 			VkExportMemoryAllocateInfo const *  obj = BitCast<VkExportMemoryAllocateInfo const *>( ptr );
 			const String  name = nameSer.MakeUnique( obj, "exportMemoryAllocateInfo"s, "info"s );
 			result << indent << "VkExportMemoryAllocateInfo  " << name << " = {};\n";
 			Serialize2_VkExportMemoryAllocateInfo( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_REPRESENTATIVE_FRAGMENT_TEST_FEATURES_NV : {
+			VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV const *  obj = BitCast<VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceRepresentativeFragmentTestFeaturesNV"s, "features"s );
+			result << indent << "VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
@@ -1465,6 +1513,14 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NVX : {
+			VkAccelerationStructureMemoryRequirementsInfoNVX const *  obj = BitCast<VkAccelerationStructureMemoryRequirementsInfoNVX const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "accelerationStructureMemoryRequirementsInfoNVX"s, "info"s );
+			result << indent << "VkAccelerationStructureMemoryRequirementsInfoNVX  " << name << " = {};\n";
+			Serialize2_VkAccelerationStructureMemoryRequirementsInfoNVX( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES_KHR : {
 			VkPhysicalDeviceVulkanMemoryModelFeaturesKHR const *  obj = BitCast<VkPhysicalDeviceVulkanMemoryModelFeaturesKHR const *>( ptr );
 			const String  name = nameSer.MakeUnique( obj, "physicalDeviceVulkanMemoryModelFeatures"s, "features"s );
@@ -1478,6 +1534,14 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			const String  name = nameSer.MakeUnique( obj, "pipelineRasterizationStateRasterizationOrderAMD"s );
 			result << indent << "VkPipelineRasterizationStateRasterizationOrderAMD  " << name << " = {};\n";
 			Serialize2_VkPipelineRasterizationStateRasterizationOrderAMD( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_GEOMETRY_NVX : {
+			VkGeometryNVX const *  obj = BitCast<VkGeometryNVX const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "geometryNVX"s );
+			result << indent << "VkGeometryNVX  " << name << " = {};\n";
+			Serialize2_VkGeometryNVX( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
@@ -1653,11 +1717,27 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_EXCLUSIVE_SCISSOR_STATE_CREATE_INFO_NV : {
+			VkPipelineViewportExclusiveScissorStateCreateInfoNV const *  obj = BitCast<VkPipelineViewportExclusiveScissorStateCreateInfoNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "pipelineViewportExclusiveScissorStateCreateInfoNV"s, "createInfo"s );
+			result << indent << "VkPipelineViewportExclusiveScissorStateCreateInfoNV  " << name << " = {};\n";
+			Serialize2_VkPipelineViewportExclusiveScissorStateCreateInfoNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_W_SCALING_STATE_CREATE_INFO_NV : {
 			VkPipelineViewportWScalingStateCreateInfoNV const *  obj = BitCast<VkPipelineViewportWScalingStateCreateInfoNV const *>( ptr );
 			const String  name = nameSer.MakeUnique( obj, "pipelineViewportWScalingStateCreateInfoNV"s, "createInfo"s );
 			result << indent << "VkPipelineViewportWScalingStateCreateInfoNV  " << name << " = {};\n";
 			Serialize2_VkPipelineViewportWScalingStateCreateInfoNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXCLUSIVE_SCISSOR_FEATURES_NV : {
+			VkPhysicalDeviceExclusiveScissorFeaturesNV const *  obj = BitCast<VkPhysicalDeviceExclusiveScissorFeaturesNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceExclusiveScissorFeaturesNV"s, "features"s );
+			result << indent << "VkPhysicalDeviceExclusiveScissorFeaturesNV  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceExclusiveScissorFeaturesNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
@@ -1698,6 +1778,14 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			const String  name = nameSer.MakeUnique( obj, "pipelineDiscardRectangleStateCreateInfo"s, "createInfo"s );
 			result << indent << "VkPipelineDiscardRectangleStateCreateInfoEXT  " << name << " = {};\n";
 			Serialize2_VkPipelineDiscardRectangleStateCreateInfoEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_RAYTRACING_PIPELINE_CREATE_INFO_NVX : {
+			VkRaytracingPipelineCreateInfoNVX const *  obj = BitCast<VkRaytracingPipelineCreateInfoNVX const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "raytracingPipelineCreateInfoNVX"s, "createInfo"s );
+			result << indent << "VkRaytracingPipelineCreateInfoNVX  " << name << " = {};\n";
+			Serialize2_VkRaytracingPipelineCreateInfoNVX( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
@@ -1749,11 +1837,27 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SHADING_RATE_IMAGE_STATE_CREATE_INFO_NV : {
+			VkPipelineViewportShadingRateImageStateCreateInfoNV const *  obj = BitCast<VkPipelineViewportShadingRateImageStateCreateInfoNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "pipelineViewportShadingRateImageStateCreateInfoNV"s, "createInfo"s );
+			result << indent << "VkPipelineViewportShadingRateImageStateCreateInfoNV  " << name << " = {};\n";
+			Serialize2_VkPipelineViewportShadingRateImageStateCreateInfoNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_INLINE_UNIFORM_BLOCK_CREATE_INFO_EXT : {
 			VkDescriptorPoolInlineUniformBlockCreateInfoEXT const *  obj = BitCast<VkDescriptorPoolInlineUniformBlockCreateInfoEXT const *>( ptr );
 			const String  name = nameSer.MakeUnique( obj, "descriptorPoolInlineUniformBlockCreateInfo"s, "createInfo"s );
 			result << indent << "VkDescriptorPoolInlineUniformBlockCreateInfoEXT  " << name << " = {};\n";
 			Serialize2_VkDescriptorPoolInlineUniformBlockCreateInfoEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_FEATURES_NV : {
+			VkPhysicalDeviceShadingRateImageFeaturesNV const *  obj = BitCast<VkPhysicalDeviceShadingRateImageFeaturesNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceShadingRateImageFeaturesNV"s, "features"s );
+			result << indent << "VkPhysicalDeviceShadingRateImageFeaturesNV  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceShadingRateImageFeaturesNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
@@ -1831,6 +1935,46 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_GEOMETRY_AABB_NVX : {
+			VkGeometryAABBNVX const *  obj = BitCast<VkGeometryAABBNVX const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "geometryAABBNVX"s );
+			result << indent << "VkGeometryAABBNVX  " << name << " = {};\n";
+			Serialize2_VkGeometryAABBNVX( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NVX : {
+			VkBindAccelerationStructureMemoryInfoNVX const *  obj = BitCast<VkBindAccelerationStructureMemoryInfoNVX const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "bindAccelerationStructureMemoryInfoNVX"s, "info"s );
+			result << indent << "VkBindAccelerationStructureMemoryInfoNVX  " << name << " = {};\n";
+			Serialize2_VkBindAccelerationStructureMemoryInfoNVX( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_DESCRIPTOR_ACCELERATION_STRUCTURE_INFO_NVX : {
+			VkDescriptorAccelerationStructureInfoNVX const *  obj = BitCast<VkDescriptorAccelerationStructureInfoNVX const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "descriptorAccelerationStructureInfoNVX"s, "info"s );
+			result << indent << "VkDescriptorAccelerationStructureInfoNVX  " << name << " = {};\n";
+			Serialize2_VkDescriptorAccelerationStructureInfoNVX( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAYTRACING_PROPERTIES_NVX : {
+			VkPhysicalDeviceRaytracingPropertiesNVX const *  obj = BitCast<VkPhysicalDeviceRaytracingPropertiesNVX const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceRaytracingPropertiesNVX"s, "properties"s );
+			result << indent << "VkPhysicalDeviceRaytracingPropertiesNVX  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceRaytracingPropertiesNVX( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PIPELINE_REPRESENTATIVE_FRAGMENT_TEST_STATE_CREATE_INFO_NV : {
+			VkPipelineRepresentativeFragmentTestStateCreateInfoNV const *  obj = BitCast<VkPipelineRepresentativeFragmentTestStateCreateInfoNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "pipelineRepresentativeFragmentTestStateCreateInfoNV"s, "createInfo"s );
+			result << indent << "VkPipelineRepresentativeFragmentTestStateCreateInfoNV  " << name << " = {};\n";
+			Serialize2_VkPipelineRepresentativeFragmentTestStateCreateInfoNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_EXT : {
 			VkDeviceQueueGlobalPriorityCreateInfoEXT const *  obj = BitCast<VkDeviceQueueGlobalPriorityCreateInfoEXT const *>( ptr );
 			const String  name = nameSer.MakeUnique( obj, "deviceQueueGlobalPriorityCreateInfo"s, "createInfo"s );
@@ -1878,6 +2022,46 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			const String  name = nameSer.MakeUnique( obj, "physicalDeviceVertexAttributeDivisorFeatures"s, "features"s );
 			result << indent << "VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT  " << name << " = {};\n";
 			Serialize2_VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMPUTE_SHADER_DERIVATIVES_FEATURES_NV : {
+			VkPhysicalDeviceComputeShaderDerivativesFeaturesNV const *  obj = BitCast<VkPhysicalDeviceComputeShaderDerivativesFeaturesNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceComputeShaderDerivativesFeaturesNV"s, "features"s );
+			result << indent << "VkPhysicalDeviceComputeShaderDerivativesFeaturesNV  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceComputeShaderDerivativesFeaturesNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV : {
+			VkPhysicalDeviceMeshShaderFeaturesNV const *  obj = BitCast<VkPhysicalDeviceMeshShaderFeaturesNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceMeshShaderFeaturesNV"s, "features"s );
+			result << indent << "VkPhysicalDeviceMeshShaderFeaturesNV  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceMeshShaderFeaturesNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_NV : {
+			VkPhysicalDeviceMeshShaderPropertiesNV const *  obj = BitCast<VkPhysicalDeviceMeshShaderPropertiesNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceMeshShaderPropertiesNV"s, "properties"s );
+			result << indent << "VkPhysicalDeviceMeshShaderPropertiesNV  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceMeshShaderPropertiesNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_FEATURES_NV : {
+			VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV const *  obj = BitCast<VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceFragmentShaderBarycentricFeaturesNV"s, "features"s );
+			result << indent << "VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_IMAGE_FOOTPRINT_FEATURES_NV : {
+			VkPhysicalDeviceShaderImageFootprintFeaturesNV const *  obj = BitCast<VkPhysicalDeviceShaderImageFootprintFeaturesNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceShaderImageFootprintFeaturesNV"s, "features"s );
+			result << indent << "VkPhysicalDeviceShaderImageFootprintFeaturesNV  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceShaderImageFootprintFeaturesNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
@@ -1987,6 +2171,8 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 		case VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_TAG_INFO_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_INLINE_UNIFORM_BLOCK_EXT : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_GEOMETRY_INSTANCE_NVX : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_HIT_SHADER_MODULE_CREATE_INFO_NVX : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_IMPORT_MEMORY_HOST_POINTER_INFO_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_MEMORY_HOST_POINTER_PROPERTIES_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_CHECKPOINT_DATA_NV : ASSERT(false); break;
@@ -2041,6 +2227,25 @@ void  Serialize2_VkPhysicalDeviceSparseProperties (const VkPhysicalDeviceSparseP
 	result << indent << name << ".residencyStandard3DBlockShape = " << BoolToString(obj->residencyStandard3DBlockShape) << ";\n";
 	result << indent << name << ".residencyAlignedMipSize = " << BoolToString(obj->residencyAlignedMipSize) << ";\n";
 	result << indent << name << ".residencyNonResidentStrict = " << BoolToString(obj->residencyNonResidentStrict) << ";\n";
+}
+
+void  Serialize2_VkPipelineViewportCoarseSampleOrderStateCreateInfoNV (const VkPipelineViewportCoarseSampleOrderStateCreateInfoNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_COARSE_SAMPLE_ORDER_STATE_CREATE_INFO_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_COARSE_SAMPLE_ORDER_STATE_CREATE_INFO_NV );
+	if ( obj->pCustomSampleOrders ) {
+		CHECK( obj->customSampleOrderCount > 0 );
+		const String arr_name = nameSer.MakeUnique( &obj->pCustomSampleOrders, "customSampleOrders"s, "coarseSampleOrderCustomNV"s );
+		before << indent << "VkCoarseSampleOrderCustomNV  " << arr_name << "[" << IntToString(obj->customSampleOrderCount) << "] = {};\n";
+		for (uint i = 0; i < obj->customSampleOrderCount; ++i) {
+			Serialize2_VkCoarseSampleOrderCustomNV( obj->pCustomSampleOrders + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
+		}
+	}
+	result << indent << name << ".sampleOrderType = " << Serialize_VkCoarseSampleOrderTypeNV( obj->sampleOrderType ) << ";\n";
+	result << indent << name << ".customSampleOrderCount = " << IntToString(obj->customSampleOrderCount) << ";\n";
+	result << indent << name << ".pCustomSampleOrders = " << nameSer.Get( &obj->pCustomSampleOrders ) << ";\n";
 }
 
 ND_ String  Serialize_VkDescriptorUpdateTemplateEntry (const VkDescriptorUpdateTemplateEntry *obj, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)
@@ -2136,14 +2341,14 @@ void  Serialize2_VkPhysicalDeviceLimits (const VkPhysicalDeviceLimits *obj, Stri
 	result << indent << name << ".maxFragmentDualSrcAttachments = " << IntToString(obj->maxFragmentDualSrcAttachments) << ";\n";
 	result << indent << name << ".maxFragmentCombinedOutputResources = " << IntToString(obj->maxFragmentCombinedOutputResources) << ";\n";
 	result << indent << name << ".maxComputeSharedMemorySize = " << IntToString(obj->maxComputeSharedMemorySize) << ";\n";
-	result << indent << name << ".maxComputeWorkGroupCount << " << "StaticArray<uint32_t, " << IntToString(std::size(obj->maxComputeWorkGroupCount)) << ">{ ";
-	for (uint i = 0; i < std::size(obj->maxComputeWorkGroupCount); ++i) {
+	result << indent << name << ".maxComputeWorkGroupCount << " << "StaticArray<uint32_t, " << IntToString(CountOf(obj->maxComputeWorkGroupCount)) << ">{ ";
+	for (uint i = 0; i < CountOf(obj->maxComputeWorkGroupCount); ++i) {
 		result << (i ? ", " : "") << IntToString(obj->maxComputeWorkGroupCount[i]);
 	}
 	result << " }" << ";\n";
 	result << indent << name << ".maxComputeWorkGroupInvocations = " << IntToString(obj->maxComputeWorkGroupInvocations) << ";\n";
-	result << indent << name << ".maxComputeWorkGroupSize << " << "StaticArray<uint32_t, " << IntToString(std::size(obj->maxComputeWorkGroupSize)) << ">{ ";
-	for (uint i = 0; i < std::size(obj->maxComputeWorkGroupSize); ++i) {
+	result << indent << name << ".maxComputeWorkGroupSize << " << "StaticArray<uint32_t, " << IntToString(CountOf(obj->maxComputeWorkGroupSize)) << ">{ ";
+	for (uint i = 0; i < CountOf(obj->maxComputeWorkGroupSize); ++i) {
 		result << (i ? ", " : "") << IntToString(obj->maxComputeWorkGroupSize[i]);
 	}
 	result << " }" << ";\n";
@@ -2155,13 +2360,13 @@ void  Serialize2_VkPhysicalDeviceLimits (const VkPhysicalDeviceLimits *obj, Stri
 	result << indent << name << ".maxSamplerLodBias = " << FloatToString(obj->maxSamplerLodBias) << ";\n";
 	result << indent << name << ".maxSamplerAnisotropy = " << FloatToString(obj->maxSamplerAnisotropy) << ";\n";
 	result << indent << name << ".maxViewports = " << IntToString(obj->maxViewports) << ";\n";
-	result << indent << name << ".maxViewportDimensions << " << "StaticArray<uint32_t, " << IntToString(std::size(obj->maxViewportDimensions)) << ">{ ";
-	for (uint i = 0; i < std::size(obj->maxViewportDimensions); ++i) {
+	result << indent << name << ".maxViewportDimensions << " << "StaticArray<uint32_t, " << IntToString(CountOf(obj->maxViewportDimensions)) << ">{ ";
+	for (uint i = 0; i < CountOf(obj->maxViewportDimensions); ++i) {
 		result << (i ? ", " : "") << IntToString(obj->maxViewportDimensions[i]);
 	}
 	result << " }" << ";\n";
-	result << indent << name << ".viewportBoundsRange << " << "StaticArray<float, " << IntToString(std::size(obj->viewportBoundsRange)) << ">{ ";
-	for (uint i = 0; i < std::size(obj->viewportBoundsRange); ++i) {
+	result << indent << name << ".viewportBoundsRange << " << "StaticArray<float, " << IntToString(CountOf(obj->viewportBoundsRange)) << ">{ ";
+	for (uint i = 0; i < CountOf(obj->viewportBoundsRange); ++i) {
 		result << (i ? ", " : "") << FloatToString(obj->viewportBoundsRange[i]);
 	}
 	result << " }" << ";\n";
@@ -2197,13 +2402,13 @@ void  Serialize2_VkPhysicalDeviceLimits (const VkPhysicalDeviceLimits *obj, Stri
 	result << indent << name << ".maxCullDistances = " << IntToString(obj->maxCullDistances) << ";\n";
 	result << indent << name << ".maxCombinedClipAndCullDistances = " << IntToString(obj->maxCombinedClipAndCullDistances) << ";\n";
 	result << indent << name << ".discreteQueuePriorities = " << IntToString(obj->discreteQueuePriorities) << ";\n";
-	result << indent << name << ".pointSizeRange << " << "StaticArray<float, " << IntToString(std::size(obj->pointSizeRange)) << ">{ ";
-	for (uint i = 0; i < std::size(obj->pointSizeRange); ++i) {
+	result << indent << name << ".pointSizeRange << " << "StaticArray<float, " << IntToString(CountOf(obj->pointSizeRange)) << ">{ ";
+	for (uint i = 0; i < CountOf(obj->pointSizeRange); ++i) {
 		result << (i ? ", " : "") << FloatToString(obj->pointSizeRange[i]);
 	}
 	result << " }" << ";\n";
-	result << indent << name << ".lineWidthRange << " << "StaticArray<float, " << IntToString(std::size(obj->lineWidthRange)) << ">{ ";
-	for (uint i = 0; i < std::size(obj->lineWidthRange); ++i) {
+	result << indent << name << ".lineWidthRange << " << "StaticArray<float, " << IntToString(CountOf(obj->lineWidthRange)) << ">{ ";
+	for (uint i = 0; i < CountOf(obj->lineWidthRange); ++i) {
 		result << (i ? ", " : "") << FloatToString(obj->lineWidthRange[i]);
 	}
 	result << " }" << ";\n";
@@ -2474,8 +2679,8 @@ void  Serialize2_VkPhysicalDeviceProperties (const VkPhysicalDeviceProperties *o
 	result << indent << name << ".deviceID = " << IntToString(obj->deviceID) << ";\n";
 	result << indent << name << ".deviceType = " << Serialize_VkPhysicalDeviceType( obj->deviceType ) << ";\n";
 	result << indent << name << ".deviceName = " << '"' << obj->deviceName << '"' << ";\n";
-	result << indent << name << ".pipelineCacheUUID << " << "StaticArray<uint8_t, " << IntToString(std::size(obj->pipelineCacheUUID)) << ">{ ";
-	for (uint i = 0; i < std::size(obj->pipelineCacheUUID); ++i) {
+	result << indent << name << ".pipelineCacheUUID << " << "StaticArray<uint8_t, " << IntToString(CountOf(obj->pipelineCacheUUID)) << ">{ ";
+	for (uint i = 0; i < CountOf(obj->pipelineCacheUUID); ++i) {
 		result << (i ? ", " : "") << IntToString(obj->pipelineCacheUUID[i]);
 	}
 	result << " }" << ";\n";
@@ -2571,7 +2776,7 @@ void  Serialize2_VkImageFormatListCreateInfoKHR (const VkImageFormatListCreateIn
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << Serialize_VkFormat( obj->pViewFormats[i] );
 		}
 		before << "\n" << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pViewFormats ) << ") == " << IntToString(obj->viewFormatCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pViewFormats ) << ") == " << IntToString(obj->viewFormatCount) << " );\n\n";
 	}
 	result << indent << name << ".viewFormatCount = " << IntToString(obj->viewFormatCount) << ";\n";
 	result << indent << name << ".pViewFormats = " << nameSer.Get( &obj->pViewFormats ) << ";\n";
@@ -2590,18 +2795,18 @@ ND_ String  Serialize_VkPhysicalDeviceMemoryProperties (const VkPhysicalDeviceMe
 void  Serialize2_VkPhysicalDeviceMemoryProperties (const VkPhysicalDeviceMemoryProperties *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	if ( obj->memoryTypes ) {
-		CHECK( std::size(obj->memoryTypes) > 0 );
+		CHECK( CountOf(obj->memoryTypes) > 0 );
 		const String arr_name = nameSer.MakeUnique( &obj->memoryTypes, "memoryTypes"s, "memoryType"s );
-		before << indent << "VkMemoryType  " << arr_name << "[" << IntToString(std::size(obj->memoryTypes)) << "] = {};\n";
-		for (uint i = 0; i < std::size(obj->memoryTypes); ++i) {
+		before << indent << "VkMemoryType  " << arr_name << "[" << IntToString(CountOf(obj->memoryTypes)) << "] = {};\n";
+		for (uint i = 0; i < CountOf(obj->memoryTypes); ++i) {
 			Serialize2_VkMemoryType( obj->memoryTypes + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
 		}
 	}
 	if ( obj->memoryHeaps ) {
-		CHECK( std::size(obj->memoryHeaps) > 0 );
+		CHECK( CountOf(obj->memoryHeaps) > 0 );
 		const String arr_name = nameSer.MakeUnique( &obj->memoryHeaps, "memoryHeaps"s, "memoryHeap"s );
-		before << indent << "VkMemoryHeap  " << arr_name << "[" << IntToString(std::size(obj->memoryHeaps)) << "] = {};\n";
-		for (uint i = 0; i < std::size(obj->memoryHeaps); ++i) {
+		before << indent << "VkMemoryHeap  " << arr_name << "[" << IntToString(CountOf(obj->memoryHeaps)) << "] = {};\n";
+		for (uint i = 0; i < CountOf(obj->memoryHeaps); ++i) {
 			Serialize2_VkMemoryHeap( obj->memoryHeaps + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
 		}
 	}
@@ -2659,7 +2864,7 @@ void  Serialize2_VkDeviceQueueCreateInfo (const VkDeviceQueueCreateInfo *obj, St
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << FloatToString(obj->pQueuePriorities[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pQueuePriorities ) << ") == " << IntToString(obj->queueCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pQueuePriorities ) << ") == " << IntToString(obj->queueCount) << " );\n\n";
 	}
 	result << indent << name << ".flags = " << Serialize_VkDeviceQueueCreateFlags( obj->flags ) << ";\n";
 	result << indent << name << ".queueFamilyIndex = " << IntToString(obj->queueFamilyIndex) << ";\n";
@@ -2680,7 +2885,7 @@ void  Serialize2_VkSubmitInfo (const VkSubmitInfo *obj, StringView name, NameSer
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SemaphoreID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, obj->pWaitSemaphores[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pWaitSemaphores ) << ") == " << IntToString(obj->waitSemaphoreCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pWaitSemaphores ) << ") == " << IntToString(obj->waitSemaphoreCount) << " );\n\n";
 	}
 	if ( obj->pWaitDstStageMask ) {
 		CHECK( obj->waitSemaphoreCount > 0 );
@@ -2689,7 +2894,7 @@ void  Serialize2_VkSubmitInfo (const VkSubmitInfo *obj, StringView name, NameSer
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << Serialize_VkPipelineStageFlags( obj->pWaitDstStageMask[i] );
 		}
 		before << "\n" << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pWaitDstStageMask ) << ") == " << IntToString(obj->waitSemaphoreCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pWaitDstStageMask ) << ") == " << IntToString(obj->waitSemaphoreCount) << " );\n\n";
 	}
 	if ( obj->pCommandBuffers ) {
 		CHECK( obj->commandBufferCount > 0 );
@@ -2698,7 +2903,7 @@ void  Serialize2_VkSubmitInfo (const VkSubmitInfo *obj, StringView name, NameSer
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->pCommandBuffers[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pCommandBuffers ) << ") == " << IntToString(obj->commandBufferCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pCommandBuffers ) << ") == " << IntToString(obj->commandBufferCount) << " );\n\n";
 	}
 	if ( obj->pSignalSemaphores ) {
 		CHECK( obj->signalSemaphoreCount > 0 );
@@ -2707,7 +2912,7 @@ void  Serialize2_VkSubmitInfo (const VkSubmitInfo *obj, StringView name, NameSer
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SemaphoreID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, obj->pSignalSemaphores[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pSignalSemaphores ) << ") == " << IntToString(obj->signalSemaphoreCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pSignalSemaphores ) << ") == " << IntToString(obj->signalSemaphoreCount) << " );\n\n";
 	}
 	result << indent << name << ".waitSemaphoreCount = " << IntToString(obj->waitSemaphoreCount) << ";\n";
 	result << indent << name << ".pWaitSemaphores = " << nameSer.Get( &obj->pWaitSemaphores ) << ";\n";
@@ -2731,7 +2936,7 @@ void  Serialize2_VkPipelineDynamicStateCreateInfo (const VkPipelineDynamicStateC
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << Serialize_VkDynamicState( obj->pDynamicStates[i] );
 		}
 		before << "\n" << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pDynamicStates ) << ") == " << IntToString(obj->dynamicStateCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pDynamicStates ) << ") == " << IntToString(obj->dynamicStateCount) << " );\n\n";
 	}
 	result << indent << name << ".flags = " << Serialize_VkPipelineDynamicStateCreateFlags( obj->flags ) << ";\n";
 	result << indent << name << ".dynamicStateCount = " << IntToString(obj->dynamicStateCount) << ";\n";
@@ -2875,7 +3080,7 @@ void  Serialize2_VkBindSparseInfo (const VkBindSparseInfo *obj, StringView name,
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SemaphoreID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, obj->pWaitSemaphores[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pWaitSemaphores ) << ") == " << IntToString(obj->waitSemaphoreCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pWaitSemaphores ) << ") == " << IntToString(obj->waitSemaphoreCount) << " );\n\n";
 	}
 	if ( obj->pBufferBinds ) {
 		CHECK( obj->bufferBindCount > 0 );
@@ -2908,7 +3113,7 @@ void  Serialize2_VkBindSparseInfo (const VkBindSparseInfo *obj, StringView name,
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SemaphoreID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, obj->pSignalSemaphores[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pSignalSemaphores ) << ") == " << IntToString(obj->signalSemaphoreCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pSignalSemaphores ) << ") == " << IntToString(obj->signalSemaphoreCount) << " );\n\n";
 	}
 	result << indent << name << ".waitSemaphoreCount = " << IntToString(obj->waitSemaphoreCount) << ";\n";
 	result << indent << name << ".pWaitSemaphores = " << nameSer.Get( &obj->pWaitSemaphores ) << ";\n";
@@ -3242,7 +3447,7 @@ void  Serialize2_VkBufferCreateInfo (const VkBufferCreateInfo *obj, StringView n
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pQueueFamilyIndices[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pQueueFamilyIndices ) << ") == " << IntToString(obj->queueFamilyIndexCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pQueueFamilyIndices ) << ") == " << IntToString(obj->queueFamilyIndexCount) << " );\n\n";
 	}
 	result << indent << name << ".flags = " << Serialize_VkBufferCreateFlags( obj->flags ) << ";\n";
 	result << indent << name << ".size = " << IntToString(obj->size) << ";\n";
@@ -3265,7 +3470,7 @@ void  Serialize2_VkImageCreateInfo (const VkImageCreateInfo *obj, StringView nam
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pQueueFamilyIndices[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pQueueFamilyIndices ) << ") == " << IntToString(obj->queueFamilyIndexCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pQueueFamilyIndices ) << ") == " << IntToString(obj->queueFamilyIndexCount) << " );\n\n";
 	}
 	result << indent << name << ".flags = " << Serialize_VkImageCreateFlags( obj->flags ) << ";\n";
 	result << indent << name << ".imageType = " << Serialize_VkImageType( obj->imageType ) << ";\n";
@@ -3295,7 +3500,7 @@ void  Serialize2_VkPipelineMultisampleStateCreateInfo (const VkPipelineMultisamp
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pSampleMask[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pSampleMask ) << ") == " << IntToString(((uint(obj->rasterizationSamples) + 31) / 32)) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pSampleMask ) << ") == " << IntToString(((uint(obj->rasterizationSamples) + 31) / 32)) << " );\n\n";
 	}
 	result << indent << name << ".flags = " << Serialize_VkPipelineMultisampleStateCreateFlags( obj->flags ) << ";\n";
 	result << indent << name << ".rasterizationSamples = " << Serialize_VkSampleCountFlagBits( obj->rasterizationSamples ) << ";\n";
@@ -3358,7 +3563,7 @@ void  Serialize2_VkDescriptorSetLayoutBindingFlagsCreateInfoEXT (const VkDescrip
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << Serialize_VkDescriptorBindingFlagsEXT( obj->pBindingFlags[i] );
 		}
 		before << "\n" << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pBindingFlags ) << ") == " << IntToString(obj->bindingCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pBindingFlags ) << ") == " << IntToString(obj->bindingCount) << " );\n\n";
 	}
 	result << indent << name << ".bindingCount = " << IntToString(obj->bindingCount) << ";\n";
 	result << indent << name << ".pBindingFlags = " << nameSer.Get( &obj->pBindingFlags ) << ";\n";
@@ -3376,7 +3581,7 @@ void  Serialize2_VkPipelineCacheCreateInfo (const VkPipelineCacheCreateInfo *obj
 		before << (i ? "," : "") << (i%8 == 0 ? "\n\t"s << indent : " ") << VoidToFIValueString( obj->pInitialData, i*sizeof(FIValue) );
 	}
 	before << '\n' << indent << "};\n";
-	before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pInitialData ) << ") == " << IntToString(obj->initialDataSize) << " );\n\n";
+	before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pInitialData ) << ") == " << IntToString(obj->initialDataSize) << " );\n\n";
 	result << indent << name << ".flags = " << Serialize_VkPipelineCacheCreateFlags( obj->flags ) << ";\n";
 	result << indent << name << ".initialDataSize = " << IntToString(obj->initialDataSize) << ";\n";
 	result << indent << name << ".pInitialData = " << nameSer.Get( &obj->pInitialData ) << ";\n";
@@ -3418,7 +3623,7 @@ void  Serialize2_VkSpecializationInfo (const VkSpecializationInfo *obj, StringVi
 		before << (i ? "," : "") << (i%8 == 0 ? "\n\t"s << indent : " ") << VoidToFIValueString( obj->pData, i*sizeof(FIValue) );
 	}
 	before << '\n' << indent << "};\n";
-	before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pData ) << ") == " << IntToString(obj->dataSize) << " );\n\n";
+	before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pData ) << ") == " << IntToString(obj->dataSize) << " );\n\n";
 	result << indent << name << ".mapEntryCount = " << IntToString(obj->mapEntryCount) << ";\n";
 	result << indent << name << ".pMapEntries = " << nameSer.Get( &obj->pMapEntries ) << ";\n";
 	result << indent << name << ".dataSize = " << IntToString(obj->dataSize) << ";\n";
@@ -3695,8 +3900,8 @@ void  Serialize2_VkPipelineColorBlendStateCreateInfo (const VkPipelineColorBlend
 	result << indent << name << ".logicOp = " << Serialize_VkLogicOp( obj->logicOp ) << ";\n";
 	result << indent << name << ".attachmentCount = " << IntToString(obj->attachmentCount) << ";\n";
 	result << indent << name << ".pAttachments = " << nameSer.Get( &obj->pAttachments ) << ";\n";
-	result << indent << name << ".blendConstants << " << "StaticArray<float, " << IntToString(std::size(obj->blendConstants)) << ">{ ";
-	for (uint i = 0; i < std::size(obj->blendConstants); ++i) {
+	result << indent << name << ".blendConstants << " << "StaticArray<float, " << IntToString(CountOf(obj->blendConstants)) << ">{ ";
+	for (uint i = 0; i < CountOf(obj->blendConstants); ++i) {
 		result << (i ? ", " : "") << FloatToString(obj->blendConstants[i]);
 	}
 	result << " }" << ";\n";
@@ -3827,7 +4032,7 @@ void  Serialize2_VkPipelineLayoutCreateInfo (const VkPipelineLayoutCreateInfo *o
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(DescriptorSetLayoutID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT, obj->pSetLayouts[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pSetLayouts ) << ") == " << IntToString(obj->setLayoutCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pSetLayouts ) << ") == " << IntToString(obj->setLayoutCount) << " );\n\n";
 	}
 	if ( obj->pPushConstantRanges ) {
 		CHECK( obj->pushConstantRangeCount > 0 );
@@ -3923,7 +4128,7 @@ void  Serialize2_VkDescriptorSetLayoutBinding (const VkDescriptorSetLayoutBindin
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SamplerID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT, obj->pImmutableSamplers[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pImmutableSamplers ) << ") == " << IntToString(obj->descriptorCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pImmutableSamplers ) << ") == " << IntToString(obj->descriptorCount) << " );\n\n";
 	}
 	result << indent << name << ".binding = " << IntToString(obj->binding) << ";\n";
 	result << indent << name << ".descriptorType = " << Serialize_VkDescriptorType( obj->descriptorType ) << ";\n";
@@ -3965,6 +4170,28 @@ void  Serialize2_VkDescriptorPoolSize (const VkDescriptorPoolSize *obj, StringVi
 {
 	result << indent << name << ".type = " << Serialize_VkDescriptorType( obj->type ) << ";\n";
 	result << indent << name << ".descriptorCount = " << IntToString(obj->descriptorCount) << ";\n";
+}
+
+void  Serialize2_VkAccelerationStructureCreateInfoNVX (const VkAccelerationStructureCreateInfoNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NVX;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NVX );
+	if ( obj->pGeometries ) {
+		CHECK( obj->geometryCount > 0 );
+		const String arr_name = nameSer.MakeUnique( &obj->pGeometries, "geometries"s, "geometryNVX"s );
+		before << indent << "VkGeometryNVX  " << arr_name << "[" << IntToString(obj->geometryCount) << "] = {};\n";
+		for (uint i = 0; i < obj->geometryCount; ++i) {
+			Serialize2_VkGeometryNVX( obj->pGeometries + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
+		}
+	}
+	result << indent << name << ".type = " << Serialize_VkAccelerationStructureTypeNVX( obj->type ) << ";\n";
+	result << indent << name << ".flags = " << Serialize_VkBuildAccelerationStructureFlagsNVX( obj->flags ) << ";\n";
+	result << indent << name << ".compactedSize = " << IntToString(obj->compactedSize) << ";\n";
+	result << indent << name << ".instanceCount = " << IntToString(obj->instanceCount) << ";\n";
+	result << indent << name << ".geometryCount = " << IntToString(obj->geometryCount) << ";\n";
+	result << indent << name << ".pGeometries = " << nameSer.Get( &obj->pGeometries ) << ";\n";
 }
 
 void  Serialize2_VkDescriptorPoolCreateInfo (const VkDescriptorPoolCreateInfo *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -4009,7 +4236,7 @@ void  Serialize2_VkDescriptorSetAllocateInfo (const VkDescriptorSetAllocateInfo 
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(DescriptorSetLayoutID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT, obj->pSetLayouts[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pSetLayouts ) << ") == " << IntToString(obj->descriptorSetCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pSetLayouts ) << ") == " << IntToString(obj->descriptorSetCount) << " );\n\n";
 	}
 	result << indent << name << ".descriptorPool = " << "app.GetResource(DescriptorPoolID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT, obj->descriptorPool ) << "))" << ";\n";
 	result << indent << name << ".descriptorSetCount = " << IntToString(obj->descriptorSetCount) << ";\n";
@@ -4134,7 +4361,7 @@ void  Serialize2_VkWriteDescriptorSet (const VkWriteDescriptorSet *obj, StringVi
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(BufferViewID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT, obj->pTexelBufferView[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pTexelBufferView ) << ") == " << IntToString(obj->descriptorCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pTexelBufferView ) << ") == " << IntToString(obj->descriptorCount) << " );\n\n";
 	}
 	result << indent << name << ".dstSet = " << "app.GetResource(DescriptorSetID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT, obj->dstSet ) << "))" << ";\n";
 	result << indent << name << ".dstBinding = " << IntToString(obj->dstBinding) << ";\n";
@@ -4184,7 +4411,7 @@ void  Serialize2_VkFramebufferCreateInfo (const VkFramebufferCreateInfo *obj, St
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(ImageViewID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT, obj->pAttachments[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pAttachments ) << ") == " << IntToString(obj->attachmentCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pAttachments ) << ") == " << IntToString(obj->attachmentCount) << " );\n\n";
 	}
 	result << indent << name << ".flags = " << Serialize_VkFramebufferCreateFlags( obj->flags ) << ";\n";
 	result << indent << name << ".renderPass = " << "app.GetResource(RenderPassID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT, obj->renderPass ) << "))" << ";\n";
@@ -4234,6 +4461,25 @@ void  Serialize2_VkAttachmentReference (const VkAttachmentReference *obj, String
 	result << indent << name << ".layout = " << Serialize_VkImageLayout( obj->layout ) << ";\n";
 }
 
+void  Serialize2_VkGeometryTrianglesNVX (const VkGeometryTrianglesNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NVX;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NVX );
+	result << indent << name << ".vertexData = " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->vertexData ) << "))" << ";\n";
+	result << indent << name << ".vertexOffset = " << IntToString(obj->vertexOffset) << ";\n";
+	result << indent << name << ".vertexCount = " << IntToString(obj->vertexCount) << ";\n";
+	result << indent << name << ".vertexStride = " << IntToString(obj->vertexStride) << ";\n";
+	result << indent << name << ".vertexFormat = " << Serialize_VkFormat( obj->vertexFormat ) << ";\n";
+	result << indent << name << ".indexData = " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->indexData ) << "))" << ";\n";
+	result << indent << name << ".indexOffset = " << IntToString(obj->indexOffset) << ";\n";
+	result << indent << name << ".indexCount = " << IntToString(obj->indexCount) << ";\n";
+	result << indent << name << ".indexType = " << Serialize_VkIndexType( obj->indexType ) << ";\n";
+	result << indent << name << ".transformData = " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->transformData ) << "))" << ";\n";
+	result << indent << name << ".transformOffset = " << IntToString(obj->transformOffset) << ";\n";
+}
+
 ND_ String  Serialize_VkSubpassDescription (const VkSubpassDescription *obj, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)
 {
 	String	result, before;
@@ -4280,7 +4526,7 @@ void  Serialize2_VkSubpassDescription (const VkSubpassDescription *obj, StringVi
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pPreserveAttachments[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pPreserveAttachments ) << ") == " << IntToString(obj->preserveAttachmentCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pPreserveAttachments ) << ") == " << IntToString(obj->preserveAttachmentCount) << " );\n\n";
 	}
 	result << indent << name << ".flags = " << Serialize_VkSubpassDescriptionFlags( obj->flags ) << ";\n";
 	result << indent << name << ".pipelineBindPoint = " << Serialize_VkPipelineBindPoint( obj->pipelineBindPoint ) << ";\n";
@@ -4452,18 +4698,18 @@ ND_ String  Serialize_VkImageBlit (const VkImageBlit *obj, NameSerializer &nameS
 void  Serialize2_VkImageBlit (const VkImageBlit *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	if ( obj->srcOffsets ) {
-		CHECK( std::size(obj->srcOffsets) > 0 );
+		CHECK( CountOf(obj->srcOffsets) > 0 );
 		const String arr_name = nameSer.MakeUnique( &obj->srcOffsets, "srcOffsets"s, "offset3D"s );
-		before << indent << "VkOffset3D  " << arr_name << "[" << IntToString(std::size(obj->srcOffsets)) << "] = {};\n";
-		for (uint i = 0; i < std::size(obj->srcOffsets); ++i) {
+		before << indent << "VkOffset3D  " << arr_name << "[" << IntToString(CountOf(obj->srcOffsets)) << "] = {};\n";
+		for (uint i = 0; i < CountOf(obj->srcOffsets); ++i) {
 			Serialize2_VkOffset3D( obj->srcOffsets + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
 		}
 	}
 	if ( obj->dstOffsets ) {
-		CHECK( std::size(obj->dstOffsets) > 0 );
+		CHECK( CountOf(obj->dstOffsets) > 0 );
 		const String arr_name = nameSer.MakeUnique( &obj->dstOffsets, "dstOffsets"s, "offset3D"s );
-		before << indent << "VkOffset3D  " << arr_name << "[" << IntToString(std::size(obj->dstOffsets)) << "] = {};\n";
-		for (uint i = 0; i < std::size(obj->dstOffsets); ++i) {
+		before << indent << "VkOffset3D  " << arr_name << "[" << IntToString(CountOf(obj->dstOffsets)) << "] = {};\n";
+		for (uint i = 0; i < CountOf(obj->dstOffsets); ++i) {
 			Serialize2_VkOffset3D( obj->dstOffsets + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
 		}
 	}
@@ -4679,6 +4925,31 @@ void  Serialize2_VkPhysicalDevicePointClippingProperties (const VkPhysicalDevice
 	result << indent << name << ".pointClippingBehavior = " << Serialize_VkPointClippingBehavior( obj->pointClippingBehavior ) << ";\n";
 }
 
+ND_ String  Serialize_VkShadingRatePaletteNV (const VkShadingRatePaletteNV *obj, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)
+{
+	String	result, before;
+	if ( obj == null ) return result;
+	const String  name = nameSer.MakeUnique( obj, "shadingRatePaletteNV"s );
+	result << indent << "VkShadingRatePaletteNV  " << name << " = {};\n";
+	Serialize2_VkShadingRatePaletteNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+	return before + result;
+}
+
+void  Serialize2_VkShadingRatePaletteNV (const VkShadingRatePaletteNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	if ( obj->pShadingRatePaletteEntries ) {
+		CHECK( obj->shadingRatePaletteEntryCount > 0 );
+		before << indent << "const VkShadingRatePaletteEntryNV  " << nameSer.MakeUnique( &obj->pShadingRatePaletteEntries, "shadingRatePaletteEntries"s ) << "[] = {";
+		for (uint i = 0; i < obj->shadingRatePaletteEntryCount; ++i) {
+			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << Serialize_VkShadingRatePaletteEntryNV( obj->pShadingRatePaletteEntries[i] );
+		}
+		before << "\n" << indent << " };\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pShadingRatePaletteEntries ) << ") == " << IntToString(obj->shadingRatePaletteEntryCount) << " );\n\n";
+	}
+	result << indent << name << ".shadingRatePaletteEntryCount = " << IntToString(obj->shadingRatePaletteEntryCount) << ";\n";
+	result << indent << name << ".pShadingRatePaletteEntries = " << nameSer.Get( &obj->pShadingRatePaletteEntries ) << ";\n";
+}
+
 void  Serialize2_VkPhysicalDeviceSubgroupProperties (const VkPhysicalDeviceSubgroupProperties *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
@@ -4743,6 +5014,17 @@ void  Serialize2_VkMemoryDedicatedRequirements (const VkMemoryDedicatedRequireme
 	result << indent << name << ".requiresDedicatedAllocation = " << BoolToString(obj->requiresDedicatedAllocation) << ";\n";
 }
 
+void  Serialize2_VkPhysicalDeviceShadingRateImagePropertiesNV (const VkPhysicalDeviceShadingRateImagePropertiesNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_PROPERTIES_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_PROPERTIES_NV );
+	Serialize2_VkExtent2D( &obj->shadingRateTexelSize, String(name) << ".shadingRateTexelSize", nameSer, remapper, indent, INOUT result, INOUT before );
+	result << indent << name << ".shadingRatePaletteSize = " << IntToString(obj->shadingRatePaletteSize) << ";\n";
+	result << indent << name << ".shadingRateMaxCoarseSamples = " << IntToString(obj->shadingRateMaxCoarseSamples) << ";\n";
+}
+
 void  Serialize2_VkMemoryDedicatedAllocateInfo (const VkMemoryDedicatedAllocateInfo *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
@@ -4804,7 +5086,7 @@ void  Serialize2_VkDeviceGroupSubmitInfo (const VkDeviceGroupSubmitInfo *obj, St
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pWaitSemaphoreDeviceIndices[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pWaitSemaphoreDeviceIndices ) << ") == " << IntToString(obj->waitSemaphoreCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pWaitSemaphoreDeviceIndices ) << ") == " << IntToString(obj->waitSemaphoreCount) << " );\n\n";
 	}
 	if ( obj->pCommandBufferDeviceMasks ) {
 		CHECK( obj->commandBufferCount > 0 );
@@ -4813,7 +5095,7 @@ void  Serialize2_VkDeviceGroupSubmitInfo (const VkDeviceGroupSubmitInfo *obj, St
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pCommandBufferDeviceMasks[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pCommandBufferDeviceMasks ) << ") == " << IntToString(obj->commandBufferCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pCommandBufferDeviceMasks ) << ") == " << IntToString(obj->commandBufferCount) << " );\n\n";
 	}
 	if ( obj->pSignalSemaphoreDeviceIndices ) {
 		CHECK( obj->signalSemaphoreCount > 0 );
@@ -4822,7 +5104,7 @@ void  Serialize2_VkDeviceGroupSubmitInfo (const VkDeviceGroupSubmitInfo *obj, St
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pSignalSemaphoreDeviceIndices[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pSignalSemaphoreDeviceIndices ) << ") == " << IntToString(obj->signalSemaphoreCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pSignalSemaphoreDeviceIndices ) << ") == " << IntToString(obj->signalSemaphoreCount) << " );\n\n";
 	}
 	result << indent << name << ".waitSemaphoreCount = " << IntToString(obj->waitSemaphoreCount) << ";\n";
 	result << indent << name << ".pWaitSemaphoreDeviceIndices = " << nameSer.Get( &obj->pWaitSemaphoreDeviceIndices ) << ";\n";
@@ -4855,7 +5137,7 @@ void  Serialize2_VkBindBufferMemoryDeviceGroupInfo (const VkBindBufferMemoryDevi
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pDeviceIndices[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pDeviceIndices ) << ") == " << IntToString(obj->deviceIndexCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pDeviceIndices ) << ") == " << IntToString(obj->deviceIndexCount) << " );\n\n";
 	}
 	result << indent << name << ".deviceIndexCount = " << IntToString(obj->deviceIndexCount) << ";\n";
 	result << indent << name << ".pDeviceIndices = " << nameSer.Get( &obj->pDeviceIndices ) << ";\n";
@@ -4874,7 +5156,7 @@ void  Serialize2_VkBindImageMemoryDeviceGroupInfo (const VkBindImageMemoryDevice
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pDeviceIndices[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pDeviceIndices ) << ") == " << IntToString(obj->deviceIndexCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pDeviceIndices ) << ") == " << IntToString(obj->deviceIndexCount) << " );\n\n";
 	}
 	if ( obj->pSplitInstanceBindRegions ) {
 		CHECK( obj->splitInstanceBindRegionCount > 0 );
@@ -4897,13 +5179,13 @@ void  Serialize2_VkPhysicalDeviceGroupProperties (const VkPhysicalDeviceGroupPro
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GROUP_PROPERTIES;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GROUP_PROPERTIES );
 	if ( obj->physicalDevices ) {
-		CHECK( std::size(obj->physicalDevices) > 0 );
+		CHECK( CountOf(obj->physicalDevices) > 0 );
 		before << indent << "const VkPhysicalDevice  " << nameSer.MakeUnique( &obj->physicalDevices, "physicalDevices"s, "physicalDevice"s ) << "[] = {";
-		for (uint i = 0; i < std::size(obj->physicalDevices); ++i) {
+		for (uint i = 0; i < CountOf(obj->physicalDevices); ++i) {
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(PhysicalDeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT, obj->physicalDevices[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->physicalDevices ) << ") == " << IntToString(std::size(obj->physicalDevices)) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->physicalDevices ) << ") == " << IntToString(CountOf(obj->physicalDevices)) << " );\n\n";
 	}
 	result << indent << name << ".physicalDeviceCount = " << IntToString(obj->physicalDeviceCount) << ";\n";
 	result << indent << name << ".physicalDevices = " << nameSer.Get( &obj->physicalDevices ) << ";\n";
@@ -4923,7 +5205,7 @@ void  Serialize2_VkDeviceGroupDeviceCreateInfo (const VkDeviceGroupDeviceCreateI
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(PhysicalDeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT, obj->pPhysicalDevices[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pPhysicalDevices ) << ") == " << IntToString(obj->physicalDeviceCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pPhysicalDevices ) << ") == " << IntToString(obj->physicalDeviceCount) << " );\n\n";
 	}
 	result << indent << name << ".physicalDeviceCount = " << IntToString(obj->physicalDeviceCount) << ";\n";
 	result << indent << name << ".pPhysicalDevices = " << nameSer.Get( &obj->pPhysicalDevices ) << ";\n";
@@ -5146,7 +5428,7 @@ void  Serialize2_VkRenderPassMultiviewCreateInfo (const VkRenderPassMultiviewCre
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pViewMasks[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pViewMasks ) << ") == " << IntToString(obj->subpassCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pViewMasks ) << ") == " << IntToString(obj->subpassCount) << " );\n\n";
 	}
 	if ( obj->pViewOffsets ) {
 		CHECK( obj->dependencyCount > 0 );
@@ -5155,7 +5437,7 @@ void  Serialize2_VkRenderPassMultiviewCreateInfo (const VkRenderPassMultiviewCre
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pViewOffsets[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pViewOffsets ) << ") == " << IntToString(obj->dependencyCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pViewOffsets ) << ") == " << IntToString(obj->dependencyCount) << " );\n\n";
 	}
 	if ( obj->pCorrelationMasks ) {
 		CHECK( obj->correlationMaskCount > 0 );
@@ -5164,7 +5446,7 @@ void  Serialize2_VkRenderPassMultiviewCreateInfo (const VkRenderPassMultiviewCre
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pCorrelationMasks[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pCorrelationMasks ) << ") == " << IntToString(obj->correlationMaskCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pCorrelationMasks ) << ") == " << IntToString(obj->correlationMaskCount) << " );\n\n";
 	}
 	result << indent << name << ".subpassCount = " << IntToString(obj->subpassCount) << ";\n";
 	result << indent << name << ".pViewMasks = " << nameSer.Get( &obj->pViewMasks ) << ";\n";
@@ -5393,18 +5675,18 @@ void  Serialize2_VkPhysicalDeviceIDProperties (const VkPhysicalDeviceIDPropertie
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES );
-	result << indent << name << ".deviceUUID << " << "StaticArray<uint8_t, " << IntToString(std::size(obj->deviceUUID)) << ">{ ";
-	for (uint i = 0; i < std::size(obj->deviceUUID); ++i) {
+	result << indent << name << ".deviceUUID << " << "StaticArray<uint8_t, " << IntToString(CountOf(obj->deviceUUID)) << ">{ ";
+	for (uint i = 0; i < CountOf(obj->deviceUUID); ++i) {
 		result << (i ? ", " : "") << IntToString(obj->deviceUUID[i]);
 	}
 	result << " }" << ";\n";
-	result << indent << name << ".driverUUID << " << "StaticArray<uint8_t, " << IntToString(std::size(obj->driverUUID)) << ">{ ";
-	for (uint i = 0; i < std::size(obj->driverUUID); ++i) {
+	result << indent << name << ".driverUUID << " << "StaticArray<uint8_t, " << IntToString(CountOf(obj->driverUUID)) << ">{ ";
+	for (uint i = 0; i < CountOf(obj->driverUUID); ++i) {
 		result << (i ? ", " : "") << IntToString(obj->driverUUID[i]);
 	}
 	result << " }" << ";\n";
-	result << indent << name << ".deviceLUID << " << "StaticArray<uint8_t, " << IntToString(std::size(obj->deviceLUID)) << ">{ ";
-	for (uint i = 0; i < std::size(obj->deviceLUID); ++i) {
+	result << indent << name << ".deviceLUID << " << "StaticArray<uint8_t, " << IntToString(CountOf(obj->deviceLUID)) << ">{ ";
+	for (uint i = 0; i < CountOf(obj->deviceLUID); ++i) {
 		result << (i ? ", " : "") << IntToString(obj->deviceLUID[i]);
 	}
 	result << " }" << ";\n";
@@ -5421,6 +5703,15 @@ void  Serialize2_VkExternalMemoryImageCreateInfo (const VkExternalMemoryImageCre
 	result << indent << name << ".handleTypes = " << Serialize_VkExternalMemoryHandleTypeFlags( obj->handleTypes ) << ";\n";
 }
 
+void  Serialize2_VkPhysicalDeviceCornerSampledImageFeaturesNV (const VkPhysicalDeviceCornerSampledImageFeaturesNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CORNER_SAMPLED_IMAGE_FEATURES_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CORNER_SAMPLED_IMAGE_FEATURES_NV );
+	result << indent << name << ".cornerSampledImage = " << BoolToString(obj->cornerSampledImage) << ";\n";
+}
+
 void  Serialize2_VkExportMemoryAllocateInfo (const VkExportMemoryAllocateInfo *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
@@ -5428,6 +5719,15 @@ void  Serialize2_VkExportMemoryAllocateInfo (const VkExportMemoryAllocateInfo *o
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO );
 	result << indent << name << ".handleTypes = " << Serialize_VkExternalMemoryHandleTypeFlags( obj->handleTypes ) << ";\n";
+}
+
+void  Serialize2_VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV (const VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_REPRESENTATIVE_FRAGMENT_TEST_FEATURES_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_REPRESENTATIVE_FRAGMENT_TEST_FEATURES_NV );
+	result << indent << name << ".representativeFragmentTest = " << BoolToString(obj->representativeFragmentTest) << ";\n";
 }
 
 void  Serialize2_VkPhysicalDeviceExternalFenceInfo (const VkPhysicalDeviceExternalFenceInfo *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -5470,6 +5770,23 @@ void  Serialize2_VkExportFenceCreateInfo (const VkExportFenceCreateInfo *obj, St
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_EXPORT_FENCE_CREATE_INFO;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_EXPORT_FENCE_CREATE_INFO );
 	result << indent << name << ".handleTypes = " << Serialize_VkExternalFenceHandleTypeFlags( obj->handleTypes ) << ";\n";
+}
+
+ND_ String  Serialize_VkCoarseSampleLocationNV (const VkCoarseSampleLocationNV *obj, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)
+{
+	String	result, before;
+	if ( obj == null ) return result;
+	const String  name = nameSer.MakeUnique( obj, "coarseSampleLocationNV"s );
+	result << indent << "VkCoarseSampleLocationNV  " << name << " = {};\n";
+	Serialize2_VkCoarseSampleLocationNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+	return before + result;
+}
+
+void  Serialize2_VkCoarseSampleLocationNV (const VkCoarseSampleLocationNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	result << indent << name << ".pixelX = " << IntToString(obj->pixelX) << ";\n";
+	result << indent << name << ".pixelY = " << IntToString(obj->pixelY) << ";\n";
+	result << indent << name << ".sample = " << IntToString(obj->sample) << ";\n";
 }
 
 void  Serialize2_VkExportSemaphoreCreateInfo (const VkExportSemaphoreCreateInfo *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -5609,7 +5926,7 @@ void  Serialize2_VkSwapchainCreateInfoKHR (const VkSwapchainCreateInfoKHR *obj, 
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pQueueFamilyIndices[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pQueueFamilyIndices ) << ") == " << IntToString(obj->queueFamilyIndexCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pQueueFamilyIndices ) << ") == " << IntToString(obj->queueFamilyIndexCount) << " );\n\n";
 	}
 	result << indent << name << ".flags = " << Serialize_VkSwapchainCreateFlagsKHR( obj->flags ) << ";\n";
 	result << indent << name << ".surface = " << "app.GetResource(SurfaceKHRID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT, obj->surface ) << "))" << ";\n";
@@ -5642,7 +5959,7 @@ void  Serialize2_VkPresentInfoKHR (const VkPresentInfoKHR *obj, StringView name,
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SemaphoreID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, obj->pWaitSemaphores[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pWaitSemaphores ) << ") == " << IntToString(obj->waitSemaphoreCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pWaitSemaphores ) << ") == " << IntToString(obj->waitSemaphoreCount) << " );\n\n";
 	}
 	if ( obj->pSwapchains ) {
 		CHECK( obj->swapchainCount > 0 );
@@ -5651,7 +5968,7 @@ void  Serialize2_VkPresentInfoKHR (const VkPresentInfoKHR *obj, StringView name,
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SwapchainKHRID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT, obj->pSwapchains[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pSwapchains ) << ") == " << IntToString(obj->swapchainCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pSwapchains ) << ") == " << IntToString(obj->swapchainCount) << " );\n\n";
 	}
 	if ( obj->pImageIndices ) {
 		CHECK( obj->swapchainCount > 0 );
@@ -5660,7 +5977,7 @@ void  Serialize2_VkPresentInfoKHR (const VkPresentInfoKHR *obj, StringView name,
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pImageIndices[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pImageIndices ) << ") == " << IntToString(obj->swapchainCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pImageIndices ) << ") == " << IntToString(obj->swapchainCount) << " );\n\n";
 	}
 	if ( obj->pResults ) {
 		CHECK( obj->swapchainCount > 0 );
@@ -5669,7 +5986,7 @@ void  Serialize2_VkPresentInfoKHR (const VkPresentInfoKHR *obj, StringView name,
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << Serialize_VkResult( obj->pResults[i] );
 		}
 		before << "\n" << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pResults ) << ") == " << IntToString(obj->swapchainCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pResults ) << ") == " << IntToString(obj->swapchainCount) << " );\n\n";
 	}
 	result << indent << name << ".waitSemaphoreCount = " << IntToString(obj->waitSemaphoreCount) << ";\n";
 	result << indent << name << ".pWaitSemaphores = " << nameSer.Get( &obj->pWaitSemaphores ) << ";\n";
@@ -5722,8 +6039,8 @@ void  Serialize2_VkDeviceGroupPresentCapabilitiesKHR (const VkDeviceGroupPresent
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_CAPABILITIES_KHR;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_CAPABILITIES_KHR );
-	result << indent << name << ".presentMask << " << "StaticArray<uint32_t, " << IntToString(std::size(obj->presentMask)) << ">{ ";
-	for (uint i = 0; i < std::size(obj->presentMask); ++i) {
+	result << indent << name << ".presentMask << " << "StaticArray<uint32_t, " << IntToString(CountOf(obj->presentMask)) << ">{ ";
+	for (uint i = 0; i < CountOf(obj->presentMask); ++i) {
 		result << (i ? ", " : "") << IntToString(obj->presentMask[i]);
 	}
 	result << " }" << ";\n";
@@ -5743,7 +6060,7 @@ void  Serialize2_VkDeviceGroupPresentInfoKHR (const VkDeviceGroupPresentInfoKHR 
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pDeviceMasks[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pDeviceMasks ) << ") == " << IntToString(obj->swapchainCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pDeviceMasks ) << ") == " << IntToString(obj->swapchainCount) << " );\n\n";
 	}
 	result << indent << name << ".swapchainCount = " << IntToString(obj->swapchainCount) << ";\n";
 	result << indent << name << ".pDeviceMasks = " << nameSer.Get( &obj->pDeviceMasks ) << ";\n";
@@ -6042,7 +6359,7 @@ void  Serialize2_VkSubpassDescription2KHR (const VkSubpassDescription2KHR *obj, 
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pPreserveAttachments[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pPreserveAttachments ) << ") == " << IntToString(obj->preserveAttachmentCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pPreserveAttachments ) << ") == " << IntToString(obj->preserveAttachmentCount) << " );\n\n";
 	}
 	result << indent << name << ".flags = " << Serialize_VkSubpassDescriptionFlags( obj->flags ) << ";\n";
 	result << indent << name << ".pipelineBindPoint = " << Serialize_VkPipelineBindPoint( obj->pipelineBindPoint ) << ";\n";
@@ -6119,7 +6436,7 @@ void  Serialize2_VkRenderPassCreateInfo2KHR (const VkRenderPassCreateInfo2KHR *o
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pCorrelatedViewMasks[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pCorrelatedViewMasks ) << ") == " << IntToString(obj->correlatedViewMaskCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pCorrelatedViewMasks ) << ") == " << IntToString(obj->correlatedViewMaskCount) << " );\n\n";
 	}
 	result << indent << name << ".flags = " << Serialize_VkRenderPassCreateFlags( obj->flags ) << ";\n";
 	result << indent << name << ".attachmentCount = " << IntToString(obj->attachmentCount) << ";\n";
@@ -6261,7 +6578,7 @@ void  Serialize2_VkDescriptorSetVariableDescriptorCountAllocateInfoEXT (const Vk
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pDescriptorCounts[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pDescriptorCounts ) << ") == " << IntToString(obj->descriptorSetCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pDescriptorCounts ) << ") == " << IntToString(obj->descriptorSetCount) << " );\n\n";
 	}
 	result << indent << name << ".descriptorSetCount = " << IntToString(obj->descriptorSetCount) << ";\n";
 	result << indent << name << ".pDescriptorCounts = " << nameSer.Get( &obj->pDescriptorCounts ) << ";\n";
@@ -6276,6 +6593,15 @@ void  Serialize2_VkPhysicalDevice8BitStorageFeaturesKHR (const VkPhysicalDevice8
 	result << indent << name << ".storageBuffer8BitAccess = " << BoolToString(obj->storageBuffer8BitAccess) << ";\n";
 	result << indent << name << ".uniformAndStorageBuffer8BitAccess = " << BoolToString(obj->uniformAndStorageBuffer8BitAccess) << ";\n";
 	result << indent << name << ".storagePushConstant8 = " << BoolToString(obj->storagePushConstant8) << ";\n";
+}
+
+void  Serialize2_VkAccelerationStructureMemoryRequirementsInfoNVX (const VkAccelerationStructureMemoryRequirementsInfoNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NVX;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NVX );
+	result << indent << name << ".accelerationStructure = " << "app.GetResource(AccelerationStructureNVXID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NVX_EXT, obj->accelerationStructure ) << "))" << ";\n";
 }
 
 void  Serialize2_VkPhysicalDeviceVulkanMemoryModelFeaturesKHR (const VkPhysicalDeviceVulkanMemoryModelFeaturesKHR *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -6297,6 +6623,17 @@ void  Serialize2_VkPipelineRasterizationStateRasterizationOrderAMD (const VkPipe
 	result << indent << name << ".rasterizationOrder = " << Serialize_VkRasterizationOrderAMD( obj->rasterizationOrder ) << ";\n";
 }
 
+void  Serialize2_VkGeometryNVX (const VkGeometryNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_GEOMETRY_NVX;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_GEOMETRY_NVX );
+	result << indent << name << ".geometryType = " << Serialize_VkGeometryTypeNVX( obj->geometryType ) << ";\n";
+	Serialize2_VkGeometryDataNVX( &obj->geometry, String(name) << ".geometry", nameSer, remapper, indent, INOUT result, INOUT before );
+	result << indent << name << ".flags = " << Serialize_VkGeometryFlagsNVX( obj->flags ) << ";\n";
+}
+
 void  Serialize2_VkDebugMarkerObjectNameInfoEXT (const VkDebugMarkerObjectNameInfoEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
@@ -6315,8 +6652,8 @@ void  Serialize2_VkDebugMarkerMarkerInfoEXT (const VkDebugMarkerMarkerInfoEXT *o
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT );
 	result << indent << name << ".pMarkerName = " << '"' << obj->pMarkerName << '"' << ";\n";
-	result << indent << name << ".color << " << "StaticArray<float, " << IntToString(std::size(obj->color)) << ">{ ";
-	for (uint i = 0; i < std::size(obj->color); ++i) {
+	result << indent << name << ".color << " << "StaticArray<float, " << IntToString(CountOf(obj->color)) << ">{ ";
+	for (uint i = 0; i < CountOf(obj->color); ++i) {
 		result << (i ? ", " : "") << FloatToString(obj->color[i]);
 	}
 	result << " }" << ";\n";
@@ -6396,6 +6733,32 @@ void  Serialize2_VkTextureLODGatherFormatPropertiesAMD (const VkTextureLODGather
 	result << indent << name << ".supportsTextureGatherLODBiasAMD = " << BoolToString(obj->supportsTextureGatherLODBiasAMD) << ";\n";
 }
 
+ND_ String  Serialize_VkCoarseSampleOrderCustomNV (const VkCoarseSampleOrderCustomNV *obj, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)
+{
+	String	result, before;
+	if ( obj == null ) return result;
+	const String  name = nameSer.MakeUnique( obj, "coarseSampleOrderCustomNV"s );
+	result << indent << "VkCoarseSampleOrderCustomNV  " << name << " = {};\n";
+	Serialize2_VkCoarseSampleOrderCustomNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+	return before + result;
+}
+
+void  Serialize2_VkCoarseSampleOrderCustomNV (const VkCoarseSampleOrderCustomNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	if ( obj->pSampleLocations ) {
+		CHECK( obj->sampleLocationCount > 0 );
+		const String arr_name = nameSer.MakeUnique( &obj->pSampleLocations, "sampleLocations"s, "coarseSampleLocationNV"s );
+		before << indent << "VkCoarseSampleLocationNV  " << arr_name << "[" << IntToString(obj->sampleLocationCount) << "] = {};\n";
+		for (uint i = 0; i < obj->sampleLocationCount; ++i) {
+			Serialize2_VkCoarseSampleLocationNV( obj->pSampleLocations + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
+		}
+	}
+	result << indent << name << ".shadingRate = " << Serialize_VkShadingRatePaletteEntryNV( obj->shadingRate ) << ";\n";
+	result << indent << name << ".sampleCount = " << IntToString(obj->sampleCount) << ";\n";
+	result << indent << name << ".sampleLocationCount = " << IntToString(obj->sampleLocationCount) << ";\n";
+	result << indent << name << ".pSampleLocations = " << nameSer.Get( &obj->pSampleLocations ) << ";\n";
+}
+
 void  Serialize2_VkExternalMemoryImageCreateInfoNV (const VkExternalMemoryImageCreateInfoNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
@@ -6418,7 +6781,7 @@ void  Serialize2_VkValidationFlagsEXT (const VkValidationFlagsEXT *obj, StringVi
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << Serialize_VkValidationCheckEXT( obj->pDisabledValidationChecks[i] );
 		}
 		before << "\n" << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pDisabledValidationChecks ) << ") == " << IntToString(obj->disabledValidationCheckCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pDisabledValidationChecks ) << ") == " << IntToString(obj->disabledValidationCheckCount) << " );\n\n";
 	}
 	result << indent << name << ".disabledValidationCheckCount = " << IntToString(obj->disabledValidationCheckCount) << ";\n";
 	result << indent << name << ".pDisabledValidationChecks = " << nameSer.Get( &obj->pDisabledValidationChecks ) << ";\n";
@@ -6458,7 +6821,7 @@ void  Serialize2_VkD3D12FenceSubmitInfoKHR (const VkD3D12FenceSubmitInfoKHR *obj
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pWaitSemaphoreValues[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pWaitSemaphoreValues ) << ") == " << IntToString(obj->waitSemaphoreValuesCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pWaitSemaphoreValues ) << ") == " << IntToString(obj->waitSemaphoreValuesCount) << " );\n\n";
 	}
 	if ( obj->pSignalSemaphoreValues ) {
 		CHECK( obj->signalSemaphoreValuesCount > 0 );
@@ -6467,7 +6830,7 @@ void  Serialize2_VkD3D12FenceSubmitInfoKHR (const VkD3D12FenceSubmitInfoKHR *obj
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pSignalSemaphoreValues[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pSignalSemaphoreValues ) << ") == " << IntToString(obj->signalSemaphoreValuesCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pSignalSemaphoreValues ) << ") == " << IntToString(obj->signalSemaphoreValuesCount) << " );\n\n";
 	}
 	result << indent << name << ".waitSemaphoreValuesCount = " << IntToString(obj->waitSemaphoreValuesCount) << ";\n";
 	result << indent << name << ".pWaitSemaphoreValues = " << nameSer.Get( &obj->pWaitSemaphoreValues ) << ";\n";
@@ -6590,7 +6953,7 @@ void  Serialize2_VkObjectTableCreateInfoNVX (const VkObjectTableCreateInfoNVX *o
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << Serialize_VkObjectEntryTypeNVX( obj->pObjectEntryTypes[i] );
 		}
 		before << "\n" << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pObjectEntryTypes ) << ") == " << IntToString(obj->objectCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pObjectEntryTypes ) << ") == " << IntToString(obj->objectCount) << " );\n\n";
 	}
 	if ( obj->pObjectEntryCounts ) {
 		CHECK( obj->objectCount > 0 );
@@ -6599,7 +6962,7 @@ void  Serialize2_VkObjectTableCreateInfoNVX (const VkObjectTableCreateInfoNVX *o
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pObjectEntryCounts[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pObjectEntryCounts ) << ") == " << IntToString(obj->objectCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pObjectEntryCounts ) << ") == " << IntToString(obj->objectCount) << " );\n\n";
 	}
 	if ( obj->pObjectEntryUsageFlags ) {
 		CHECK( obj->objectCount > 0 );
@@ -6608,7 +6971,7 @@ void  Serialize2_VkObjectTableCreateInfoNVX (const VkObjectTableCreateInfoNVX *o
 			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << Serialize_VkObjectEntryUsageFlagsNVX( obj->pObjectEntryUsageFlags[i] );
 		}
 		before << "\n" << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pObjectEntryUsageFlags ) << ") == " << IntToString(obj->objectCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pObjectEntryUsageFlags ) << ") == " << IntToString(obj->objectCount) << " );\n\n";
 	}
 	result << indent << name << ".objectCount = " << IntToString(obj->objectCount) << ";\n";
 	result << indent << name << ".pObjectEntryTypes = " << nameSer.Get( &obj->pObjectEntryTypes ) << ";\n";
@@ -6653,6 +7016,24 @@ void  Serialize2_VkViewportWScalingNV (const VkViewportWScalingNV *obj, StringVi
 	result << indent << name << ".ycoeff = " << FloatToString(obj->ycoeff) << ";\n";
 }
 
+void  Serialize2_VkPipelineViewportExclusiveScissorStateCreateInfoNV (const VkPipelineViewportExclusiveScissorStateCreateInfoNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_EXCLUSIVE_SCISSOR_STATE_CREATE_INFO_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_EXCLUSIVE_SCISSOR_STATE_CREATE_INFO_NV );
+	if ( obj->pExclusiveScissors ) {
+		CHECK( obj->exclusiveScissorCount > 0 );
+		const String arr_name = nameSer.MakeUnique( &obj->pExclusiveScissors, "exclusiveScissors"s, "rect2D"s );
+		before << indent << "VkRect2D  " << arr_name << "[" << IntToString(obj->exclusiveScissorCount) << "] = {};\n";
+		for (uint i = 0; i < obj->exclusiveScissorCount; ++i) {
+			Serialize2_VkRect2D( obj->pExclusiveScissors + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
+		}
+	}
+	result << indent << name << ".exclusiveScissorCount = " << IntToString(obj->exclusiveScissorCount) << ";\n";
+	result << indent << name << ".pExclusiveScissors = " << nameSer.Get( &obj->pExclusiveScissors ) << ";\n";
+}
+
 void  Serialize2_VkPipelineViewportWScalingStateCreateInfoNV (const VkPipelineViewportWScalingStateCreateInfoNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
@@ -6670,6 +7051,15 @@ void  Serialize2_VkPipelineViewportWScalingStateCreateInfoNV (const VkPipelineVi
 	result << indent << name << ".viewportWScalingEnable = " << BoolToString(obj->viewportWScalingEnable) << ";\n";
 	result << indent << name << ".viewportCount = " << IntToString(obj->viewportCount) << ";\n";
 	result << indent << name << ".pViewportWScalings = " << nameSer.Get( &obj->pViewportWScalings ) << ";\n";
+}
+
+void  Serialize2_VkPhysicalDeviceExclusiveScissorFeaturesNV (const VkPhysicalDeviceExclusiveScissorFeaturesNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXCLUSIVE_SCISSOR_FEATURES_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXCLUSIVE_SCISSOR_FEATURES_NV );
+	result << indent << name << ".exclusiveScissor = " << BoolToString(obj->exclusiveScissor) << ";\n";
 }
 
 void  Serialize2_VkDisplayPowerInfoEXT (const VkDisplayPowerInfoEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -6754,6 +7144,39 @@ void  Serialize2_VkPipelineDiscardRectangleStateCreateInfoEXT (const VkPipelineD
 	result << indent << name << ".pDiscardRectangles = " << nameSer.Get( &obj->pDiscardRectangles ) << ";\n";
 }
 
+void  Serialize2_VkRaytracingPipelineCreateInfoNVX (const VkRaytracingPipelineCreateInfoNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_RAYTRACING_PIPELINE_CREATE_INFO_NVX;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_RAYTRACING_PIPELINE_CREATE_INFO_NVX );
+	if ( obj->pStages ) {
+		CHECK( obj->stageCount > 0 );
+		const String arr_name = nameSer.MakeUnique( &obj->pStages, "stages"s, "pipelineShaderStageCreateInfo"s, "createInfo"s );
+		before << indent << "VkPipelineShaderStageCreateInfo  " << arr_name << "[" << IntToString(obj->stageCount) << "] = {};\n";
+		for (uint i = 0; i < obj->stageCount; ++i) {
+			Serialize2_VkPipelineShaderStageCreateInfo( obj->pStages + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
+		}
+	}
+	if ( obj->pGroupNumbers ) {
+		CHECK( obj->stageCount > 0 );
+		before << indent << "const uint32_t  " << nameSer.MakeUnique( &obj->pGroupNumbers, "groupNumbers"s ) << "[] = { ";
+		for (uint i = 0; i < obj->stageCount; ++i) {
+			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pGroupNumbers[i]);
+		}
+		before << indent << " };\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pGroupNumbers ) << ") == " << IntToString(obj->stageCount) << " );\n\n";
+	}
+	result << indent << name << ".flags = " << Serialize_VkPipelineCreateFlags( obj->flags ) << ";\n";
+	result << indent << name << ".stageCount = " << IntToString(obj->stageCount) << ";\n";
+	result << indent << name << ".pStages = " << nameSer.Get( &obj->pStages ) << ";\n";
+	result << indent << name << ".pGroupNumbers = " << nameSer.Get( &obj->pGroupNumbers ) << ";\n";
+	result << indent << name << ".maxRecursionDepth = " << IntToString(obj->maxRecursionDepth) << ";\n";
+	result << indent << name << ".layout = " << "app.GetResource(PipelineLayoutID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT, obj->layout ) << "))" << ";\n";
+	result << indent << name << ".basePipelineHandle = " << "app.GetResource(PipelineID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT, obj->basePipelineHandle ) << "))" << ";\n";
+	result << indent << name << ".basePipelineIndex = " << IntToString(obj->basePipelineIndex) << ";\n";
+}
+
 void  Serialize2_VkPipelineRasterizationConservativeStateCreateInfoEXT (const VkPipelineRasterizationConservativeStateCreateInfoEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
@@ -6772,8 +7195,8 @@ void  Serialize2_VkDebugUtilsLabelEXT (const VkDebugUtilsLabelEXT *obj, StringVi
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT );
 	result << indent << name << ".pLabelName = " << '"' << obj->pLabelName << '"' << ";\n";
-	result << indent << name << ".color << " << "StaticArray<float, " << IntToString(std::size(obj->color)) << ">{ ";
-	for (uint i = 0; i < std::size(obj->color); ++i) {
+	result << indent << name << ".color << " << "StaticArray<float, " << IntToString(CountOf(obj->color)) << ">{ ";
+	for (uint i = 0; i < CountOf(obj->color); ++i) {
 		result << (i ? ", " : "") << FloatToString(obj->color[i]);
 	}
 	result << " }" << ";\n";
@@ -6853,6 +7276,20 @@ void  Serialize2_VkPhysicalDeviceInlineUniformBlockPropertiesEXT (const VkPhysic
 	result << indent << name << ".maxDescriptorSetUpdateAfterBindInlineUniformBlocks = " << IntToString(obj->maxDescriptorSetUpdateAfterBindInlineUniformBlocks) << ";\n";
 }
 
+void  Serialize2_VkPipelineViewportShadingRateImageStateCreateInfoNV (const VkPipelineViewportShadingRateImageStateCreateInfoNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SHADING_RATE_IMAGE_STATE_CREATE_INFO_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SHADING_RATE_IMAGE_STATE_CREATE_INFO_NV );
+	if ( obj->pShadingRatePalettes ) {
+		before << Serialize_VkShadingRatePaletteNV( obj->pShadingRatePalettes, nameSer, remapper, indent );
+	}
+	result << indent << name << ".shadingRateImageEnable = " << BoolToString(obj->shadingRateImageEnable) << ";\n";
+	result << indent << name << ".viewportCount = " << IntToString(obj->viewportCount) << ";\n";
+	result << indent << name << ".pShadingRatePalettes = " << nameSer.GetPtr( obj->pShadingRatePalettes ) << ";\n";
+}
+
 void  Serialize2_VkDescriptorPoolInlineUniformBlockCreateInfoEXT (const VkDescriptorPoolInlineUniformBlockCreateInfoEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
@@ -6876,6 +7313,16 @@ void  Serialize2_VkSampleLocationEXT (const VkSampleLocationEXT *obj, StringView
 {
 	result << indent << name << ".x = " << FloatToString(obj->x) << ";\n";
 	result << indent << name << ".y = " << FloatToString(obj->y) << ";\n";
+}
+
+void  Serialize2_VkPhysicalDeviceShadingRateImageFeaturesNV (const VkPhysicalDeviceShadingRateImageFeaturesNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_FEATURES_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_FEATURES_NV );
+	result << indent << name << ".shadingRateImage = " << BoolToString(obj->shadingRateImage) << ";\n";
+	result << indent << name << ".shadingRateCoarseSampleOrder = " << BoolToString(obj->shadingRateCoarseSampleOrder) << ";\n";
 }
 
 void  Serialize2_VkSampleLocationsInfoEXT (const VkSampleLocationsInfoEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -6934,8 +7381,8 @@ void  Serialize2_VkPhysicalDeviceSampleLocationsPropertiesEXT (const VkPhysicalD
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLE_LOCATIONS_PROPERTIES_EXT );
 	result << indent << name << ".sampleLocationSampleCounts = " << Serialize_VkSampleCountFlags( obj->sampleLocationSampleCounts ) << ";\n";
 	Serialize2_VkExtent2D( &obj->maxSampleLocationGridSize, String(name) << ".maxSampleLocationGridSize", nameSer, remapper, indent, INOUT result, INOUT before );
-	result << indent << name << ".sampleLocationCoordinateRange << " << "StaticArray<float, " << IntToString(std::size(obj->sampleLocationCoordinateRange)) << ">{ ";
-	for (uint i = 0; i < std::size(obj->sampleLocationCoordinateRange); ++i) {
+	result << indent << name << ".sampleLocationCoordinateRange << " << "StaticArray<float, " << IntToString(CountOf(obj->sampleLocationCoordinateRange)) << ">{ ";
+	for (uint i = 0; i < CountOf(obj->sampleLocationCoordinateRange); ++i) {
 		result << (i ? ", " : "") << FloatToString(obj->sampleLocationCoordinateRange[i]);
 	}
 	result << " }" << ";\n";
@@ -6974,7 +7421,7 @@ void  Serialize2_VkPipelineCoverageModulationStateCreateInfoNV (const VkPipeline
 			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << FloatToString(obj->pCoverageModulationTable[i]);
 		}
 		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pCoverageModulationTable ) << ") == " << IntToString(obj->coverageModulationTableCount) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pCoverageModulationTable ) << ") == " << IntToString(obj->coverageModulationTableCount) << " );\n\n";
 	}
 	result << indent << name << ".flags = " << Serialize_VkPipelineCoverageModulationStateCreateFlagsNV( obj->flags ) << ";\n";
 	result << indent << name << ".coverageModulationMode = " << Serialize_VkCoverageModulationModeNV( obj->coverageModulationMode ) << ";\n";
@@ -7060,6 +7507,97 @@ void  Serialize2_VkPhysicalDeviceDescriptorIndexingPropertiesEXT (const VkPhysic
 	result << indent << name << ".maxDescriptorSetUpdateAfterBindInputAttachments = " << IntToString(obj->maxDescriptorSetUpdateAfterBindInputAttachments) << ";\n";
 }
 
+void  Serialize2_VkGeometryAABBNVX (const VkGeometryAABBNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_GEOMETRY_AABB_NVX;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_GEOMETRY_AABB_NVX );
+	result << indent << name << ".aabbData = " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->aabbData ) << "))" << ";\n";
+	result << indent << name << ".numAABBs = " << IntToString(obj->numAABBs) << ";\n";
+	result << indent << name << ".stride = " << IntToString(obj->stride) << ";\n";
+	result << indent << name << ".offset = " << IntToString(obj->offset) << ";\n";
+}
+
+ND_ String  Serialize_VkGeometryDataNVX (const VkGeometryDataNVX *obj, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)
+{
+	String	result, before;
+	if ( obj == null ) return result;
+	const String  name = nameSer.MakeUnique( obj, "geometryDataNVX"s );
+	result << indent << "VkGeometryDataNVX  " << name << " = {};\n";
+	Serialize2_VkGeometryDataNVX( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+	return before + result;
+}
+
+void  Serialize2_VkGeometryDataNVX (const VkGeometryDataNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const*>(&obj->triangles), nameSer, remapper, indent );
+	before << SerializeStruct( BitCast<VkBaseInStructure const*>(&obj->aabbs), nameSer, remapper, indent );
+	result << indent << name << ".triangles = " << nameSer.Get( &obj->triangles ) << ";\n";
+	result << indent << name << ".aabbs = " << nameSer.Get( &obj->aabbs ) << ";\n";
+}
+
+void  Serialize2_VkBindAccelerationStructureMemoryInfoNVX (const VkBindAccelerationStructureMemoryInfoNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NVX;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NVX );
+	if ( obj->pDeviceIndices ) {
+		CHECK( obj->deviceIndexCount > 0 );
+		before << indent << "const uint32_t  " << nameSer.MakeUnique( &obj->pDeviceIndices, "deviceIndices"s ) << "[] = { ";
+		for (uint i = 0; i < obj->deviceIndexCount; ++i) {
+			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pDeviceIndices[i]);
+		}
+		before << indent << " };\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pDeviceIndices ) << ") == " << IntToString(obj->deviceIndexCount) << " );\n\n";
+	}
+	result << indent << name << ".accelerationStructure = " << "app.GetResource(AccelerationStructureNVXID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NVX_EXT, obj->accelerationStructure ) << "))" << ";\n";
+	result << indent << name << ".memory = " << "app.GetResource(DeviceMemoryID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, obj->memory ) << "))" << ";\n";
+	result << indent << name << ".memoryOffset = " << IntToString(obj->memoryOffset) << ";\n";
+	result << indent << name << ".deviceIndexCount = " << IntToString(obj->deviceIndexCount) << ";\n";
+	result << indent << name << ".pDeviceIndices = " << nameSer.Get( &obj->pDeviceIndices ) << ";\n";
+}
+
+void  Serialize2_VkDescriptorAccelerationStructureInfoNVX (const VkDescriptorAccelerationStructureInfoNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_DESCRIPTOR_ACCELERATION_STRUCTURE_INFO_NVX;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DESCRIPTOR_ACCELERATION_STRUCTURE_INFO_NVX );
+	if ( obj->pAccelerationStructures ) {
+		CHECK( obj->accelerationStructureCount > 0 );
+		before << indent << "const VkAccelerationStructureNVX  " << nameSer.MakeUnique( &obj->pAccelerationStructures, "accelerationStructures"s, "accelerationStructureNVX"s ) << "[] = {";
+		for (uint i = 0; i < obj->accelerationStructureCount; ++i) {
+			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(AccelerationStructureNVXID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NVX_EXT, obj->pAccelerationStructures[i] ) << "))";
+		}
+		before << "\n" << indent << "};\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pAccelerationStructures ) << ") == " << IntToString(obj->accelerationStructureCount) << " );\n\n";
+	}
+	result << indent << name << ".accelerationStructureCount = " << IntToString(obj->accelerationStructureCount) << ";\n";
+	result << indent << name << ".pAccelerationStructures = " << nameSer.Get( &obj->pAccelerationStructures ) << ";\n";
+}
+
+void  Serialize2_VkPhysicalDeviceRaytracingPropertiesNVX (const VkPhysicalDeviceRaytracingPropertiesNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAYTRACING_PROPERTIES_NVX;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAYTRACING_PROPERTIES_NVX );
+	result << indent << name << ".shaderHeaderSize = " << IntToString(obj->shaderHeaderSize) << ";\n";
+	result << indent << name << ".maxRecursionDepth = " << IntToString(obj->maxRecursionDepth) << ";\n";
+	result << indent << name << ".maxGeometryCount = " << IntToString(obj->maxGeometryCount) << ";\n";
+}
+
+void  Serialize2_VkPipelineRepresentativeFragmentTestStateCreateInfoNV (const VkPipelineRepresentativeFragmentTestStateCreateInfoNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PIPELINE_REPRESENTATIVE_FRAGMENT_TEST_STATE_CREATE_INFO_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_REPRESENTATIVE_FRAGMENT_TEST_STATE_CREATE_INFO_NV );
+	result << indent << name << ".representativeFragmentTestEnable = " << BoolToString(obj->representativeFragmentTestEnable) << ";\n";
+}
+
 void  Serialize2_VkDeviceQueueGlobalPriorityCreateInfoEXT (const VkDeviceQueueGlobalPriorityCreateInfoEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
@@ -7138,6 +7676,73 @@ void  Serialize2_VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT (const VkPhys
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT );
 	result << indent << name << ".vertexAttributeInstanceRateDivisor = " << BoolToString(obj->vertexAttributeInstanceRateDivisor) << ";\n";
 	result << indent << name << ".vertexAttributeInstanceRateZeroDivisor = " << BoolToString(obj->vertexAttributeInstanceRateZeroDivisor) << ";\n";
+}
+
+void  Serialize2_VkPhysicalDeviceComputeShaderDerivativesFeaturesNV (const VkPhysicalDeviceComputeShaderDerivativesFeaturesNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMPUTE_SHADER_DERIVATIVES_FEATURES_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMPUTE_SHADER_DERIVATIVES_FEATURES_NV );
+	result << indent << name << ".computeDerivativeGroupQuads = " << BoolToString(obj->computeDerivativeGroupQuads) << ";\n";
+	result << indent << name << ".computeDerivativeGroupLinear = " << BoolToString(obj->computeDerivativeGroupLinear) << ";\n";
+}
+
+void  Serialize2_VkPhysicalDeviceMeshShaderFeaturesNV (const VkPhysicalDeviceMeshShaderFeaturesNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV );
+	result << indent << name << ".taskShader = " << BoolToString(obj->taskShader) << ";\n";
+	result << indent << name << ".meshShader = " << BoolToString(obj->meshShader) << ";\n";
+}
+
+void  Serialize2_VkPhysicalDeviceMeshShaderPropertiesNV (const VkPhysicalDeviceMeshShaderPropertiesNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_NV );
+	result << indent << name << ".maxDrawMeshTasksCount = " << IntToString(obj->maxDrawMeshTasksCount) << ";\n";
+	result << indent << name << ".maxTaskWorkGroupInvocations = " << IntToString(obj->maxTaskWorkGroupInvocations) << ";\n";
+	result << indent << name << ".maxTaskWorkGroupSize << " << "StaticArray<uint32_t, " << IntToString(CountOf(obj->maxTaskWorkGroupSize)) << ">{ ";
+	for (uint i = 0; i < CountOf(obj->maxTaskWorkGroupSize); ++i) {
+		result << (i ? ", " : "") << IntToString(obj->maxTaskWorkGroupSize[i]);
+	}
+	result << " }" << ";\n";
+	result << indent << name << ".maxTaskTotalMemorySize = " << IntToString(obj->maxTaskTotalMemorySize) << ";\n";
+	result << indent << name << ".maxTaskOutputCount = " << IntToString(obj->maxTaskOutputCount) << ";\n";
+	result << indent << name << ".maxMeshWorkGroupInvocations = " << IntToString(obj->maxMeshWorkGroupInvocations) << ";\n";
+	result << indent << name << ".maxMeshWorkGroupSize << " << "StaticArray<uint32_t, " << IntToString(CountOf(obj->maxMeshWorkGroupSize)) << ">{ ";
+	for (uint i = 0; i < CountOf(obj->maxMeshWorkGroupSize); ++i) {
+		result << (i ? ", " : "") << IntToString(obj->maxMeshWorkGroupSize[i]);
+	}
+	result << " }" << ";\n";
+	result << indent << name << ".maxMeshTotalMemorySize = " << IntToString(obj->maxMeshTotalMemorySize) << ";\n";
+	result << indent << name << ".maxMeshOutputVertices = " << IntToString(obj->maxMeshOutputVertices) << ";\n";
+	result << indent << name << ".maxMeshOutputPrimitives = " << IntToString(obj->maxMeshOutputPrimitives) << ";\n";
+	result << indent << name << ".maxMeshMultiviewViewCount = " << IntToString(obj->maxMeshMultiviewViewCount) << ";\n";
+	result << indent << name << ".meshOutputPerVertexGranularity = " << IntToString(obj->meshOutputPerVertexGranularity) << ";\n";
+	result << indent << name << ".meshOutputPerPrimitiveGranularity = " << IntToString(obj->meshOutputPerPrimitiveGranularity) << ";\n";
+}
+
+void  Serialize2_VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV (const VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_FEATURES_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_FEATURES_NV );
+	result << indent << name << ".fragmentShaderBarycentric = " << BoolToString(obj->fragmentShaderBarycentric) << ";\n";
+}
+
+void  Serialize2_VkPhysicalDeviceShaderImageFootprintFeaturesNV (const VkPhysicalDeviceShaderImageFootprintFeaturesNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_IMAGE_FOOTPRINT_FEATURES_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_IMAGE_FOOTPRINT_FEATURES_NV );
+	result << indent << name << ".imageFootprint = " << BoolToString(obj->imageFootprint) << ";\n";
 }
 
 #ifdef VULKAN_WIN32_H_

@@ -17,10 +17,12 @@ namespace VTPlayer
 */
 	PlayerInstance_vLatest::PlayerInstance_vLatest (PlayerSettings &&playerSettings, WindowSettings &&windowSettings,
 													VulkanSettings &&vulkanSettings) :
+		_playerFinished{ ATOMIC_FLAG_INIT },
 		_playerSettings{ playerSettings },	_windowSettings{ windowSettings },
 		_vulkanSettings{ vulkanSettings }
 	{
 		_messageBits = 0;
+		_playerFinished = 0;
 	}
 	
 /*
@@ -79,6 +81,16 @@ namespace VTPlayer
 	
 /*
 =================================================
+	IsRunning
+=================================================
+*/
+	bool PlayerInstance_vLatest::IsRunning ()
+	{
+		return not _playerFinished;
+	}
+
+/*
+=================================================
 	Release
 =================================================
 */
@@ -123,12 +135,12 @@ namespace VTPlayer
 */
 	bool PlayerInstance_vLatest::_OpenTrace (OUT PlayerCtor_t &ctor)
 	{
-		_traceFile.reset( new HddRFile{ _playerSettings.traceFilename });
+		_traceFile.reset( new FileRStream{ _playerSettings.traceFilename });
 		CHECK_ERR( _traceFile->IsOpen() );
 
 		if ( _playerSettings.dataFilename.size() > 0 )
 		{
-			_dataFile.reset( new HddRFile{ _playerSettings.dataFilename });
+			_dataFile.reset( new FileRStream{ _playerSettings.dataFilename });
 			CHECK_ERR( _dataFile->IsOpen() );
 		}
 
@@ -139,15 +151,32 @@ namespace VTPlayer
 
 		CHECK_ERR( header.magic == TraceFileHeader::MagicNumber );
 		CHECK_ERR( header.pointerSize == sizeof(void*) );
+		CHECK_ERR( header.instructionBlockOffset == sizeof(header) );	// not supported
+		CHECK_ERR( header.dataBlockOffset == ~0ull );					// not supported
+
+		switch ( header.archiveType )
+		{
+			case TraceFileHeader::EArchiveType::None :
+				break;
+
+			case TraceFileHeader::EArchiveType::Brotli : {
+				// reopen as brotli decoder stream
+				ASSERT(false);	// TODO
+				break;
+			}
+
+			default :
+				RETURN_ERR( "unsupported archive type!" );
+		}
 
 		switch ( header.instructionSet )
 		{
 			case EPacketID::_VulkanApi | EPacketID::_V100 :
-				ctor = [this] () { return new VkPlayer_v100( _vulkanSettings, _windowSettings, _traceFile, _dataFile ); };
+				ctor = [this] () { return new VkPlayer_v100( _vulkanSettings, _windowSettings, _playerSettings, _traceFile, _dataFile ); };
 				break;
 
 			default :
-				RETURN_ERR( "unsupported instruction set" );
+				RETURN_ERR( "unsupported instruction set!" );
 		}
 
 		return true;
@@ -203,6 +232,7 @@ namespace VTPlayer
 		player.reset();
 		window.reset();
 
+		_playerFinished = true;
 		return true;
 	}
 

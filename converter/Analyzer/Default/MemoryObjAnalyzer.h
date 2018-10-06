@@ -22,6 +22,7 @@ namespace VTC
 			VkDeviceSize			offset	= 0;
 			VkDeviceSize			size	= 0;
 			TraceRange::Bookmark	pos;
+			bool					aliased	= false;	// 'true' if same memory range used for other resources
 		};
 
 		enum class EMemoryUsage
@@ -73,7 +74,7 @@ namespace VTC
 
 		void Process (const TraceRange::Iterator &) override {}
 		
-		void PostProcess () override {}
+		void PostProcess () override;
 
 		void AddResourceUsage (const TraceRange::Iterator &, EResourceType, ResourceID, FrameID, EResOp) override;
 
@@ -96,6 +97,8 @@ namespace VTC
 		bool _BindImageMemory (MemoryObjInfo_t &mem, VkImage image, VkDeviceSize memoryOffset, const TraceRange::Iterator &pos);
 		bool _OnFlushMappedMemoryRanges (const TraceRange::Iterator &, MemoryObjInfo_t &);
 		bool _OnInvalidateMappedMemoryRanges (const TraceRange::Iterator &, MemoryObjInfo_t &);
+
+		bool _DetectMemoryAliasing ();
 	};
 
 

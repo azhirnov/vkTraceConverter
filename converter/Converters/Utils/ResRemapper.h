@@ -35,7 +35,7 @@ namespace VTC
 		template <typename T>
 		ND_ String  operator () (EResourceType type, const T &resourceId) const
 		{
-			STATIC_ASSERT( std::is_pointer_v<T> or std::is_same_v<T, uint64_t> );
+			STATIC_ASSERT( IsPointer<T> or IsSameTypes<T, uint64_t> );
 
 			return GetResource( type, ResourceID(resourceId) );
 		}

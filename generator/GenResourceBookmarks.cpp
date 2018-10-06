@@ -338,7 +338,7 @@ namespace VTC
 
 
 		// store to file
-		HddWFile	file{ output };
+		FileWStream		file{ output };
 		CHECK_ERR( file.IsOpen() );
 		CHECK_ERR( file.Write( StringView(str) ));
 
@@ -402,6 +402,7 @@ namespace VTC
 			FindAndReplace( INOUT type_name, "16_BIT", "16BIT" );
 			FindAndReplace( INOUT type_name, "8_BIT", "8BIT" );
 			FindAndReplace( INOUT type_name, "D_3_D_12", "D3D12" );
+			FindAndReplace( INOUT type_name, "AABBNVX", "AABB_NVX" );
 		}
 
 		for (auto field = values.begin(); field != values.end(); ++field)
@@ -479,7 +480,7 @@ namespace VTC
 
 
 		// store to file
-		HddWFile	file{ output };
+		FileWStream		file{ output };
 		CHECK_ERR( file.IsOpen() );
 		CHECK_ERR( file.Write( StringView(str) ));
 

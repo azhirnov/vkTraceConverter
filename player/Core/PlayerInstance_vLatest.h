@@ -35,10 +35,11 @@ namespace VTPlayer
 	// variables
 	private:
 		std::atomic<uint>		_messageBits;
+		std::atomic<uint>		_playerFinished;
 		std::thread				_playerThread;
 
-		SharedPtr<RFile>		_traceFile;
-		SharedPtr<RFile>		_dataFile;
+		SharedPtr<RStream>		_traceFile;
+		SharedPtr<RStream>		_dataFile;
 
 		PipelineCache_t			_pplnCache;
 
@@ -59,6 +60,7 @@ namespace VTPlayer
 		bool IsInitialized () const override;
 		bool Play () override;
 		bool Pause () override;
+		bool IsRunning () override;
 		void Release () override;
 		bool LoadVkPipelineCache (const void *, size_t) override;
 		bool GetVkPipelineCache (OUT void const* &, OUT size_t &) override;

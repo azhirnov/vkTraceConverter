@@ -148,13 +148,13 @@ namespace VTC
 	
 		// store header to file
 		{
-			HddWFile	file{ headerFile };
+			FileWStream		file{ headerFile };
 			CHECK_ERR( file.IsOpen() );
 			CHECK_ERR( file.Write( StringView(header) ));
 		}
 		// store source to file
 		{
-			HddWFile	file{ sourceFile };
+			FileWStream		file{ sourceFile };
 			CHECK_ERR( file.IsOpen() );
 			CHECK_ERR( file.Write( StringView(str) ));
 		}

@@ -65,6 +65,7 @@ int main (int argc, const char** argv)
 
 	CHECK_ERR( generator.MarkRequiredTypesForUnpack(), -11 );
 	CHECK_ERR( generator.GenUnpacker( fs::path(output).append( "UnpackPacket.h" )), -12 );
+	CHECK_ERR( generator.GenFuncErrorChecks( fs::path(output).append( "CheckPacketError.h" )), -13 );
 	
 	CHECK_ERR( generator.MarkRequiredTypesForSerializing(), -14 );
 	CHECK_ERR( generator.GenRawVulkanCalls( fs::path(output).append( "BuildRawVulkanCalls.h" )), -15 );

@@ -4,8 +4,8 @@
 
 #include "stl/Algorithms/EnumUtils.h"
 #include "stl/Algorithms/Cast.h"
-#include "stl/File/HddFile.h"
-#include "stl/File/MemFile.h"
+#include "stl/Stream/FileStream.h"
+#include "stl/Stream/MemStream.h"
 
 #include "framework/Vulkan/VulkanDeviceExt.h"
 #include "framework/Vulkan/VulkanSwapchain.h"

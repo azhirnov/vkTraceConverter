@@ -16,6 +16,10 @@ set( VTC_CONVERTER_DEPENDENCIES "" )
 set( VTC_CONVERTER_LIBRARIES "" )
 set( VTC_CONVERTER_DEFINES "" )
 
+set( VTC_PLAYER_INCLUDE_DIRS "" )
+set( VTC_PLAYER_DEPENDENCIES "" )
+set( VTC_PLAYER_LIBRARIES "" )
+
 
 # configure
 set( VTC_LIST_SEPARATOR "|" )
@@ -42,7 +46,8 @@ else ()
 	include( "${CMAKE_SOURCE_DIR}/cmake/download_vulkan_tools.cmake" )
 endif ()
 
-include( "${CMAKE_SOURCE_DIR}/cmake/download_other.cmake" )
+#include( "${CMAKE_SOURCE_DIR}/cmake/download_other.cmake" )
+include( "${CMAKE_SOURCE_DIR}/cmake/download_brotli.cmake" )
 include( "${CMAKE_SOURCE_DIR}/cmake/download_fg.cmake" )
 include( "${CMAKE_SOURCE_DIR}/cmake/download_vez.cmake" )
 include( "${CMAKE_SOURCE_DIR}/cmake/graphviz.cmake" )
@@ -54,3 +59,7 @@ set( VTC_CONVERTER_INCLUDE_DIRS "${VTC_CONVERTER_INCLUDE_DIRS}" CACHE INTERNAL "
 set( VTC_CONVERTER_DEPENDENCIES "${VTC_CONVERTER_DEPENDENCIES}" CACHE INTERNAL "" FORCE )
 set( VTC_CONVERTER_LIBRARIES "${VTC_CONVERTER_LIBRARIES}" CACHE INTERNAL "" FORCE )
 set( VTC_CONVERTER_DEFINES "${VTC_CONVERTER_DEFINES}" CACHE INTERNAL "" FORCE )
+
+set( VTC_PLAYER_INCLUDE_DIRS "${VTC_PLAYER_INCLUDE_DIRS}" CACHE INTERNAL "" FORCE )
+set( VTC_PLAYER_DEPENDENCIES "${VTC_PLAYER_DEPENDENCIES}" CACHE INTERNAL "" FORCE )
+set( VTC_PLAYER_LIBRARIES "${VTC_PLAYER_LIBRARIES}" CACHE INTERNAL "" FORCE )

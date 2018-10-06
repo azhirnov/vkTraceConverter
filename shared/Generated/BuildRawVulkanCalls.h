@@ -334,7 +334,7 @@ switch ( iter->packet_id )
 				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(FenceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT, obj->pFences[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
-			before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pFences ) << ") == " << IntToString(obj->fenceCount) << " );\n\n";
+			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pFences ) << ") == " << IntToString(obj->fenceCount) << " );\n\n";
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkResetFences( \n";
@@ -357,7 +357,7 @@ switch ( iter->packet_id )
 				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(FenceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT, obj->pFences[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
-			before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pFences ) << ") == " << IntToString(obj->fenceCount) << " );\n\n";
+			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pFences ) << ") == " << IntToString(obj->fenceCount) << " );\n\n";
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkWaitForFences( \n";
@@ -651,7 +651,7 @@ switch ( iter->packet_id )
 				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(PipelineCacheID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_CACHE_EXT, obj->pSrcCaches[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
-			before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pSrcCaches ) << ") == " << IntToString(obj->srcCacheCount) << " );\n\n";
+			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pSrcCaches ) << ") == " << IntToString(obj->srcCacheCount) << " );\n\n";
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkMergePipelineCaches( \n";
@@ -902,7 +902,7 @@ switch ( iter->packet_id )
 				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(DescriptorSetID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT, obj->pDescriptorSets[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
-			before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pDescriptorSets ) << ") == " << IntToString(obj->descriptorSetCount) << " );\n\n";
+			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pDescriptorSets ) << ") == " << IntToString(obj->descriptorSetCount) << " );\n\n";
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkFreeDescriptorSets( \n";
@@ -1082,7 +1082,7 @@ switch ( iter->packet_id )
 				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->pCommandBuffers[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
-			before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pCommandBuffers ) << ") == " << IntToString(obj->commandBufferCount) << " );\n\n";
+			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pCommandBuffers ) << ") == " << IntToString(obj->commandBufferCount) << " );\n\n";
 		}
 		result << indent << "app.vkFreeCommandBuffers( \n";
 		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
@@ -1215,8 +1215,8 @@ switch ( iter->packet_id )
 		result << indent << "app.vkCmdSetBlendConstants( \n";
 		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*blendConstants*/ " << "StaticArray<float, " << IntToString(std::size(obj->blendConstants)) << ">{ ";
-		for (uint i = 0; i < std::size(obj->blendConstants); ++i) {
+		result << indent << "		/*blendConstants*/ " << "StaticArray<float, " << IntToString(CountOf(obj->blendConstants)) << ">{ ";
+		for (uint i = 0; i < CountOf(obj->blendConstants); ++i) {
 			result << (i ? ", " : "") << FloatToString(obj->blendConstants[i]);
 		}
 		result << " }";
@@ -1281,7 +1281,7 @@ switch ( iter->packet_id )
 				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(DescriptorSetID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT, obj->pDescriptorSets[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
-			before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pDescriptorSets ) << ") == " << IntToString(obj->descriptorSetCount) << " );\n\n";
+			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pDescriptorSets ) << ") == " << IntToString(obj->descriptorSetCount) << " );\n\n";
 		}
 		if ( obj->pDynamicOffsets ) {
 			CHECK( obj->dynamicOffsetCount > 0 );
@@ -1290,7 +1290,7 @@ switch ( iter->packet_id )
 				before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pDynamicOffsets[i]);
 			}
 			before << indent << " };\n";
-			before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pDynamicOffsets ) << ") == " << IntToString(obj->dynamicOffsetCount) << " );\n\n";
+			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pDynamicOffsets ) << ") == " << IntToString(obj->dynamicOffsetCount) << " );\n\n";
 		}
 		result << indent << "app.vkCmdBindDescriptorSets( \n";
 		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
@@ -1335,7 +1335,7 @@ switch ( iter->packet_id )
 				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->pBuffers[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
-			before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pBuffers ) << ") == " << IntToString(obj->bindingCount) << " );\n\n";
+			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pBuffers ) << ") == " << IntToString(obj->bindingCount) << " );\n\n";
 		}
 		if ( obj->pOffsets ) {
 			CHECK( obj->bindingCount > 0 );
@@ -1344,7 +1344,7 @@ switch ( iter->packet_id )
 				before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pOffsets[i]);
 			}
 			before << indent << " };\n";
-			before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pOffsets ) << ") == " << IntToString(obj->bindingCount) << " );\n\n";
+			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pOffsets ) << ") == " << IntToString(obj->bindingCount) << " );\n\n";
 		}
 		result << indent << "app.vkCmdBindVertexBuffers( \n";
 		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
@@ -1594,7 +1594,7 @@ switch ( iter->packet_id )
 			before << (i ? "," : "") << (i%8 == 0 ? "\n\t"s << indent : " ") << VoidToFIValueString( obj->pData, i*sizeof(FIValue) );
 		}
 		before << '\n' << indent << "};\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pData ) << ") == " << IntToString(obj->dataSize) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pData ) << ") == " << IntToString(obj->dataSize) << " );\n\n";
 		result << indent << "app.vkCmdUpdateBuffer( \n";
 		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
 		result << ",\n";
@@ -1776,7 +1776,7 @@ switch ( iter->packet_id )
 				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(EventID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT, obj->pEvents[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
-			before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pEvents ) << ") == " << IntToString(obj->eventCount) << " );\n\n";
+			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pEvents ) << ") == " << IntToString(obj->eventCount) << " );\n\n";
 		}
 		if ( obj->pMemoryBarriers ) {
 			CHECK( obj->memoryBarrierCount > 0 );
@@ -1962,7 +1962,7 @@ switch ( iter->packet_id )
 			before << (i ? "," : "") << (i%8 == 0 ? "\n\t"s << indent : " ") << VoidToFIValueString( obj->pValues, i*sizeof(FIValue) );
 		}
 		before << '\n' << indent << "};\n";
-		before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pValues ) << ") == " << IntToString(obj->size) << " );\n\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pValues ) << ") == " << IntToString(obj->size) << " );\n\n";
 		result << indent << "app.vkCmdPushConstants( \n";
 		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
 		result << ",\n";
@@ -2021,7 +2021,7 @@ switch ( iter->packet_id )
 				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->pCommandBuffers[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
-			before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pCommandBuffers ) << ") == " << IntToString(obj->commandBufferCount) << " );\n\n";
+			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pCommandBuffers ) << ") == " << IntToString(obj->commandBufferCount) << " );\n\n";
 		}
 		result << indent << "app.vkCmdExecuteCommands( \n";
 		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
@@ -2364,7 +2364,7 @@ switch ( iter->packet_id )
 				before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pObjectIndices[i]);
 			}
 			before << indent << " };\n";
-			before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pObjectIndices ) << ") == " << IntToString(obj->objectCount) << " );\n\n";
+			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pObjectIndices ) << ") == " << IntToString(obj->objectCount) << " );\n\n";
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkRegisterObjectsNVX( \n";
@@ -2390,7 +2390,7 @@ switch ( iter->packet_id )
 				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << Serialize_VkObjectEntryTypeNVX( obj->pObjectEntryTypes[i] );
 			}
 			before << "\n" << indent << " };\n";
-			before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pObjectEntryTypes ) << ") == " << IntToString(obj->objectCount) << " );\n\n";
+			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pObjectEntryTypes ) << ") == " << IntToString(obj->objectCount) << " );\n\n";
 		}
 		if ( obj->pObjectIndices ) {
 			CHECK( obj->objectCount > 0 );
@@ -2399,7 +2399,7 @@ switch ( iter->packet_id )
 				before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pObjectIndices[i]);
 			}
 			before << indent << " };\n";
-			before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pObjectIndices ) << ") == " << IntToString(obj->objectCount) << " );\n\n";
+			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pObjectIndices ) << ") == " << IntToString(obj->objectCount) << " );\n\n";
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkUnregisterObjectsNVX( \n";
@@ -2474,7 +2474,7 @@ switch ( iter->packet_id )
 				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SwapchainKHRID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT, obj->pSwapchains[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
-			before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pSwapchains ) << ") == " << IntToString(obj->swapchainCount) << " );\n\n";
+			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pSwapchains ) << ") == " << IntToString(obj->swapchainCount) << " );\n\n";
 		}
 		if ( obj->pMetadata ) {
 			CHECK( obj->swapchainCount > 0 );
@@ -2685,7 +2685,7 @@ switch ( iter->packet_id )
 				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(ValidationCacheEXTID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT, obj->pSrcCaches[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
-			before << indent << "STATIC_ASSERT( std::size(" << nameSer.Get( &obj->pSrcCaches ) << ") == " << IntToString(obj->srcCacheCount) << " );\n\n";
+			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pSrcCaches ) << ") == " << IntToString(obj->srcCacheCount) << " );\n\n";
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkMergeValidationCachesEXT( \n";

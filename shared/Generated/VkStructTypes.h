@@ -7,6 +7,7 @@ template <> struct TypeToEnum< VkExternalMemoryBufferCreateInfo > { static const
 template <> struct TypeToEnum< VkSemaphoreCreateInfo > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO; };
 template <> struct TypeToEnum< VkDeviceCreateInfo > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO; };
 template <> struct TypeToEnum< VkExternalImageFormatProperties > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_EXTERNAL_IMAGE_FORMAT_PROPERTIES; };
+template <> struct TypeToEnum< VkPipelineViewportCoarseSampleOrderStateCreateInfoNV > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_COARSE_SAMPLE_ORDER_STATE_CREATE_INFO_NV; };
 template <> struct TypeToEnum< VkPipelineTessellationDomainOriginStateCreateInfo > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_DOMAIN_ORIGIN_STATE_CREATE_INFO; };
 template <> struct TypeToEnum< VkApplicationInfo > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_APPLICATION_INFO; };
 template <> struct TypeToEnum< VkDebugUtilsObjectNameInfoEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT; };
@@ -78,6 +79,7 @@ template <> struct TypeToEnum< VkDisplayPlaneProperties2KHR > { static constexpr
 template <> struct TypeToEnum< VkDisplayPresentInfoKHR > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_DISPLAY_PRESENT_INFO_KHR; };
 template <> struct TypeToEnum< VkSamplerCreateInfo > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO; };
 template <> struct TypeToEnum< VkDescriptorSetLayoutCreateInfo > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO; };
+template <> struct TypeToEnum< VkAccelerationStructureCreateInfoNVX > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NVX; };
 template <> struct TypeToEnum< VkDescriptorPoolCreateInfo > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO; };
 template <> struct TypeToEnum< VkImageMemoryRequirementsInfo2 > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2; };
 template <> struct TypeToEnum< VkDescriptorSetAllocateInfo > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO; };
@@ -90,6 +92,7 @@ template <> struct TypeToEnum< VkWriteDescriptorSet > { static constexpr VkStruc
 template <> struct TypeToEnum< VkCopyDescriptorSet > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET; };
 template <> struct TypeToEnum< VkPhysicalDeviceSamplerFilterMinmaxPropertiesEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_FILTER_MINMAX_PROPERTIES_EXT; };
 template <> struct TypeToEnum< VkFramebufferCreateInfo > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO; };
+template <> struct TypeToEnum< VkGeometryTrianglesNVX > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NVX; };
 template <> struct TypeToEnum< VkRenderPassCreateInfo > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO; };
 template <> struct TypeToEnum< VkCommandPoolCreateInfo > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO; };
 template <> struct TypeToEnum< VkCommandBufferAllocateInfo > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO; };
@@ -112,6 +115,7 @@ template <> struct TypeToEnum< VkBindImageMemoryInfo > { static constexpr VkStru
 template <> struct TypeToEnum< VkSubpassEndInfoKHR > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_SUBPASS_END_INFO_KHR; };
 template <> struct TypeToEnum< VkPhysicalDevice16BitStorageFeatures > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES; };
 template <> struct TypeToEnum< VkMemoryDedicatedRequirements > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS; };
+template <> struct TypeToEnum< VkPhysicalDeviceShadingRateImagePropertiesNV > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_PROPERTIES_NV; };
 template <> struct TypeToEnum< VkMemoryDedicatedAllocateInfo > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO; };
 template <> struct TypeToEnum< VkMemoryAllocateFlagsInfo > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO; };
 template <> struct TypeToEnum< VkDeviceGroupRenderPassBeginInfo > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_DEVICE_GROUP_RENDER_PASS_BEGIN_INFO; };
@@ -160,7 +164,9 @@ template <> struct TypeToEnum< VkExternalBufferProperties > { static constexpr V
 template <> struct TypeToEnum< VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_PROPERTIES_EXT; };
 template <> struct TypeToEnum< VkPhysicalDeviceIDProperties > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES; };
 template <> struct TypeToEnum< VkExternalMemoryImageCreateInfo > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO; };
+template <> struct TypeToEnum< VkPhysicalDeviceCornerSampledImageFeaturesNV > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CORNER_SAMPLED_IMAGE_FEATURES_NV; };
 template <> struct TypeToEnum< VkExportMemoryAllocateInfo > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO; };
+template <> struct TypeToEnum< VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_REPRESENTATIVE_FRAGMENT_TEST_FEATURES_NV; };
 template <> struct TypeToEnum< VkPhysicalDeviceExternalFenceInfo > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_FENCE_INFO; };
 #ifdef VULKAN_WIN32_H_
 template <> struct TypeToEnum< VkExportMemoryWin32HandleInfoKHR > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_EXPORT_MEMORY_WIN32_HANDLE_INFO_KHR; };
@@ -215,9 +221,11 @@ template <> struct TypeToEnum< VkDisplayModeProperties2KHR > { static constexpr 
 template <> struct TypeToEnum< VkDisplayPlaneCapabilities2KHR > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_DISPLAY_PLANE_CAPABILITIES_2_KHR; };
 template <> struct TypeToEnum< VkDescriptorSetVariableDescriptorCountAllocateInfoEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO_EXT; };
 template <> struct TypeToEnum< VkPhysicalDevice8BitStorageFeaturesKHR > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR; };
+template <> struct TypeToEnum< VkAccelerationStructureMemoryRequirementsInfoNVX > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NVX; };
 template <> struct TypeToEnum< VkPhysicalDeviceVulkanMemoryModelFeaturesKHR > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES_KHR; };
 template <> struct TypeToEnum< VkDebugReportCallbackCreateInfoEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT; };
 template <> struct TypeToEnum< VkPipelineRasterizationStateRasterizationOrderAMD > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD; };
+template <> struct TypeToEnum< VkGeometryNVX > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_GEOMETRY_NVX; };
 template <> struct TypeToEnum< VkDebugMarkerObjectNameInfoEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT; };
 template <> struct TypeToEnum< VkDebugMarkerObjectTagInfoEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT; };
 template <> struct TypeToEnum< VkDebugMarkerMarkerInfoEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT; };
@@ -244,12 +252,15 @@ template <> struct TypeToEnum< VkDisplayEventInfoEXT > { static constexpr VkStru
 template <> struct TypeToEnum< VkCmdProcessCommandsInfoNVX > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_CMD_PROCESS_COMMANDS_INFO_NVX; };
 template <> struct TypeToEnum< VkCmdReserveSpaceForCommandsInfoNVX > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_CMD_RESERVE_SPACE_FOR_COMMANDS_INFO_NVX; };
 template <> struct TypeToEnum< VkObjectTableCreateInfoNVX > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_OBJECT_TABLE_CREATE_INFO_NVX; };
+template <> struct TypeToEnum< VkPipelineViewportExclusiveScissorStateCreateInfoNV > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_EXCLUSIVE_SCISSOR_STATE_CREATE_INFO_NV; };
 template <> struct TypeToEnum< VkPipelineViewportWScalingStateCreateInfoNV > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_W_SCALING_STATE_CREATE_INFO_NV; };
+template <> struct TypeToEnum< VkPhysicalDeviceExclusiveScissorFeaturesNV > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXCLUSIVE_SCISSOR_FEATURES_NV; };
 template <> struct TypeToEnum< VkDisplayPowerInfoEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_DISPLAY_POWER_INFO_EXT; };
 template <> struct TypeToEnum< VkSwapchainCounterCreateInfoEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_SWAPCHAIN_COUNTER_CREATE_INFO_EXT; };
 template <> struct TypeToEnum< VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_ATTRIBUTES_PROPERTIES_NVX; };
 template <> struct TypeToEnum< VkPipelineViewportSwizzleStateCreateInfoNV > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SWIZZLE_STATE_CREATE_INFO_NV; };
 template <> struct TypeToEnum< VkPipelineDiscardRectangleStateCreateInfoEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PIPELINE_DISCARD_RECTANGLE_STATE_CREATE_INFO_EXT; };
+template <> struct TypeToEnum< VkRaytracingPipelineCreateInfoNVX > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_RAYTRACING_PIPELINE_CREATE_INFO_NVX; };
 template <> struct TypeToEnum< VkPipelineRasterizationConservativeStateCreateInfoEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_CONSERVATIVE_STATE_CREATE_INFO_EXT; };
 template <> struct TypeToEnum< VkDebugUtilsObjectTagInfoEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_TAG_INFO_EXT; };
 template <> struct TypeToEnum< VkDebugUtilsLabelEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT; };
@@ -259,7 +270,9 @@ template <> struct TypeToEnum< VkDebugUtilsMessengerCreateInfoEXT > { static con
 template <> struct TypeToEnum< VkPhysicalDeviceInlineUniformBlockFeaturesEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_FEATURES_EXT; };
 template <> struct TypeToEnum< VkPhysicalDeviceInlineUniformBlockPropertiesEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_PROPERTIES_EXT; };
 template <> struct TypeToEnum< VkWriteDescriptorSetInlineUniformBlockEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_INLINE_UNIFORM_BLOCK_EXT; };
+template <> struct TypeToEnum< VkPipelineViewportShadingRateImageStateCreateInfoNV > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SHADING_RATE_IMAGE_STATE_CREATE_INFO_NV; };
 template <> struct TypeToEnum< VkDescriptorPoolInlineUniformBlockCreateInfoEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_INLINE_UNIFORM_BLOCK_CREATE_INFO_EXT; };
+template <> struct TypeToEnum< VkPhysicalDeviceShadingRateImageFeaturesNV > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_FEATURES_NV; };
 template <> struct TypeToEnum< VkSampleLocationsInfoEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_SAMPLE_LOCATIONS_INFO_EXT; };
 template <> struct TypeToEnum< VkPipelineSampleLocationsStateCreateInfoEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PIPELINE_SAMPLE_LOCATIONS_STATE_CREATE_INFO_EXT; };
 template <> struct TypeToEnum< VkPhysicalDeviceSampleLocationsPropertiesEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLE_LOCATIONS_PROPERTIES_EXT; };
@@ -271,6 +284,11 @@ template <> struct TypeToEnum< VkPhysicalDeviceDescriptorIndexingFeaturesEXT > {
 template <> struct TypeToEnum< VkAndroidHardwareBufferFormatPropertiesANDROID > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_FORMAT_PROPERTIES_ANDROID; };
 #endif // VULKAN_ANDROID_H_
 template <> struct TypeToEnum< VkPhysicalDeviceDescriptorIndexingPropertiesEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES_EXT; };
+template <> struct TypeToEnum< VkGeometryAABBNVX > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_GEOMETRY_AABB_NVX; };
+template <> struct TypeToEnum< VkBindAccelerationStructureMemoryInfoNVX > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NVX; };
+template <> struct TypeToEnum< VkDescriptorAccelerationStructureInfoNVX > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_DESCRIPTOR_ACCELERATION_STRUCTURE_INFO_NVX; };
+template <> struct TypeToEnum< VkPhysicalDeviceRaytracingPropertiesNVX > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAYTRACING_PROPERTIES_NVX; };
+template <> struct TypeToEnum< VkPipelineRepresentativeFragmentTestStateCreateInfoNV > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PIPELINE_REPRESENTATIVE_FRAGMENT_TEST_STATE_CREATE_INFO_NV; };
 template <> struct TypeToEnum< VkDeviceQueueGlobalPriorityCreateInfoEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_EXT; };
 template <> struct TypeToEnum< VkPhysicalDeviceShaderCorePropertiesAMD > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_AMD; };
 template <> struct TypeToEnum< VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_PROPERTIES_EXT; };
@@ -279,6 +297,11 @@ template <> struct TypeToEnum< VkPipelineVertexInputDivisorStateCreateInfoEXT > 
 template <> struct TypeToEnum< VkFenceGetWin32HandleInfoKHR > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_FENCE_GET_WIN32_HANDLE_INFO_KHR; };
 #endif // VULKAN_WIN32_H_
 template <> struct TypeToEnum< VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT; };
+template <> struct TypeToEnum< VkPhysicalDeviceComputeShaderDerivativesFeaturesNV > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMPUTE_SHADER_DERIVATIVES_FEATURES_NV; };
+template <> struct TypeToEnum< VkPhysicalDeviceMeshShaderFeaturesNV > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV; };
+template <> struct TypeToEnum< VkPhysicalDeviceMeshShaderPropertiesNV > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_NV; };
+template <> struct TypeToEnum< VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_FEATURES_NV; };
+template <> struct TypeToEnum< VkPhysicalDeviceShaderImageFootprintFeaturesNV > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_IMAGE_FOOTPRINT_FEATURES_NV; };
 template <> struct TypeToEnum< VkCheckpointDataNV > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_CHECKPOINT_DATA_NV; };
 #ifdef VULKAN_WIN32_H_
 template <> struct TypeToEnum< VkWin32SurfaceCreateInfoKHR > { static constexpr VkStructureType  value = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR; };
@@ -316,6 +339,7 @@ template <> struct EnumToType< VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_BUFFER_CREATE_I
 template <> struct EnumToType< VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO > { using type = VkSemaphoreCreateInfo; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO > { using type = VkDeviceCreateInfo; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_EXTERNAL_IMAGE_FORMAT_PROPERTIES > { using type = VkExternalImageFormatProperties; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_COARSE_SAMPLE_ORDER_STATE_CREATE_INFO_NV > { using type = VkPipelineViewportCoarseSampleOrderStateCreateInfoNV; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_DOMAIN_ORIGIN_STATE_CREATE_INFO > { using type = VkPipelineTessellationDomainOriginStateCreateInfo; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_APPLICATION_INFO > { using type = VkApplicationInfo; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT > { using type = VkDebugUtilsObjectNameInfoEXT; };
@@ -387,6 +411,7 @@ template <> struct EnumToType< VK_STRUCTURE_TYPE_DISPLAY_PLANE_PROPERTIES_2_KHR 
 template <> struct EnumToType< VK_STRUCTURE_TYPE_DISPLAY_PRESENT_INFO_KHR > { using type = VkDisplayPresentInfoKHR; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO > { using type = VkSamplerCreateInfo; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO > { using type = VkDescriptorSetLayoutCreateInfo; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NVX > { using type = VkAccelerationStructureCreateInfoNVX; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO > { using type = VkDescriptorPoolCreateInfo; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2 > { using type = VkImageMemoryRequirementsInfo2; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO > { using type = VkDescriptorSetAllocateInfo; };
@@ -399,6 +424,7 @@ template <> struct EnumToType< VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET > { using 
 template <> struct EnumToType< VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET > { using type = VkCopyDescriptorSet; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_FILTER_MINMAX_PROPERTIES_EXT > { using type = VkPhysicalDeviceSamplerFilterMinmaxPropertiesEXT; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO > { using type = VkFramebufferCreateInfo; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NVX > { using type = VkGeometryTrianglesNVX; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO > { using type = VkRenderPassCreateInfo; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO > { using type = VkCommandPoolCreateInfo; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO > { using type = VkCommandBufferAllocateInfo; };
@@ -421,6 +447,7 @@ template <> struct EnumToType< VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO > { usin
 template <> struct EnumToType< VK_STRUCTURE_TYPE_SUBPASS_END_INFO_KHR > { using type = VkSubpassEndInfoKHR; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES > { using type = VkPhysicalDevice16BitStorageFeatures; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS > { using type = VkMemoryDedicatedRequirements; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_PROPERTIES_NV > { using type = VkPhysicalDeviceShadingRateImagePropertiesNV; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO > { using type = VkMemoryDedicatedAllocateInfo; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO > { using type = VkMemoryAllocateFlagsInfo; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_DEVICE_GROUP_RENDER_PASS_BEGIN_INFO > { using type = VkDeviceGroupRenderPassBeginInfo; };
@@ -469,7 +496,9 @@ template <> struct EnumToType< VK_STRUCTURE_TYPE_EXTERNAL_BUFFER_PROPERTIES > { 
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_PROPERTIES_EXT > { using type = VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES > { using type = VkPhysicalDeviceIDProperties; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO > { using type = VkExternalMemoryImageCreateInfo; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CORNER_SAMPLED_IMAGE_FEATURES_NV > { using type = VkPhysicalDeviceCornerSampledImageFeaturesNV; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO > { using type = VkExportMemoryAllocateInfo; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_REPRESENTATIVE_FRAGMENT_TEST_FEATURES_NV > { using type = VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_FENCE_INFO > { using type = VkPhysicalDeviceExternalFenceInfo; };
 #ifdef VULKAN_WIN32_H_
 template <> struct EnumToType< VK_STRUCTURE_TYPE_EXPORT_MEMORY_WIN32_HANDLE_INFO_KHR > { using type = VkExportMemoryWin32HandleInfoKHR; };
@@ -524,9 +553,11 @@ template <> struct EnumToType< VK_STRUCTURE_TYPE_DISPLAY_MODE_PROPERTIES_2_KHR >
 template <> struct EnumToType< VK_STRUCTURE_TYPE_DISPLAY_PLANE_CAPABILITIES_2_KHR > { using type = VkDisplayPlaneCapabilities2KHR; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO_EXT > { using type = VkDescriptorSetVariableDescriptorCountAllocateInfoEXT; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR > { using type = VkPhysicalDevice8BitStorageFeaturesKHR; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NVX > { using type = VkAccelerationStructureMemoryRequirementsInfoNVX; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES_KHR > { using type = VkPhysicalDeviceVulkanMemoryModelFeaturesKHR; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT > { using type = VkDebugReportCallbackCreateInfoEXT; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD > { using type = VkPipelineRasterizationStateRasterizationOrderAMD; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_GEOMETRY_NVX > { using type = VkGeometryNVX; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT > { using type = VkDebugMarkerObjectNameInfoEXT; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT > { using type = VkDebugMarkerObjectTagInfoEXT; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT > { using type = VkDebugMarkerMarkerInfoEXT; };
@@ -553,12 +584,15 @@ template <> struct EnumToType< VK_STRUCTURE_TYPE_DISPLAY_EVENT_INFO_EXT > { usin
 template <> struct EnumToType< VK_STRUCTURE_TYPE_CMD_PROCESS_COMMANDS_INFO_NVX > { using type = VkCmdProcessCommandsInfoNVX; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_CMD_RESERVE_SPACE_FOR_COMMANDS_INFO_NVX > { using type = VkCmdReserveSpaceForCommandsInfoNVX; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_OBJECT_TABLE_CREATE_INFO_NVX > { using type = VkObjectTableCreateInfoNVX; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_EXCLUSIVE_SCISSOR_STATE_CREATE_INFO_NV > { using type = VkPipelineViewportExclusiveScissorStateCreateInfoNV; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_W_SCALING_STATE_CREATE_INFO_NV > { using type = VkPipelineViewportWScalingStateCreateInfoNV; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXCLUSIVE_SCISSOR_FEATURES_NV > { using type = VkPhysicalDeviceExclusiveScissorFeaturesNV; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_DISPLAY_POWER_INFO_EXT > { using type = VkDisplayPowerInfoEXT; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_SWAPCHAIN_COUNTER_CREATE_INFO_EXT > { using type = VkSwapchainCounterCreateInfoEXT; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_ATTRIBUTES_PROPERTIES_NVX > { using type = VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SWIZZLE_STATE_CREATE_INFO_NV > { using type = VkPipelineViewportSwizzleStateCreateInfoNV; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PIPELINE_DISCARD_RECTANGLE_STATE_CREATE_INFO_EXT > { using type = VkPipelineDiscardRectangleStateCreateInfoEXT; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_RAYTRACING_PIPELINE_CREATE_INFO_NVX > { using type = VkRaytracingPipelineCreateInfoNVX; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_CONSERVATIVE_STATE_CREATE_INFO_EXT > { using type = VkPipelineRasterizationConservativeStateCreateInfoEXT; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_TAG_INFO_EXT > { using type = VkDebugUtilsObjectTagInfoEXT; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT > { using type = VkDebugUtilsLabelEXT; };
@@ -568,7 +602,9 @@ template <> struct EnumToType< VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_IN
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_FEATURES_EXT > { using type = VkPhysicalDeviceInlineUniformBlockFeaturesEXT; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_PROPERTIES_EXT > { using type = VkPhysicalDeviceInlineUniformBlockPropertiesEXT; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_INLINE_UNIFORM_BLOCK_EXT > { using type = VkWriteDescriptorSetInlineUniformBlockEXT; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SHADING_RATE_IMAGE_STATE_CREATE_INFO_NV > { using type = VkPipelineViewportShadingRateImageStateCreateInfoNV; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_INLINE_UNIFORM_BLOCK_CREATE_INFO_EXT > { using type = VkDescriptorPoolInlineUniformBlockCreateInfoEXT; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_FEATURES_NV > { using type = VkPhysicalDeviceShadingRateImageFeaturesNV; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_SAMPLE_LOCATIONS_INFO_EXT > { using type = VkSampleLocationsInfoEXT; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PIPELINE_SAMPLE_LOCATIONS_STATE_CREATE_INFO_EXT > { using type = VkPipelineSampleLocationsStateCreateInfoEXT; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLE_LOCATIONS_PROPERTIES_EXT > { using type = VkPhysicalDeviceSampleLocationsPropertiesEXT; };
@@ -580,6 +616,11 @@ template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDE
 template <> struct EnumToType< VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_FORMAT_PROPERTIES_ANDROID > { using type = VkAndroidHardwareBufferFormatPropertiesANDROID; };
 #endif // VULKAN_ANDROID_H_
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES_EXT > { using type = VkPhysicalDeviceDescriptorIndexingPropertiesEXT; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_GEOMETRY_AABB_NVX > { using type = VkGeometryAABBNVX; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NVX > { using type = VkBindAccelerationStructureMemoryInfoNVX; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_DESCRIPTOR_ACCELERATION_STRUCTURE_INFO_NVX > { using type = VkDescriptorAccelerationStructureInfoNVX; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAYTRACING_PROPERTIES_NVX > { using type = VkPhysicalDeviceRaytracingPropertiesNVX; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_PIPELINE_REPRESENTATIVE_FRAGMENT_TEST_STATE_CREATE_INFO_NV > { using type = VkPipelineRepresentativeFragmentTestStateCreateInfoNV; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_EXT > { using type = VkDeviceQueueGlobalPriorityCreateInfoEXT; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_AMD > { using type = VkPhysicalDeviceShaderCorePropertiesAMD; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_PROPERTIES_EXT > { using type = VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT; };
@@ -588,6 +629,11 @@ template <> struct EnumToType< VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_DIVISOR_S
 template <> struct EnumToType< VK_STRUCTURE_TYPE_FENCE_GET_WIN32_HANDLE_INFO_KHR > { using type = VkFenceGetWin32HandleInfoKHR; };
 #endif // VULKAN_WIN32_H_
 template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT > { using type = VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMPUTE_SHADER_DERIVATIVES_FEATURES_NV > { using type = VkPhysicalDeviceComputeShaderDerivativesFeaturesNV; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV > { using type = VkPhysicalDeviceMeshShaderFeaturesNV; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_NV > { using type = VkPhysicalDeviceMeshShaderPropertiesNV; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_FEATURES_NV > { using type = VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV; };
+template <> struct EnumToType< VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_IMAGE_FOOTPRINT_FEATURES_NV > { using type = VkPhysicalDeviceShaderImageFootprintFeaturesNV; };
 template <> struct EnumToType< VK_STRUCTURE_TYPE_CHECKPOINT_DATA_NV > { using type = VkCheckpointDataNV; };
 #ifdef VULKAN_WIN32_H_
 template <> struct EnumToType< VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR > { using type = VkWin32SurfaceCreateInfoKHR; };

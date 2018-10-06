@@ -325,7 +325,7 @@ namespace VTC
 							<< VkResourceToString( t.resInfo->first ) << "(\" << remapper( " << t.resInfo->second.typeName << ", obj->" << fieldName << "[i] ) << \"))\";\n"
 				<< indent << "\t}\n"
 				<< indent << "\tbefore << \"\\n\" << indent << \"};\\n\";\n"
-				<< indent << "\tbefore << indent << \"STATIC_ASSERT( std::size(\" << nameSer.Get( &obj->" << fieldName
+				<< indent << "\tbefore << indent << \"STATIC_ASSERT( CountOf(\" << nameSer.Get( &obj->" << fieldName
 							<< " ) << \") == \" << IntToString(" << counter << ") << \" );\\n\\n\";\n"
 				<< indent << "}\n";
 
@@ -347,7 +347,7 @@ namespace VTC
 							<< t.enumInfo->data.name << "( obj->" << fieldName << "[i] );\n"
 				<< indent << "\t}\n"
 				<< indent << "\tbefore << \"\\n\" << indent << \" };\\n\";\n"
-				<< indent << "\tbefore << indent << \"STATIC_ASSERT( std::size(\" << nameSer.Get( &obj->" << fieldName
+				<< indent << "\tbefore << indent << \"STATIC_ASSERT( CountOf(\" << nameSer.Get( &obj->" << fieldName
 							<< " ) << \") == \" << IntToString(" << counter << ") << \" );\\n\\n\";\n"
 				<< indent << "}\n";
 
@@ -369,7 +369,7 @@ namespace VTC
 							<< t.bitfieldInfo->data.name << "( obj->" << fieldName << "[i] );\n"
 				<< indent << "\t}\n"
 				<< indent << "\tbefore << \"\\n\" << indent << \" };\\n\";\n"
-				<< indent << "\tbefore << indent << \"STATIC_ASSERT( std::size(\" << nameSer.Get( &obj->" << fieldName
+				<< indent << "\tbefore << indent << \"STATIC_ASSERT( CountOf(\" << nameSer.Get( &obj->" << fieldName
 							<< " ) << \") == \" << IntToString(" << counter << ") << \" );\\n\\n\";\n"
 				<< indent << "}\n";
 
@@ -403,7 +403,7 @@ namespace VTC
 									<< " << VoidToFIValueString( obj->" << fieldName << ", i*sizeof(FIValue) );\n"
 						<< indent << "}\n"
 						<< indent << "before << '\\n' << indent << \"};\\n\";\n"
-						<< indent << "before << indent << \"STATIC_ASSERT( std::size(\" << nameSer.Get( &obj->" << fieldName
+						<< indent << "before << indent << \"STATIC_ASSERT( CountOf(\" << nameSer.Get( &obj->" << fieldName
 									<< " ) << \") == \" << IntToString(" << counter << ") << \" );\\n\\n\";\n";
 
 					str << "nameSer.Get( &obj->" << fieldName << " )";
@@ -446,7 +446,7 @@ namespace VTC
 								<< ConvertBasicType( "obj->"s << fieldName << "[i]", t.basicInfo->first, t.basicInfo->second, false ) << ";\n"
 					<< indent << "\t}\n"
 					<< indent << "\tbefore << indent << \" };\\n\";\n"
-					<< indent << "\tbefore << indent << \"STATIC_ASSERT( std::size(\" << nameSer.Get( &obj->" << fieldName
+					<< indent << "\tbefore << indent << \"STATIC_ASSERT( CountOf(\" << nameSer.Get( &obj->" << fieldName
 								<< " ) << \") == \" << IntToString(" << counter << ") << \" );\\n\\n\";\n"
 					<< indent << "}\n";
 
@@ -590,7 +590,7 @@ namespace VTC
 				counter = counterName;
 			else
 			if ( _IsNumber( counterName ) or t.isArray )
-				counter = "std::size(obj->"s << fieldName << ")";
+				counter = "CountOf(obj->"s << fieldName << ")";
 			else
 				counter << "obj->" << counterName;
 		}
@@ -839,13 +839,13 @@ namespace VTC
 
 		// store header to file
 		{
-			HddWFile	file{ headerFile };
+			FileWStream		file{ headerFile };
 			CHECK_ERR( file.IsOpen() );
 			CHECK_ERR( file.Write( StringView(header) ));
 		}
 		// store source to file
 		{
-			HddWFile	file{ sourceFile };
+			FileWStream		file{ sourceFile };
 			CHECK_ERR( file.IsOpen() );
 			CHECK_ERR( file.Write( StringView(str1) ));
 			CHECK_ERR( file.Write( StringView(str2) ));

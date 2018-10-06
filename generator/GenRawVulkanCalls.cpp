@@ -52,7 +52,10 @@ namespace VTC
 */
 	bool Generator::GenRawVulkanCalls (const fs::path &output) const
 	{
-		String	str = "// auto-generated file\n\nENABLE_ENUM_CHECKS();\nswitch ( iter->packet_id )\n{\n";
+		String	str =	"// auto-generated file\n\n"
+						"ENABLE_ENUM_CHECKS();\n"
+						"switch ( iter->packet_id )\n"
+						"{\n";
 		String	temp;
 
 		for (auto& packet : _packetIDs)
@@ -77,7 +80,7 @@ namespace VTC
 
 
 		// store to file
-		HddWFile	file{ output };
+		FileWStream		file{ output };
 		CHECK_ERR( file.IsOpen() );
 		CHECK_ERR( file.Write( StringView(str) ));
 

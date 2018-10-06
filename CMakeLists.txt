@@ -18,6 +18,7 @@ add_subdirectory( "external" "external" )
 set( VTC_STABLE OFF CACHE BOOL "disable code generation and some external projects" )
 set( VTC_ENABLE_GLFW ON CACHE BOOL "use GLFW" )
 set( VTC_ENABLE_SDL2 OFF CACHE BOOL "use SDL2" )
+set( VTC_ENABLE_BROTLI ON CACHE BOOL "use brotli compression" )
 
 set( MAIN_BINARY_DIR "${CMAKE_BINARY_DIR}/bin" CACHE INTERNAL "" FORCE )
 set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${MAIN_BINARY_DIR}" )
@@ -32,7 +33,6 @@ add_subdirectory( "converter" "converter" )
 add_subdirectory( "engine" "engine" )
 
 add_subdirectory( "player" "player" )
-add_subdirectory( "player_exe" "player_exe" )
 
 message( STATUS "project 'VkTraceConverter' generation ended" )
 message( STATUS "\n==========================================================================" )

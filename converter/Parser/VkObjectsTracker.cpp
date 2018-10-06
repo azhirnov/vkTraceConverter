@@ -47,7 +47,7 @@ namespace VTC
 		static constexpr uint	MaxDescriptorSets	= 8;
 
 		using VertexBuffers_t			= StaticArray< ResourceID, MaxVertexBuffers >;
-		using EnabledVertexBuffers_t	= std::bitset< MaxVertexBuffers >;
+		using EnabledVertexBuffers_t	= BitSet< MaxVertexBuffers >;
 
 		using DescriptorSets_t			= StaticArray< ResourceID, MaxDescriptorSets >;
 
@@ -320,6 +320,7 @@ namespace VTC
 
 				for (uint i = 0; i < packet.pAllocateInfo->commandBufferCount; ++i)
 				{
+					ASSERT( packet.pCommandBuffers[i] );
 					CHECK( cmd_pool->second.commandBuffers.insert( ResourceID(packet.pCommandBuffers[i]) ).second );
 				}
 				break;
@@ -394,6 +395,7 @@ namespace VTC
 
 				for (uint i = 0; i < packet.pAllocateInfo->descriptorSetCount; ++i)
 				{
+					ASSERT( packet.pDescriptorSets[i] );
 					CHECK( desc_pool->second.descriptorSets.insert( ResourceID(packet.pDescriptorSets[i]) ).second );
 				}
 				break;

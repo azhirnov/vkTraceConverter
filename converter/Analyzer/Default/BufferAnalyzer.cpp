@@ -54,6 +54,11 @@ namespace VTC
 												     { packet.pBufferMemoryBarriers, packet.bufferMemoryBarrierCount } ));
 				break;
 			}
+
+			//
+			case VKTRACE_TPI_VK_vkUpdateDescriptorSets :
+				CHECK( _OnUpdateDescriptorSets( pos ));
+				break;
 		}
 	}
 
@@ -88,7 +93,6 @@ namespace VTC
 
 		switch ( pos->packet_id )
 		{
-			case VKTRACE_TPI_VK_vkCreateBufferView :
 			case VKTRACE_TPI_VK_vkBindBufferMemory :				CHECK( _OnBindBufferMemory( pos, info ));				break;
 			case VKTRACE_TPI_VK_vkBindBufferMemory2 :
 			case VKTRACE_TPI_VK_vkBindBufferMemory2KHR :			CHECK( _OnBindBufferMemory2( pos, info ));				break;
@@ -97,29 +101,47 @@ namespace VTC
 			case VKTRACE_TPI_VK_vkGetBufferMemoryRequirements2 :
 			case VKTRACE_TPI_VK_vkGetBufferMemoryRequirements2KHR :	CHECK( _OnGetBufferMemoryRequirements2( pos, info ));	break;
 				
-			case VKTRACE_TPI_VK_vkDestroyBuffer :
-			case VKTRACE_TPI_VK_vkCmdBindIndexBuffer :
-			case VKTRACE_TPI_VK_vkCmdBindVertexBuffers :
-			case VKTRACE_TPI_VK_vkCmdDispatchIndirect :
-			case VKTRACE_TPI_VK_vkCmdCopyBuffer :
+			case VKTRACE_TPI_VK_vkCmdCopyBuffer :					CHECK( _OnCopyBuffer( pos, info ));						break;
+			case VKTRACE_TPI_VK_vkCmdDispatchIndirect :				CHECK( _OnDispatchIndirect( pos, info ));				break;
+			case VKTRACE_TPI_VK_vkCmdDrawIndirect :					CHECK( _OnDrawIndirect( pos, info ));					break;
+			case VKTRACE_TPI_VK_vkCmdDrawIndirectCountAMD :			CHECK( _OnDrawIndirectCountAMD( pos, info ));			break;
+			case VKTRACE_TPI_VK_vkCmdDrawIndexedIndirect :			CHECK( _OnDrawIndexedIndirect( pos, info ));			break;
+			case VKTRACE_TPI_VK_vkCmdDrawIndexedIndirectCountAMD :	CHECK( _OnDrawIndexedIndirectCountAMD( pos, info ));	break;
+
 			case VKTRACE_TPI_VK_vkCmdCopyBufferToImage :
+				_AddBufferUsage( info, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_READ_BIT );
+				_AddBufferAccess( info, pos.GetBookmark() );
+				break;
+
 			case VKTRACE_TPI_VK_vkCmdCopyImageToBuffer :
-			case VKTRACE_TPI_VK_vkCmdUpdateBuffer :
+			case VKTRACE_TPI_VK_vkCmdCopyQueryPoolResults :
 			case VKTRACE_TPI_VK_vkCmdFillBuffer :
+			case VKTRACE_TPI_VK_vkCmdUpdateBuffer :
+				_AddBufferUsage( info, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT );
+				_AddBufferAccess( info, pos.GetBookmark() );
+				break;
+
+			case VKTRACE_TPI_VK_vkCmdBindIndexBuffer :
+				_AddBufferUsage( info, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_ACCESS_INDEX_READ_BIT );
+				_AddBufferAccess( info, pos.GetBookmark() );
+				break;
+
+			case VKTRACE_TPI_VK_vkCmdBindVertexBuffers :
+				_AddBufferUsage( info, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT );
+				_AddBufferAccess( info, pos.GetBookmark() );
+				break;
+
+			case VKTRACE_TPI_VK_vkCreateBufferView :
+			case VKTRACE_TPI_VK_vkDestroyBuffer :
 			case VKTRACE_TPI_VK_vkAllocateMemory :
 			case VKTRACE_TPI_VK_vkUpdateDescriptorSets :
 			case VKTRACE_TPI_VK_vkCmdPipelineBarrier :
 			case VKTRACE_TPI_VK_vkCmdWaitEvents :
-			case VKTRACE_TPI_VK_vkCmdCopyQueryPoolResults :
 				break;
 
 			// vertex / index / indirect buffer usage
 			case VKTRACE_TPI_VK_vkCmdDraw :
-			case VKTRACE_TPI_VK_vkCmdDrawIndirect :
-			case VKTRACE_TPI_VK_vkCmdDrawIndirectCountAMD :
 			case VKTRACE_TPI_VK_vkCmdDrawIndexed :
-			case VKTRACE_TPI_VK_vkCmdDrawIndexedIndirect :
-			case VKTRACE_TPI_VK_vkCmdDrawIndexedIndirectCountAMD :
 				break;
 
 			default :
@@ -222,6 +244,106 @@ namespace VTC
 		buffer.memRequirements = packet.pMemoryRequirements->memoryRequirements;
 		return true;
 	}
+	
+/*
+=================================================
+	_OnCopyBuffer
+=================================================
+*/
+	bool BufferAnalyzer::_OnCopyBuffer (const TraceRange::Iterator &pos, BufferInfo_t &buffer)
+	{
+		auto&	packet = pos.Cast< packet_vkCmdCopyBuffer >();
+
+		if ( ResourceID(packet.srcBuffer) == buffer.id ) {
+			_AddBufferUsage( buffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_READ_BIT );
+			_AddBufferAccess( buffer, pos.GetBookmark() );
+		}
+		if ( ResourceID(packet.dstBuffer) == buffer.id ) {
+			_AddBufferUsage( buffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT );
+			_AddBufferAccess( buffer, pos.GetBookmark() );
+		}
+		return true;
+	}
+	
+/*
+=================================================
+	_OnDispatchIndirect
+=================================================
+*/
+	bool BufferAnalyzer::_OnDispatchIndirect (const TraceRange::Iterator &pos, BufferInfo_t &buffer)
+	{
+		auto&	packet = pos.Cast< packet_vkCmdDispatchIndirect >();
+
+		if ( ResourceID(packet.buffer) == buffer.id ) {
+			_AddBufferUsage( buffer, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_ACCESS_INDEX_READ_BIT );
+			_AddBufferAccess( buffer, pos.GetBookmark() );
+		}
+		return true;
+	}
+	
+/*
+=================================================
+	_OnDrawIndirect
+=================================================
+*/
+	bool BufferAnalyzer::_OnDrawIndirect (const TraceRange::Iterator &pos, BufferInfo_t &buffer)
+	{
+		auto&	packet = pos.Cast< packet_vkCmdDrawIndirect >();
+
+		if ( ResourceID(packet.buffer) == buffer.id ) {
+			_AddBufferUsage( buffer, VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT, VK_ACCESS_INDEX_READ_BIT );
+			_AddBufferAccess( buffer, pos.GetBookmark() );
+		}
+		return true;
+	}
+	
+/*
+=================================================
+	_OnDrawIndirectCountAMD
+=================================================
+*/
+	bool BufferAnalyzer::_OnDrawIndirectCountAMD (const TraceRange::Iterator &pos, BufferInfo_t &buffer)
+	{
+		auto&	packet = pos.Cast< packet_vkCmdDrawIndirectCountAMD >();
+
+		if ( ResourceID(packet.buffer) == buffer.id ) {
+			_AddBufferUsage( buffer, VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT, VK_ACCESS_INDEX_READ_BIT );
+			_AddBufferAccess( buffer, pos.GetBookmark() );
+		}
+		return true;
+	}
+	
+/*
+=================================================
+	_OnDrawIndexedIndirect
+=================================================
+*/
+	bool BufferAnalyzer::_OnDrawIndexedIndirect (const TraceRange::Iterator &pos, BufferInfo_t &buffer)
+	{
+		auto&	packet = pos.Cast< packet_vkCmdDrawIndexedIndirect >();
+
+		if ( ResourceID(packet.buffer) == buffer.id ) {
+			_AddBufferUsage( buffer, VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT, VK_ACCESS_INDEX_READ_BIT );
+			_AddBufferAccess( buffer, pos.GetBookmark() );
+		}
+		return true;
+	}
+	
+/*
+=================================================
+	_OnDrawIndexedIndirectCountAMD
+=================================================
+*/
+	bool BufferAnalyzer::_OnDrawIndexedIndirectCountAMD (const TraceRange::Iterator &pos, BufferInfo_t &buffer)
+	{
+		auto&	packet = pos.Cast< packet_vkCmdDrawIndexedIndirectCountAMD >();
+
+		if ( ResourceID(packet.buffer) == buffer.id ) {
+			_AddBufferUsage( buffer, VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT, VK_ACCESS_INDEX_READ_BIT );
+			_AddBufferAccess( buffer, pos.GetBookmark() );
+		}
+		return true;
+	}
 
 /*
 =================================================
@@ -292,10 +414,54 @@ namespace VTC
 
 			CHECK_ERR( _AddBufferUsage( *buffer, srcStageMask, bar.srcAccessMask ));
 			CHECK_ERR( _AddBufferUsage( *buffer, dstStageMask, bar.dstAccessMask ));
+			
+			_AddBufferAccess( *buffer, pos );
 		}
 		return true;
 	}
 	
+/*
+=================================================
+	_OnUpdateDescriptorSets
+=================================================
+*/
+	bool BufferAnalyzer::_OnUpdateDescriptorSets (const TraceRange::Iterator &pos)
+	{
+		auto&	packet = pos.Cast< packet_vkUpdateDescriptorSets >();
+
+		for (uint i = 0; i < packet.descriptorWriteCount; ++i)
+		{
+			auto&	write = packet.pDescriptorWrites[i];
+			ASSERT( write.pNext == null );				// add support if triggered
+			ASSERT( write.pTexelBufferView == null );	// not supported, yet
+
+			if ( not write.pBufferInfo )
+				continue;
+
+			VkAccessFlags			access	= 0;
+			VkPipelineStageFlags	stage	= 0;	// TODO
+			
+			if ( write.descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER or
+				 write.descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC )
+				access = VK_ACCESS_UNIFORM_READ_BIT;
+
+			if ( write.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER or
+				 write.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC )
+				access = VK_ACCESS_SHADER_READ_BIT;
+
+			for (uint j = 0; j < write.descriptorCount; ++j)
+			{
+				auto&	buf		= write.pBufferInfo[j];
+				auto*	info	= _buffers.FindIn( ResourceID(buf.buffer), pos );
+				CHECK_ERR( info );
+
+				_AddBufferUsage( *info, stage, access );
+				_AddBufferAccess( *info, pos.GetBookmark() );
+			}
+		}
+		return true;
+	}
+
 /*
 =================================================
 	ConvertToBufferUsage
@@ -343,6 +509,19 @@ namespace VTC
 		buffer.allStageFlags	|= stage;
 		buffer.usage			|= ConvertToBufferUsage( stage, access );
 		return true;
+	}
+	
+/*
+=================================================
+	_AddBufferAccess
+=================================================
+*/
+	void BufferAnalyzer::_AddBufferAccess (BufferInfo_t &buffer, TraceRange::Bookmark pos)
+	{
+		if ( buffer.firstAccess == TraceRange::Bookmark() )
+			buffer.firstAccess = buffer.lastAccess = pos;
+		else
+			buffer.lastAccess = std::max( buffer.lastAccess, pos );
 	}
 
 

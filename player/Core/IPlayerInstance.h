@@ -19,6 +19,7 @@ namespace VTPlayer
 
 		virtual bool Play () = 0;
 		virtual bool Pause () = 0;
+		virtual bool IsRunning () = 0;
 		virtual void Release () = 0;
 
 		// Vulkan only

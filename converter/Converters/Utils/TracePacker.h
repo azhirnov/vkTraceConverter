@@ -4,7 +4,7 @@
 
 #include "Analyzer/Default/AllResourcesBookmarks.h"
 #include "stl/CompileTime/TypeList.h"
-#include "stl/File/MemFile.h"
+#include "stl/Stream/MemStream.h"
 #include <typeindex>
 
 namespace VTC
@@ -29,6 +29,7 @@ namespace VTC
 			const void *	ptr;
 			Buffer_t		buf;
 			size_t			align;
+			int				structDepth	= 0;
 		};
 
 		using PointerStack_t = Array< ScopeInfo >;
@@ -44,7 +45,7 @@ namespace VTC
 		EPacketID						_currPacket;
 
 		Buffer_t						_tempData;
-		MemWFile						_file;
+		MemWStream						_file;
 
 
 	// methods
@@ -66,9 +67,11 @@ namespace VTC
 		template <typename T>	void PopAndStore (T const *);
 							
 		template <typename T>	void RemapVkResource (INOUT T const *);
-		template <typename T>	void AddStruct (const T &);
 								void AddArray (const void*, size_t size);
 								void AddString (const char *);
+
+								void BeginStruct ();
+		template <typename T>	void EndStruct (const T &);
 
 								void Clear ();
 								void Flush ();
@@ -97,10 +100,10 @@ namespace VTC
 		if constexpr ( IsVkResource<T> )
 			return _AddVkResource( value );
 		else
-		if constexpr ( std::is_pointer_v<T> )
+		if constexpr ( IsPointer<T> )
 			return _AddPointer( value );
 		else
-		if constexpr ( std::is_enum_v<T> or std::is_integral_v<T> or std::is_floating_point_v<T> )
+		if constexpr ( IsEnum<T> or IsInteger<T> or IsFloatPoint<T> )
 			return _AddBasicType( value );
 		else
 			STATIC_ASSERT( false );
@@ -188,14 +191,17 @@ namespace VTC
 		ASSERT( id != null );
 		T&	result = *const_cast<T *>( id );
 
-		if ( result == VK_NULL_HANDLE )
-		{
+		if ( result == VK_NULL_HANDLE ) {
 			result = T(~0ull);
 			return;
 		}
 
 		auto*	res_info = _resBookmarks->GetResource( GetVkResourceType<T>(), ResourceID(result), _currentPos );
-		CHECK_ERR( res_info, void());
+
+		if ( not res_info ) {
+			result = T(~0ull);
+			return;
+		}
 
 		if ( _useUniqueIndices ) {
 			CHECK_ERR( res_info->uniqueIndex != ~0ull, void());
@@ -222,13 +228,27 @@ namespace VTC
 	
 /*
 =================================================
-	AddStruct
+	BeginStruct
+=================================================
+*/
+	inline void TracePacker::BeginStruct ()
+	{
+		++(_pointerStack.back().structDepth);
+	}
+
+/*
+=================================================
+	EndStruct
 =================================================
 */
 	template <typename T>
-	inline void TracePacker::AddStruct (const T &obj)
+	inline void TracePacker::EndStruct (const T &obj)
 	{
-		STATIC_ASSERT( (std::is_class_v<T> or std::is_union_v<T>) and std::is_pod_v<T> );
+		STATIC_ASSERT( (IsClass<T> or IsUnion<T>) and IsPOD<T> );
+		ASSERT( _pointerStack.back().structDepth > 0 );
+
+		if ( --(_pointerStack.back().structDepth) > 0 )
+			return;
 
 		_Store( &obj, sizeof(obj), alignof(T) );
 	}

@@ -30,6 +30,89 @@ namespace VTC
 
 		CHECK( _bufferAnalyzer and _imageAnalyzer );
 	}
+	
+/*
+=================================================
+	PostProcess
+=================================================
+*/
+	void MemoryObjAnalyzer::PostProcess ()
+	{
+		CHECK( _DetectMemoryAliasing() );
+	}
+	
+/*
+=================================================
+	_DetectMemoryAliasing
+=================================================
+*/
+	bool MemoryObjAnalyzer::_DetectMemoryAliasing ()
+	{
+		const auto	FindAliasing = [this] (INOUT MemoryObjInfo_t &item, INOUT MemBinding &binding, VkDeviceSize actualSize,
+										   TraceRange::Bookmark firstPos, TraceRange::Bookmark lastPos) -> bool
+		{
+			for (auto& buf : item.bufferBindings)
+			{
+				if ( &buf == &binding )
+					continue;
+				
+				auto*	info = _bufferAnalyzer->GetBuffer( buf.id, buf.pos );
+				CHECK_ERR( info );
+				
+				if ( IsIntersects( buf.offset, (buf.offset + info->createInfo.size), binding.offset, (binding.offset + actualSize) ) and
+					 IsIntersects( firstPos, lastPos, info->FirstBookmark().pos, info->LastBookmark().pos ) )
+				{
+					binding.aliased	= true;
+					buf.aliased		= true;
+				}
+			}
+
+			for (auto& img : item.imageBindings)
+			{
+				if ( &img == &binding )
+					continue;
+
+				auto*	info = _imageAnalyzer->GetImage( img.id, img.pos );
+				CHECK_ERR( info );
+
+				if ( IsIntersects( img.offset, (img.offset + img.size), binding.offset, (binding.offset + actualSize) ) and
+					 IsIntersects( firstPos, lastPos, info->FirstBookmark().pos, info->LastBookmark().pos ) )
+				{
+					binding.aliased	= true;
+					img.aliased		= true;
+				}
+			}
+			return true;
+		};
+
+
+		for (auto& obj : _memObjects)
+		for (auto& item : obj.second)
+		{
+			for (auto& buf : item.bufferBindings)
+			{
+				if ( buf.aliased )
+					continue;
+
+				auto*	info = _bufferAnalyzer->GetBuffer( buf.id, buf.pos );
+				CHECK_ERR( info );
+
+				CHECK_ERR( FindAliasing( item, buf, info->createInfo.size, info->FirstBookmark().pos, info->LastBookmark().pos ));
+			}
+
+			for (auto& img : item.imageBindings)
+			{
+				if ( img.aliased )
+					continue;
+
+				auto*	info = _imageAnalyzer->GetImage( img.id, img.pos );
+				CHECK_ERR( info );
+
+				CHECK_ERR( FindAliasing( item, img, img.size, info->FirstBookmark().pos, info->LastBookmark().pos ));
+			}
+		}
+		return true;
+	}
 
 /*
 =================================================

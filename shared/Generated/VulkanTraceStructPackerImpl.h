@@ -12,6 +12,12 @@ void VPackStruct (const VkBaseInStructure *ptr, VPacker &packer)
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_COARSE_SAMPLE_ORDER_STATE_CREATE_INFO_NV : {
+			VkPipelineViewportCoarseSampleOrderStateCreateInfoNV const *  obj = BitCast<VkPipelineViewportCoarseSampleOrderStateCreateInfoNV const *>( ptr );
+			VPack_VkPipelineViewportCoarseSampleOrderStateCreateInfoNV( obj, packer );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_DOMAIN_ORIGIN_STATE_CREATE_INFO : {
 			VkPipelineTessellationDomainOriginStateCreateInfo const *  obj = BitCast<VkPipelineTessellationDomainOriginStateCreateInfo const *>( ptr );
 			VPack_VkPipelineTessellationDomainOriginStateCreateInfo( obj, packer );
@@ -528,6 +534,12 @@ void VPackStruct (const VkBaseInStructure *ptr, VPacker &packer)
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_EXCLUSIVE_SCISSOR_STATE_CREATE_INFO_NV : {
+			VkPipelineViewportExclusiveScissorStateCreateInfoNV const *  obj = BitCast<VkPipelineViewportExclusiveScissorStateCreateInfoNV const *>( ptr );
+			VPack_VkPipelineViewportExclusiveScissorStateCreateInfoNV( obj, packer );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_W_SCALING_STATE_CREATE_INFO_NV : {
 			VkPipelineViewportWScalingStateCreateInfoNV const *  obj = BitCast<VkPipelineViewportWScalingStateCreateInfoNV const *>( ptr );
 			VPack_VkPipelineViewportWScalingStateCreateInfoNV( obj, packer );
@@ -558,6 +570,12 @@ void VPackStruct (const VkBaseInStructure *ptr, VPacker &packer)
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SHADING_RATE_IMAGE_STATE_CREATE_INFO_NV : {
+			VkPipelineViewportShadingRateImageStateCreateInfoNV const *  obj = BitCast<VkPipelineViewportShadingRateImageStateCreateInfoNV const *>( ptr );
+			VPack_VkPipelineViewportShadingRateImageStateCreateInfoNV( obj, packer );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_INLINE_UNIFORM_BLOCK_CREATE_INFO_EXT : {
 			VkDescriptorPoolInlineUniformBlockCreateInfoEXT const *  obj = BitCast<VkDescriptorPoolInlineUniformBlockCreateInfoEXT const *>( ptr );
 			VPack_VkDescriptorPoolInlineUniformBlockCreateInfoEXT( obj, packer );
@@ -579,6 +597,12 @@ void VPackStruct (const VkBaseInStructure *ptr, VPacker &packer)
 		case VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_MODULATION_STATE_CREATE_INFO_NV : {
 			VkPipelineCoverageModulationStateCreateInfoNV const *  obj = BitCast<VkPipelineCoverageModulationStateCreateInfoNV const *>( ptr );
 			VPack_VkPipelineCoverageModulationStateCreateInfoNV( obj, packer );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PIPELINE_REPRESENTATIVE_FRAGMENT_TEST_STATE_CREATE_INFO_NV : {
+			VkPipelineRepresentativeFragmentTestStateCreateInfoNV const *  obj = BitCast<VkPipelineRepresentativeFragmentTestStateCreateInfoNV const *>( ptr );
+			VPack_VkPipelineRepresentativeFragmentTestStateCreateInfoNV( obj, packer );
 			break;
 		}
 
@@ -657,6 +681,7 @@ void VPackStruct (const VkBaseInStructure *ptr, VPacker &packer)
 		case VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_TEXTURE_LOD_GATHER_FORMAT_PROPERTIES_AMD : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CORNER_SAMPLED_IMAGE_FEATURES_NV : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO_NV : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO_NV : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_NV : ASSERT(false); break;
@@ -738,6 +763,20 @@ void VPackStruct (const VkBaseInStructure *ptr, VPacker &packer)
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_LAYOUT_SUPPORT_EXT : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_FEATURES_NV : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_PROPERTIES_NV : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_RAYTRACING_PIPELINE_CREATE_INFO_NVX : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NVX : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_GEOMETRY_INSTANCE_NVX : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_GEOMETRY_NVX : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NVX : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_GEOMETRY_AABB_NVX : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NVX : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_DESCRIPTOR_ACCELERATION_STRUCTURE_INFO_NVX : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NVX : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAYTRACING_PROPERTIES_NVX : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_HIT_SHADER_MODULE_CREATE_INFO_NVX : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_REPRESENTATIVE_FRAGMENT_TEST_FEATURES_NV : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_IMPORT_MEMORY_HOST_POINTER_INFO_EXT : ASSERT(false); break;
@@ -746,6 +785,12 @@ void VPackStruct (const VkBaseInStructure *ptr, VPacker &packer)
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_AMD : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_PROPERTIES_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMPUTE_SHADER_DERIVATIVES_FEATURES_NV : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_NV : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_FEATURES_NV : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_IMAGE_FOOTPRINT_FEATURES_NV : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXCLUSIVE_SCISSOR_FEATURES_NV : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_CHECKPOINT_DATA_NV : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_QUEUE_FAMILY_CHECKPOINT_PROPERTIES_NV : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES_KHR : ASSERT(false); break;
@@ -758,96 +803,123 @@ void VPackStruct (const VkBaseInStructure *ptr, VPacker &packer)
 void VPack_VkSemaphoreCreateInfo (const VkSemaphoreCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
+}
+
+
+void VPack_VkPipelineViewportCoarseSampleOrderStateCreateInfoNV (const VkPipelineViewportCoarseSampleOrderStateCreateInfoNV *obj, VPacker &packer)
+{
+	if ( obj == null ) return;
+	packer.BeginStruct();
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_COARSE_SAMPLE_ORDER_STATE_CREATE_INFO_NV );
+	packer.Push( obj->pNext );
+	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
+	packer.Pop( OUT obj->pNext );
+	packer.Push( obj->pCustomSampleOrders );
+	 for (uint i = 0; obj->pCustomSampleOrders and i < obj->customSampleOrderCount; ++i) {
+		VPack_VkCoarseSampleOrderCustomNV( obj->pCustomSampleOrders + i, packer );
+	 }
+	packer.Pop( OUT obj->pCustomSampleOrders );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDescriptorUpdateTemplateEntry (const VkDescriptorUpdateTemplateEntry *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineTessellationDomainOriginStateCreateInfo (const VkPipelineTessellationDomainOriginStateCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_DOMAIN_ORIGIN_STATE_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkBufferViewCreateInfo (const VkBufferViewCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
 	packer.RemapVkResource( INOUT &obj->buffer );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkMemoryBarrier (const VkMemoryBarrier *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_MEMORY_BARRIER );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineColorBlendAttachmentState (const VkPipelineColorBlendAttachmentState *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineInputAssemblyStateCreateInfo (const VkPipelineInputAssemblyStateCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkExtent3D (const VkExtent3D *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSparseBufferMemoryBindInfo (const VkSparseBufferMemoryBindInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	packer.RemapVkResource( INOUT &obj->buffer );
 	packer.Push( obj->pBinds );
 	 for (uint i = 0; obj->pBinds and i < obj->bindCount; ++i) {
 		VPack_VkSparseMemoryBind( obj->pBinds + i, packer );
 	 }
 	packer.Pop( OUT obj->pBinds );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkImageFormatListCreateInfoKHR (const VkImageFormatListCreateInfoKHR *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_IMAGE_FORMAT_LIST_CREATE_INFO_KHR );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -857,32 +929,35 @@ void VPack_VkImageFormatListCreateInfoKHR (const VkImageFormatListCreateInfoKHR 
 		packer << (obj->pViewFormats[i]);
 	 }
 	packer.Pop( OUT obj->pViewFormats );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkOffset2D (const VkOffset2D *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkMappedMemoryRange (const VkMappedMemoryRange *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
 	packer.RemapVkResource( INOUT &obj->memory );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSubmitInfo (const VkSubmitInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_SUBMIT_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -907,13 +982,14 @@ void VPack_VkSubmitInfo (const VkSubmitInfo *obj, VPacker &packer)
 		packer << (obj->pSignalSemaphores[i]);
 	 }
 	packer.Pop( OUT obj->pSignalSemaphores );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineDynamicStateCreateInfo (const VkPipelineDynamicStateCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -923,76 +999,91 @@ void VPack_VkPipelineDynamicStateCreateInfo (const VkPipelineDynamicStateCreateI
 		packer << (obj->pDynamicStates[i]);
 	 }
 	packer.Pop( OUT obj->pDynamicStates );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSparseMemoryBind (const VkSparseMemoryBind *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	packer.RemapVkResource( INOUT &obj->memory );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkImageViewCreateInfo (const VkImageViewCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
 	packer.RemapVkResource( INOUT &obj->image );
-	packer.AddStruct( *obj );
+	VPack_VkComponentMapping( &obj->components, packer );
+	VPack_VkImageSubresourceRange( &obj->subresourceRange, packer );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineTessellationStateCreateInfo (const VkPipelineTessellationStateCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkMemoryAllocateInfo (const VkMemoryAllocateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSpecializationMapEntry (const VkSpecializationMapEntry *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkComponentMapping (const VkComponentMapping *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkImageResolve (const VkImageResolve *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	VPack_VkImageSubresourceLayers( &obj->srcSubresource, packer );
+	VPack_VkOffset3D( &obj->srcOffset, packer );
+	VPack_VkImageSubresourceLayers( &obj->dstSubresource, packer );
+	VPack_VkOffset3D( &obj->dstOffset, packer );
+	VPack_VkExtent3D( &obj->extent, packer );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkBindSparseInfo (const VkBindSparseInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_BIND_SPARSE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1022,26 +1113,28 @@ void VPack_VkBindSparseInfo (const VkBindSparseInfo *obj, VPacker &packer)
 		packer << (obj->pSignalSemaphores[i]);
 	 }
 	packer.Pop( OUT obj->pSignalSemaphores );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSparseImageOpaqueMemoryBindInfo (const VkSparseImageOpaqueMemoryBindInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	packer.RemapVkResource( INOUT &obj->image );
 	packer.Push( obj->pBinds );
 	 for (uint i = 0; obj->pBinds and i < obj->bindCount; ++i) {
 		VPack_VkSparseMemoryBind( obj->pBinds + i, packer );
 	 }
 	packer.Pop( OUT obj->pBinds );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineViewportStateCreateInfo (const VkPipelineViewportStateCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1056,13 +1149,14 @@ void VPack_VkPipelineViewportStateCreateInfo (const VkPipelineViewportStateCreat
 		VPack_VkRect2D( obj->pScissors + i, packer );
 	 }
 	packer.Pop( OUT obj->pScissors );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineVertexInputStateCreateInfo (const VkPipelineVertexInputStateCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1077,99 +1171,112 @@ void VPack_VkPipelineVertexInputStateCreateInfo (const VkPipelineVertexInputStat
 		VPack_VkVertexInputAttributeDescription( obj->pVertexAttributeDescriptions + i, packer );
 	 }
 	packer.Pop( OUT obj->pVertexAttributeDescriptions );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkImageSubresource (const VkImageSubresource *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkOffset3D (const VkOffset3D *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSparseImageMemoryBind (const VkSparseImageMemoryBind *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
+	VPack_VkImageSubresource( &obj->subresource, packer );
+	VPack_VkOffset3D( &obj->offset, packer );
+	VPack_VkExtent3D( &obj->extent, packer );
 	packer.RemapVkResource( INOUT &obj->memory );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSparseImageMemoryBindInfo (const VkSparseImageMemoryBindInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	packer.RemapVkResource( INOUT &obj->image );
 	packer.Push( obj->pBinds );
 	 for (uint i = 0; obj->pBinds and i < obj->bindCount; ++i) {
 		VPack_VkSparseImageMemoryBind( obj->pBinds + i, packer );
 	 }
 	packer.Pop( OUT obj->pBinds );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkFenceCreateInfo (const VkFenceCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_FENCE_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkEventCreateInfo (const VkEventCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_EVENT_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkRenderPassBeginInfo (const VkRenderPassBeginInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
 	packer.RemapVkResource( INOUT &obj->renderPass );
 	packer.RemapVkResource( INOUT &obj->framebuffer );
+	VPack_VkRect2D( &obj->renderArea, packer );
 	packer.Push( obj->pClearValues );
 	 for (uint i = 0; obj->pClearValues and i < obj->clearValueCount; ++i) {
 		VPack_VkClearValue( obj->pClearValues + i, packer );
 	 }
 	packer.Pop( OUT obj->pClearValues );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkQueryPoolCreateInfo (const VkQueryPoolCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkBufferCreateInfo (const VkBufferCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1179,29 +1286,32 @@ void VPack_VkBufferCreateInfo (const VkBufferCreateInfo *obj, VPacker &packer)
 		packer << (obj->pQueueFamilyIndices[i]);
 	 }
 	packer.Pop( OUT obj->pQueueFamilyIndices );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkImageCreateInfo (const VkImageCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
+	VPack_VkExtent3D( &obj->extent, packer );
 	packer.Push( obj->pQueueFamilyIndices );
 	 for (uint i = 0; obj->pQueueFamilyIndices and i < obj->queueFamilyIndexCount; ++i) {
 		packer << (obj->pQueueFamilyIndices[i]);
 	 }
 	packer.Pop( OUT obj->pQueueFamilyIndices );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineMultisampleStateCreateInfo (const VkPipelineMultisampleStateCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1211,27 +1321,30 @@ void VPack_VkPipelineMultisampleStateCreateInfo (const VkPipelineMultisampleStat
 		packer << (obj->pSampleMask[i]);
 	 }
 	packer.Pop( OUT obj->pSampleMask );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkViewport (const VkViewport *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkImageSubresourceRange (const VkImageSubresourceRange *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkShaderModuleCreateInfo (const VkShaderModuleCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1241,13 +1354,14 @@ void VPack_VkShaderModuleCreateInfo (const VkShaderModuleCreateInfo *obj, VPacke
 		packer << (obj->pCode[i]);
 	 }
 	packer.Pop( OUT obj->pCode );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDescriptorSetLayoutBindingFlagsCreateInfoEXT (const VkDescriptorSetLayoutBindingFlagsCreateInfoEXT *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO_EXT );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1257,13 +1371,14 @@ void VPack_VkDescriptorSetLayoutBindingFlagsCreateInfoEXT (const VkDescriptorSet
 		packer << (obj->pBindingFlags[i]);
 	 }
 	packer.Pop( OUT obj->pBindingFlags );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineCacheCreateInfo (const VkPipelineCacheCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1271,13 +1386,14 @@ void VPack_VkPipelineCacheCreateInfo (const VkPipelineCacheCreateInfo *obj, VPac
 	packer.Push( obj->pInitialData );
 	 packer.AddArray( obj->pInitialData, obj->initialDataSize );
 	packer.Pop( OUT obj->pInitialData );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSpecializationInfo (const VkSpecializationInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	packer.Push( obj->pMapEntries );
 	 for (uint i = 0; obj->pMapEntries and i < obj->mapEntryCount; ++i) {
 		VPack_VkSpecializationMapEntry( obj->pMapEntries + i, packer );
@@ -1286,13 +1402,14 @@ void VPack_VkSpecializationInfo (const VkSpecializationInfo *obj, VPacker &packe
 	packer.Push( obj->pData );
 	 packer.AddArray( obj->pData, obj->dataSize );
 	packer.Pop( OUT obj->pData );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineShaderStageCreateInfo (const VkPipelineShaderStageCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1304,90 +1421,109 @@ void VPack_VkPipelineShaderStageCreateInfo (const VkPipelineShaderStageCreateInf
 	packer.Push( obj->pSpecializationInfo );
 	 VPack_VkSpecializationInfo( obj->pSpecializationInfo, packer );
 	packer.Pop( OUT obj->pSpecializationInfo );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkVertexInputBindingDescription (const VkVertexInputBindingDescription *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkImageCopy (const VkImageCopy *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	VPack_VkImageSubresourceLayers( &obj->srcSubresource, packer );
+	VPack_VkOffset3D( &obj->srcOffset, packer );
+	VPack_VkImageSubresourceLayers( &obj->dstSubresource, packer );
+	VPack_VkOffset3D( &obj->dstOffset, packer );
+	VPack_VkExtent3D( &obj->extent, packer );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkVertexInputAttributeDescription (const VkVertexInputAttributeDescription *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineRasterizationStateCreateInfo (const VkPipelineRasterizationStateCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkExtent2D (const VkExtent2D *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkRect2D (const VkRect2D *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	VPack_VkOffset2D( &obj->offset, packer );
+	VPack_VkExtent2D( &obj->extent, packer );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkStencilOpState (const VkStencilOpState *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineDepthStencilStateCreateInfo (const VkPipelineDepthStencilStateCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	VPack_VkStencilOpState( &obj->front, packer );
+	VPack_VkStencilOpState( &obj->back, packer );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkCommandBufferInheritanceInfo (const VkCommandBufferInheritanceInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
 	packer.RemapVkResource( INOUT &obj->renderPass );
 	packer.RemapVkResource( INOUT &obj->framebuffer );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineColorBlendStateCreateInfo (const VkPipelineColorBlendStateCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1397,13 +1533,14 @@ void VPack_VkPipelineColorBlendStateCreateInfo (const VkPipelineColorBlendStateC
 		VPack_VkPipelineColorBlendAttachmentState( obj->pAttachments + i, packer );
 	 }
 	packer.Pop( OUT obj->pAttachments );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkGraphicsPipelineCreateInfo (const VkGraphicsPipelineCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1443,45 +1580,50 @@ void VPack_VkGraphicsPipelineCreateInfo (const VkGraphicsPipelineCreateInfo *obj
 	packer.RemapVkResource( INOUT &obj->layout );
 	packer.RemapVkResource( INOUT &obj->renderPass );
 	packer.RemapVkResource( INOUT &obj->basePipelineHandle );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSamplerYcbcrConversionInfo (const VkSamplerYcbcrConversionInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
 	packer.RemapVkResource( INOUT &obj->conversion );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkComputePipelineCreateInfo (const VkComputePipelineCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
+	VPackStruct( BitCast<VkBaseInStructure const*>(&obj->stage), packer );
 	packer.RemapVkResource( INOUT &obj->layout );
 	packer.RemapVkResource( INOUT &obj->basePipelineHandle );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPushConstantRange (const VkPushConstantRange *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineLayoutCreateInfo (const VkPipelineLayoutCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1496,36 +1638,39 @@ void VPack_VkPipelineLayoutCreateInfo (const VkPipelineLayoutCreateInfo *obj, VP
 		VPack_VkPushConstantRange( obj->pPushConstantRanges + i, packer );
 	 }
 	packer.Pop( OUT obj->pPushConstantRanges );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSamplerCreateInfo (const VkSamplerCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDescriptorSetLayoutBinding (const VkDescriptorSetLayoutBinding *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	packer.Push( obj->pImmutableSamplers );
 	 for (uint i = 0; obj->pImmutableSamplers and i < obj->descriptorCount; ++i) {
 		packer << (obj->pImmutableSamplers[i]);
 	 }
 	packer.Pop( OUT obj->pImmutableSamplers );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDescriptorSetLayoutCreateInfo (const VkDescriptorSetLayoutCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1535,20 +1680,22 @@ void VPack_VkDescriptorSetLayoutCreateInfo (const VkDescriptorSetLayoutCreateInf
 		VPack_VkDescriptorSetLayoutBinding( obj->pBindings + i, packer );
 	 }
 	packer.Pop( OUT obj->pBindings );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDescriptorPoolSize (const VkDescriptorPoolSize *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDescriptorPoolCreateInfo (const VkDescriptorPoolCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1558,13 +1705,14 @@ void VPack_VkDescriptorPoolCreateInfo (const VkDescriptorPoolCreateInfo *obj, VP
 		VPack_VkDescriptorPoolSize( obj->pPoolSizes + i, packer );
 	 }
 	packer.Pop( OUT obj->pPoolSizes );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDescriptorSetAllocateInfo (const VkDescriptorSetAllocateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1575,37 +1723,43 @@ void VPack_VkDescriptorSetAllocateInfo (const VkDescriptorSetAllocateInfo *obj, 
 		packer << (obj->pSetLayouts[i]);
 	 }
 	packer.Pop( OUT obj->pSetLayouts );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkClearValue (const VkClearValue *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	VPack_VkClearColorValue( &obj->color, packer );
+	VPack_VkClearDepthStencilValue( &obj->depthStencil, packer );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDescriptorImageInfo (const VkDescriptorImageInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	packer.RemapVkResource( INOUT &obj->sampler );
 	packer.RemapVkResource( INOUT &obj->imageView );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDescriptorBufferInfo (const VkDescriptorBufferInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	packer.RemapVkResource( INOUT &obj->buffer );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkWriteDescriptorSet (const VkWriteDescriptorSet *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1626,26 +1780,28 @@ void VPack_VkWriteDescriptorSet (const VkWriteDescriptorSet *obj, VPacker &packe
 		packer << (obj->pTexelBufferView[i]);
 	 }
 	packer.Pop( OUT obj->pTexelBufferView );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkCopyDescriptorSet (const VkCopyDescriptorSet *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
 	packer.RemapVkResource( INOUT &obj->srcSet );
 	packer.RemapVkResource( INOUT &obj->dstSet );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkFramebufferCreateInfo (const VkFramebufferCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1656,27 +1812,30 @@ void VPack_VkFramebufferCreateInfo (const VkFramebufferCreateInfo *obj, VPacker 
 		packer << (obj->pAttachments[i]);
 	 }
 	packer.Pop( OUT obj->pAttachments );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkAttachmentDescription (const VkAttachmentDescription *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkAttachmentReference (const VkAttachmentReference *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSubpassDescription (const VkSubpassDescription *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	packer.Push( obj->pInputAttachments );
 	 for (uint i = 0; obj->pInputAttachments and i < obj->inputAttachmentCount; ++i) {
 		VPack_VkAttachmentReference( obj->pInputAttachments + i, packer );
@@ -1700,20 +1859,22 @@ void VPack_VkSubpassDescription (const VkSubpassDescription *obj, VPacker &packe
 		packer << (obj->pPreserveAttachments[i]);
 	 }
 	packer.Pop( OUT obj->pPreserveAttachments );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSubpassDependency (const VkSubpassDependency *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkRenderPassCreateInfo (const VkRenderPassCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1733,36 +1894,39 @@ void VPack_VkRenderPassCreateInfo (const VkRenderPassCreateInfo *obj, VPacker &p
 		VPack_VkSubpassDependency( obj->pDependencies + i, packer );
 	 }
 	packer.Pop( OUT obj->pDependencies );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkCommandPoolCreateInfo (const VkCommandPoolCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkCommandBufferAllocateInfo (const VkCommandBufferAllocateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
 	packer.RemapVkResource( INOUT &obj->commandPool );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkCommandBufferBeginInfo (const VkCommandBufferBeginInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1770,172 +1934,217 @@ void VPack_VkCommandBufferBeginInfo (const VkCommandBufferBeginInfo *obj, VPacke
 	packer.Push( obj->pInheritanceInfo );
 	 VPackStruct( BitCast<VkBaseInStructure const*>(obj->pInheritanceInfo), packer );
 	packer.Pop( OUT obj->pInheritanceInfo );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkBufferCopy (const VkBufferCopy *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkImageSubresourceLayers (const VkImageSubresourceLayers *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkImageBlit (const VkImageBlit *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	VPack_VkImageSubresourceLayers( &obj->srcSubresource, packer );
+	for (uint i = 0; obj->srcOffsets and i < CountOf(obj->srcOffsets); ++i) {
+		VPack_VkOffset3D( &obj->srcOffsets[i], packer );
+	}
+	VPack_VkImageSubresourceLayers( &obj->dstSubresource, packer );
+	for (uint i = 0; obj->dstOffsets and i < CountOf(obj->dstOffsets); ++i) {
+		VPack_VkOffset3D( &obj->dstOffsets[i], packer );
+	}
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkBufferImageCopy (const VkBufferImageCopy *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	VPack_VkImageSubresourceLayers( &obj->imageSubresource, packer );
+	VPack_VkOffset3D( &obj->imageOffset, packer );
+	VPack_VkExtent3D( &obj->imageExtent, packer );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkClearColorValue (const VkClearColorValue *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkClearDepthStencilValue (const VkClearDepthStencilValue *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkClearAttachment (const VkClearAttachment *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	VPack_VkClearValue( &obj->clearValue, packer );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkClearRect (const VkClearRect *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	VPack_VkRect2D( &obj->rect, packer );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkViewportSwizzleNV (const VkViewportSwizzleNV *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkBufferMemoryBarrier (const VkBufferMemoryBarrier *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
 	packer.RemapVkResource( INOUT &obj->buffer );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkImageMemoryBarrier (const VkImageMemoryBarrier *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
 	packer.RemapVkResource( INOUT &obj->image );
-	packer.AddStruct( *obj );
+	VPack_VkImageSubresourceRange( &obj->subresourceRange, packer );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineCoverageToColorStateCreateInfoNV (const VkPipelineCoverageToColorStateCreateInfoNV *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_TO_COLOR_STATE_CREATE_INFO_NV );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
+}
+
+
+void VPack_VkShadingRatePaletteNV (const VkShadingRatePaletteNV *obj, VPacker &packer)
+{
+	if ( obj == null ) return;
+	packer.BeginStruct();
+	packer.Push( obj->pShadingRatePaletteEntries );
+	 for (uint i = 0; obj->pShadingRatePaletteEntries and i < obj->shadingRatePaletteEntryCount; ++i) {
+		packer << (obj->pShadingRatePaletteEntries[i]);
+	 }
+	packer.Pop( OUT obj->pShadingRatePaletteEntries );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkBindBufferMemoryInfo (const VkBindBufferMemoryInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
 	packer.RemapVkResource( INOUT &obj->buffer );
 	packer.RemapVkResource( INOUT &obj->memory );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkBindImageMemoryInfo (const VkBindImageMemoryInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
 	packer.RemapVkResource( INOUT &obj->image );
 	packer.RemapVkResource( INOUT &obj->memory );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSubpassEndInfoKHR (const VkSubpassEndInfoKHR *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_SUBPASS_END_INFO_KHR );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkMemoryDedicatedAllocateInfo (const VkMemoryDedicatedAllocateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
 	packer.RemapVkResource( INOUT &obj->image );
 	packer.RemapVkResource( INOUT &obj->buffer );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkMemoryAllocateFlagsInfo (const VkMemoryAllocateFlagsInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDeviceGroupRenderPassBeginInfo (const VkDeviceGroupRenderPassBeginInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DEVICE_GROUP_RENDER_PASS_BEGIN_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1945,24 +2154,26 @@ void VPack_VkDeviceGroupRenderPassBeginInfo (const VkDeviceGroupRenderPassBeginI
 		VPack_VkRect2D( obj->pDeviceRenderAreas + i, packer );
 	 }
 	packer.Pop( OUT obj->pDeviceRenderAreas );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDeviceGroupCommandBufferBeginInfo (const VkDeviceGroupCommandBufferBeginInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DEVICE_GROUP_COMMAND_BUFFER_BEGIN_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDeviceGroupSubmitInfo (const VkDeviceGroupSubmitInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DEVICE_GROUP_SUBMIT_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -1982,24 +2193,26 @@ void VPack_VkDeviceGroupSubmitInfo (const VkDeviceGroupSubmitInfo *obj, VPacker 
 		packer << (obj->pSignalSemaphoreDeviceIndices[i]);
 	 }
 	packer.Pop( OUT obj->pSignalSemaphoreDeviceIndices );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDeviceGroupBindSparseInfo (const VkDeviceGroupBindSparseInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DEVICE_GROUP_BIND_SPARSE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkBindBufferMemoryDeviceGroupInfo (const VkBindBufferMemoryDeviceGroupInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_DEVICE_GROUP_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -2009,13 +2222,14 @@ void VPack_VkBindBufferMemoryDeviceGroupInfo (const VkBindBufferMemoryDeviceGrou
 		packer << (obj->pDeviceIndices[i]);
 	 }
 	packer.Pop( OUT obj->pDeviceIndices );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkBindImageMemoryDeviceGroupInfo (const VkBindImageMemoryDeviceGroupInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_DEVICE_GROUP_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -2030,42 +2244,46 @@ void VPack_VkBindImageMemoryDeviceGroupInfo (const VkBindImageMemoryDeviceGroupI
 		VPack_VkRect2D( obj->pSplitInstanceBindRegions + i, packer );
 	 }
 	packer.Pop( OUT obj->pSplitInstanceBindRegions );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSamplerReductionModeCreateInfoEXT (const VkSamplerReductionModeCreateInfoEXT *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_SAMPLER_REDUCTION_MODE_CREATE_INFO_EXT );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkAttachmentReference2KHR (const VkAttachmentReference2KHR *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_ATTACHMENT_REFERENCE_2_KHR );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkInputAttachmentAspectReference (const VkInputAttachmentAspectReference *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkRenderPassInputAttachmentAspectCreateInfo (const VkRenderPassInputAttachmentAspectCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_RENDER_PASS_INPUT_ATTACHMENT_ASPECT_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -2075,24 +2293,26 @@ void VPack_VkRenderPassInputAttachmentAspectCreateInfo (const VkRenderPassInputA
 		VPack_VkInputAttachmentAspectReference( obj->pAspectReferences + i, packer );
 	 }
 	packer.Pop( OUT obj->pAspectReferences );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkImageViewUsageCreateInfo (const VkImageViewUsageCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_IMAGE_VIEW_USAGE_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkRenderPassMultiviewCreateInfo (const VkRenderPassMultiviewCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_RENDER_PASS_MULTIVIEW_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -2112,13 +2332,14 @@ void VPack_VkRenderPassMultiviewCreateInfo (const VkRenderPassMultiviewCreateInf
 		packer << (obj->pCorrelationMasks[i]);
 	 }
 	packer.Pop( OUT obj->pCorrelationMasks );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkRenderPassSampleLocationsBeginInfoEXT (const VkRenderPassSampleLocationsBeginInfoEXT *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_RENDER_PASS_SAMPLE_LOCATIONS_BEGIN_INFO_EXT );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -2133,57 +2354,63 @@ void VPack_VkRenderPassSampleLocationsBeginInfoEXT (const VkRenderPassSampleLoca
 		VPack_VkSubpassSampleLocationsEXT( obj->pPostSubpassSampleLocations + i, packer );
 	 }
 	packer.Pop( OUT obj->pPostSubpassSampleLocations );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDeviceQueueInfo2 (const VkDeviceQueueInfo2 *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DEVICE_QUEUE_INFO_2 );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkProtectedSubmitInfo (const VkProtectedSubmitInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PROTECTED_SUBMIT_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSamplerYcbcrConversionCreateInfo (const VkSamplerYcbcrConversionCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	VPack_VkComponentMapping( &obj->components, packer );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkBindImagePlaneMemoryInfo (const VkBindImagePlaneMemoryInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_BIND_IMAGE_PLANE_MEMORY_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDescriptorUpdateTemplateCreateInfo (const VkDescriptorUpdateTemplateCreateInfo *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_CREATE_INFO );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -2195,73 +2422,89 @@ void VPack_VkDescriptorUpdateTemplateCreateInfo (const VkDescriptorUpdateTemplat
 	packer.Pop( OUT obj->pDescriptorUpdateEntries );
 	packer.RemapVkResource( INOUT &obj->descriptorSetLayout );
 	packer.RemapVkResource( INOUT &obj->pipelineLayout );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
+}
+
+
+void VPack_VkCoarseSampleLocationNV (const VkCoarseSampleLocationNV *obj, VPacker &packer)
+{
+	if ( obj == null ) return;
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkImageSwapchainCreateInfoKHR (const VkImageSwapchainCreateInfoKHR *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_IMAGE_SWAPCHAIN_CREATE_INFO_KHR );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
 	packer.RemapVkResource( INOUT &obj->swapchain );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkBindImageMemorySwapchainInfoKHR (const VkBindImageMemorySwapchainInfoKHR *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_SWAPCHAIN_INFO_KHR );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
 	packer.RemapVkResource( INOUT &obj->swapchain );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkVertexInputBindingDivisorDescriptionEXT (const VkVertexInputBindingDivisorDescriptionEXT *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSubpassSampleLocationsEXT (const VkSubpassSampleLocationsEXT *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	VPackStruct( BitCast<VkBaseInStructure const*>(&obj->sampleLocationsInfo), packer );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineColorBlendAdvancedStateCreateInfoEXT (const VkPipelineColorBlendAdvancedStateCreateInfoEXT *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_ADVANCED_STATE_CREATE_INFO_EXT );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkAttachmentDescription2KHR (const VkAttachmentDescription2KHR *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_ATTACHMENT_DESCRIPTION_2_KHR );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSubpassDescription2KHR (const VkSubpassDescription2KHR *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_SUBPASS_DESCRIPTION_2_KHR );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -2289,24 +2532,26 @@ void VPack_VkSubpassDescription2KHR (const VkSubpassDescription2KHR *obj, VPacke
 		packer << (obj->pPreserveAttachments[i]);
 	 }
 	packer.Pop( OUT obj->pPreserveAttachments );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSubpassDependency2KHR (const VkSubpassDependency2KHR *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_SUBPASS_DEPENDENCY_2_KHR );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkRenderPassCreateInfo2KHR (const VkRenderPassCreateInfo2KHR *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO_2_KHR );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -2331,24 +2576,26 @@ void VPack_VkRenderPassCreateInfo2KHR (const VkRenderPassCreateInfo2KHR *obj, VP
 		packer << (obj->pCorrelatedViewMasks[i]);
 	 }
 	packer.Pop( OUT obj->pCorrelatedViewMasks );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSubpassBeginInfoKHR (const VkSubpassBeginInfoKHR *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_SUBPASS_BEGIN_INFO_KHR );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDescriptorSetVariableDescriptorCountAllocateInfoEXT (const VkDescriptorSetVariableDescriptorCountAllocateInfoEXT *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO_EXT );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -2358,24 +2605,26 @@ void VPack_VkDescriptorSetVariableDescriptorCountAllocateInfoEXT (const VkDescri
 		packer << (obj->pDescriptorCounts[i]);
 	 }
 	packer.Pop( OUT obj->pDescriptorCounts );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineRasterizationStateRasterizationOrderAMD (const VkPipelineRasterizationStateRasterizationOrderAMD *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDebugMarkerObjectNameInfoEXT (const VkDebugMarkerObjectNameInfoEXT *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -2383,13 +2632,14 @@ void VPack_VkDebugMarkerObjectNameInfoEXT (const VkDebugMarkerObjectNameInfoEXT 
 	packer.Push( obj->pObjectName );
 	 packer.AddString( obj->pObjectName );
 	packer.Pop( OUT obj->pObjectName );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDebugMarkerMarkerInfoEXT (const VkDebugMarkerMarkerInfoEXT *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -2397,77 +2647,114 @@ void VPack_VkDebugMarkerMarkerInfoEXT (const VkDebugMarkerMarkerInfoEXT *obj, VP
 	packer.Push( obj->pMarkerName );
 	 packer.AddString( obj->pMarkerName );
 	packer.Pop( OUT obj->pMarkerName );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDedicatedAllocationImageCreateInfoNV (const VkDedicatedAllocationImageCreateInfoNV *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_IMAGE_CREATE_INFO_NV );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDedicatedAllocationBufferCreateInfoNV (const VkDedicatedAllocationBufferCreateInfoNV *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_BUFFER_CREATE_INFO_NV );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDedicatedAllocationMemoryAllocateInfoNV (const VkDedicatedAllocationMemoryAllocateInfoNV *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
 	packer.RemapVkResource( INOUT &obj->image );
 	packer.RemapVkResource( INOUT &obj->buffer );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
+}
+
+
+void VPack_VkCoarseSampleOrderCustomNV (const VkCoarseSampleOrderCustomNV *obj, VPacker &packer)
+{
+	if ( obj == null ) return;
+	packer.BeginStruct();
+	packer.Push( obj->pSampleLocations );
+	 for (uint i = 0; obj->pSampleLocations and i < obj->sampleLocationCount; ++i) {
+		VPack_VkCoarseSampleLocationNV( obj->pSampleLocations + i, packer );
+	 }
+	packer.Pop( OUT obj->pSampleLocations );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkImageViewASTCDecodeModeEXT (const VkImageViewASTCDecodeModeEXT *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_IMAGE_VIEW_ASTC_DECODE_MODE_EXT );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkCommandBufferInheritanceConditionalRenderingInfoEXT (const VkCommandBufferInheritanceConditionalRenderingInfoEXT *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_CONDITIONAL_RENDERING_INFO_EXT );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkViewportWScalingNV (const VkViewportWScalingNV *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
+}
+
+
+void VPack_VkPipelineViewportExclusiveScissorStateCreateInfoNV (const VkPipelineViewportExclusiveScissorStateCreateInfoNV *obj, VPacker &packer)
+{
+	if ( obj == null ) return;
+	packer.BeginStruct();
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_EXCLUSIVE_SCISSOR_STATE_CREATE_INFO_NV );
+	packer.Push( obj->pNext );
+	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
+	packer.Pop( OUT obj->pNext );
+	packer.Push( obj->pExclusiveScissors );
+	 for (uint i = 0; obj->pExclusiveScissors and i < obj->exclusiveScissorCount; ++i) {
+		VPack_VkRect2D( obj->pExclusiveScissors + i, packer );
+	 }
+	packer.Pop( OUT obj->pExclusiveScissors );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineViewportWScalingStateCreateInfoNV (const VkPipelineViewportWScalingStateCreateInfoNV *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_W_SCALING_STATE_CREATE_INFO_NV );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -2477,13 +2764,14 @@ void VPack_VkPipelineViewportWScalingStateCreateInfoNV (const VkPipelineViewport
 		VPack_VkViewportWScalingNV( obj->pViewportWScalings + i, packer );
 	 }
 	packer.Pop( OUT obj->pViewportWScalings );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineViewportSwizzleStateCreateInfoNV (const VkPipelineViewportSwizzleStateCreateInfoNV *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SWIZZLE_STATE_CREATE_INFO_NV );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -2493,13 +2781,14 @@ void VPack_VkPipelineViewportSwizzleStateCreateInfoNV (const VkPipelineViewportS
 		VPack_VkViewportSwizzleNV( obj->pViewportSwizzles + i, packer );
 	 }
 	packer.Pop( OUT obj->pViewportSwizzles );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineDiscardRectangleStateCreateInfoEXT (const VkPipelineDiscardRectangleStateCreateInfoEXT *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_DISCARD_RECTANGLE_STATE_CREATE_INFO_EXT );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -2509,24 +2798,26 @@ void VPack_VkPipelineDiscardRectangleStateCreateInfoEXT (const VkPipelineDiscard
 		VPack_VkRect2D( obj->pDiscardRectangles + i, packer );
 	 }
 	packer.Pop( OUT obj->pDiscardRectangles );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineRasterizationConservativeStateCreateInfoEXT (const VkPipelineRasterizationConservativeStateCreateInfoEXT *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_CONSERVATIVE_STATE_CREATE_INFO_EXT );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkWriteDescriptorSetInlineUniformBlockEXT (const VkWriteDescriptorSetInlineUniformBlockEXT *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_INLINE_UNIFORM_BLOCK_EXT );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -2534,65 +2825,89 @@ void VPack_VkWriteDescriptorSetInlineUniformBlockEXT (const VkWriteDescriptorSet
 	packer.Push( obj->pData );
 	 packer.AddArray( obj->pData, obj->dataSize );
 	packer.Pop( OUT obj->pData );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
+}
+
+
+void VPack_VkPipelineViewportShadingRateImageStateCreateInfoNV (const VkPipelineViewportShadingRateImageStateCreateInfoNV *obj, VPacker &packer)
+{
+	if ( obj == null ) return;
+	packer.BeginStruct();
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SHADING_RATE_IMAGE_STATE_CREATE_INFO_NV );
+	packer.Push( obj->pNext );
+	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
+	packer.Pop( OUT obj->pNext );
+	packer.Push( obj->pShadingRatePalettes );
+	 VPack_VkShadingRatePaletteNV( obj->pShadingRatePalettes, packer );
+	packer.Pop( OUT obj->pShadingRatePalettes );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkDescriptorPoolInlineUniformBlockCreateInfoEXT (const VkDescriptorPoolInlineUniformBlockCreateInfoEXT *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_INLINE_UNIFORM_BLOCK_CREATE_INFO_EXT );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSampleLocationEXT (const VkSampleLocationEXT *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkSampleLocationsInfoEXT (const VkSampleLocationsInfoEXT *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_SAMPLE_LOCATIONS_INFO_EXT );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
+	VPack_VkExtent2D( &obj->sampleLocationGridSize, packer );
 	packer.Push( obj->pSampleLocations );
 	 for (uint i = 0; obj->pSampleLocations and i < obj->sampleLocationsCount; ++i) {
 		VPack_VkSampleLocationEXT( obj->pSampleLocations + i, packer );
 	 }
 	packer.Pop( OUT obj->pSampleLocations );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkAttachmentSampleLocationsEXT (const VkAttachmentSampleLocationsEXT *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
-	packer.AddStruct( *obj );
+	packer.BeginStruct();
+	VPackStruct( BitCast<VkBaseInStructure const*>(&obj->sampleLocationsInfo), packer );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineSampleLocationsStateCreateInfoEXT (const VkPipelineSampleLocationsStateCreateInfoEXT *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_SAMPLE_LOCATIONS_STATE_CREATE_INFO_EXT );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.AddStruct( *obj );
+	VPackStruct( BitCast<VkBaseInStructure const*>(&obj->sampleLocationsInfo), packer );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineCoverageModulationStateCreateInfoNV (const VkPipelineCoverageModulationStateCreateInfoNV *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_MODULATION_STATE_CREATE_INFO_NV );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -2602,13 +2917,26 @@ void VPack_VkPipelineCoverageModulationStateCreateInfoNV (const VkPipelineCovera
 		packer << (obj->pCoverageModulationTable[i]);
 	 }
 	packer.Pop( OUT obj->pCoverageModulationTable );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
+}
+
+
+void VPack_VkPipelineRepresentativeFragmentTestStateCreateInfoNV (const VkPipelineRepresentativeFragmentTestStateCreateInfoNV *obj, VPacker &packer)
+{
+	if ( obj == null ) return;
+	packer.BeginStruct();
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_REPRESENTATIVE_FRAGMENT_TEST_STATE_CREATE_INFO_NV );
+	packer.Push( obj->pNext );
+	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
+	packer.Pop( OUT obj->pNext );
+	packer.EndStruct( *obj );
 }
 
 
 void VPack_VkPipelineVertexInputDivisorStateCreateInfoEXT (const VkPipelineVertexInputDivisorStateCreateInfoEXT *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
+	packer.BeginStruct();
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_DIVISOR_STATE_CREATE_INFO_EXT );
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
@@ -2618,7 +2946,7 @@ void VPack_VkPipelineVertexInputDivisorStateCreateInfoEXT (const VkPipelineVerte
 		VPack_VkVertexInputBindingDivisorDescriptionEXT( obj->pVertexBindingDivisors + i, packer );
 	 }
 	packer.Pop( OUT obj->pVertexBindingDivisors );
-	packer.AddStruct( *obj );
+	packer.EndStruct( *obj );
 }
 
 

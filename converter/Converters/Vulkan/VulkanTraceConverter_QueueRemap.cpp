@@ -37,20 +37,20 @@ namespace VTC
 	
 /*
 =================================================
-	_OnCmdWaitEvents
+	_OnWaitEvents3
 =================================================
 */
-	bool VulkanTraceConverter::_OnCmdWaitEvents (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_OnWaitEvents3 (const TraceRange::Iterator &pos) const
 	{
 		return false;
 	}
 	
 /*
 =================================================
-	_OnCmdPipelineBarrier
+	_OnPipelineBarrier3
 =================================================
 */
-	bool VulkanTraceConverter::_OnCmdPipelineBarrier (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_OnPipelineBarrier3 (const TraceRange::Iterator &pos) const
 	{
 		return false;
 	}

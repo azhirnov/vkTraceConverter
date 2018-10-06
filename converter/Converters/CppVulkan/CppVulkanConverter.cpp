@@ -130,6 +130,9 @@ namespace VTC
 
 		for (auto iter = trace.begin(); iter < trace.LastBookmark(); ++iter)
 		{
+			if ( not AppTrace::CheckPacketErrors( iter ) )
+				continue;
+
 			CHECK_ERR( _ConvertFunction( iter, frameIndex, INOUT src ));
 		}
 		
@@ -181,6 +184,9 @@ namespace VTC
 		for (auto iter = trace.begin(); iter < trace.LastBookmark(); ++iter)
 		{
 			PerThread &		thread	= per_thread_source[ iter->thread_id ];
+
+			if ( not AppTrace::CheckPacketErrors( iter ) )
+				continue;
 
 			// check if it is begiging of new pass
 			switch ( iter->packet_id )
@@ -687,7 +693,7 @@ namespace VTC
 */
 	bool CppVulkanConverter::_StoreFile (const fs::path &filename, StringView data) const
 	{
-		HddWFile	file{ filename };
+		FileWStream		file{ filename };
 		CHECK_ERR( file.IsOpen() );
 		CHECK_ERR( file.Write( data ));
 		return true;

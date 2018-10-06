@@ -55,6 +55,7 @@ namespace VTC
 		// initialization
 		{
 			_appTrace		= &appTrace;
+			_dataCounter	= 0;
 
 			// request analyzers
 			_swapchainAnalyzer		= appTrace.GetAnalyzer< SwapchainAnalyzer >();
@@ -87,6 +88,9 @@ namespace VTC
 
 			if ( curr_frame >= last_frame )
 				break;
+
+			if ( not appTrace.CheckPacketErrors( iter ) )
+				continue;
 			
 			CHECK_ERR( _ConvertFunction( iter, curr_frame ));
 		}
@@ -126,6 +130,9 @@ namespace VTC
 */
 	bool VulkanTraceConverter::_PackVulkanCreateInfo (INOUT TracePacker &packer) const
 	{
+		using ESwapchainType	= VulkanCreateInfo::ESwapchainType;
+		using EImplFlags		= VulkanCreateInfo::EImplFlags;
+
 		VulkanCreateInfo		ci	= {};
 		TraceRange::Bookmark	pos;
 		const uint64_t			sw_count = _resourcesBookmarks->GetUniqueResourceCountByType( VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT );
@@ -191,14 +198,20 @@ namespace VTC
 		ci.queueFamilies			= queue_flags.data();
 		ci.queuePriorities			= queue_priorities.data();
 
-		ci.swapchainType			= 0;
+		ci.implementationFlags		= EImplFlags::None;
+		if ( _config.remapMemory )				ci.implementationFlags |= EImplFlags::OverrideMemoryAllocation;
+		if ( _config.remapQueueFamily )			ci.implementationFlags |= EImplFlags::RemapQueueFamilies;
+		if ( _config.indirectSwapchain )		ci.implementationFlags |= EImplFlags::IndirectSwapchain;
+		if ( _config.useUniqueResourceIndices )	ci.implementationFlags |= EImplFlags::UniqueResourceIndices;
+
+		ci.swapchainType			= ESwapchainType::WithoutSwapchain;
 
 		if ( swapchain )
 		{
 			pos = std::max( pos, swapchain->FirstBookmark().pos );
 
 			ci.swapchainID				= VkSwapchainKHR(swapchain->id);
-			ci.swapchainType			= 1;
+			ci.swapchainType			= ESwapchainType::DefaultSwapchain;
 			ci.swapchainImageWidth		= swapchain->createInfo.imageExtent.width;
 			ci.swapchainImageHeight		= swapchain->createInfo.imageExtent.height;
 			ci.swapchainColorFormat		= swapchain->createInfo.imageFormat;
@@ -209,11 +222,26 @@ namespace VTC
 			ci.swapchainPresentMode		= swapchain->createInfo.presentMode;
 			ci.swapchainCompositeAlpha	= swapchain->createInfo.compositeAlpha;
 			ci.swapchainColorImageUsage	= 0;
+			ci.swapchainImageLayout		= VK_IMAGE_LAYOUT_UNDEFINED;
 
 			for (auto& img : swapchain->images)
 			{
 				auto*	img_info = _imageAnalyzer->GetImage( img.id, img.pos );
 				CHECK_ERR( img_info );
+
+				if ( ci.swapchainImageLayout == VK_IMAGE_LAYOUT_UNDEFINED )
+				{
+					if ( img_info->layouts.find( VK_IMAGE_LAYOUT_PRESENT_SRC_KHR ) != img_info->layouts.end() )
+						ci.swapchainImageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+					
+					// not supported, yet
+					//if ( img_info->layouts.find( VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR ) != img_info->layouts.end() )
+					//	ci.swapchainImageLayout = VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR;
+
+					CHECK_ERR( ci.swapchainImageLayout != VK_IMAGE_LAYOUT_UNDEFINED );
+				}
+				else
+					CHECK_ERR( img_info->layouts.find( ci.swapchainImageLayout ) != img_info->layouts.end() );
 
 				ci.swapchainColorImageUsage |= img_info->usage;
 
@@ -228,6 +256,7 @@ namespace VTC
 		
 		packer.SetCurrentPos( pos );
 		packer.Begin( EPacketID::VCreateDevice );
+		packer.BeginStruct();
 		
 		// instanceExtensions
 		packer.Push( ci.instanceExtensions );
@@ -279,7 +308,7 @@ namespace VTC
 		packer.Pop( OUT ci.swapchainImageIDs );
 		packer.RemapVkResource( INOUT &ci.swapchainID );
 
-		packer.AddStruct( ci );
+		packer.EndStruct( ci );
 		packer.End( EPacketID::VCreateDevice );
 
 		return true;
@@ -304,16 +333,19 @@ namespace VTC
 */
 	bool VulkanTraceConverter::_AfterConverting ()
 	{
-		const auto	fname	= fs::path{_directory}.append( _fileName + ".vt" );
-		HddWFile	file	{ fname };
+		const auto		fname	= fs::path{_directory}.append( _fileName + ".bin" );
+		FileWStream		file	{ fname };
 		CHECK_ERR( file.IsOpen() );
 
 		// header
 		{
-			TraceFileHeader		header = {};
-			header.magic			= TraceFileHeader::MagicNumber;
-			header.instructionSet	= uint(EPacketID::_VulkanApi | EPacketID::_V100);
-			header.pointerSize		= sizeof(void*);
+			TraceFileHeader		header		= {};
+			header.magic					= TraceFileHeader::MagicNumber;
+			header.instructionSet			= uint(EPacketID::_VulkanApi | EPacketID::_V100);
+			header.pointerSize				= sizeof(void*);
+			header.archiveType				= TraceFileHeader::EArchiveType::None;	// TODO
+			header.instructionBlockOffset	= sizeof(header);
+			header.dataBlockOffset			= ~0ull;
 
 			CHECK_ERR( file.Write( header ));
 		}
@@ -321,12 +353,13 @@ namespace VTC
 		// pack part 1
 		{
 			TracePacker		packer{ _resourcesBookmarks, _config.useUniqueResourceIndices };
-		
-			_InitializeResources( INOUT packer );
-			_PackVulkanCreateInfo( INOUT packer );
-			_SetSourceFPS( INOUT packer );
 
 			CHECK_ERR( _PackData( INOUT packer ));
+			
+			_SetSourceFPS( INOUT packer );
+			_InitializeResources( INOUT packer );
+			_PackVulkanCreateInfo( INOUT packer );
+
 			CHECK_ERR( file.Write( packer.GetData() ));
 		}
 
@@ -352,22 +385,40 @@ namespace VTC
 		const uint	height		= swapchain ? swapchain->createInfo.imageExtent.height : 600;
 
 		String	str;
-		str << "#include <Windows.h>\n"
+		str << "#ifdef _WIN32\n"
+			<< "#	include <Windows.h>\n"
+			<< "#else\n"
+			<< "#	include <dlfcn.h>\n"
+			<< "#	include <linux/limits.h>\n"
+			<< "#endif\n"
 			<< "#include <VPPlayer.h>\n"
 			<< "using namespace VTPlayer;\n\n"
 
 			<< "int main ()\n{\n"
+			<< "# ifdef _WIN32\n"
 			<< "	HMODULE module = LoadLibraryA( \"VTPlayer.dll\" );\n"
 			<< "	if ( module == nullptr )\n"
 			<< "		return -1;\n\n"
-			<< "	PFN_CreateVTPlayer	CreateVTPlayer	= reinterpret_cast<PFN_CreateVTPlayer>(GetProcAddress( module, \"CreateVTPlayer\" ));\n"
-			<< "	PFN_DestroyVTPlayer	DestroyVTPlayer = reinterpret_cast<PFN_DestroyVTPlayer>(GetProcAddress( module, \"DestroyVTPlayer\" ));\n"
+			<< "	PFN_CreatePlayer	CreatePlayer	= reinterpret_cast<PFN_CreatePlayer>(GetProcAddress( module, \"CreatePlayer\" ));\n"
+			<< "	PFN_DestroyPlayer	DestroyPlayer	= reinterpret_cast<PFN_DestroyPlayer>(GetProcAddress( module, \"DestroyPlayer\" ));\n"
 			<< "	PFN_PlayerStart		PlayerStart		= reinterpret_cast<PFN_PlayerStart>(GetProcAddress( module, \"PlayerStart\" ));\n"
-			<< "	PFN_PlayerPause		PlayerPause		= reinterpret_cast<PFN_PlayerPause>(GetProcAddress( module, \"PlayerPause\" ));\n\n"
-			<< "	if ( !CreateVTPlayer || !DestroyVTPlayer || !PlayerStart || !PlayerPause )\n"
+			<< "	PFN_PlayerPause		PlayerPause		= reinterpret_cast<PFN_PlayerPause>(GetProcAddress( module, \"PlayerPause\" ));\n"
+			<< "	PFN_PlayerIsActive	PlayerIsActive	= reinterpret_cast<PFN_PlayerIsActive>(GetProcAddress( module, \"PlayerIsActive\" ));\n"
+			<< "# else\n"
+			<< "	void* module = dlopen( \"VTPlayer.so\", RTLD_NOW | RTLD_LOCAL );\n"
+			<< "	if ( module == nullptr )\n"
+			<< "		return -1;\n\n"
+			<< "	PFN_CreatePlayer	CreatePlayer	= reinterpret_cast<PFN_CreatePlayer>(dlsym( module, \"CreatePlayer\" ));\n"
+			<< "	PFN_DestroyPlayer	DestroyPlayer	= reinterpret_cast<PFN_DestroyPlayer>(dlsym( module, \"DestroyPlayer\" ));\n"
+			<< "	PFN_PlayerStart		PlayerStart		= reinterpret_cast<PFN_PlayerStart>(dlsym( module, \"PlayerStart\" ));\n"
+			<< "	PFN_PlayerPause		PlayerPause		= reinterpret_cast<PFN_PlayerPause>(dlsym( module, \"PlayerPause\" ));\n"
+			<< "	PFN_PlayerIsActive	PlayerIsActive	= reinterpret_cast<PFN_PlayerIsActive>(dlsym( module, \"PlayerIsActive\" ));\n"
+			<< "# endif\n\n"
+
+			<< "	if ( !CreatePlayer || !DestroyPlayer || !PlayerStart || !PlayerPause || !PlayerIsActive )\n"
 			<< "		return -2;\n\n"
 
-			<< "	VTPlayerInstance	instance = nullptr;\n"
+			<< "	VTPlayerInstance	player1  = nullptr;\n"
 			<< "	VTPlayerSettings	settings = {};\n"
 			<< "	settings.structSize			= sizeof(settings);\n"
 			<< "	settings.playerVersion		= VTPLAYER_VERSION_LATEST;\n"
@@ -383,18 +434,23 @@ namespace VTC
 			<< "	settings.windowResizable	= 1;\n"
 			<< "	settings.preferredGPUName	= nullptr;\n\n"
 
-			<< "	if ( !CreateVTPlayer( &settings, OUT &instance ) )\n"
+			<< "	if ( !CreatePlayer( &settings, OUT &player1 ) )\n"
 			<< "		return -3;\n\n"
-			<< "	if ( !PlayerStart( instance ) )\n"
+			<< "	if ( !PlayerStart( player1 ) )\n"
 			<< "		return -4;\n\n"
-			<< "	for (;;) {\n"
-			<< "	}\n\n"
-			<< "	DestroyVTPlayer( instance );\n"
+			<< "	while ( PlayerIsActive( player1 ) )\n\t{\n"
+			<< "		Sleep( 1 );\n\t};\n\n"
+
+			<< "	DestroyPlayer( player1 );\n"
+			<< "# ifdef _WIN32\n"
 			<< "	FreeLibrary( module );\n"
+			<< "# else\n"
+			<< "	dlclose( module );\n"
+			<< "# endif\n"
 			<< "	return 0;\n"
 			<< "}\n";
 
-		HddWFile	file{ fs::path{_directory}.append( "main.cpp" ) };
+		FileWStream		file{ fs::path{_directory}.append( "main.cpp" ) };
 		CHECK_ERR( file.IsOpen() );
 		CHECK_ERR( file.Write( StringView(str) ));
 
@@ -413,7 +469,7 @@ namespace VTC
 			<< "project( \"" << _fileName << "\" LANGUAGES C CXX )\n\n"
 			<< "add_executable( \"" << _fileName << "\" \"main.cpp\" )\n\n";
 		
-		HddWFile	file{ fs::path{_directory}.append( "CMakeLists.txt" ) };
+		FileWStream		file{ fs::path{_directory}.append( "CMakeLists.txt" ) };
 		CHECK_ERR( file.IsOpen() );
 		CHECK_ERR( file.Write( StringView(str) ));
 
@@ -427,6 +483,8 @@ namespace VTC
 */
 	bool VulkanTraceConverter::_PackData (INOUT TracePacker &packer) const
 	{
+		uint64_t	total_size = 0;
+
 		for (auto& data : _dataAccess)
 		{
 			packer.Begin( EPacketID::SetData );
@@ -436,7 +494,11 @@ namespace VTC
 			packer << data.second.min;
 			packer << data.second.max;
 			packer.End( EPacketID::SetData );
+
+			total_size += data.first.size;
 		}
+
+		FG_LOGI( "total data size: "s << ToString(BytesU(total_size)) );
 		return true;
 	}
 
@@ -470,8 +532,6 @@ namespace VTC
 			/*case VKTRACE_TPI_VK_vkCreateCommandPool :				CHECK_ERR( _OnCreateCommandPool( iter, INOUT *_tracePacker ));			break;
 			case VKTRACE_TPI_VK_vkCreateBuffer :					CHECK_ERR( _OnCreateBuffer( iter, INOUT *_tracePacker ));				break;
 			case VKTRACE_TPI_VK_vkCreateImage :						CHECK_ERR( _OnCreateImage( iter, INOUT *_tracePacker ));				break;
-			case VKTRACE_TPI_VK_vkCmdWaitEvents :					CHECK_ERR( _OnCmdWaitEvents( iter, INOUT *_tracePacker ));				break;
-			case VKTRACE_TPI_VK_vkCmdPipelineBarrier :				CHECK_ERR( _OnCmdPipelineBarrier( iter, INOUT *_tracePacker ));			break;
 			*/
 			// load data from file and call function
 			case VKTRACE_TPI_VK_vkCreateShaderModule :				CHECK_ERR( _OnCreateShaderModule( iter, frameId, INOUT *_tracePacker ));					break;
@@ -484,7 +544,11 @@ namespace VTC
 			case VKTRACE_TPI_VK_vkAcquireNextImageKHR :				CHECK_ERR( _OnAcquireNextImage( iter, INOUT *_tracePacker ));			break;
 			case VKTRACE_TPI_VK_vkAcquireNextImage2KHR :			ASSERT(false);															break;	// TODO
 			case VKTRACE_TPI_VK_vkQueuePresentKHR :					CHECK_ERR( _OnQueuePresent( iter, INOUT *_tracePacker ));				break;
-
+			case VKTRACE_TPI_VK_vkCreateRenderPass :				CHECK_ERR( _OnCreateRenderPass( iter, INOUT *_tracePacker ));			break;
+				
+			// remap swapchain images adn queue family index
+			case VKTRACE_TPI_VK_vkCmdWaitEvents :					CHECK_ERR( _OnCmdWaitEvents( iter, INOUT *_tracePacker ));				break;
+			case VKTRACE_TPI_VK_vkCmdPipelineBarrier :				CHECK_ERR( _OnCmdPipelineBarrier( iter, INOUT *_tracePacker ));			break;
 
 			/*
 			//case VKTRACE_TPI_VK_vkGetDeviceMemoryCommitment :		CHECK_ERR( _OnGetDeviceMemoryCommitment( iter, INOUT *_tracePacker ));	break;
@@ -565,9 +629,9 @@ namespace VTC
 		return data_iter->first.dataId;
 	}
 	
-	VulkanTraceConverter::DataID  VulkanTraceConverter::_RequestData (const TraceRange::Iterator &iter, const void* hdr, const void *member, uint64_t size, FrameID frameId)
+	VulkanTraceConverter::DataID  VulkanTraceConverter::_RequestData (const TraceRange::Iterator &pos, const void* hdr, const void *member, uint64_t size, FrameID frameId)
 	{
-		return _RequestData( _appTrace->FullTrace().GetPositionInFile( iter, hdr, member ), size, frameId );
+		return _RequestData( _appTrace->FullTrace().GetPositionInFile( pos, hdr, member ), size, frameId );
 	}
 	
 /*
@@ -631,6 +695,124 @@ namespace VTC
 		return true;
 	}
 	
+/*
+=================================================
+	IsPresentLayout
+=================================================
+*/
+	ND_ inline bool  IsPresentLayout (VkImageLayout layout)
+	{
+		if ( layout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR or
+			 layout == VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR )
+		{
+			return true;
+		}
+		return false;
+	}
+
+/*
+=================================================
+	_OnCreateRenderPass
+=================================================
+*/
+	bool VulkanTraceConverter::_OnCreateRenderPass (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
+	{
+		// replace image layouts with *present* by *transfer*
+		if ( _config.indirectSwapchain )
+		{
+			auto&	packet = pos.Cast< packet_vkCreateRenderPass >();
+
+			for (uint i = 0; i < packet.pCreateInfo->attachmentCount; ++i)
+			{
+				auto&	attachment = const_cast<VkAttachmentDescription *>( packet.pCreateInfo->pAttachments )[i];
+
+				if ( IsPresentLayout( attachment.initialLayout ) )
+					attachment.initialLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;	// from blit command
+
+				if ( IsPresentLayout( attachment.finalLayout ) )
+					attachment.finalLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;		// to blit command
+			}
+		}
+			
+		return _ConvertVkFunction( pos, packer );
+	}
+	
+/*
+=================================================
+	_OnWaitEvents2
+=================================================
+*/
+	bool VulkanTraceConverter::_OnWaitEvents2 (const TraceRange::Iterator &pos) const
+	{
+		// replace image layouts with *present* by *transfer*
+		if ( _config.indirectSwapchain )
+		{
+			auto&	packet = pos.Cast< packet_vkCmdWaitEvents >();
+
+			for (uint i = 0; i < packet.imageMemoryBarrierCount; ++i)
+			{
+				auto&	barrier = const_cast<VkImageMemoryBarrier *>( packet.pImageMemoryBarriers )[i];
+
+				if ( IsPresentLayout( barrier.oldLayout ) )
+					barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;	// from blit command
+
+				if ( IsPresentLayout( barrier.newLayout ) )
+					barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;	// to blit command
+			}
+		}
+		return true;
+	}
+	
+/*
+=================================================
+	_OnPipelineBarrier2
+=================================================
+*/
+	bool VulkanTraceConverter::_OnPipelineBarrier2 (const TraceRange::Iterator &pos) const
+	{
+		// replace image layouts with *present* by *transfer*
+		if ( _config.indirectSwapchain )
+		{
+			auto&	packet = pos.Cast< packet_vkCmdPipelineBarrier >();
+
+			for (uint i = 0; i < packet.imageMemoryBarrierCount; ++i)
+			{
+				auto&	barrier = const_cast<VkImageMemoryBarrier *>( packet.pImageMemoryBarriers )[i];
+
+				if ( IsPresentLayout( barrier.oldLayout ) )
+					barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;	// from blit command
+
+				if ( IsPresentLayout( barrier.newLayout ) )
+					barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;	// to blit command
+			}
+		}
+		return true;
+	}
+
+/*
+=================================================
+	_OnCmdWaitEvents
+=================================================
+*/
+	bool VulkanTraceConverter::_OnCmdWaitEvents (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
+	{
+		CHECK_ERR( _OnWaitEvents2( pos ));
+		//CHECK_ERR( _OnWaitEvents3( pos ));
+		return _ConvertVkFunction( pos, packer );
+	}
+	
+/*
+=================================================
+	_OnCmdPipelineBarrier
+=================================================
+*/
+	bool VulkanTraceConverter::_OnCmdPipelineBarrier (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
+	{
+		CHECK_ERR( _OnPipelineBarrier2( pos ));
+		//CHECK_ERR( _OnPipelineBarrier3( pos ));
+		return _ConvertVkFunction( pos, packer );
+	}
+
 /*
 =================================================
 	_OnCreateShaderModule

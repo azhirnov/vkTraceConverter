@@ -72,21 +72,21 @@ namespace VTC
 		#endif	// VTC_MEMORY_REMAPPING
 
 
-		using RFilePtr	= SharedPtr<RFile>;
+		using RStreamPtr	= SharedPtr<RStream>;
 
 		struct FilePartExt : FilePart
 		{
-			RFilePtr	file;
+			RStreamPtr	file;
 
 			FilePartExt () {}
-			FilePartExt (const FilePart &part, const RFilePtr &file) : FilePart{part}, file{file} {}
+			FilePartExt (const FilePart &part, const RStreamPtr &file) : FilePart{part}, file{file} {}
 		};
 		
 		using ResourceMap_t			= StaticArray< Array<VkResourceID_t>, 32 >;
 		using DataMap_t				= HashMap< DataID, Array<uint8_t> >;
 		using LoadEvents_t			= HashMap< FrameID, Array<FilePartExt> >;
 		using UnloadEvents_t		= HashMap< FrameID, Array<DataID> >;
-		using FileMap_t				= HashMap< String, RFilePtr >;
+		using FileMap_t				= HashMap< String, RStreamPtr >;
 
 
 
@@ -269,8 +269,8 @@ namespace VTC
 		_resources[ index ].resize( size_t(count) );
 		
 		#if VTC_MEMORY_REMAPPING
-			if constexpr ( std::is_same_v<ResIdType, ImageID> )		_imageAlloc.resize( size_t(count) );
-			if constexpr ( std::is_same_v<ResIdType, BufferID> )	_bufferAlloc.resize( size_t(count) );
+			if constexpr ( IsSameTypes<ResIdType, ImageID> )	_imageAlloc.resize( size_t(count) );
+			if constexpr ( IsSameTypes<ResIdType, BufferID> )	_bufferAlloc.resize( size_t(count) );
 		#endif
 	}
 

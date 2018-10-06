@@ -28,7 +28,7 @@ namespace VTPlayer
 		AlignedBuffer<alignof(size_t)>	_buffer;
 		TracePacketHeader				_packet;
 
-		SharedPtr<RFile>				_file;
+		SharedPtr<RStream>				_file;
 		BytesU							_offset;
 		
 		static constexpr size_t			_MaxBufferSize	= (4u << 20);
@@ -36,7 +36,7 @@ namespace VTPlayer
 
 	// methods
 	public:
-		explicit TraceReader (const SharedPtr<RFile> &file);
+		explicit TraceReader (const SharedPtr<RStream> &file);
 		~TraceReader ();
 
 		bool ReadNext ();

@@ -63,7 +63,7 @@ namespace VTC
 */
 	bool GraphVizConverter::_StoreFile (const fs::path &filename, StringView data) const
 	{
-		HddWFile	file{ filename };
+		FileWStream		file{ filename };
 		CHECK_ERR( file.IsOpen() );
 		CHECK_ERR( file.Write( data ));
 		return true;
@@ -79,7 +79,7 @@ namespace VTC
 	static bool RunExe (StringView commands, uint timeoutMS)
 	{
 		char	buf[MAX_PATH] = {};
-		::GetSystemDirectoryA( buf, UINT(std::size(buf)) );
+		::GetSystemDirectoryA( buf, UINT(CountOf(buf)) );
 		
 		String		command_line;
 		command_line << '"' << buf << "\\cmd.exe\" /C " << commands;

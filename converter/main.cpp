@@ -66,6 +66,7 @@ static const char	s_Help[] = R"#(
 							end=[N] -- stop converting on N frame, default is -1.
 							remap-mem=[true/false] -- enable this for portability.
 							remap-queue=[true/false] -- enable this for portability.
+							indirect-swapchain=[true/false] -- enable this for portability.
 
 --cfg-vez-trace			configure 'vez-trace' converter:
 
@@ -202,6 +203,7 @@ static bool ParseVkTraceConfig (StringView param, StringView value, INOUT Conver
 	if ( param == "end" )				{ cfg.lastFrame = FrameID(std::stoll( String(value) ));		return true; }
 	if ( param == "remap-mem" )			{ cfg.remapMemory = (value == "true");						return true; }
 	if ( param == "remap-queue" )		{ cfg.remapQueueFamily = (value == "true");					return true; }
+	if ( param == "indirect-swapchain" ){ cfg.indirectSwapchain = (value == "true");				return true; }
 	if ( param == "multithreaded" )		{ /*cfg.isMultithreaded = (value == "true");*/				return true; }
 	if ( param == "async-load" )		{ /*cfg.isAsyncLoadEnabled = (value == "true");*/			return true; }
 
@@ -300,7 +302,7 @@ int main (int argc, const char** argv)
 		const char*	test_commands[] = {
 			"TODO: path to exe",
 			//"--convert",		"vk-cpp",	"--cfg-vk-cpp",		"begin=2000", "end=2010",
-			"--convert",		"vk-trace",
+			"--convert",		"vk-trace",	"--cfg-vk-trace",	"indirect-swapchain=false",	"remap-mem=true",
 			//"--convert",		"graphviz",	"--cfg-graphviz",	"begin=0", "end=3", "show-sync=true",
 			#if 0
 				"--open",		R"(D:\VkTraceOutput\doom1.vktrace)",
@@ -320,7 +322,7 @@ int main (int argc, const char** argv)
 			#endif
 		};
 		argv = test_commands;
-		argc = int(std::size( test_commands ));
+		argc = int(CountOf( test_commands ));
 	#endif
 
 
@@ -383,27 +385,6 @@ int main (int argc, const char** argv)
 	}
 
 
-	// create resource data writer
-	/*ResourceDataWriterPtr	data_writer;
-	{
-		fs::path	path = fs::absolute(fs::path{ config.outputDirectory });
-
-		if ( not fs::exists( path ) ) {
-			CHECK_ERR( fs::create_directories( path ), -111 );
-		}
-
-		path.append( "data" );
-		if ( not fs::exists( path ) ) {
-			CHECK_ERR( fs::create_directories( path ), -112 );
-		}
-
-		data_writer = MakeShared<ResourceDataWriter>();
-		
-		path.append( "resources.bin" );
-		CHECK_ERR( data_writer->Create( path.string() ), -113 );
-	}*/
-
-
 	// initialize tracer
 	AppTrace	app_trace;
 	app_trace.AddAnalyzer(AnalyzerPtr{ new AllResourcesBookmarks() });
@@ -424,8 +405,6 @@ int main (int argc, const char** argv)
 
 
 	// run converters
-	//CHECK_ERR( RunDataConverter( app_trace, config, data_writer ));
-
 	if ( config.conveters.vulkanCppSource.isEnabled )	CHECK_ERR( RunConverter_VulkanCppSource( app_trace, config ), -130 );
 	if ( config.conveters.vulkanTrace.isEnabled )		CHECK_ERR( RunConverter_VulkanPlayer( app_trace, config ), -131 );
 	if ( config.conveters.graphviz.isEnabled )			CHECK_ERR( RunConverter_GraphViz( app_trace, config ), -132 );

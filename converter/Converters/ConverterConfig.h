@@ -36,6 +36,7 @@ namespace VTC
 			bool		isEnabled				= false;
 			bool		remapMemory				= false;
 			bool		remapQueueFamily		= false;
+			bool		indirectSwapchain		= false;
 			bool		useUniqueResourceIndices= false;
 			FrameID		lastFrame				= ~FrameID(0);
 		};

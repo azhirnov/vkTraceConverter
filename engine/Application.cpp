@@ -294,7 +294,7 @@ namespace VTC
 		// open file
 		if ( file_iter == _files.end() )
 		{
-			RFilePtr	file{ new HddRFile{ filename }};
+			RStreamPtr	file{ new FileRStream{ filename }};
 
 			file_iter = _files.insert({ filename, file }).first;
 		}

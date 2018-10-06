@@ -20,12 +20,12 @@ namespace VTC
 	_OnBindBufferMemory
 =================================================
 */
-	bool VulkanTraceConverter::_OnBindBufferMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_OnBindBufferMemory (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
 	{
 		if ( _config.remapMemory )
-			return _RemapBufferMemory( iter, INOUT packer );
+			return _RemapBufferMemory( pos, INOUT packer );
 		else
-			return _ConvertVkFunction( iter, INOUT packer );
+			return _ConvertVkFunction( pos, INOUT packer );
 	}
 	
 /*
@@ -33,12 +33,12 @@ namespace VTC
 	_OnBindImageMemory
 =================================================
 */
-	bool VulkanTraceConverter::_OnBindImageMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_OnBindImageMemory (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
 	{
 		if ( _config.remapMemory )
-			return _RemapImageMemory( iter, INOUT packer );
+			return _RemapImageMemory( pos, INOUT packer );
 		else
-			return _ConvertVkFunction( iter, INOUT packer );
+			return _ConvertVkFunction( pos, INOUT packer );
 	}
 	
 /*
@@ -46,12 +46,12 @@ namespace VTC
 	_OnBindBufferMemory2
 =================================================
 */
-	bool VulkanTraceConverter::_OnBindBufferMemory2 (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_OnBindBufferMemory2 (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
 	{
 		if ( _config.remapMemory )
-			return _RemapBufferMemory2( iter, INOUT packer );
+			return _RemapBufferMemory2( pos, INOUT packer );
 		else
-			return _ConvertVkFunction( iter, INOUT packer );
+			return _ConvertVkFunction( pos, INOUT packer );
 	}
 	
 /*
@@ -59,12 +59,12 @@ namespace VTC
 	_OnBindImageMemory2
 =================================================
 */
-	bool VulkanTraceConverter::_OnBindImageMemory2 (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_OnBindImageMemory2 (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
 	{
 		if ( _config.remapMemory )
-			return _RemapImageMemory2( iter, INOUT packer );
+			return _RemapImageMemory2( pos, INOUT packer );
 		else
-			return _ConvertVkFunction( iter, INOUT packer );
+			return _ConvertVkFunction( pos, INOUT packer );
 	}
 	
 /*
@@ -72,12 +72,12 @@ namespace VTC
 	_OnAllocateMemory
 =================================================
 */
-	bool VulkanTraceConverter::_OnAllocateMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_OnAllocateMemory (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
 	{
 		if ( _config.remapMemory )
 			return true;
 		else
-			return _ConvertVkFunction( iter, INOUT packer );
+			return _ConvertVkFunction( pos, INOUT packer );
 	}
 	
 /*
@@ -85,12 +85,12 @@ namespace VTC
 	_OnFreeMemory
 =================================================
 */
-	bool VulkanTraceConverter::_OnFreeMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_OnFreeMemory (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
 	{
 		if ( _config.remapMemory )
 			return true;
 		else
-			return _ConvertVkFunction( iter, INOUT packer );
+			return _ConvertVkFunction( pos, INOUT packer );
 	}
 	
 /*
@@ -98,12 +98,12 @@ namespace VTC
 	_OnMapMemory
 =================================================
 */
-	bool VulkanTraceConverter::_OnMapMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_OnMapMemory (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
 	{
 		if ( _config.remapMemory )
 			return true;
 		else
-			return _OverrideMapMemory( iter, INOUT packer );
+			return _OverrideMapMemory( pos, INOUT packer );
 	}
 	
 /*
@@ -111,12 +111,12 @@ namespace VTC
 	_OnUnmapMemory
 =================================================
 */
-	bool VulkanTraceConverter::_OnUnmapMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_OnUnmapMemory (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
 	{
 		if ( _config.remapMemory )
 			return true;
 		else
-			return _OverrideUnmapMemory( iter, INOUT packer );
+			return _OverrideUnmapMemory( pos, INOUT packer );
 	}
 	
 /*
@@ -124,12 +124,12 @@ namespace VTC
 	_OnFlushMappedMemoryRanges
 =================================================
 */
-	bool VulkanTraceConverter::_OnFlushMappedMemoryRanges (const TraceRange::Iterator &iter, FrameID frameId, INOUT TracePacker &packer)
+	bool VulkanTraceConverter::_OnFlushMappedMemoryRanges (const TraceRange::Iterator &pos, FrameID frameId, INOUT TracePacker &packer)
 	{
 		if ( _config.remapMemory )
-			return _RemapFlushMemoryRanges( iter, frameId, INOUT packer );
+			return _RemapFlushMemoryRanges( pos, frameId, INOUT packer );
 		else
-			return _OverrideFlushMappedMemoryRanges( iter, frameId, INOUT packer );
+			return _OverrideFlushMappedMemoryRanges( pos, frameId, INOUT packer );
 	}
 	
 /*
@@ -137,12 +137,12 @@ namespace VTC
 	_OnDestroyImage
 =================================================
 */
-	bool VulkanTraceConverter::_OnDestroyImage (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_OnDestroyImage (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
 	{
 		if ( _config.remapMemory )
-			return _FreeImageMemory( iter, INOUT packer );
+			return _FreeImageMemory( pos, INOUT packer );
 		else
-			return _ConvertVkFunction( iter, INOUT packer );
+			return _ConvertVkFunction( pos, INOUT packer );
 	}
 	
 /*
@@ -150,12 +150,12 @@ namespace VTC
 	_OnDestroyBuffer
 =================================================
 */
-	bool VulkanTraceConverter::_OnDestroyBuffer (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_OnDestroyBuffer (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
 	{
 		if ( _config.remapMemory )
-			return _FreeBufferMemory( iter, INOUT packer );
+			return _FreeBufferMemory( pos, INOUT packer );
 		else
-			return _ConvertVkFunction( iter, INOUT packer );
+			return _ConvertVkFunction( pos, INOUT packer );
 	}
 //-----------------------------------------------------------------------------
 
@@ -165,9 +165,9 @@ namespace VTC
 	_OverrideMapMemory
 =================================================
 */
-	bool VulkanTraceConverter::_OverrideMapMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_OverrideMapMemory (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
 	{
-		auto&	packet = iter.Cast< packet_vkMapMemory >();
+		auto&	packet = pos.Cast< packet_vkMapMemory >();
 		VK_CHECK( packet.result );
 		
 		packer.Begin( EPacketID::VMapMemory );
@@ -185,9 +185,9 @@ namespace VTC
 	_OverrideUnmapMemory
 =================================================
 */
-	bool VulkanTraceConverter::_OverrideUnmapMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_OverrideUnmapMemory (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
 	{
-		auto&	packet = iter.Cast< packet_vkUnmapMemory >();
+		auto&	packet = pos.Cast< packet_vkUnmapMemory >();
 		
 		packer.Begin( EPacketID::VUnmapMemory );
 		packer << packet.device;
@@ -201,16 +201,16 @@ namespace VTC
 	_OverrideFlushMappedMemoryRanges
 =================================================
 */
-	bool VulkanTraceConverter::_OverrideFlushMappedMemoryRanges (const TraceRange::Iterator &iter, FrameID frameId, INOUT TracePacker &packer)
+	bool VulkanTraceConverter::_OverrideFlushMappedMemoryRanges (const TraceRange::Iterator &pos, FrameID frameId, INOUT TracePacker &packer)
 	{
-		auto&	packet = iter.Cast< packet_vkFlushMappedMemoryRanges >();
+		auto&	packet = pos.Cast< packet_vkFlushMappedMemoryRanges >();
 		VK_CHECK( packet.result );
 		CHECK_ERR( packet.memoryRangeCount > 0 and packet.pMemoryRanges );
 		
 		for (uint i = 0; i < packet.memoryRangeCount; ++i)
 		{
 			auto	mem_id		= packet.pMemoryRanges[i].memory;
-			auto*	transfer	= _memTransferAnalyzer->GetTransfer( ResourceID(mem_id), iter.GetBookmark() );
+			auto*	transfer	= _memTransferAnalyzer->GetTransfer( ResourceID(mem_id), pos.GetBookmark() );
 			CHECK_ERR( transfer );
 			
 			for (auto& block : transfer->blocks)
@@ -301,21 +301,26 @@ namespace VTC
 	_RemapBufferMemory
 =================================================
 */
-	bool VulkanTraceConverter::_RemapBufferMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_RemapBufferMemory (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
 	{
-		auto&	packet = iter.Cast< packet_vkBindBufferMemory >();
+		auto&	packet = pos.Cast< packet_vkBindBufferMemory >();
 		VK_CHECK( packet.result );
 		
 		if ( not _initializedResources.insert( ResourceID(packet.buffer) ).second )
 			return true;
 
-		auto*	mem = _memoryObjAnalyzer->GetMemoryObj( ResourceID(packet.memory), iter.GetBookmark() );
+		auto*	mem = _memoryObjAnalyzer->GetMemoryObj( ResourceID(packet.memory), pos.GetBookmark() );
 		CHECK_ERR( mem );
+		
+		auto*	res_info = _resourcesBookmarks->GetResource( mem->id, pos.GetBookmark() );
+		CHECK_ERR( res_info );
+
 		CHECK( mem->dedicatedResource == ResourceID(0) or mem->dedicatedResource == ResourceID(packet.buffer) );
 		
 		packer.Begin( EPacketID::VAllocateBufferMemory );
 		packer << packet.device;
 		packer << packet.buffer;
+		packer << res_info->uniqueIndex;
 		ConvertVmaAllocationCreateFlagsAndMemoryUsage( mem->propertyFlags, mem->usage, INOUT packer );
 		packer.End( EPacketID::VAllocateBufferMemory );
 		return true;
@@ -326,21 +331,26 @@ namespace VTC
 	_RemapImageMemory
 =================================================
 */
-	bool VulkanTraceConverter::_RemapImageMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_RemapImageMemory (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
 	{
-		auto&	packet = iter.Cast< packet_vkBindImageMemory >();
+		auto&	packet = pos.Cast< packet_vkBindImageMemory >();
 		VK_CHECK( packet.result );
 		
 		if ( not _initializedResources.insert( ResourceID(packet.image) ).second )
 			return true;
 
-		auto*	mem = _memoryObjAnalyzer->GetMemoryObj( ResourceID(packet.memory), iter.GetBookmark() );
+		auto*	mem = _memoryObjAnalyzer->GetMemoryObj( ResourceID(packet.memory), pos.GetBookmark() );
 		CHECK_ERR( mem );
+		
+		auto*	res_info = _resourcesBookmarks->GetResource( mem->id, pos.GetBookmark() );
+		CHECK_ERR( res_info );
+
 		CHECK( mem->dedicatedResource == ResourceID(0) or mem->dedicatedResource == ResourceID(packet.image) );
 
 		packer.Begin( EPacketID::VAllocateImageMemory );
 		packer << packet.device;
 		packer << packet.image;
+		packer << res_info->uniqueIndex;
 		ConvertVmaAllocationCreateFlagsAndMemoryUsage( mem->propertyFlags, mem->usage, INOUT packer );
 		packer.End( EPacketID::VAllocateImageMemory );
 		return true;
@@ -351,25 +361,30 @@ namespace VTC
 	_RemapBufferMemory2
 =================================================
 */
-	bool VulkanTraceConverter::_RemapBufferMemory2 (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_RemapBufferMemory2 (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
 	{
-		auto&	packet = iter.Cast< packet_vkBindBufferMemory2 >();
+		auto&	packet = pos.Cast< packet_vkBindBufferMemory2 >();
 		VK_CHECK( packet.result );
 
 		for (uint i = 0; i < packet.bindInfoCount; ++i)
 		{
 			auto&	binding = packet.pBindInfos[i];
-			auto*	mem		= _memoryObjAnalyzer->GetMemoryObj( ResourceID(binding.memory), iter.GetBookmark() );
 			
 			if ( not _initializedResources.insert( ResourceID(binding.buffer) ).second )
 				continue;
 
+			auto*	mem = _memoryObjAnalyzer->GetMemoryObj( ResourceID(binding.memory), pos.GetBookmark() );
 			CHECK_ERR( mem );
+			
+			auto*	res_info = _resourcesBookmarks->GetResource( mem->id, pos.GetBookmark() );
+			CHECK_ERR( res_info );
+
 			CHECK( mem->dedicatedResource == ResourceID(0) or mem->dedicatedResource == ResourceID(binding.buffer) );
 			
 			packer.Begin( EPacketID::VAllocateBufferMemory );
 			packer << packet.device;
 			packer << binding.buffer;
+			packer << res_info->uniqueIndex;
 			ConvertVmaAllocationCreateFlagsAndMemoryUsage( mem->propertyFlags, mem->usage, INOUT packer );
 			packer.End( EPacketID::VAllocateBufferMemory );
 		}
@@ -381,25 +396,30 @@ namespace VTC
 	_RemapImageMemory2
 =================================================
 */
-	bool VulkanTraceConverter::_RemapImageMemory2 (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_RemapImageMemory2 (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
 	{
-		auto&	packet = iter.Cast< packet_vkBindImageMemory2 >();
+		auto&	packet = pos.Cast< packet_vkBindImageMemory2 >();
 		VK_CHECK( packet.result );
 
 		for (uint i = 0; i < packet.bindInfoCount; ++i)
 		{
 			auto&	binding = packet.pBindInfos[i];
-			auto*	mem		= _memoryObjAnalyzer->GetMemoryObj( ResourceID(binding.memory), iter.GetBookmark() );
 			
 			if ( not _initializedResources.insert( ResourceID(binding.image) ).second )
 				continue;
 
+			auto*	mem = _memoryObjAnalyzer->GetMemoryObj( ResourceID(binding.memory), pos.GetBookmark() );
 			CHECK_ERR( mem );
+			
+			auto*	res_info = _resourcesBookmarks->GetResource( mem->id, pos.GetBookmark() );
+			CHECK_ERR( res_info );
+
 			CHECK( mem->dedicatedResource == ResourceID(0) or mem->dedicatedResource == ResourceID(binding.image) );
 			
 			packer.Begin( EPacketID::VAllocateImageMemory );
 			packer << packet.device;
 			packer << binding.image;
+			packer << res_info->uniqueIndex;
 			ConvertVmaAllocationCreateFlagsAndMemoryUsage( mem->propertyFlags, mem->usage, INOUT packer );
 			packer.End( EPacketID::VAllocateImageMemory );
 		}
@@ -411,123 +431,92 @@ namespace VTC
 	_RemapFlushMemoryRanges
 =================================================
 */
-	bool VulkanTraceConverter::_RemapFlushMemoryRanges (const TraceRange::Iterator &iter, FrameID frameId, INOUT TracePacker &packer)
+	bool VulkanTraceConverter::_RemapFlushMemoryRanges (const TraceRange::Iterator &pos, FrameID frameId, INOUT TracePacker &packer)
 	{
-		auto&	packet = iter.Cast< packet_vkFlushMappedMemoryRanges >();
+		auto&	packet = pos.Cast< packet_vkFlushMappedMemoryRanges >();
 
 		for (uint i = 0; i < packet.memoryRangeCount; ++i)
 		{
 			auto&	flush_range	= packet.pMemoryRanges[i];
-			auto*	transfer	= _memTransferAnalyzer->GetTransfer( ResourceID(flush_range.memory), iter.GetBookmark() );
+			auto*	transfer	= _memTransferAnalyzer->GetTransfer( ResourceID(flush_range.memory), pos.GetBookmark() );
 			CHECK_ERR( transfer );
-
-			auto*	mem			= _memoryObjAnalyzer->GetMemoryObj( ResourceID(flush_range.memory), iter.GetBookmark() );
+			
+			auto*	mem			= _memoryObjAnalyzer->GetMemoryObj( ResourceID(flush_range.memory), pos.GetBookmark() );
 			CHECK_ERR( mem );
 
-			for (auto& block : transfer->blocks)
+			auto*	res_info	= _resourcesBookmarks->GetResource( mem->id, pos.GetBookmark() );
+			CHECK_ERR( res_info );
+
+
+			for (auto& res : transfer->resources)
 			{
-				// search in buffer bindings
-				for (auto& buffer : mem->bufferBindings)
+				if ( res.type == VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT )
 				{
-					auto*	info = _bufferAnalyzer->GetBuffer( buffer.id, buffer.pos );
-					CHECK_ERR( info );
-
-					// buffer was destroyed or not yet created
-					if ( iter.GetBookmark() > info->LastBookmark().pos or
-						 iter.GetBookmark() < info->FirstBookmark().pos )
-						continue;
-
-					// check intersection
-					if ( buffer.offset >= (block.memOffset + block.dataSize) or
-						 block.memOffset >= (buffer.offset + buffer.size) )
-						continue;
-
 					// initialize buffer memory
-					if ( _initializedResources.insert( buffer.id ).second )
+					if ( _initializedResources.insert( res.id ).second )
 					{
-						ASSERT( iter.GetBookmark() < buffer.pos );
+						ASSERT( pos.GetBookmark() < res.pos );
 						
 						packer.Begin( EPacketID::VAllocateBufferMemory );
 						packer << packet.device;
-						packer << VkBuffer(buffer.id);
+						packer << VkBuffer(res.id);
+						packer << res_info->uniqueIndex;
 						ConvertVmaAllocationCreateFlagsAndMemoryUsage( mem->propertyFlags, mem->usage, INOUT packer );
 						packer.End( EPacketID::VAllocateBufferMemory );
 					}
 
-					// intersect
-					VkDeviceSize	offset		= Max( buffer.offset, block.memOffset );
-					VkDeviceSize	size		= Min( buffer.offset + buffer.size, block.memOffset + block.dataSize ) - offset;
-					uint64_t		file_pos	= block.fileOffset + (block.memOffset - offset);
-
-					DataID	data_id = _RequestData( file_pos, size, frameId );
+					DataID	data_id = _RequestData( res.fileOffset, res.dataSize, frameId );
 					CHECK_ERR( data_id != ~DataID(0) );
 
 					packer.Begin( EPacketID::VLoadDataToBuffer );
 					packer << packet.device;
-					packer << VkBuffer(buffer.id);
+					packer << VkBuffer(res.id);
 					packer << data_id;
-					packer << offset;
-					packer << size;
+					packer << res.resOffset;
+					packer << res.dataSize;
 					packer.End( EPacketID::VLoadDataToBuffer );
 				}
-
-				// search in image bindings
-				for (auto& image : mem->imageBindings)
+				else
 				{
-					auto*	info = _imageAnalyzer->GetImage( image.id, image.pos );
-					CHECK_ERR( info );
+					ASSERT( res.type == VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT );
 
-					// image was destroyed or not yet created
-					if ( iter.GetBookmark() > info->LastBookmark().pos or
-						 iter.GetBookmark() < info->FirstBookmark().pos )
-						continue;
-
-					// check intersection
-					if ( image.offset >= (block.memOffset + block.dataSize) or
-						 block.memOffset >= (image.offset + image.size) )
-						continue;
-					
 					// initialize buffer memory
-					if ( _initializedResources.insert( image.id ).second )
+					if ( _initializedResources.insert( res.id ).second )
 					{
-						ASSERT( iter.GetBookmark() < image.pos );
+						ASSERT( pos.GetBookmark() < res.pos );
 						
 						packer.Begin( EPacketID::VAllocateImageMemory );
 						packer << packet.device;
-						packer << VkImage(image.id);
+						packer << VkImage(res.id);
+						packer << res_info->uniqueIndex;
 						ConvertVmaAllocationCreateFlagsAndMemoryUsage( mem->propertyFlags, mem->usage, INOUT packer );
 						packer.End( EPacketID::VAllocateImageMemory );
 					}
 
-					// intersect
-					VkDeviceSize	offset		= Max( image.offset, block.memOffset );
-					VkDeviceSize	size		= Min( image.offset + image.size, block.memOffset + block.dataSize ) - offset;
-					uint64_t		file_pos	= block.fileOffset + (block.memOffset - offset);
-
-					DataID	data_id = _RequestData( file_pos, size, frameId );
+					DataID	data_id = _RequestData( res.fileOffset, res.dataSize, frameId );
 					CHECK_ERR( data_id != ~DataID(0) );
 
 					packer.Begin( EPacketID::VLoadDataToImage );
 					packer << packet.device;
-					packer << VkImage(image.id);
+					packer << VkImage(res.id);
 					packer << data_id;
-					packer << offset;
-					packer << size;
+					packer << res.resOffset;
+					packer << res.dataSize;
 					packer.End( EPacketID::VLoadDataToImage );
 				}
 			}
 		}
 		return true;
 	}
-	
+
 /*
 =================================================
 	_FreeImageMemory
 =================================================
 */
-	bool VulkanTraceConverter::_FreeImageMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_FreeImageMemory (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
 	{
-		auto&	packet = iter.Cast< packet_vkDestroyImage >();
+		auto&	packet = pos.Cast< packet_vkDestroyImage >();
 		
 		CHECK( _initializedResources.erase( ResourceID(packet.image) ) == 1 );
 
@@ -543,9 +532,9 @@ namespace VTC
 	_FreeBufferMemory
 =================================================
 */
-	bool VulkanTraceConverter::_FreeBufferMemory (const TraceRange::Iterator &iter, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_FreeBufferMemory (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
 	{
-		auto&	packet = iter.Cast< packet_vkDestroyBuffer >();
+		auto&	packet = pos.Cast< packet_vkDestroyBuffer >();
 		
 		CHECK( _initializedResources.erase( ResourceID(packet.buffer) ) == 1 );
 		

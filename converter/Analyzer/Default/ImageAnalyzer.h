@@ -54,6 +54,8 @@ namespace VTC
 			ImageViewIDs_t				imageViews;
 			SubresLayouts_t				subresLayouts;
 			VkMemoryRequirements		memRequirements	= {};
+			TraceRange::Bookmark		firstAccess;			// when used in shader, in transfer op, as render target
+			TraceRange::Bookmark		lastAccess;
 		};
 
 		using ImagesMap_t		= ResourceTracker< ImageInfo, DefaultBookmark, true >;
@@ -132,6 +134,7 @@ namespace VTC
 
 		bool _AddImageUsage (ImageInfo_t &image, VkImageUsageFlags usage, VkImageLayout layout);
 		bool _AddImageUsage (ImageInfo_t &image, VkPipelineStageFlags stage, VkAccessFlags access, VkImageLayout layout);
+		void _AddImageAccess (ImageInfo_t &image, TraceRange::Bookmark pos);
 	};
 
 

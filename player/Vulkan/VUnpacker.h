@@ -29,16 +29,17 @@ namespace VTPlayer
 		ResourceMap_t&		_resources;
 
 		// used for resource remapping after constructor call
-		TempBuffer_t&		_tempBuffer;
+		PoolAllocator&		_allocator;
 		AfterCallFn_t		_afterCall		= null;
-		void *				_resPtr			= null;
+		void *				_resourceIDs	= null;		// origin array with resource indices, used to map new handles to origin
+		void *				_newVkHandles	= null;		// array where vulkan handles will be writen during constructor call
 		uint				_resCount		= 0;
 
 
 	// methods
 	public:
-		VUnpacker (void *data, BytesU size, BytesU offset, ResourceMap_t& resources, TempBuffer_t &temp) :
-			_data{data}, _size{size}, _offset{offset}, _resources{resources}, _tempBuffer{temp} {}
+		VUnpacker (void *data, BytesU size, BytesU offset, ResourceMap_t& resources, PoolAllocator &alloc) :
+			_data{data}, _size{size}, _offset{offset}, _resources{resources}, _allocator{alloc} {}
 
 		~VUnpacker ();
 
@@ -102,7 +103,7 @@ namespace VTPlayer
 	template <typename T>
 	void  VUnpacker::UnpackPtr (INOUT T& ptr) const
 	{
-		STATIC_ASSERT( std::is_pointer_v<T> );
+		STATIC_ASSERT( IsPointer<T> );
 
 		if ( ptr == T(~size_t(0)) )
 		{
@@ -172,14 +173,14 @@ namespace VTPlayer
 		if ( src == null or count == 0 )
 			return null;
 
-		ASSERT( _resPtr == null and _resCount == 0 );
+		ASSERT( _resourceIDs == null and _resCount == 0 );
 		
-		_resPtr		= src;
-		_resCount	= count;
-		_afterCall	= &VUnpacker::_RemapAfterCall<T>;
+		_resourceIDs	= src;
+		_resCount		= count;
+		_afterCall		= &VUnpacker::_RemapAfterCall<T>;
+		_newVkHandles	= _allocator.Alloc<T>( count );
 
-		_tempBuffer.resize( count );
-		return BitCast<T *>( _tempBuffer.data() );
+		return static_cast<T *>( _newVkHandles );
 	}
 	
 /*
@@ -190,10 +191,10 @@ namespace VTPlayer
 	template <typename T>
 	void  VUnpacker::_RemapAfterCall ()
 	{
-		ASSERT( _resPtr and _resCount );
+		ASSERT( _resourceIDs and _resCount );
 
-		T *			idx = BitCast<T *>( _resPtr );
-		const T*	src = BitCast<T*>( _tempBuffer.data() );
+		T *			idx = static_cast<T *>( _resourceIDs );
+		const T*	src = static_cast<T *>( _newVkHandles );
 
 		for (uint i = 0; i < _resCount; ++i)
 		{
@@ -259,29 +260,29 @@ namespace VTPlayer
 		if constexpr ( IsVkResource< std::remove_const_t<T> > )
 		{
 			ASSERT( count == 1 );
-			return *_GetVkResources<T>( BitCast<T *>(_Read( SizeOf<T>, AlignOf<T> )), 1 );
+			return *_GetVkResources<T>( static_cast<T *>(_Read( SizeOf<T>, AlignOf<T> )), 1 );
 		}
 		else
-		if constexpr ( std::is_integral_v<T> or std::is_enum_v<T> or std::is_floating_point_v<T> )
+		if constexpr ( IsInteger<T> or IsEnum<T> or IsFloatPoint<T> )
 		{
 			ASSERT( count == 1 );
-			return *BitCast<T *>(_Read( SizeOf<T>, AlignOf<T> ));
+			return *static_cast<T *>(_Read( SizeOf<T>, AlignOf<T> ));
 		}
 		else
-		if constexpr ( std::is_array_v<T> )
+		if constexpr ( IsStaticArray<T> )
 		{
 			using B = std::remove_all_extents_t<T>;
 
 			ASSERT( count > 0 );
-			return BitCast<B *>(_Read( SizeOf<T>, AlignOf<B> ));
+			return static_cast<B *>(_Read( SizeOf<T>, AlignOf<B> ));
 		}
 		else
-		if constexpr ( std::is_pointer_v<T> )
+		if constexpr ( IsPointer<T> )
 		{
 			using B = std::remove_pointer_t<T>;
 			using C = std::remove_const_t<B>;
 			
-			C*	ptr = *BitCast<C**>(_Read( SizeOf<T>, AlignOf<T> ));
+			C*	ptr = *static_cast<C**>(_Read( SizeOf<T>, AlignOf<T> ));
 			UnpackPtr( INOUT ptr );
 
 			if constexpr ( IsVkResource<B> )
@@ -290,16 +291,16 @@ namespace VTPlayer
 			if constexpr ( IsVkResource<C> )
 				return _GetVkResources<B>( ptr, count );
 			else
-			if constexpr ( std::is_pointer_v<B> ) {
+			if constexpr ( IsPointer<B> ) {
 				for (uint i = 0; i < count; ++i)
 					UnpackPtr( INOUT ptr[i] );
 				return ptr;
 			}else
-			if constexpr ( std::is_integral_v<C> or std::is_enum_v<C> or std::is_floating_point_v<C> or std::is_same_v<T, const void *> ) {
+			if constexpr ( IsInteger<C> or IsEnum<C> or IsFloatPoint<C> or IsSameTypes<T, const void *> ) {
 				ASSERT( (ptr != null) == (count > 0) );
 				return ptr;
 			}else{
-				STATIC_ASSERT( std::is_class_v<C> or std::is_union_v<C> );
+				STATIC_ASSERT( IsClass<C> or IsUnion<C> );
 				return _GetPtr( ptr, count );
 			}
 		}

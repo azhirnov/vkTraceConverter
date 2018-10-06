@@ -24,8 +24,12 @@ struct VulkanCreateInfo
 	VkQueueFlags const*				queueFamilies;			// [queueCount]
 	float const*					queuePriorities;		// [queueCount]
 
+	enum class ESwapchainType : uint32_t {
+		WithoutSwapchain		= 0,
+		DefaultSwapchain		= 1,
+	};
+	ESwapchainType					swapchainType;			// 0 - none, 1 - default, ...
 	VkSwapchainKHR					swapchainID;
-	uint32_t						swapchainType;			// 0 - none, 1 - default, ...
 	uint32_t						swapchainImageWidth;	// trace requires fixed image size
 	uint32_t						swapchainImageHeight;
 	VkFormat						swapchainColorFormat;
@@ -36,6 +40,19 @@ struct VulkanCreateInfo
 	VkPresentModeKHR				swapchainPresentMode;
 	VkCompositeAlphaFlagBitsKHR		swapchainCompositeAlpha;
 	VkImageUsageFlags				swapchainColorImageUsage;
+	VkImageLayout					swapchainImageLayout;
 	uint32_t						swapchainImageCount;
 	VkImage const*					swapchainImageIDs;
+
+	enum class EImplFlags : uint32_t {
+		None						= 0,
+		OverrideMemoryAllocation	= 1 << 0,
+		RemapQueueFamilies			= 1 << 1,
+		IndirectSwapchain			= 1 << 2,
+		UniqueResourceIndices		= 1 << 3,
+	};
+	EImplFlags						implementationFlags;
 };
+
+FG_BIT_OPERATORS( VulkanCreateInfo::ESwapchainType );
+FG_BIT_OPERATORS( VulkanCreateInfo::EImplFlags );

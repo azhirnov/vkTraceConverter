@@ -69,7 +69,7 @@ namespace VTC
 
 
 		// store to file
-		HddWFile	file{ output };
+		FileWStream		file{ output };
 		CHECK_ERR( file.IsOpen() );
 		CHECK_ERR( file.Write( StringView(str) ));
 

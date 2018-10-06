@@ -71,7 +71,7 @@ namespace VTC
 			ND_ Bookmark const&		LastBookmark ()		const	{ return lastBookmark; }
 		};
 
-		using Item				= std::conditional_t< UseBookmarkArray, ItemWithBookmarkArray, ItemWithBookmarkRange >;
+		using Item				= Conditional< UseBookmarkArray, ItemWithBookmarkArray, ItemWithBookmarkRange >;
 		using ItemArray_t		= Deque< Item >;
 		using ItemMap_t			= HashMap< ResourceID, ItemArray_t >;
 

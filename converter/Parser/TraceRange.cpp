@@ -10,7 +10,7 @@ namespace VTC
 	constructor
 =================================================
 */
-	TraceRange::TraceRange (const RFilePtr &file, BytesU first, BytesU last) :
+	TraceRange::TraceRange (const RStreamPtr &file, BytesU first, BytesU last) :
 		_file{file}, _firstPacketOffset{first}, _lastPacketOffset{last}
 	{
 		ASSERT( _file );
@@ -23,7 +23,7 @@ namespace VTC
 	constructor
 =================================================
 */
-	TraceRange::TraceRange (const RFilePtr &file) :
+	TraceRange::TraceRange (const RStreamPtr &file) :
 		_file{ file },
 		_firstPacketOffset{ file->Position() },
 		_lastPacketOffset{ _file->Size() }
@@ -133,7 +133,7 @@ namespace VTC
 	template <typename T>
 	inline void  UnpackPointer (INOUT T &ptr, vktrace_trace_packet_header* header)
 	{
-		STATIC_ASSERT( std::is_pointer_v<T> );
+		STATIC_ASSERT( IsPointer<T> );
 
 		if ( ptr == null )
 			return;
@@ -165,7 +165,7 @@ namespace VTC
 	constructor
 =================================================
 */
-	TraceRange::Iterator::Iterator (const RFilePtr &file, BytesU offset) :
+	TraceRange::Iterator::Iterator (const RStreamPtr &file, BytesU offset) :
 		_file{file}, _offset{offset}
 	{
 		_buffer.reserve( _MaxBufferSize );

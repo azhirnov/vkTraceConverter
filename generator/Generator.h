@@ -6,9 +6,9 @@
 #include "stl/Containers/ArrayView.h"
 #include "stl/Containers/FixedArray.h"
 #include "stl/Algorithms/StringUtils.h"
-#include "stl/File/File.h"
-#include "stl/File/HddFile.h"
-#include "stl/File/MemFile.h"
+#include "stl/Stream/Stream.h"
+#include "stl/Stream/FileStream.h"
+#include "stl/Stream/MemStream.h"
 
 #define VK_NO_PROTOTYPES
 #include "vulkan/vulkan.h"
@@ -319,6 +319,7 @@ namespace VTC
 		bool GenStructToString (const fs::path &headerFile, const fs::path &sourceFile) const;
 		bool GenStructTypeHelpers (const fs::path &output) const;
 
+		bool GenFuncErrorChecks (const fs::path &output) const;
 		bool GenUnpacker (const fs::path &output) const;
 
 		bool GenRawVulkanCalls (const fs::path &output) const;

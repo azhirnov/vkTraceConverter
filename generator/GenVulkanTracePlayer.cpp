@@ -233,14 +233,14 @@ namespace VTC
 		
 		// store header to file
 		{
-			HddWFile	file{ headerFile };
+			FileWStream		file{ headerFile };
 			CHECK_ERR( file.IsOpen() );
 			CHECK_ERR( file.Write( StringView(header) ));
 			CHECK_ERR( file.Write( StringView(header2) ));
 		}
 		// store source to file
 		{
-			HddWFile	file{ sourceFile };
+			FileWStream		file{ sourceFile };
 			CHECK_ERR( file.IsOpen() );
 			CHECK_ERR( file.Write( StringView(str1) ));
 			CHECK_ERR( file.Write( StringView(str2) ));
@@ -299,7 +299,7 @@ namespace VTC
 		}
 
 
-		HddWFile	file{ output };
+		FileWStream		file{ output };
 		CHECK_ERR( file.IsOpen() );	
 		CHECK_ERR( file.Write( StringView(str) ));
 

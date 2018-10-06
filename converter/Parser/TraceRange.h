@@ -17,7 +17,7 @@ namespace VTC
 	{
 	// types
 	public:
-		using RFilePtr	= SharedPtr<HddRFile>;
+		using RStreamPtr	= SharedPtr<FileRStream>;
 
 
 		struct Bookmark
@@ -58,7 +58,7 @@ namespace VTC
 		private:
 			AlignedBuffer<alignof(size_t)>	_buffer;
 			vktrace_trace_packet_header*	_lastPacket		= null;
-			RFilePtr						_file;
+			RStreamPtr						_file;
 			BytesU							_offset;
 			BytesU							_nextOffset;
 			
@@ -67,7 +67,7 @@ namespace VTC
 
 		// methods
 		private:
-			Iterator (const RFilePtr &file, BytesU offset);
+			Iterator (const RStreamPtr &file, BytesU offset);
 
 			bool _ReadPacket ();
 			void _ReleasePacket ();
@@ -103,18 +103,18 @@ namespace VTC
 
 	// variables
 	private:
-		RFilePtr	_file;
+		RStreamPtr	_file;
 		BytesU		_firstPacketOffset;
 		BytesU		_lastPacketOffset;
 
 
 	// methods
 	private:
-		TraceRange (const RFilePtr &file, BytesU first, BytesU last);
+		TraceRange (const RStreamPtr &file, BytesU first, BytesU last);
 
 	public:
 		TraceRange () {}
-		explicit TraceRange (const RFilePtr &file);
+		explicit TraceRange (const RStreamPtr &file);
 
 		ND_ Iterator	begin ()	const;
 		//ND_ Iterator	end ()		const;		// use 'LastBookmark()' instead
@@ -160,7 +160,7 @@ namespace VTC
 	{
 		ASSERT( _lastPacket );
 
-		if constexpr ( std::is_pointer_v<T> )
+		if constexpr ( IsPointer<T> )
 			return BitCast< const T >( _lastPacket->pBody );
 		else
 			return *BitCast< T const *>( _lastPacket->pBody );

@@ -130,7 +130,7 @@ namespace VTC
 		auto	func_info = _funcs.find( SearchableFunc{packet.vkFunc} );
 		CHECK_ERR( func_info != _funcs.end() );
 
-		str	<< "\t\t	packet_" << packet.suffix << "*  packet = BitCast<packet_" << packet.suffix << "*>(header->pBody);\n"
+		str	<< "\t\t	auto*  packet = BitCast<packet_" << packet.suffix << "*>(header->pBody);\n"
 			<< "\t\t	packet->header = header;\n";
 
 
@@ -376,7 +376,7 @@ namespace VTC
 
 
 		// store to file
-		HddWFile	file{ output };
+		FileWStream		file{ output };
 		CHECK_ERR( file.IsOpen() );
 	
 		CHECK_ERR( file.Write( StringView(str) ));

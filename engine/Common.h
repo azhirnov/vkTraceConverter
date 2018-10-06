@@ -4,7 +4,7 @@
 
 #include "stl/Algorithms/Cast.h"
 #include "stl/Containers/Union.h"
-#include "stl/File/HddFile.h"
+#include "stl/Stream/FileStream.h"
 
 #include "framework/Vulkan/VulkanDeviceExt.h"
 #include "framework/Vulkan/VulkanSwapchain.h"

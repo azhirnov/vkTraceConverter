@@ -10,7 +10,7 @@ namespace VTPlayer
 	constructor
 =================================================
 */
-	TraceReader::TraceReader (const SharedPtr<RFile> &file) :
+	TraceReader::TraceReader (const SharedPtr<RStream> &file) :
 		_packet{},		_file{ file }
 	{
 		if ( _file and _file->IsOpen() )
@@ -42,10 +42,10 @@ namespace VTPlayer
 			return false;
 		}
 
-		if ( not _file->SeekSet( _offset ) ) {
+		/*if ( not _file->SeekSet( _offset ) ) {
 			ASSERT(false);
 			return false;
-		}
+		}*/
 
 		CHECK_ERR( _file->Read( OUT _packet ));
 

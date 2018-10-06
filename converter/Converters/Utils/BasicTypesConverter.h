@@ -33,11 +33,11 @@ namespace VTC
 		std::stringstream	str;
 		str << "0x" << std::hex << ivalue;
 		
-		if constexpr ( std::is_same_v< T, uint32_t > or (std::is_pointer_v<T> and sizeof(T) == sizeof(uint32_t)) )
+		if constexpr ( IsSameTypes< T, uint32_t > or (IsPointer<T> and sizeof(T) == sizeof(uint32_t)) )
 			str << 'u';
-		else if constexpr ( std::is_same_v< T, uint64_t > or (std::is_pointer_v<T> and sizeof(T) == sizeof(uint64_t)) )
+		else if constexpr ( IsSameTypes< T, uint64_t > or (IsPointer<T> and sizeof(T) == sizeof(uint64_t)) )
 			str << "ull";
-		else if constexpr ( std::is_same_v< T, int64_t > )
+		else if constexpr ( IsSameTypes< T, int64_t > )
 			str << "ll";
 
 		return str.str();
@@ -49,15 +49,15 @@ namespace VTC
 =================================================
 */
 	template <typename T>
-	ND_ inline std::enable_if_t<std::is_integral_v<T>, String>  IntToString (const T &value)
+	ND_ inline EnableIf<IsInteger<T>, String>  IntToString (const T &value)
 	{
 		String	str = ToString( value );
 
-		if constexpr ( std::is_same_v< T, uint32_t > )
+		if constexpr ( IsSameTypes< T, uint32_t > )
 			str << 'u';
-		else if constexpr ( std::is_same_v< T, uint64_t > )
+		else if constexpr ( IsSameTypes< T, uint64_t > )
 			str << "ull";
-		else if constexpr ( std::is_same_v< T, int64_t > )
+		else if constexpr ( IsSameTypes< T, int64_t > )
 			str << "ll";
 
 		return str;

@@ -85,6 +85,7 @@
 	ND_ String  Serialize_VkExternalSemaphoreHandleTypeFlagBits (VkExternalSemaphoreHandleTypeFlagBits);
 	ND_ String  Serialize_VkExternalSemaphoreFeatureFlagBits (VkExternalSemaphoreFeatureFlagBits);
 	ND_ String  Serialize_VkColorSpaceKHR (VkColorSpaceKHR);
+	ND_ String  Serialize_VkAccelerationStructureTypeNVX (VkAccelerationStructureTypeNVX);
 	ND_ String  Serialize_VkPresentModeKHR (VkPresentModeKHR);
 	ND_ String  Serialize_VkSurfaceTransformFlagBitsKHR (VkSurfaceTransformFlagBitsKHR);
 	ND_ String  Serialize_VkCompositeAlphaFlagBitsKHR (VkCompositeAlphaFlagBitsKHR);
@@ -103,6 +104,9 @@
 	ND_ String  Serialize_VkConservativeRasterizationModeEXT (VkConservativeRasterizationModeEXT);
 	ND_ String  Serialize_VkSamplerReductionModeEXT (VkSamplerReductionModeEXT);
 	ND_ String  Serialize_VkCoverageModulationModeNV (VkCoverageModulationModeNV);
+	ND_ String  Serialize_VkShadingRatePaletteEntryNV (VkShadingRatePaletteEntryNV);
+	ND_ String  Serialize_VkCoarseSampleOrderTypeNV (VkCoarseSampleOrderTypeNV);
+	ND_ String  Serialize_VkGeometryTypeNVX (VkGeometryTypeNVX);
 	ND_ String  Serialize_VkDisplayPlaneAlphaFlagsKHR (VkDisplayPlaneAlphaFlagsKHR);
 	ND_ String  Serialize_VkQueueFlags (VkQueueFlags);
 	ND_ String  Serialize_VkCommandPoolTrimFlags (VkCommandPoolTrimFlags);
@@ -197,6 +201,8 @@
 	ND_ String  Serialize_VkPipelineRasterizationConservativeStateCreateFlagsEXT (VkPipelineRasterizationConservativeStateCreateFlagsEXT);
 	ND_ String  Serialize_VkValidationCacheCreateFlagsEXT (VkValidationCacheCreateFlagsEXT);
 	ND_ String  Serialize_VkDescriptorBindingFlagsEXT (VkDescriptorBindingFlagsEXT);
+	ND_ String  Serialize_VkGeometryFlagsNVX (VkGeometryFlagsNVX);
+	ND_ String  Serialize_VkBuildAccelerationStructureFlagsNVX (VkBuildAccelerationStructureFlagsNVX);
 #ifdef VULKAN_ANDROID_H_
 	ND_ String  Serialize_VkAndroidSurfaceCreateFlagsKHR (VkAndroidSurfaceCreateFlagsKHR);
 #endif

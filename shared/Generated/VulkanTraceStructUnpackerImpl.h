@@ -11,6 +11,12 @@ void VUnpackStruct (VkBaseOutStructure *ptr, const VUnpacker &unpacker)
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_COARSE_SAMPLE_ORDER_STATE_CREATE_INFO_NV : {
+			VkPipelineViewportCoarseSampleOrderStateCreateInfoNV*  obj = BitCast<VkPipelineViewportCoarseSampleOrderStateCreateInfoNV*>( ptr );
+			VUnpack_VkPipelineViewportCoarseSampleOrderStateCreateInfoNV( obj, unpacker );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_DOMAIN_ORIGIN_STATE_CREATE_INFO : {
 			VkPipelineTessellationDomainOriginStateCreateInfo*  obj = BitCast<VkPipelineTessellationDomainOriginStateCreateInfo*>( ptr );
 			VUnpack_VkPipelineTessellationDomainOriginStateCreateInfo( obj, unpacker );
@@ -527,6 +533,12 @@ void VUnpackStruct (VkBaseOutStructure *ptr, const VUnpacker &unpacker)
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_EXCLUSIVE_SCISSOR_STATE_CREATE_INFO_NV : {
+			VkPipelineViewportExclusiveScissorStateCreateInfoNV*  obj = BitCast<VkPipelineViewportExclusiveScissorStateCreateInfoNV*>( ptr );
+			VUnpack_VkPipelineViewportExclusiveScissorStateCreateInfoNV( obj, unpacker );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_W_SCALING_STATE_CREATE_INFO_NV : {
 			VkPipelineViewportWScalingStateCreateInfoNV*  obj = BitCast<VkPipelineViewportWScalingStateCreateInfoNV*>( ptr );
 			VUnpack_VkPipelineViewportWScalingStateCreateInfoNV( obj, unpacker );
@@ -557,6 +569,12 @@ void VUnpackStruct (VkBaseOutStructure *ptr, const VUnpacker &unpacker)
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SHADING_RATE_IMAGE_STATE_CREATE_INFO_NV : {
+			VkPipelineViewportShadingRateImageStateCreateInfoNV*  obj = BitCast<VkPipelineViewportShadingRateImageStateCreateInfoNV*>( ptr );
+			VUnpack_VkPipelineViewportShadingRateImageStateCreateInfoNV( obj, unpacker );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_INLINE_UNIFORM_BLOCK_CREATE_INFO_EXT : {
 			VkDescriptorPoolInlineUniformBlockCreateInfoEXT*  obj = BitCast<VkDescriptorPoolInlineUniformBlockCreateInfoEXT*>( ptr );
 			VUnpack_VkDescriptorPoolInlineUniformBlockCreateInfoEXT( obj, unpacker );
@@ -581,6 +599,12 @@ void VUnpackStruct (VkBaseOutStructure *ptr, const VUnpacker &unpacker)
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_PIPELINE_REPRESENTATIVE_FRAGMENT_TEST_STATE_CREATE_INFO_NV : {
+			VkPipelineRepresentativeFragmentTestStateCreateInfoNV*  obj = BitCast<VkPipelineRepresentativeFragmentTestStateCreateInfoNV*>( ptr );
+			VUnpack_VkPipelineRepresentativeFragmentTestStateCreateInfoNV( obj, unpacker );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_DIVISOR_STATE_CREATE_INFO_EXT : {
 			VkPipelineVertexInputDivisorStateCreateInfoEXT*  obj = BitCast<VkPipelineVertexInputDivisorStateCreateInfoEXT*>( ptr );
 			VUnpack_VkPipelineVertexInputDivisorStateCreateInfoEXT( obj, unpacker );
@@ -594,6 +618,18 @@ void VUnpack_VkSemaphoreCreateInfo (VkSemaphoreCreateInfo *ptr, const VUnpacker 
 {
 	if ( ptr == null ) return;
 	unpacker.UnpackPtr( INOUT ptr->pNext );
+	VUnpackStruct( Cast<VkBaseOutStructure>(const_cast<void*>(ptr->pNext)), unpacker );
+}
+
+
+void VUnpack_VkPipelineViewportCoarseSampleOrderStateCreateInfoNV (VkPipelineViewportCoarseSampleOrderStateCreateInfoNV *ptr, const VUnpacker &unpacker)
+{
+	if ( ptr == null ) return;
+	unpacker.UnpackPtr( INOUT ptr->pNext );
+	unpacker.UnpackPtr( INOUT ptr->pCustomSampleOrders );
+	for (uint i = 0; (ptr->pCustomSampleOrders != null) and (i < ptr->customSampleOrderCount); ++i) {
+		VUnpack_VkCoarseSampleOrderCustomNV( const_cast<VkCoarseSampleOrderCustomNV*>(ptr->pCustomSampleOrders + i), unpacker );
+	}
 	VUnpackStruct( Cast<VkBaseOutStructure>(const_cast<void*>(ptr->pNext)), unpacker );
 }
 
@@ -1451,6 +1487,13 @@ void VUnpack_VkPipelineCoverageToColorStateCreateInfoNV (VkPipelineCoverageToCol
 }
 
 
+void VUnpack_VkShadingRatePaletteNV (VkShadingRatePaletteNV *ptr, const VUnpacker &unpacker)
+{
+	if ( ptr == null ) return;
+	unpacker.UnpackPtr( INOUT ptr->pShadingRatePaletteEntries );
+}
+
+
 void VUnpack_VkBindBufferMemoryInfo (VkBindBufferMemoryInfo *ptr, const VUnpacker &unpacker)
 {
 	if ( ptr == null ) return;
@@ -1674,6 +1717,12 @@ void VUnpack_VkDescriptorUpdateTemplateCreateInfo (VkDescriptorUpdateTemplateCre
 }
 
 
+void VUnpack_VkCoarseSampleLocationNV (VkCoarseSampleLocationNV *ptr, const VUnpacker &unpacker)
+{
+	if ( ptr == null ) return;
+}
+
+
 void VUnpack_VkImageSwapchainCreateInfoKHR (VkImageSwapchainCreateInfoKHR *ptr, const VUnpacker &unpacker)
 {
 	if ( ptr == null ) return;
@@ -1842,6 +1891,16 @@ void VUnpack_VkDedicatedAllocationMemoryAllocateInfoNV (VkDedicatedAllocationMem
 }
 
 
+void VUnpack_VkCoarseSampleOrderCustomNV (VkCoarseSampleOrderCustomNV *ptr, const VUnpacker &unpacker)
+{
+	if ( ptr == null ) return;
+	unpacker.UnpackPtr( INOUT ptr->pSampleLocations );
+	for (uint i = 0; (ptr->pSampleLocations != null) and (i < ptr->sampleLocationCount); ++i) {
+		VUnpack_VkCoarseSampleLocationNV( const_cast<VkCoarseSampleLocationNV*>(ptr->pSampleLocations + i), unpacker );
+	}
+}
+
+
 void VUnpack_VkImageViewASTCDecodeModeEXT (VkImageViewASTCDecodeModeEXT *ptr, const VUnpacker &unpacker)
 {
 	if ( ptr == null ) return;
@@ -1861,6 +1920,18 @@ void VUnpack_VkCommandBufferInheritanceConditionalRenderingInfoEXT (VkCommandBuf
 void VUnpack_VkViewportWScalingNV (VkViewportWScalingNV *ptr, const VUnpacker &unpacker)
 {
 	if ( ptr == null ) return;
+}
+
+
+void VUnpack_VkPipelineViewportExclusiveScissorStateCreateInfoNV (VkPipelineViewportExclusiveScissorStateCreateInfoNV *ptr, const VUnpacker &unpacker)
+{
+	if ( ptr == null ) return;
+	unpacker.UnpackPtr( INOUT ptr->pNext );
+	unpacker.UnpackPtr( INOUT ptr->pExclusiveScissors );
+	for (uint i = 0; (ptr->pExclusiveScissors != null) and (i < ptr->exclusiveScissorCount); ++i) {
+		VUnpack_VkRect2D( const_cast<VkRect2D*>(ptr->pExclusiveScissors + i), unpacker );
+	}
+	VUnpackStruct( Cast<VkBaseOutStructure>(const_cast<void*>(ptr->pNext)), unpacker );
 }
 
 
@@ -1917,6 +1988,16 @@ void VUnpack_VkWriteDescriptorSetInlineUniformBlockEXT (VkWriteDescriptorSetInli
 }
 
 
+void VUnpack_VkPipelineViewportShadingRateImageStateCreateInfoNV (VkPipelineViewportShadingRateImageStateCreateInfoNV *ptr, const VUnpacker &unpacker)
+{
+	if ( ptr == null ) return;
+	unpacker.UnpackPtr( INOUT ptr->pNext );
+	unpacker.UnpackPtr( INOUT ptr->pShadingRatePalettes );
+	VUnpack_VkShadingRatePaletteNV( const_cast<VkShadingRatePaletteNV*>(ptr->pShadingRatePalettes), unpacker );
+	VUnpackStruct( Cast<VkBaseOutStructure>(const_cast<void*>(ptr->pNext)), unpacker );
+}
+
+
 void VUnpack_VkDescriptorPoolInlineUniformBlockCreateInfoEXT (VkDescriptorPoolInlineUniformBlockCreateInfoEXT *ptr, const VUnpacker &unpacker)
 {
 	if ( ptr == null ) return;
@@ -1965,6 +2046,14 @@ void VUnpack_VkPipelineCoverageModulationStateCreateInfoNV (VkPipelineCoverageMo
 	if ( ptr == null ) return;
 	unpacker.UnpackPtr( INOUT ptr->pNext );
 	unpacker.UnpackPtr( INOUT ptr->pCoverageModulationTable );
+	VUnpackStruct( Cast<VkBaseOutStructure>(const_cast<void*>(ptr->pNext)), unpacker );
+}
+
+
+void VUnpack_VkPipelineRepresentativeFragmentTestStateCreateInfoNV (VkPipelineRepresentativeFragmentTestStateCreateInfoNV *ptr, const VUnpacker &unpacker)
+{
+	if ( ptr == null ) return;
+	unpacker.UnpackPtr( INOUT ptr->pNext );
 	VUnpackStruct( Cast<VkBaseOutStructure>(const_cast<void*>(ptr->pNext)), unpacker );
 }
 

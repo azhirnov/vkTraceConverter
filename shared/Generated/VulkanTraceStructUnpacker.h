@@ -2,6 +2,7 @@
 
 void VUnpackStruct (VkBaseOutStructure*, const VUnpacker&);
 void VUnpack_VkSemaphoreCreateInfo (VkSemaphoreCreateInfo*, const VUnpacker&);
+void VUnpack_VkPipelineViewportCoarseSampleOrderStateCreateInfoNV (VkPipelineViewportCoarseSampleOrderStateCreateInfoNV*, const VUnpacker&);
 void VUnpack_VkDescriptorUpdateTemplateEntry (VkDescriptorUpdateTemplateEntry*, const VUnpacker&);
 void VUnpack_VkPipelineTessellationDomainOriginStateCreateInfo (VkPipelineTessellationDomainOriginStateCreateInfo*, const VUnpacker&);
 void VUnpack_VkBufferViewCreateInfo (VkBufferViewCreateInfo*, const VUnpacker&);
@@ -92,6 +93,7 @@ void VUnpack_VkViewportSwizzleNV (VkViewportSwizzleNV*, const VUnpacker&);
 void VUnpack_VkBufferMemoryBarrier (VkBufferMemoryBarrier*, const VUnpacker&);
 void VUnpack_VkImageMemoryBarrier (VkImageMemoryBarrier*, const VUnpacker&);
 void VUnpack_VkPipelineCoverageToColorStateCreateInfoNV (VkPipelineCoverageToColorStateCreateInfoNV*, const VUnpacker&);
+void VUnpack_VkShadingRatePaletteNV (VkShadingRatePaletteNV*, const VUnpacker&);
 void VUnpack_VkBindBufferMemoryInfo (VkBindBufferMemoryInfo*, const VUnpacker&);
 void VUnpack_VkBindImageMemoryInfo (VkBindImageMemoryInfo*, const VUnpacker&);
 void VUnpack_VkSubpassEndInfoKHR (VkSubpassEndInfoKHR*, const VUnpacker&);
@@ -115,6 +117,7 @@ void VUnpack_VkProtectedSubmitInfo (VkProtectedSubmitInfo*, const VUnpacker&);
 void VUnpack_VkSamplerYcbcrConversionCreateInfo (VkSamplerYcbcrConversionCreateInfo*, const VUnpacker&);
 void VUnpack_VkBindImagePlaneMemoryInfo (VkBindImagePlaneMemoryInfo*, const VUnpacker&);
 void VUnpack_VkDescriptorUpdateTemplateCreateInfo (VkDescriptorUpdateTemplateCreateInfo*, const VUnpacker&);
+void VUnpack_VkCoarseSampleLocationNV (VkCoarseSampleLocationNV*, const VUnpacker&);
 void VUnpack_VkImageSwapchainCreateInfoKHR (VkImageSwapchainCreateInfoKHR*, const VUnpacker&);
 void VUnpack_VkBindImageMemorySwapchainInfoKHR (VkBindImageMemorySwapchainInfoKHR*, const VUnpacker&);
 void VUnpack_VkVertexInputBindingDivisorDescriptionEXT (VkVertexInputBindingDivisorDescriptionEXT*, const VUnpacker&);
@@ -132,24 +135,29 @@ void VUnpack_VkDebugMarkerMarkerInfoEXT (VkDebugMarkerMarkerInfoEXT*, const VUnp
 void VUnpack_VkDedicatedAllocationImageCreateInfoNV (VkDedicatedAllocationImageCreateInfoNV*, const VUnpacker&);
 void VUnpack_VkDedicatedAllocationBufferCreateInfoNV (VkDedicatedAllocationBufferCreateInfoNV*, const VUnpacker&);
 void VUnpack_VkDedicatedAllocationMemoryAllocateInfoNV (VkDedicatedAllocationMemoryAllocateInfoNV*, const VUnpacker&);
+void VUnpack_VkCoarseSampleOrderCustomNV (VkCoarseSampleOrderCustomNV*, const VUnpacker&);
 void VUnpack_VkImageViewASTCDecodeModeEXT (VkImageViewASTCDecodeModeEXT*, const VUnpacker&);
 void VUnpack_VkCommandBufferInheritanceConditionalRenderingInfoEXT (VkCommandBufferInheritanceConditionalRenderingInfoEXT*, const VUnpacker&);
 void VUnpack_VkViewportWScalingNV (VkViewportWScalingNV*, const VUnpacker&);
+void VUnpack_VkPipelineViewportExclusiveScissorStateCreateInfoNV (VkPipelineViewportExclusiveScissorStateCreateInfoNV*, const VUnpacker&);
 void VUnpack_VkPipelineViewportWScalingStateCreateInfoNV (VkPipelineViewportWScalingStateCreateInfoNV*, const VUnpacker&);
 void VUnpack_VkPipelineViewportSwizzleStateCreateInfoNV (VkPipelineViewportSwizzleStateCreateInfoNV*, const VUnpacker&);
 void VUnpack_VkPipelineDiscardRectangleStateCreateInfoEXT (VkPipelineDiscardRectangleStateCreateInfoEXT*, const VUnpacker&);
 void VUnpack_VkPipelineRasterizationConservativeStateCreateInfoEXT (VkPipelineRasterizationConservativeStateCreateInfoEXT*, const VUnpacker&);
 void VUnpack_VkWriteDescriptorSetInlineUniformBlockEXT (VkWriteDescriptorSetInlineUniformBlockEXT*, const VUnpacker&);
+void VUnpack_VkPipelineViewportShadingRateImageStateCreateInfoNV (VkPipelineViewportShadingRateImageStateCreateInfoNV*, const VUnpacker&);
 void VUnpack_VkDescriptorPoolInlineUniformBlockCreateInfoEXT (VkDescriptorPoolInlineUniformBlockCreateInfoEXT*, const VUnpacker&);
 void VUnpack_VkSampleLocationEXT (VkSampleLocationEXT*, const VUnpacker&);
 void VUnpack_VkSampleLocationsInfoEXT (VkSampleLocationsInfoEXT*, const VUnpacker&);
 void VUnpack_VkAttachmentSampleLocationsEXT (VkAttachmentSampleLocationsEXT*, const VUnpacker&);
 void VUnpack_VkPipelineSampleLocationsStateCreateInfoEXT (VkPipelineSampleLocationsStateCreateInfoEXT*, const VUnpacker&);
 void VUnpack_VkPipelineCoverageModulationStateCreateInfoNV (VkPipelineCoverageModulationStateCreateInfoNV*, const VUnpacker&);
+void VUnpack_VkPipelineRepresentativeFragmentTestStateCreateInfoNV (VkPipelineRepresentativeFragmentTestStateCreateInfoNV*, const VUnpacker&);
 void VUnpack_VkPipelineVertexInputDivisorStateCreateInfoEXT (VkPipelineVertexInputDivisorStateCreateInfoEXT*, const VUnpacker&);
 
 
 template <> inline VkSemaphoreCreateInfo*  VUnpacker::_GetPtr<> (VkSemaphoreCreateInfo *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkSemaphoreCreateInfo( &ptr[i], *this );  return ptr; }
+template <> inline VkPipelineViewportCoarseSampleOrderStateCreateInfoNV*  VUnpacker::_GetPtr<> (VkPipelineViewportCoarseSampleOrderStateCreateInfoNV *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkPipelineViewportCoarseSampleOrderStateCreateInfoNV( &ptr[i], *this );  return ptr; }
 template <> inline VkDescriptorUpdateTemplateEntry*  VUnpacker::_GetPtr<> (VkDescriptorUpdateTemplateEntry *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkDescriptorUpdateTemplateEntry( &ptr[i], *this );  return ptr; }
 template <> inline VkPipelineTessellationDomainOriginStateCreateInfo*  VUnpacker::_GetPtr<> (VkPipelineTessellationDomainOriginStateCreateInfo *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkPipelineTessellationDomainOriginStateCreateInfo( &ptr[i], *this );  return ptr; }
 template <> inline VkBufferViewCreateInfo*  VUnpacker::_GetPtr<> (VkBufferViewCreateInfo *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkBufferViewCreateInfo( &ptr[i], *this );  return ptr; }
@@ -240,6 +248,7 @@ template <> inline VkViewportSwizzleNV*  VUnpacker::_GetPtr<> (VkViewportSwizzle
 template <> inline VkBufferMemoryBarrier*  VUnpacker::_GetPtr<> (VkBufferMemoryBarrier *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkBufferMemoryBarrier( &ptr[i], *this );  return ptr; }
 template <> inline VkImageMemoryBarrier*  VUnpacker::_GetPtr<> (VkImageMemoryBarrier *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkImageMemoryBarrier( &ptr[i], *this );  return ptr; }
 template <> inline VkPipelineCoverageToColorStateCreateInfoNV*  VUnpacker::_GetPtr<> (VkPipelineCoverageToColorStateCreateInfoNV *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkPipelineCoverageToColorStateCreateInfoNV( &ptr[i], *this );  return ptr; }
+template <> inline VkShadingRatePaletteNV*  VUnpacker::_GetPtr<> (VkShadingRatePaletteNV *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkShadingRatePaletteNV( &ptr[i], *this );  return ptr; }
 template <> inline VkBindBufferMemoryInfo*  VUnpacker::_GetPtr<> (VkBindBufferMemoryInfo *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkBindBufferMemoryInfo( &ptr[i], *this );  return ptr; }
 template <> inline VkBindImageMemoryInfo*  VUnpacker::_GetPtr<> (VkBindImageMemoryInfo *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkBindImageMemoryInfo( &ptr[i], *this );  return ptr; }
 template <> inline VkSubpassEndInfoKHR*  VUnpacker::_GetPtr<> (VkSubpassEndInfoKHR *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkSubpassEndInfoKHR( &ptr[i], *this );  return ptr; }
@@ -263,6 +272,7 @@ template <> inline VkProtectedSubmitInfo*  VUnpacker::_GetPtr<> (VkProtectedSubm
 template <> inline VkSamplerYcbcrConversionCreateInfo*  VUnpacker::_GetPtr<> (VkSamplerYcbcrConversionCreateInfo *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkSamplerYcbcrConversionCreateInfo( &ptr[i], *this );  return ptr; }
 template <> inline VkBindImagePlaneMemoryInfo*  VUnpacker::_GetPtr<> (VkBindImagePlaneMemoryInfo *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkBindImagePlaneMemoryInfo( &ptr[i], *this );  return ptr; }
 template <> inline VkDescriptorUpdateTemplateCreateInfo*  VUnpacker::_GetPtr<> (VkDescriptorUpdateTemplateCreateInfo *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkDescriptorUpdateTemplateCreateInfo( &ptr[i], *this );  return ptr; }
+template <> inline VkCoarseSampleLocationNV*  VUnpacker::_GetPtr<> (VkCoarseSampleLocationNV *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkCoarseSampleLocationNV( &ptr[i], *this );  return ptr; }
 template <> inline VkImageSwapchainCreateInfoKHR*  VUnpacker::_GetPtr<> (VkImageSwapchainCreateInfoKHR *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkImageSwapchainCreateInfoKHR( &ptr[i], *this );  return ptr; }
 template <> inline VkBindImageMemorySwapchainInfoKHR*  VUnpacker::_GetPtr<> (VkBindImageMemorySwapchainInfoKHR *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkBindImageMemorySwapchainInfoKHR( &ptr[i], *this );  return ptr; }
 template <> inline VkVertexInputBindingDivisorDescriptionEXT*  VUnpacker::_GetPtr<> (VkVertexInputBindingDivisorDescriptionEXT *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkVertexInputBindingDivisorDescriptionEXT( &ptr[i], *this );  return ptr; }
@@ -280,18 +290,22 @@ template <> inline VkDebugMarkerMarkerInfoEXT*  VUnpacker::_GetPtr<> (VkDebugMar
 template <> inline VkDedicatedAllocationImageCreateInfoNV*  VUnpacker::_GetPtr<> (VkDedicatedAllocationImageCreateInfoNV *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkDedicatedAllocationImageCreateInfoNV( &ptr[i], *this );  return ptr; }
 template <> inline VkDedicatedAllocationBufferCreateInfoNV*  VUnpacker::_GetPtr<> (VkDedicatedAllocationBufferCreateInfoNV *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkDedicatedAllocationBufferCreateInfoNV( &ptr[i], *this );  return ptr; }
 template <> inline VkDedicatedAllocationMemoryAllocateInfoNV*  VUnpacker::_GetPtr<> (VkDedicatedAllocationMemoryAllocateInfoNV *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkDedicatedAllocationMemoryAllocateInfoNV( &ptr[i], *this );  return ptr; }
+template <> inline VkCoarseSampleOrderCustomNV*  VUnpacker::_GetPtr<> (VkCoarseSampleOrderCustomNV *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkCoarseSampleOrderCustomNV( &ptr[i], *this );  return ptr; }
 template <> inline VkImageViewASTCDecodeModeEXT*  VUnpacker::_GetPtr<> (VkImageViewASTCDecodeModeEXT *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkImageViewASTCDecodeModeEXT( &ptr[i], *this );  return ptr; }
 template <> inline VkCommandBufferInheritanceConditionalRenderingInfoEXT*  VUnpacker::_GetPtr<> (VkCommandBufferInheritanceConditionalRenderingInfoEXT *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkCommandBufferInheritanceConditionalRenderingInfoEXT( &ptr[i], *this );  return ptr; }
 template <> inline VkViewportWScalingNV*  VUnpacker::_GetPtr<> (VkViewportWScalingNV *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkViewportWScalingNV( &ptr[i], *this );  return ptr; }
+template <> inline VkPipelineViewportExclusiveScissorStateCreateInfoNV*  VUnpacker::_GetPtr<> (VkPipelineViewportExclusiveScissorStateCreateInfoNV *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkPipelineViewportExclusiveScissorStateCreateInfoNV( &ptr[i], *this );  return ptr; }
 template <> inline VkPipelineViewportWScalingStateCreateInfoNV*  VUnpacker::_GetPtr<> (VkPipelineViewportWScalingStateCreateInfoNV *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkPipelineViewportWScalingStateCreateInfoNV( &ptr[i], *this );  return ptr; }
 template <> inline VkPipelineViewportSwizzleStateCreateInfoNV*  VUnpacker::_GetPtr<> (VkPipelineViewportSwizzleStateCreateInfoNV *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkPipelineViewportSwizzleStateCreateInfoNV( &ptr[i], *this );  return ptr; }
 template <> inline VkPipelineDiscardRectangleStateCreateInfoEXT*  VUnpacker::_GetPtr<> (VkPipelineDiscardRectangleStateCreateInfoEXT *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkPipelineDiscardRectangleStateCreateInfoEXT( &ptr[i], *this );  return ptr; }
 template <> inline VkPipelineRasterizationConservativeStateCreateInfoEXT*  VUnpacker::_GetPtr<> (VkPipelineRasterizationConservativeStateCreateInfoEXT *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkPipelineRasterizationConservativeStateCreateInfoEXT( &ptr[i], *this );  return ptr; }
 template <> inline VkWriteDescriptorSetInlineUniformBlockEXT*  VUnpacker::_GetPtr<> (VkWriteDescriptorSetInlineUniformBlockEXT *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkWriteDescriptorSetInlineUniformBlockEXT( &ptr[i], *this );  return ptr; }
+template <> inline VkPipelineViewportShadingRateImageStateCreateInfoNV*  VUnpacker::_GetPtr<> (VkPipelineViewportShadingRateImageStateCreateInfoNV *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkPipelineViewportShadingRateImageStateCreateInfoNV( &ptr[i], *this );  return ptr; }
 template <> inline VkDescriptorPoolInlineUniformBlockCreateInfoEXT*  VUnpacker::_GetPtr<> (VkDescriptorPoolInlineUniformBlockCreateInfoEXT *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkDescriptorPoolInlineUniformBlockCreateInfoEXT( &ptr[i], *this );  return ptr; }
 template <> inline VkSampleLocationEXT*  VUnpacker::_GetPtr<> (VkSampleLocationEXT *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkSampleLocationEXT( &ptr[i], *this );  return ptr; }
 template <> inline VkSampleLocationsInfoEXT*  VUnpacker::_GetPtr<> (VkSampleLocationsInfoEXT *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkSampleLocationsInfoEXT( &ptr[i], *this );  return ptr; }
 template <> inline VkAttachmentSampleLocationsEXT*  VUnpacker::_GetPtr<> (VkAttachmentSampleLocationsEXT *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkAttachmentSampleLocationsEXT( &ptr[i], *this );  return ptr; }
 template <> inline VkPipelineSampleLocationsStateCreateInfoEXT*  VUnpacker::_GetPtr<> (VkPipelineSampleLocationsStateCreateInfoEXT *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkPipelineSampleLocationsStateCreateInfoEXT( &ptr[i], *this );  return ptr; }
 template <> inline VkPipelineCoverageModulationStateCreateInfoNV*  VUnpacker::_GetPtr<> (VkPipelineCoverageModulationStateCreateInfoNV *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkPipelineCoverageModulationStateCreateInfoNV( &ptr[i], *this );  return ptr; }
+template <> inline VkPipelineRepresentativeFragmentTestStateCreateInfoNV*  VUnpacker::_GetPtr<> (VkPipelineRepresentativeFragmentTestStateCreateInfoNV *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkPipelineRepresentativeFragmentTestStateCreateInfoNV( &ptr[i], *this );  return ptr; }
 template <> inline VkPipelineVertexInputDivisorStateCreateInfoEXT*  VUnpacker::_GetPtr<> (VkPipelineVertexInputDivisorStateCreateInfoEXT *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkPipelineVertexInputDivisorStateCreateInfoEXT( &ptr[i], *this );  return ptr; }

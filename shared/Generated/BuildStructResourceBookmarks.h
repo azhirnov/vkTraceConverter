@@ -35,6 +35,13 @@ switch ( header->sType )
 		break;
 	}
 
+	case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_COARSE_SAMPLE_ORDER_STATE_CREATE_INFO_NV : {
+		VkPipelineViewportCoarseSampleOrderStateCreateInfoNV const&  value = *BitCast<VkPipelineViewportCoarseSampleOrderStateCreateInfoNV const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
 	case VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_DOMAIN_ORIGIN_STATE_CREATE_INFO : {
 		VkPipelineTessellationDomainOriginStateCreateInfo const&  value = *BitCast<VkPipelineTessellationDomainOriginStateCreateInfo const *>( header );
 		if ( (value).pNext )
@@ -566,6 +573,17 @@ switch ( header->sType )
 		break;
 	}
 
+	case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NVX : {
+		VkAccelerationStructureCreateInfoNVX const&  value = *BitCast<VkAccelerationStructureCreateInfoNVX const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		for (uint a = 0; (value).pGeometries and a < (value).geometryCount; ++a) {
+			if ( ((value).pGeometries[a]).pNext )
+				_AddStructBookmsrks( BitCast<VkBaseInStructure const*>(((value).pGeometries[a]).pNext), iter, frame_id );
+		}
+		break;
+	}
+
 	case VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO : {
 		VkDescriptorPoolCreateInfo const&  value = *BitCast<VkDescriptorPoolCreateInfo const *>( header );
 		if ( (value).pNext )
@@ -657,6 +675,16 @@ switch ( header->sType )
 		for (uint a = 0; (value).pAttachments and a < (value).attachmentCount; ++a) {
 			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT, ResourceID((value).pAttachments[a]), iter, frame_id, EResOp::Access );
 		}
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NVX : {
+		VkGeometryTrianglesNVX const&  value = *BitCast<VkGeometryTrianglesNVX const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID((value).vertexData), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID((value).indexData), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID((value).transformData), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -799,6 +827,13 @@ switch ( header->sType )
 
 	case VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS : {
 		VkMemoryDedicatedRequirements const&  value = *BitCast<VkMemoryDedicatedRequirements const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_PROPERTIES_NV : {
+		VkPhysicalDeviceShadingRateImagePropertiesNV const&  value = *BitCast<VkPhysicalDeviceShadingRateImagePropertiesNV const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		break;
@@ -1152,8 +1187,22 @@ switch ( header->sType )
 		break;
 	}
 
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CORNER_SAMPLED_IMAGE_FEATURES_NV : {
+		VkPhysicalDeviceCornerSampledImageFeaturesNV const&  value = *BitCast<VkPhysicalDeviceCornerSampledImageFeaturesNV const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
 	case VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO : {
 		VkExportMemoryAllocateInfo const&  value = *BitCast<VkExportMemoryAllocateInfo const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_REPRESENTATIVE_FRAGMENT_TEST_FEATURES_NV : {
+		VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV const&  value = *BitCast<VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		break;
@@ -1556,6 +1605,14 @@ switch ( header->sType )
 		break;
 	}
 
+	case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NVX : {
+		VkAccelerationStructureMemoryRequirementsInfoNVX const&  value = *BitCast<VkAccelerationStructureMemoryRequirementsInfoNVX const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NVX_EXT, ResourceID((value).accelerationStructure), iter, frame_id, EResOp::Access );
+		break;
+	}
+
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES_KHR : {
 		VkPhysicalDeviceVulkanMemoryModelFeaturesKHR const&  value = *BitCast<VkPhysicalDeviceVulkanMemoryModelFeaturesKHR const *>( header );
 		if ( (value).pNext )
@@ -1572,6 +1629,13 @@ switch ( header->sType )
 
 	case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD : {
 		VkPipelineRasterizationStateRasterizationOrderAMD const&  value = *BitCast<VkPipelineRasterizationStateRasterizationOrderAMD const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_GEOMETRY_NVX : {
+		VkGeometryNVX const&  value = *BitCast<VkGeometryNVX const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		break;
@@ -1749,8 +1813,22 @@ switch ( header->sType )
 		break;
 	}
 
+	case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_EXCLUSIVE_SCISSOR_STATE_CREATE_INFO_NV : {
+		VkPipelineViewportExclusiveScissorStateCreateInfoNV const&  value = *BitCast<VkPipelineViewportExclusiveScissorStateCreateInfoNV const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
 	case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_W_SCALING_STATE_CREATE_INFO_NV : {
 		VkPipelineViewportWScalingStateCreateInfoNV const&  value = *BitCast<VkPipelineViewportWScalingStateCreateInfoNV const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXCLUSIVE_SCISSOR_FEATURES_NV : {
+		VkPhysicalDeviceExclusiveScissorFeaturesNV const&  value = *BitCast<VkPhysicalDeviceExclusiveScissorFeaturesNV const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		break;
@@ -1788,6 +1866,20 @@ switch ( header->sType )
 		VkPipelineDiscardRectangleStateCreateInfoEXT const&  value = *BitCast<VkPipelineDiscardRectangleStateCreateInfoEXT const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_RAYTRACING_PIPELINE_CREATE_INFO_NVX : {
+		VkRaytracingPipelineCreateInfoNVX const&  value = *BitCast<VkRaytracingPipelineCreateInfoNVX const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		for (uint a = 0; (value).pStages and a < (value).stageCount; ++a) {
+			if ( ((value).pStages[a]).pNext )
+				_AddStructBookmsrks( BitCast<VkBaseInStructure const*>(((value).pStages[a]).pNext), iter, frame_id );
+			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT, ResourceID(((value).pStages[a]).module), iter, frame_id, EResOp::Access );
+		}
+		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT, ResourceID((value).layout), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT, ResourceID((value).basePipelineHandle), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -1854,8 +1946,22 @@ switch ( header->sType )
 		break;
 	}
 
+	case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SHADING_RATE_IMAGE_STATE_CREATE_INFO_NV : {
+		VkPipelineViewportShadingRateImageStateCreateInfoNV const&  value = *BitCast<VkPipelineViewportShadingRateImageStateCreateInfoNV const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
 	case VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_INLINE_UNIFORM_BLOCK_CREATE_INFO_EXT : {
 		VkDescriptorPoolInlineUniformBlockCreateInfoEXT const&  value = *BitCast<VkDescriptorPoolInlineUniformBlockCreateInfoEXT const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_FEATURES_NV : {
+		VkPhysicalDeviceShadingRateImageFeaturesNV const&  value = *BitCast<VkPhysicalDeviceShadingRateImageFeaturesNV const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		break;
@@ -1926,6 +2032,47 @@ switch ( header->sType )
 		break;
 	}
 
+	case VK_STRUCTURE_TYPE_GEOMETRY_AABB_NVX : {
+		VkGeometryAABBNVX const&  value = *BitCast<VkGeometryAABBNVX const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID((value).aabbData), iter, frame_id, EResOp::Access );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NVX : {
+		VkBindAccelerationStructureMemoryInfoNVX const&  value = *BitCast<VkBindAccelerationStructureMemoryInfoNVX const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NVX_EXT, ResourceID((value).accelerationStructure), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, ResourceID((value).memory), iter, frame_id, EResOp::Access );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_DESCRIPTOR_ACCELERATION_STRUCTURE_INFO_NVX : {
+		VkDescriptorAccelerationStructureInfoNVX const&  value = *BitCast<VkDescriptorAccelerationStructureInfoNVX const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		for (uint a = 0; (value).pAccelerationStructures and a < (value).accelerationStructureCount; ++a) {
+			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NVX_EXT, ResourceID((value).pAccelerationStructures[a]), iter, frame_id, EResOp::Access );
+		}
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAYTRACING_PROPERTIES_NVX : {
+		VkPhysicalDeviceRaytracingPropertiesNVX const&  value = *BitCast<VkPhysicalDeviceRaytracingPropertiesNVX const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_PIPELINE_REPRESENTATIVE_FRAGMENT_TEST_STATE_CREATE_INFO_NV : {
+		VkPipelineRepresentativeFragmentTestStateCreateInfoNV const&  value = *BitCast<VkPipelineRepresentativeFragmentTestStateCreateInfoNV const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
 	case VK_STRUCTURE_TYPE_DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_EXT : {
 		VkDeviceQueueGlobalPriorityCreateInfoEXT const&  value = *BitCast<VkDeviceQueueGlobalPriorityCreateInfoEXT const *>( header );
 		if ( (value).pNext )
@@ -1966,6 +2113,41 @@ switch ( header->sType )
 
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT : {
 		VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT const&  value = *BitCast<VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMPUTE_SHADER_DERIVATIVES_FEATURES_NV : {
+		VkPhysicalDeviceComputeShaderDerivativesFeaturesNV const&  value = *BitCast<VkPhysicalDeviceComputeShaderDerivativesFeaturesNV const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV : {
+		VkPhysicalDeviceMeshShaderFeaturesNV const&  value = *BitCast<VkPhysicalDeviceMeshShaderFeaturesNV const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_NV : {
+		VkPhysicalDeviceMeshShaderPropertiesNV const&  value = *BitCast<VkPhysicalDeviceMeshShaderPropertiesNV const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_FEATURES_NV : {
+		VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV const&  value = *BitCast<VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_IMAGE_FOOTPRINT_FEATURES_NV : {
+		VkPhysicalDeviceShaderImageFootprintFeaturesNV const&  value = *BitCast<VkPhysicalDeviceShaderImageFootprintFeaturesNV const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		break;
@@ -2081,6 +2263,8 @@ switch ( header->sType )
 	case VK_STRUCTURE_TYPE_VI_SURFACE_CREATE_INFO_NN : break;
 	case VK_STRUCTURE_TYPE_IOS_SURFACE_CREATE_INFO_MVK : break;
 	case VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK : break;
+	case VK_STRUCTURE_TYPE_GEOMETRY_INSTANCE_NVX : break;
+	case VK_STRUCTURE_TYPE_HIT_SHADER_MODULE_CREATE_INFO_NVX : break;
 	case VK_STRUCTURE_TYPE_RANGE_SIZE : break;
 	case VK_STRUCTURE_TYPE_MAX_ENUM : break;
 }

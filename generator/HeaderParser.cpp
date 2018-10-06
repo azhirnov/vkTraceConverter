@@ -536,7 +536,7 @@ namespace VTC
 		for (auto& info : file_names)
 		{
 			const fs::path	path = folder / info.filename;
-			HddRFile		file{ path };
+			FileRStream		file{ path };
 			CHECK_ERR( file.IsOpen() );
 
 			_fileData.push_back({ "", info.disableIfdef.front() });
@@ -601,7 +601,7 @@ namespace VTC
 	{
 		CHECK_ERR( fs::exists( filename ));
 
-		HddRFile	file{ filename };
+		FileRStream	file{ filename };
 		CHECK_ERR( file.IsOpen() );
 
 		String	buf;
@@ -662,27 +662,6 @@ namespace VTC
 		}
 
 		return true;
-	}
-
-/*
-=================================================
-	ParsePacketIDs
-=================================================
-*
-	bool Generator::ParsePacketIDs ()
-	{
-		const HashSet<StringView>	ignore_packets = {
-			"VKTRACE_TPI_VK_vkApiVersion",
-			"VKTRACE_TPI_VK_vkGetDeviceGroupPeerMemoryFeaturesKHX",
-			"VKTRACE_TPI_VK_vkCmdSetDeviceMaskKHX",
-			"VKTRACE_TPI_VK_vkGetDeviceGroupPresentCapabilitiesKHX",
-			"VKTRACE_TPI_VK_vkGetDeviceGroupSurfacePresentModesKHX",
-			"VKTRACE_TPI_VK_vkAcquireNextImage2KHX",
-			"VKTRACE_TPI_VK_vkCmdDispatchBaseKHX",
-			"VKTRACE_TPI_VK_vkGetPhysicalDevicePresentRectanglesKHX",
-			"VKTRACE_TPI_VK_vkEnumeratePhysicalDeviceGroupsKHX",
-			"VKTRACE_TPI_VK_vkEnumerateInstanceVersion"
-		};
 	}
 
 /*
@@ -793,6 +772,8 @@ namespace VTC
 		_resourceTypes.insert({ "VkValidationCacheEXT",			{ VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT,			"VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT" }});
 		_resourceTypes.insert({ "VkSamplerYcbcrConversion",		{ VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION_EXT,		"VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION_EXT" }});
 		_resourceTypes.insert({ "VkDescriptorUpdateTemplate",	{ VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_EXT,	"VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_EXT" }});
+		_resourceTypes.insert({ "VkAccelerationStructureNVX",	{ VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NVX_EXT,	"VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NVX_EXT" }});
+
 
 		// TODO: validation
 		return true;
@@ -834,6 +815,10 @@ namespace VTC
 		AddCounter( "vkCreateGraphicsPipelines",	"pPipelines",				"createInfoCount" );
 		AddCounter( "vkCreateComputePipelines",		"pPipelines",				"createInfoCount" );
 		AddCounter( "vkCmdPushDescriptorSetKHR",	"pDescriptorWrites",		"descriptorWriteCount" );
+		AddCounter( "vkCmdBuildAccelerationStructureNVX",	"pGeometries",		"geometryCount" );
+
+		HashSet<Pair<StringView, StringView>>	skip_args;
+		skip_args.insert({ "vkCmdSetViewportShadingRatePaletteNV", "pShadingRatePalettes" });
 
 
 		for (const auto& func : _funcs)
@@ -857,7 +842,10 @@ namespace VTC
 				if ( HasSubStringIC( arg.name, name ) )
 				{
 					AddCounter( func.data.name, arg.name, other.name );
-				}else{
+				}
+				else
+				if ( skip_args.count({ func.data.name, arg.name }) == 0 )
+				{
 					ASSERT( _funcArgCountOf.find({ func.data.name, arg.name }) != _funcArgCountOf.end() );
 					//ASSERT(false);	// previous arg ends with 'size' but not match with array name
 				}
@@ -943,9 +931,17 @@ namespace VTC
 		AddCounter( "VkPipelineCacheCreateInfo",			"pInitialData",					"initialDataSize" );
 		//AddCounter( "VkValidationCacheCreateInfoEXT",		"pInitialData",					"initialDataSize" );
 		AddCounter( "VkShaderModuleCreateInfo",				"pCode",						"codeSize" );
-		AddCounter( "VkPipelineMultisampleStateCreateInfo",						"pSampleMask",			"((uint(obj->rasterizationSamples) + 31) / 32)" );
-		AddCounter( "VkDescriptorSetVariableDescriptorCountAllocateInfoEXT",	"pDescriptorCounts",	"descriptorSetCount" );
-		AddCounter( "VkWriteDescriptorSetInlineUniformBlockEXT",				"pData",				"dataSize" );
+		AddCounter( "VkPipelineMultisampleStateCreateInfo",						"pSampleMask",					"((uint(obj->rasterizationSamples) + 31) / 32)" );
+		AddCounter( "VkDescriptorSetVariableDescriptorCountAllocateInfoEXT",	"pDescriptorCounts",			"descriptorSetCount" );
+		AddCounter( "VkWriteDescriptorSetInlineUniformBlockEXT",				"pData",						"dataSize" );
+		AddCounter( "VkAccelerationStructureCreateInfoNVX",						"pGeometries",					"geometryCount" );
+		AddCounter( "VkShadingRatePaletteNV",									"pShadingRatePaletteEntries",	"shadingRatePaletteEntryCount" );
+		AddCounter( "VkBindAccelerationStructureMemoryInfoNVX",					"pDeviceIndices",				"deviceIndexCount" );
+		AddCounter( "VkRaytracingPipelineCreateInfoNVX",						"pGroupNumbers",				"stageCount" );
+		
+		HashSet<Pair<StringView, StringView>>	skip_fields;
+		skip_fields.insert({ "VkPipelineViewportShadingRateImageStateCreateInfoNV", "pShadingRatePalettes" });
+
 
 		for (const auto& info : _structs)
 		{
@@ -968,7 +964,10 @@ namespace VTC
 				if ( HasSubStringIC( field.name, name ) )
 				{
 					AddCounter( info.data.name, field.name, other.name );
-				}else{
+				}
+				else
+				if ( skip_fields.count({ info.data.name, field.name }) == 0 )
+				{
 					ASSERT( _structFieldCountOf.find({ info.data.name, field.name }) != _structFieldCountOf.end() );
 					//ASSERT(false);	// previous field ends with 'size' but not match with array name
 				}

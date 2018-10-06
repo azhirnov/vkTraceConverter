@@ -29,7 +29,7 @@ namespace VTC
 		ASSERT( _tempData.empty() );
 
 		_currPacket = packetId;
-		_pointerStack.push_back({ null, {}, 1 });
+		_pointerStack.push_back({ null, {}, 0 });
 	}
 	
 /*
@@ -74,6 +74,9 @@ namespace VTC
 	void TracePacker::_Store (const void *data, size_t size, size_t align)
 	{
 		ASSERT( not _pointerStack.empty() );
+
+		if ( _pointerStack.back().align == 0 )
+			_pointerStack.back().align = align;
 
 		auto&			buf			= _pointerStack.back().buf;
 		const size_t	src_size	= buf.size();
@@ -138,7 +141,7 @@ namespace VTC
 		// copy last part
 		{
 			const auto&		buf			= _pointerStack.back().buf;
-			const size_t	align		= _pointerStack.back().align;
+			const size_t	align		= Max( 4u, _pointerStack.back().align );
 			const size_t	src_size	= _tempData.size();
 			const size_t	offset		= AlignToLarger( _tempData.size(), align );
 

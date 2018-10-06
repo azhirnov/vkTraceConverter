@@ -57,7 +57,7 @@ namespace VTC
 		Close();
 		FG_TIMEPROFILER();
 
-		_traceFile.reset( new HddRFile{ filename });
+		_traceFile.reset( new FileRStream{ filename });
 		CHECK_ERR( _traceFile->IsOpen() );
 
 		return _ProcessTrace();
@@ -68,7 +68,7 @@ namespace VTC
 		Close();
 		FG_TIMEPROFILER();
 		
-		_traceFile.reset( new HddRFile{ path });
+		_traceFile.reset( new FileRStream{ path });
 		CHECK_ERR( _traceFile->IsOpen() );
 
 		return _ProcessTrace();
@@ -93,40 +93,6 @@ namespace VTC
 	
 /*
 =================================================
-	_ReadPortabilityTable
-----
-	copied from readPortabilityTable() in vkreplay_main.cpp
-=================================================
-*
-	bool AppTrace::_ReadPortabilityTable ()
-	{
-		uint64_t table_size			= 0;
-		uint64_t original_file_pos	= vktrace_FileLike_GetCurrentPosition( _traceFile );
-
-		if ( not vktrace_FileLike_SetCurrentPosition( _traceFile, _traceFile->mFileLen - sizeof(uint64_t) ) )
-			return false;
-
-		if ( not vktrace_FileLike_ReadRaw( _traceFile, OUT &table_size, sizeof(table_size) ) )
-			return false;
-
-		if ( table_size != 0 )
-		{
-			if ( not vktrace_FileLike_SetCurrentPosition( _traceFile, _traceFile->mFileLen - ((table_size + 1) * sizeof(uint64_t)) ) )
-		        return false;
-
-			_portabilityTable.resize( size_t(table_size) );
-
-			CHECK_ERR( vktrace_FileLike_ReadRaw( _traceFile, _portabilityTable.data(), size_t(ArraySizeOf(_portabilityTable)) ));
-		}
-
-		if ( not vktrace_FileLike_SetCurrentPosition( _traceFile, original_file_pos ) )
-			return false;
-
-		return true;
-	}
-	
-/*
-=================================================
 	_ProcessTrace
 ----
 	this is first trace processing pass,
@@ -138,9 +104,6 @@ namespace VTC
 	{
 		CHECK_ERR( _traceFile->Read( OUT _fileHeader ));
 		CHECK_ERR( _traceFile->Read( _fileHeader.n_gpuinfo, _gpuInfo ));
-		
-		//if ( _fileHeader.portability_table_valid )
-		//	_fileHeader.portability_table_valid = _ReadPortabilityTable();
 
 		_fullTrace = TraceRange{ _traceFile };
 
@@ -167,6 +130,10 @@ namespace VTC
 				_presentBookmarks.push_back( iter.GetBookmark() );
 				new_frame = false;
 			}
+
+			// skip packet if failed
+			if ( not CheckPacketErrors( iter ) )
+				continue;
 
 			// analyze before bookmarking
 			for (auto& analyzer : _analyzers)
@@ -201,12 +168,75 @@ namespace VTC
 	
 /*
 =================================================
+	CheckPacketErrors
+=================================================
+*/
+	bool AppTrace::CheckPacketErrors (const Iterator &iter)
+	{
+		bool	result = true;
+
+#		include "Generated/CheckPacketError.h"
+
+		return result;
+	}
+
+/*
+=================================================
 	_AddStructBookmsrks
 =================================================
 */
 	void AppTrace::_AddStructBookmsrks (const VkBaseInStructure *header, const Iterator &iter, FrameID frame_id)
 	{
+		if ( _OverrideStructBookmarks( header, iter, frame_id ) )
+			return;
+
 #		include "Generated/BuildStructResourceBookmarks.h"
+	}
+	
+/*
+=================================================
+	_OverrideStructBookmarks
+=================================================
+*/
+	bool AppTrace::_OverrideStructBookmarks (const VkBaseInStructure *header, const Iterator &iter, FrameID frame_id)
+	{
+		switch ( header->sType )
+		{
+			case VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET : {
+				VkWriteDescriptorSet const&  value = *BitCast<VkWriteDescriptorSet const *>( header );
+				
+				if ( (value).pNext )
+					_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+				
+				_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT, ResourceID((value).dstSet), iter, frame_id, EResOp::Access );
+				
+				for (uint a = 0; (value).pImageInfo and a < (value).descriptorCount; ++a)
+				{
+					if ( value.descriptorType == VK_DESCRIPTOR_TYPE_SAMPLER or
+						 value.descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER )
+					{
+						_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT, ResourceID(((value).pImageInfo[a]).sampler), iter, frame_id, EResOp::Access );
+					}					
+					if ( value.descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER or
+						 value.descriptorType == VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE or
+						 value.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_IMAGE or
+						 value.descriptorType == VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT )
+					{
+						_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT, ResourceID(((value).pImageInfo[a]).imageView), iter, frame_id, EResOp::Access );
+					}
+				}
+
+				for (uint a = 0; (value).pBufferInfo and a < (value).descriptorCount; ++a) {
+					_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID(((value).pBufferInfo[a]).buffer), iter, frame_id, EResOp::Access );
+				}
+
+				for (uint a = 0; (value).pTexelBufferView and a < (value).descriptorCount; ++a) {
+					_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT, ResourceID((value).pTexelBufferView[a]), iter, frame_id, EResOp::Access );
+				}
+				return true;
+			}
+		}
+		return false;
 	}
 
 

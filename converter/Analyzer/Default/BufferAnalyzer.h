@@ -16,7 +16,7 @@ namespace VTC
 	{
 	// types
 	public:
-		using BufferViewIDs_t	= HashMap< ResourceID, TraceRange::Bookmark >;
+		using BufferViewIDs_t	= HashSet<Pair< ResourceID, TraceRange::Bookmark >>;
 
 		struct BufferInfo
 		{
@@ -29,6 +29,8 @@ namespace VTC
 			VkPipelineStageFlags		allStageFlags	= 0;
 			BufferViewIDs_t				bufferViews;
 			VkMemoryRequirements		memRequirements	= {};
+			TraceRange::Bookmark		firstAccess;			// when used in shader, in transfer op, as render target
+			TraceRange::Bookmark		lastAccess;
 		};
 
 		using BuffersMap_t		= ResourceTracker< BufferInfo, DefaultBookmark, true >;
@@ -84,13 +86,22 @@ namespace VTC
 		bool _OnBindBufferMemory2 (const TraceRange::Iterator &, BufferInfo_t &);
 		bool _OnGetBufferMemoryRequirements (const TraceRange::Iterator &, BufferInfo_t &);
 		bool _OnGetBufferMemoryRequirements2 (const TraceRange::Iterator &, BufferInfo_t &);
+		bool _OnCopyBuffer (const TraceRange::Iterator &, BufferInfo_t &);
+		bool _OnDispatchIndirect (const TraceRange::Iterator &, BufferInfo_t &);
+		bool _OnDrawIndirect (const TraceRange::Iterator &, BufferInfo_t &);
+		bool _OnDrawIndirectCountAMD (const TraceRange::Iterator &, BufferInfo_t &);
+		bool _OnDrawIndexedIndirect (const TraceRange::Iterator &, BufferInfo_t &);
+		bool _OnDrawIndexedIndirectCountAMD (const TraceRange::Iterator &, BufferInfo_t &);
 
 		bool _OnCreateBufferView (const TraceRange::Iterator &, ResourceID);
 
 		bool _ProcessBufferMemoryBarriers (TraceRange::Bookmark pos, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask,
 										   ArrayView<VkBufferMemoryBarrier> barriers);
 
+		bool _OnUpdateDescriptorSets (const TraceRange::Iterator &);
+
 		bool _AddBufferUsage (BufferInfo_t &, VkPipelineStageFlags, VkAccessFlags);
+		void _AddBufferAccess (BufferInfo_t &, TraceRange::Bookmark);
 	};
 
 

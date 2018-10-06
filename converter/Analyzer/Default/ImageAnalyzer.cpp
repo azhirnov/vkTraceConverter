@@ -252,6 +252,8 @@ namespace VTC
 		if ( image.id == ResourceID(packet.dstImage) ) {
 			_AddImageUsage( image, VK_IMAGE_USAGE_TRANSFER_DST_BIT, packet.dstImageLayout );
 		}
+
+		_AddImageAccess( image, pos.GetBookmark() );
 		return true;
 	}
 	
@@ -273,6 +275,8 @@ namespace VTC
 		if ( image.id == ResourceID(packet.dstImage) ) {
 			_AddImageUsage( image, VK_IMAGE_USAGE_TRANSFER_DST_BIT, packet.dstImageLayout );
 		}
+
+		_AddImageAccess( image, pos.GetBookmark() );
 		return true;
 	}
 	
@@ -294,6 +298,8 @@ namespace VTC
 		if ( image.id == ResourceID(packet.dstImage) ) {
 			_AddImageUsage( image, VK_IMAGE_USAGE_TRANSFER_DST_BIT, packet.dstImageLayout );
 		}
+
+		_AddImageAccess( image, pos.GetBookmark() );
 		return true;
 	}
 	
@@ -397,17 +403,20 @@ namespace VTC
 		ImageViewsMap_t::iterator	view;
 		CHECK_ERR( _imageViews.AddResourceUsage( OUT view, pos, id, op ));
 
-		//auto&	info = view->second.back();
+		auto&	info = view->second.back();
 
 		switch ( pos->packet_id )
 		{
 			case VKTRACE_TPI_VK_vkDestroyImageView :
 			case VKTRACE_TPI_VK_vkCreateFramebuffer :
 			case VKTRACE_TPI_VK_vkDestroyFramebuffer :
+				break;
+
 			case VKTRACE_TPI_VK_vkUpdateDescriptorSets :
 			case VKTRACE_TPI_VK_vkCmdBeginRenderPass :
 			case VKTRACE_TPI_VK_vkCmdNextSubpass :
 			case VKTRACE_TPI_VK_vkCmdEndRenderPass :
+				_AddImageAccess( *info.image, pos.GetBookmark() );
 				break;
 
 			// render target usage
@@ -417,6 +426,7 @@ namespace VTC
 			case VKTRACE_TPI_VK_vkCmdDrawIndexed :
 			case VKTRACE_TPI_VK_vkCmdDrawIndexedIndirect :
 			case VKTRACE_TPI_VK_vkCmdDrawIndexedIndirectCountAMD :
+				_AddImageAccess( *info.image, pos.GetBookmark() );
 				break;
 
 			default :
@@ -451,6 +461,8 @@ namespace VTC
 		info.image		= image;
 
 		image->imageViews.insert({ id, pos.GetBookmark() });
+		
+		_AddImageAccess( *image, pos.GetBookmark() );
 		return true;
 	}
 	
@@ -459,7 +471,7 @@ namespace VTC
 	_ProcessRenderPass
 =================================================
 */
-	bool ImageAnalyzer::_ProcessRenderPass (const TraceRange::Iterator &pos, ResourceID id)
+	bool ImageAnalyzer::_ProcessRenderPass (const TraceRange::Iterator &pos, ResourceID)
 	{
 		switch ( pos->packet_id )
 		{
@@ -502,18 +514,21 @@ namespace VTC
 		for (auto& subpass : rp_info->subpasses)
 		{
 			for (auto& col : subpass.colorAttachments) {
-				_AddImageUsage( *images[col.attachment], 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, col.layout );
+				if ( col.attachment < images.size() )
+					_AddImageUsage( *images[col.attachment], 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, col.layout );
 			}
 
-			if ( subpass.depthStencilAttachment.has_value() )
+			if ( subpass.depthStencilAttachment.has_value() and subpass.depthStencilAttachment->attachment < images.size() )
 				_AddImageUsage( *images[subpass.depthStencilAttachment->attachment], 0, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT, subpass.depthStencilAttachment->layout );
 
 			for (auto& res : subpass.resolveAttachments) {
-				_AddImageUsage( *images[res.attachment], 0, VK_ACCESS_TRANSFER_READ_BIT, res.layout );
+				if ( res.attachment < images.size() )
+					_AddImageUsage( *images[res.attachment], 0, VK_ACCESS_TRANSFER_READ_BIT, res.layout );
 			}
 
 			for (auto& in : subpass.inputAttachments) {
-				_AddImageUsage( *images[in.attachment], 0, VK_ACCESS_INPUT_ATTACHMENT_READ_BIT, in.layout );
+				if ( in.attachment < images.size() )
+					_AddImageUsage( *images[in.attachment], 0, VK_ACCESS_INPUT_ATTACHMENT_READ_BIT, in.layout );
 			}
 		}
 
@@ -560,6 +575,7 @@ namespace VTC
 			case VK_IMAGE_LAYOUT_PREINITIALIZED :						break;
 			case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR :						break;
 			case VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR :					break;
+			case VK_IMAGE_LAYOUT_SHADING_RATE_OPTIMAL_NV :				return VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV;
 			case VK_IMAGE_LAYOUT_RANGE_SIZE :							break;
 			case VK_IMAGE_LAYOUT_MAX_ENUM :								break;
 
@@ -630,6 +646,19 @@ namespace VTC
 		image.usage		|= usage;
 		image.layouts.insert( layout );
 		return true;
+	}
+	
+/*
+=================================================
+	_AddImageAccess
+=================================================
+*/
+	void ImageAnalyzer::_AddImageAccess (ImageInfo_t &image, TraceRange::Bookmark pos)
+	{
+		if ( image.firstAccess == TraceRange::Bookmark() )
+			image.firstAccess = image.lastAccess = pos;
+		else
+			image.lastAccess = std::max( image.lastAccess, pos );
 	}
 
 

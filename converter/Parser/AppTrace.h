@@ -31,7 +31,7 @@ namespace VTC
 	// variables
 	private:
 		TraceRange					_fullTrace;		// full vktrace file
-		TraceRange::RFilePtr		_traceFile;
+		TraceRange::RStreamPtr		_traceFile;
 
 		vktrace_trace_file_header	_fileHeader;
 		GpuInfoArray_t				_gpuInfo;
@@ -56,6 +56,8 @@ namespace VTC
 		bool Open (const fs::path &path);
 		void Close ();
 
+		ND_ static bool CheckPacketErrors (const Iterator &iter);
+
 		ND_ TraceRange const&			FullTrace ()						const	{ return _fullTrace; }
 
 		ND_ TraceRange					GetFrameTrace (FrameID id)			const;
@@ -76,6 +78,9 @@ namespace VTC
 
 		void _AddResourceBookmark (EResourceType type, ResourceID id, const Iterator &pos, FrameID frameId, EResOp op);
 		void _AddStructBookmsrks (const VkBaseInStructure *header, const Iterator &pos, FrameID frameId);
+
+
+		ND_ bool _OverrideStructBookmarks (const VkBaseInStructure *header, const Iterator &iter, FrameID frame_id);
 	};
 
 
