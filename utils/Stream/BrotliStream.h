@@ -2,11 +2,6 @@
 
 #pragma once
 
-// temp
-#ifndef VTC_ENABLE_BROTLI
-#	define VTC_ENABLE_BROTLI
-#endif
-
 #ifdef VTC_ENABLE_BROTLI
 
 #include "stl/Stream/Stream.h"

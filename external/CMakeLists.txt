@@ -40,7 +40,7 @@ foreach ( CONFIG ${CMAKE_CONFIGURATION_TYPES} )
 endforeach ()
 
 
-if (VTC_STABLE)
+if (${VTC_STABLE})
 	include( "${CMAKE_SOURCE_DIR}/cmake/vulkan_tools_alt.cmake" )
 else ()
 	include( "${CMAKE_SOURCE_DIR}/cmake/download_vulkan_tools.cmake" )

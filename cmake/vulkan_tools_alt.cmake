@@ -1,8 +1,8 @@
 # use saved copy of LunarG VulkanTools
 
-#if (NOT CMAKE_VERSION VERSION_LESS 3.7.0)
-#	find_package( Vulkan )
-#endif ()
+if (NOT CMAKE_VERSION VERSION_LESS 3.7.0)
+	find_package( Vulkan )
+endif ()
 
 
 if (NOT Vulkan_FOUND)
