@@ -3,17 +3,19 @@ Work in progress.<br/>
  
 On input takes vktrace file.<br/>
 On output can produce:
-* C++ code with raw Vulkan API calls. (done)
-* optimized trace for Vulkan API calls. (done)
+* C++ code with raw Vulkan API calls.
+* optimized trace for Vulkan API calls.
 * trace for [Vulkan-EZ](https://github.com/GPUOpen-LibrariesAndSDKs/V-EZ) (somewhen)
 * trace for OpenGL 4.6 API calls. (somewhen)
 * trace for [FrameGraph API](https://github.com/azhirnov/FrameGraph) calls. (WIP)
-* [graphviz](https://www.graphviz.org/) dot file or png. (done)
+* [graphviz](https://www.graphviz.org/) dot file or png.
  
 Features:
 * device and swapchain creation overrided for portability.
 * memory allocation overrided for portability.
 * indirect swapchain add ability to resize window.
+
+Also see console application examples [here](examples/README.md).
 
 ## Building
 Generate project with CMake and build.<br/>
