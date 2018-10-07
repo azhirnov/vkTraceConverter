@@ -1,12 +1,12 @@
-// Copyright (c)  Zhirnov Andrey. For more information see 'LICENSE.txt'
+// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #pragma once
 
-#define FG_ENABLE_VOLK
+#include "stl/Algorithms/Cast.h"
+#include "stl/Containers/Union.h"
+#include "stl/Stream/FileStream.h"
 
-#include "stl/include/Cast.h"
-
-#include "framework/Vulkan/VulkanDevice.h"
+#include "framework/Vulkan/VulkanDeviceExt.h"
 #include "framework/Vulkan/VulkanSwapchain.h"
 #include "framework/Window/IWindow.h"
 

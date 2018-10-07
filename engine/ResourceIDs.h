@@ -1,4 +1,4 @@
-// Copyright (c)  Zhirnov Andrey. For more information see 'LICENSE.txt'
+// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #pragma once
 
@@ -38,9 +38,10 @@ namespace VTC
 	enum class SwapchainKHRID : ResourceID_t {};
 	//enum class SurfaceKHRID : ResourceID_t {};
 	
-	enum class ObjectID : size_t {};
-	enum class DataID : uint64_t {};
-
+	//enum class ObjectID : size_t {};
+	enum class DataID : uint32_t {};
+	enum class FrameID : uint32_t {};
+	enum class ReusingIndex : uint32_t {};		// resources that mapped to ***ID may be recreated with same ID, this index + ID make unique resource ID
 
 	template <typename ID>  struct _ObjInfo;
 	

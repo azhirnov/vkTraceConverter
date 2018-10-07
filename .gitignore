@@ -8,5 +8,6 @@
 /external/brotli
 /external/cryptopp
 /external/BLAKE2
-/external/FrameGraph
-/external/FG-External
+/player_exe
+/tests/player/*.vktrace
+/external/_old
