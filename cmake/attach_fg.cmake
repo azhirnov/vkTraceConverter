@@ -1,6 +1,6 @@
 # find and attach FrameGraph
 
-set( VTC_FRAMEGRAPH_PATH "external/FrameGraph" CACHE PATH "Path to FrameGraph library" )
+set( VTC_FRAMEGRAPH_PATH "${CMAKE_SOURCE_DIR}/external/FrameGraph" CACHE PATH "Path to FrameGraph library" )
 message( STATUS "VTC_FRAMEGRAPH_PATH: ${VTC_FRAMEGRAPH_PATH}" )
 
 if (NOT EXISTS "${VTC_FRAMEGRAPH_PATH}/framegraph/VFG.h")
