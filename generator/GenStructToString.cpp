@@ -678,7 +678,7 @@ namespace VTC
 		}else
 		if ( info.name == "VkClearColorValue" )
 		{
-			str << "	result << indent << \"// current clear value depends of render pass\\n\";\n"
+			str << "	result << indent << \"// current clear value depends on render pass\\n\";\n"
 
 				<< "	result << indent << \"// .uint32 = { \" << IntToString(obj->uint32[0]) << \", \" << IntToString(obj->uint32[1]) << "
 				<<				"\", \" << IntToString(obj->uint32[2]) << \", \" << IntToString(obj->uint32[3]) << \" }\\n\";\n"
@@ -688,7 +688,7 @@ namespace VTC
 		}else
 		if ( info.name == "VkClearValue" )
 		{
-			str << "	result << indent << \"// current clear value depends of render pass\\n\";\n"
+			str << "	result << indent << \"// current clear value depends on render pass\\n\";\n"
 				<< "	result << indent << \"// .depthStencil = { \" << FloatToString(obj->depthStencil.depth) << \", \" << IntToString(obj->depthStencil.stencil) << \" }\\n\";\n"
 				<< "	result << indent << \"// .color.uint32 = { \" << IntToString(obj->color.uint32[0]) << \", \" << IntToString(obj->color.uint32[1]) << "
 				<<				"\", \" << IntToString(obj->color.uint32[2]) << \", \" << IntToString(obj->color.uint32[3]) << \" }\\n\";\n"

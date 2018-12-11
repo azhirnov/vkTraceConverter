@@ -177,8 +177,8 @@ namespace VTC
 */
 	void AppTrace::VkObjectsTracker::AddResourceBookmark (EResourceType type, ResourceID id, const Iterator &pos, FrameID frameId, EResOp op, Analyzers_t &analyzers)
 	{
-		if ( type != VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT and
-			 type != VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT )
+		if ( type != VK_OBJECT_TYPE_PHYSICAL_DEVICE and
+			 type != VK_OBJECT_TYPE_QUEUE )
 		{
 			_SendResourceUsageEvent( type, id, pos, frameId, op, analyzers );
 		}
@@ -186,49 +186,49 @@ namespace VTC
 		// add indirect resource usage
 		switch ( type )
 		{
-			case VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT :
+			case VK_OBJECT_TYPE_INSTANCE :
 				if ( pos->packet_id != VKTRACE_TPI_VK_vkDestroyInstance )
 					break;
 				[[fallthrough]]; // else: enter to _ProcessPhysicalDevice
 
-			case VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT :
+			case VK_OBJECT_TYPE_PHYSICAL_DEVICE :
 				CHECK( _ProcessPhysicalDevice( id, pos, frameId, op, analyzers ));
 				break;
 
-			case VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT :
+			case VK_OBJECT_TYPE_COMMAND_POOL :
 				CHECK( _ProcessCommandPool( id, pos, frameId, op, analyzers ));
 				break;
 
-			case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT :
+			case VK_OBJECT_TYPE_DESCRIPTOR_POOL :
 				CHECK( _ProcessDescriptorPool( id, pos, frameId, op, analyzers ));
 				break;
 
-			case VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT :
+			case VK_OBJECT_TYPE_SWAPCHAIN_KHR :
 				CHECK( _ProcessSwpachain( id, pos, frameId, op, analyzers ));
 				break;
 
-			case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT :
+			case VK_OBJECT_TYPE_DEVICE :
 				if ( pos->packet_id != VKTRACE_TPI_VK_vkDestroyDevice )
 					break;
 				[[fallthrough]]; // else: enter _ProcessQueue
 
-			case VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT :
+			case VK_OBJECT_TYPE_QUEUE :
 				CHECK( _ProcessQueue( id, pos, frameId, analyzers ));
 				break;
 
-			case VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT :
+			case VK_OBJECT_TYPE_FRAMEBUFFER :
 				CHECK( _ProcessFramebuffer( id, pos ));
 				break;
 
-			case VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT :
+			case VK_OBJECT_TYPE_COMMAND_BUFFER :
 				CHECK( _ProcessCommandBuffers( id, pos, frameId, analyzers ));
 				break;
 
-			case VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT :
+			case VK_OBJECT_TYPE_PIPELINE_LAYOUT :
 				CHECK( _ProcessPipelineLayout( id, pos ));
 				break;
 
-			case VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT :
+			case VK_OBJECT_TYPE_PIPELINE :
 				CHECK( _ProcessPipeline( id, pos ));
 				break;
 		}
@@ -265,7 +265,7 @@ namespace VTC
 
 			if ( _physicalDevices.insert({ id, PhysicalDeviceInfo{ResourceID(packet.instance)} }).second )
 			{
-				_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT, id, pos, frameId, EResOp::Construct, analyzers );
+				_SendResourceUsageEvent( VK_OBJECT_TYPE_PHYSICAL_DEVICE, id, pos, frameId, EResOp::Construct, analyzers );
 			}
 			return true;
 		}
@@ -278,7 +278,7 @@ namespace VTC
 			{
 				if ( iter->second.instance == id )
 				{
-					_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT, iter->first, pos, frameId, EResOp::Destruct, analyzers );
+					_SendResourceUsageEvent( VK_OBJECT_TYPE_PHYSICAL_DEVICE, iter->first, pos, frameId, EResOp::Destruct, analyzers );
 
 					iter = _physicalDevices.erase( iter );
 				}
@@ -288,7 +288,7 @@ namespace VTC
 			return true;
 		}
 		
-		_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT, id, pos, frameId, op, analyzers );
+		_SendResourceUsageEvent( VK_OBJECT_TYPE_PHYSICAL_DEVICE, id, pos, frameId, op, analyzers );
 		return true;
 	}
 
@@ -348,7 +348,7 @@ namespace VTC
 				// this function doesn't free command buffers, only put thier in the initial state
 				for (auto& cmdbuf : cmd_pool->second.commandBuffers)
 				{
-					_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, cmdbuf, pos, frameId, EResOp::IndirectAccess, analyzers );
+					_SendResourceUsageEvent( VK_OBJECT_TYPE_COMMAND_BUFFER, cmdbuf, pos, frameId, EResOp::IndirectAccess, analyzers );
 				}
 				break;
 			}
@@ -358,7 +358,7 @@ namespace VTC
 			{
 				for (auto& cmdbuf : cmd_pool->second.commandBuffers)
 				{
-					_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, cmdbuf, pos, frameId, EResOp::Destruct, analyzers );
+					_SendResourceUsageEvent( VK_OBJECT_TYPE_COMMAND_BUFFER, cmdbuf, pos, frameId, EResOp::Destruct, analyzers );
 				}
 				CHECK( _commandPools.erase( id ) == 1 );
 				break;
@@ -423,7 +423,7 @@ namespace VTC
 				// implicitly free all descriptor sets
 				for (auto& desc : desc_pool->second.descriptorSets)
 				{
-					_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT, desc, pos, frameId, EResOp::Destruct, analyzers );
+					_SendResourceUsageEvent( VK_OBJECT_TYPE_DESCRIPTOR_SET, desc, pos, frameId, EResOp::Destruct, analyzers );
 				}
 
 				desc_pool->second.descriptorSets.clear();
@@ -435,7 +435,7 @@ namespace VTC
 			{
 				for (auto& desc : desc_pool->second.descriptorSets)
 				{
-					_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT, desc, pos, frameId, EResOp::Destruct, analyzers );
+					_SendResourceUsageEvent( VK_OBJECT_TYPE_DESCRIPTOR_SET, desc, pos, frameId, EResOp::Destruct, analyzers );
 				}
 
 				CHECK( _descriptorPools.erase( id ) == 1 );
@@ -491,7 +491,7 @@ namespace VTC
 				CHECK_ERR( swapchain->first == ResourceID(packet.swapchain) );
 				CHECK_ERR( *packet.pImageIndex < swapchain->second.images.size() );
 				
-				_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, swapchain->second.images[*packet.pImageIndex],
+				_SendResourceUsageEvent( VK_OBJECT_TYPE_IMAGE, swapchain->second.images[*packet.pImageIndex],
 										 pos, frameId, EResOp::IndirectAccess, analyzers );
 				break;
 			}
@@ -515,7 +515,7 @@ namespace VTC
 			{
 				for (auto& image : swapchain->second.images)
 				{
-					_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, image, pos, frameId, EResOp::Destruct, analyzers );
+					_SendResourceUsageEvent( VK_OBJECT_TYPE_IMAGE, image, pos, frameId, EResOp::Destruct, analyzers );
 				}
 
 				CHECK( _swapchains.erase( id ) == 1 );
@@ -542,7 +542,7 @@ namespace VTC
 
 				if ( _queues.insert({ ResourceID(*packet.pQueue), QueueInfo{ResourceID(packet.device)} }).second )
 				{
-					_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT, id, pos, frameId, EResOp::Construct, analyzers );
+					_SendResourceUsageEvent( VK_OBJECT_TYPE_QUEUE, id, pos, frameId, EResOp::Construct, analyzers );
 				}
 				break;
 			}
@@ -555,7 +555,7 @@ namespace VTC
 
 				if ( _queues.insert({ ResourceID(*packet.pQueue), QueueInfo{ResourceID(packet.device)} }).second )
 				{
-					_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT, id, pos, frameId, EResOp::Construct, analyzers );
+					_SendResourceUsageEvent( VK_OBJECT_TYPE_QUEUE, id, pos, frameId, EResOp::Construct, analyzers );
 				}
 				break;
 			}
@@ -566,7 +566,7 @@ namespace VTC
 				auto&	packet = pos.Cast< packet_vkQueuePresentKHR >();
 				CHECK_ERR( packet.pPresentInfo );
 				
-				_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT, id, pos, frameId, EResOp::Access, analyzers );
+				_SendResourceUsageEvent( VK_OBJECT_TYPE_QUEUE, id, pos, frameId, EResOp::Access, analyzers );
 
 				for (uint i = 0; i < packet.pPresentInfo->swapchainCount; ++i)
 				{
@@ -575,7 +575,7 @@ namespace VTC
 
 					CHECK_ERR( packet.pPresentInfo->pImageIndices[i] < swapchain->second.images.size() );
 
-					_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT,
+					_SendResourceUsageEvent( VK_OBJECT_TYPE_IMAGE,
 											 swapchain->second.images[ packet.pPresentInfo->pImageIndices[i] ],
 											 pos, frameId, EResOp::IndirectAccess, analyzers );
 				}
@@ -591,7 +591,7 @@ namespace VTC
 				{
 					if ( iter->second.device == ResourceID(packet.device) )
 					{
-						_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT, iter->first, pos, frameId, EResOp::Destruct, analyzers );
+						_SendResourceUsageEvent( VK_OBJECT_TYPE_QUEUE, iter->first, pos, frameId, EResOp::Destruct, analyzers );
 
 						iter = _queues.erase( iter );
 					}
@@ -602,7 +602,7 @@ namespace VTC
 			}
 
 			default :
-				_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT, id, pos, frameId, EResOp::Access, analyzers );
+				_SendResourceUsageEvent( VK_OBJECT_TYPE_QUEUE, id, pos, frameId, EResOp::Access, analyzers );
 				break;
 		}
 		return true;
@@ -644,7 +644,7 @@ namespace VTC
 
 				for (auto& view : fb->second.attachments)
 				{
-					_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT, view, pos, frameId, EResOp::IndirectAccess, analyzers );
+					_SendResourceUsageEvent( VK_OBJECT_TYPE_IMAGE_VIEW, view, pos, frameId, EResOp::IndirectAccess, analyzers );
 				}
 				break;
 			}
@@ -657,7 +657,7 @@ namespace VTC
 			case VKTRACE_TPI_VK_vkCmdEndRenderPass :
 			{
 				// add bookmark to render pass
-				_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT, state.renderPass, pos, frameId, EResOp::IndirectAccess, analyzers );
+				_SendResourceUsageEvent( VK_OBJECT_TYPE_RENDER_PASS, state.renderPass, pos, frameId, EResOp::IndirectAccess, analyzers );
 
 				// add bookmarks to image view
 				auto	fb = _framebuffers.find( state.framebuffer );
@@ -665,7 +665,7 @@ namespace VTC
 
 				for (auto& view : fb->second.attachments)
 				{
-					_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT, view, pos, frameId, EResOp::IndirectAccess, analyzers );
+					_SendResourceUsageEvent( VK_OBJECT_TYPE_IMAGE_VIEW, view, pos, frameId, EResOp::IndirectAccess, analyzers );
 				}
 				break;
 			}
@@ -729,7 +729,7 @@ namespace VTC
 			case VKTRACE_TPI_VK_vkCmdDrawIndexedIndirect :
 			case VKTRACE_TPI_VK_vkCmdDrawIndexedIndirectCountAMD :
 			{
-				_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, state.indexBuffer, pos, frameId, EResOp::IndirectAccess, analyzers );
+				_SendResourceUsageEvent( VK_OBJECT_TYPE_BUFFER, state.indexBuffer, pos, frameId, EResOp::IndirectAccess, analyzers );
 				[[fallthrough]];
 			}
 
@@ -744,22 +744,22 @@ namespace VTC
 				// add bookmarks to vertex buffers
 				for (size_t i = 0; i < ppln->second.vertexBuffers.size(); ++i) {
 					if ( ppln->second.vertexBuffers[i] )
-						_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, state.vertexBuffers[i], pos, frameId, EResOp::IndirectAccess, analyzers );
+						_SendResourceUsageEvent( VK_OBJECT_TYPE_BUFFER, state.vertexBuffers[i], pos, frameId, EResOp::IndirectAccess, analyzers );
 				}
 
 				// add bookmarks to descriptor sets
 				for (uint i = 0; i < ppln->second.descriptorSetCount; ++i) {
-					_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT, state.graphicsDescriptorSets[i], pos, frameId, EResOp::IndirectAccess, analyzers );
+					_SendResourceUsageEvent( VK_OBJECT_TYPE_DESCRIPTOR_SET, state.graphicsDescriptorSets[i], pos, frameId, EResOp::IndirectAccess, analyzers );
 				}
 
-				_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT, state.graphicsPipeline, pos, frameId, EResOp::IndirectAccess, analyzers );
-				_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT, state.framebuffer, pos, frameId, EResOp::IndirectAccess, analyzers );
+				_SendResourceUsageEvent( VK_OBJECT_TYPE_PIPELINE, state.graphicsPipeline, pos, frameId, EResOp::IndirectAccess, analyzers );
+				_SendResourceUsageEvent( VK_OBJECT_TYPE_FRAMEBUFFER, state.framebuffer, pos, frameId, EResOp::IndirectAccess, analyzers );
 				
 				// add bookmarks to image view
 				auto	fb = _framebuffers.find( state.framebuffer );
 				if ( fb != _framebuffers.end() ) {
 					for (auto& view : fb->second.attachments) {
-						_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT, view, pos, frameId, EResOp::IndirectAccess, analyzers );
+						_SendResourceUsageEvent( VK_OBJECT_TYPE_IMAGE_VIEW, view, pos, frameId, EResOp::IndirectAccess, analyzers );
 					}
 				}
 				break;
@@ -776,10 +776,10 @@ namespace VTC
 				
 				// add bookmarks to descriptor sets
 				for (uint i = 0; i < ppln->second.descriptorSetCount; ++i) {
-					_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT, state.graphicsDescriptorSets[i], pos, frameId, EResOp::IndirectAccess, analyzers );
+					_SendResourceUsageEvent( VK_OBJECT_TYPE_DESCRIPTOR_SET, state.graphicsDescriptorSets[i], pos, frameId, EResOp::IndirectAccess, analyzers );
 				}
 
-				_SendResourceUsageEvent( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT, state.computePipeline, pos, frameId, EResOp::IndirectAccess, analyzers );
+				_SendResourceUsageEvent( VK_OBJECT_TYPE_PIPELINE, state.computePipeline, pos, frameId, EResOp::IndirectAccess, analyzers );
 				break;
 			}
 

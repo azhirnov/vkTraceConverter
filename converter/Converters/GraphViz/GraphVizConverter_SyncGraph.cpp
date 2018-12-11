@@ -557,7 +557,7 @@ namespace VTC
 					graph_uid = (UID(1) << 63) | UID(bm.pos.Value());
 					graph.AddNode( graph_uid, "submit"s << ToString<16>( graph_uid ), scope, frame_uid, submition_style );
 
-					//ProcessQueueCommands( bm, cmd, graph_uid, INOUT graph );
+					ProcessQueueCommands( bm, cmd, graph_uid, INOUT graph );
 
 					if ( cmd.waitSemaphores.size() ) {
 						style.bgColor	= HtmlColor::Red;

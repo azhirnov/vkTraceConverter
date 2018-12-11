@@ -11,3 +11,5 @@
 /player_exe
 /tests/player/*.vktrace
 /external/_old
+/external/SPIRV-Cross
+/external/SPIRV-Reflect

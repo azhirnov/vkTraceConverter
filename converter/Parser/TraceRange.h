@@ -3,7 +3,7 @@
 #pragma once
 
 #include "VkTraceCommon.h"
-#include "stl/Containers/AlignedBuffer.h"
+#include "../utils/AlignedBuffer.h"
 
 namespace VTC
 {
@@ -90,6 +90,7 @@ namespace VTC
 			ND_ bool		operator != (const Iterator &rhs)	const		{ return not (*this == rhs); }
 
 			ND_ bool		operator <  (Bookmark rhs)			const		{ return _offset <  rhs._offset; }
+			ND_ bool		operator >  (Bookmark rhs)			const		{ return _offset >  rhs._offset; }
 
 			ND_ Bookmark	GetBookmark () const							{ return Bookmark{ _offset }; }
 

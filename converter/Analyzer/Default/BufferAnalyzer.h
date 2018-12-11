@@ -22,6 +22,7 @@ namespace VTC
 		{
 			ResourceID					id				= 0;
 			ResourceID					memId			= 0;
+			VkDeviceSize				memOffset		= 0;
 			ResourceID					deviceId		= 0;
 			VkBufferCreateInfo			createInfo		= {};
 			VkBufferUsageFlags			usage			= 0;
@@ -29,7 +30,7 @@ namespace VTC
 			VkPipelineStageFlags		allStageFlags	= 0;
 			BufferViewIDs_t				bufferViews;
 			VkMemoryRequirements		memRequirements	= {};
-			TraceRange::Bookmark		firstAccess;			// when used in shader, in transfer op, as render target
+			TraceRange::Bookmark		firstAccess;			// when used in shader, in transfer op
 			TraceRange::Bookmark		lastAccess;
 		};
 
@@ -60,8 +61,8 @@ namespace VTC
 	public:
 		BufferAnalyzer ();
 		
-		ND_ BufferInfo_t const *	GetBuffer (ResourceID id, TraceRange::Bookmark pos) const			{ return _buffers.FindIn( id, pos ); }
-		ND_ BufferViewInfo_t const*	GetBufferView (ResourceID id, TraceRange::Bookmark pos) const		{ return _bufferViews.FindIn( id, pos ); }
+		ND_ BufferInfo_t const *	GetBuffer (ResourceID id, TraceRange::Bookmark pos, bool strict = true) const			{ return _buffers.FindIn( id, pos, strict ); }
+		ND_ BufferViewInfo_t const*	GetBufferView (ResourceID id, TraceRange::Bookmark pos, bool strict = true) const		{ return _bufferViews.FindIn( id, pos, strict ); }
 
 
 	// IAnalyzer implementation

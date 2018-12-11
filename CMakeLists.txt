@@ -12,18 +12,17 @@ message( STATUS "target system: ${CMAKE_SYSTEM_NAME} (${CMAKE_SYSTEM_VERSION})" 
 message( STATUS "host system: ${CMAKE_HOST_SYSTEM_NAME} (${CMAKE_HOST_SYSTEM_VERSION})" )
 
 include( "cmake/compilers.cmake" )
-add_subdirectory( "external" "external" )
-
 
 set( VTC_STABLE OFF CACHE BOOL "disable code generation and some external projects" )
-set( VTC_ENABLE_GLFW ON CACHE BOOL "use GLFW" )
-set( VTC_ENABLE_SDL2 OFF CACHE BOOL "use SDL2" )
 set( VTC_ENABLE_BROTLI ON CACHE BOOL "use brotli compression" )
 
 set( MAIN_BINARY_DIR "${CMAKE_BINARY_DIR}/bin" CACHE INTERNAL "" FORCE )
 set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${MAIN_BINARY_DIR}" )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY "${MAIN_BINARY_DIR}" )
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${MAIN_BINARY_DIR}" )
+add_subdirectory( "external" "external" )
+
+include( "cmake/attach_fg.cmake" )
 
 link_directories( "${LUNARG_VULKANTOOLS_INSTALL_DIR}" )
 link_directories( "${FRAMEGRAPH_INSTALL_DIR}/lib" )

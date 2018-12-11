@@ -5,7 +5,7 @@
 #include "Analyzer/Default/AllResourcesBookmarks.h"
 #include "stl/CompileTime/TypeList.h"
 #include "stl/Stream/MemStream.h"
-#include <typeindex>
+#include "framegraph/Public/IDs.h"
 
 namespace VTC
 {
@@ -37,20 +37,20 @@ namespace VTC
 
 	// variables
 	private:
-		AllResourcesBookmarks const*	_resBookmarks;
-		TraceRange::Bookmark			_currentPos;
-		bool							_useUniqueIndices;
+		Ptr< AllResourcesBookmarks const>	_resBookmarks;
+		TraceRange::Bookmark				_currentPos;
+		bool								_useUniqueIndices;
 
-		PointerStack_t					_pointerStack;
-		EPacketID						_currPacket;
+		PointerStack_t						_pointerStack;
+		EPacketID							_currPacket;
 
-		Buffer_t						_tempData;
-		MemWStream						_file;
+		Buffer_t							_tempData;
+		MemWStream							_file;
 
 
 	// methods
 	public:
-		TracePacker (const AllResourcesBookmarks *rbm, bool uniqueIndices);
+		TracePacker (Ptr<const AllResourcesBookmarks> rbm, bool uniqueIndices);
 		
 		void SetCurrentPos (const TraceRange::Bookmark &pos)
 		{
@@ -58,6 +58,8 @@ namespace VTC
 		}
 
 		template <typename T>	void operator << (const T &);
+		
+		template <size_t Size, uint UID> void operator << (const _fg_hidden_::IDWithString<Size,UID> &);
 
 								void Begin (EPacketID);
 								void End (EPacketID);
@@ -75,6 +77,8 @@ namespace VTC
 
 								void Clear ();
 								void Flush ();
+
+								void Append (const TracePacker &);
 
 		ND_ ArrayView<uint8_t>	GetData () const	{ return _file.GetData(); }
 
@@ -95,7 +99,7 @@ namespace VTC
 =================================================
 */
 	template <typename T>
-	inline void TracePacker::operator << (const T &value)
+	inline void  TracePacker::operator << (const T &value)
 	{
 		if constexpr ( IsVkResource<T> )
 			return _AddVkResource( value );
@@ -109,6 +113,17 @@ namespace VTC
 			STATIC_ASSERT( false );
 	}
 	
+/*
+=================================================
+	operator <<
+=================================================
+*/
+	template <size_t Size, uint UID>
+	inline void  TracePacker::operator << (const _fg_hidden_::IDWithString<Size,UID> &value)
+	{
+		_Store( &value, sizeof(value), alignof(_fg_hidden_::IDWithString<Size,UID>) );
+	}
+
 /*
 =================================================
 	Push
@@ -244,7 +259,7 @@ namespace VTC
 	template <typename T>
 	inline void TracePacker::EndStruct (const T &obj)
 	{
-		STATIC_ASSERT( (IsClass<T> or IsUnion<T>) and IsPOD<T> );
+		STATIC_ASSERT( (IsClass<T> or IsUnion<T>) /*and IsPOD<T>*/ );
 		ASSERT( _pointerStack.back().structDepth > 0 );
 
 		if ( --(_pointerStack.back().structDepth) > 0 )

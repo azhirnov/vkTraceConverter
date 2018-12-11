@@ -61,16 +61,26 @@ namespace VTC
 		};
 
 
-		using QueuesMap_t			= ResourceTracker< QueueInfo >;
+		struct CommandBufferInfo
+		{
+			ResourceID						id				= 0;
+			ResourceID						commandPool		= 0;
+		};
+
+
+		using QueuesMap_t			= ResourceTracker< QueueInfo, DefaultBookmark, true >;
 		using QueueInfo_t			= QueuesMap_t::Item_t;
 
 		using CmdBufferStates_t		= HashMap< ResourceID, CommandBufferState >;
+		using CmdBufferMap_t		= ResourceTracker< CommandBufferInfo, DefaultBookmark, true >;
+		using CmdBufferInfo_t		= CmdBufferMap_t::Item_t;
 
 
 	// variables
 	private:
 		QueuesMap_t					_queues;
-		CmdBufferStates_t			_cmdBuffers;
+		CmdBufferStates_t			_cmdBufferStates;
+		CmdBufferMap_t				_cmdBuffers;
 		
 		class DeviceAnalyzer const*	_deviceAnalyzer	= null;
 
@@ -79,8 +89,9 @@ namespace VTC
 	public:
 		QueueAnalyzer ();
 
-		ND_ QueueInfo_t const*	GetQueueInfo (ResourceID id, TraceRange::Bookmark pos)	const	{ return _queues.FindIn( id, pos ); }
-		
+		ND_ QueueInfo_t const*		GetQueueInfo (ResourceID id, TraceRange::Bookmark pos, bool strict = true)			const	{ return _queues.FindIn( id, pos, strict ); }
+		ND_ CmdBufferInfo_t const*	GetCommandBufferInfo (ResourceID id, TraceRange::Bookmark pos, bool strict = true)	const	{ return _cmdBuffers.FindIn( id, pos, strict ); }
+
 		ND_ Array<QueueInfo_t const*>  GetDeviceQueues (ResourceID deviceId, TraceRange::Bookmark pos) const;
 
 		void GetCommandPoolQueues (ResourceID id, TraceRange::Bookmark begin, TraceRange::Bookmark end, OUT Array<ResourceID> &queueIDs) const;

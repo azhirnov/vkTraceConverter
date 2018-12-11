@@ -4,7 +4,7 @@
 if (TRUE)
     set( VULKAN_HEADERS_INSTALL_DIR "${VTC_EXTERNAL_INSTALL_DIR}/Vulkan-Headers" CACHE INTERNAL "" FORCE )
 
-	ExternalProject_Add( "External.Vulkan-Headers"
+	ExternalProject_Add( "Extern.Vulkan-Headers"
         LIST_SEPARATOR		"${VTC_LIST_SEPARATOR}"
 		# download
 		GIT_REPOSITORY		https://github.com/KhronosGroup/Vulkan-Headers.git
@@ -18,7 +18,7 @@ if (TRUE)
         SOURCE_DIR			"${VTC_EXTERNALS_PATH}/Vulkan-Headers"
 		CMAKE_GENERATOR		"${CMAKE_GENERATOR}"
 		CMAKE_GENERATOR_TOOLSET	"${CMAKE_GENERATOR_TOOLSET}"
-        CMAKE_ARGS            "-DCMAKE_CONFIGURATION_TYPES=${VTC_EXTERNAL_CONFIGURATION_TYPES}"
+        CMAKE_ARGS			"-DCMAKE_CONFIGURATION_TYPES=${VTC_EXTERNAL_CONFIGURATION_TYPES}"
 							"-DCMAKE_SYSTEM_VERSION=${CMAKE_SYSTEM_VERSION}"
 							"-DCMAKE_DEBUG_POSTFIX="
 							"-DCMAKE_RELEASE_POSTFIX="
@@ -40,7 +40,7 @@ if (TRUE)
 		TEST_COMMAND		""
 	)
 	
-	set_property( TARGET "External.Vulkan-Headers" PROPERTY FOLDER "External" )
+	set_property( TARGET "Extern.Vulkan-Headers" PROPERTY FOLDER "External" )
     set( VTC_BUILD_TARGET_FLAGS "${VTC_BUILD_TARGET_FLAGS}" "-DVULKAN_HEADERS_INSTALL_DIR=${VULKAN_HEADERS_INSTALL_DIR}" )
 	
     set( VTC_CONVERTER_INCLUDE_DIRS "${VTC_CONVERTER_INCLUDE_DIRS}" "${VULKAN_HEADERS_INSTALL_DIR}/include" )
@@ -52,9 +52,9 @@ endif ()
 if (TRUE)
     set( VULKAN_LOADER_INSTALL_DIR "${VTC_EXTERNAL_INSTALL_DIR}/Vulkan-Loader" CACHE INTERNAL "" FORCE )
 
-	ExternalProject_Add( "External.Vulkan-Loader"
+	ExternalProject_Add( "Extern.Vulkan-Loader"
         LIST_SEPARATOR		"${VTC_LIST_SEPARATOR}"
-		DEPENDS				"External.Vulkan-Headers"
+		DEPENDS				"Extern.Vulkan-Headers"
 		# download
 		GIT_REPOSITORY		https://github.com/KhronosGroup/Vulkan-Loader.git
 		GIT_TAG				master
@@ -89,7 +89,7 @@ if (TRUE)
 		TEST_COMMAND		""
 	)
 	
-	set_property( TARGET "External.Vulkan-Loader" PROPERTY FOLDER "External" )
+	set_property( TARGET "Extern.Vulkan-Loader" PROPERTY FOLDER "External" )
     set( VTC_BUILD_TARGET_FLAGS "${VTC_BUILD_TARGET_FLAGS}" "-DVULKAN_LOADER_INSTALL_DIR=${VULKAN_LOADER_INSTALL_DIR}" )
 endif ()
 
@@ -100,7 +100,7 @@ if (TRUE)
 	find_package( PythonInterp 2.7 REQUIRED )
 	find_package( PythonLibs 2.7 REQUIRED )
 
-	ExternalProject_Add( "External.glslang"
+	ExternalProject_Add( "Extern.glslang"
 		# download
 		GIT_REPOSITORY		https://github.com/KhronosGroup/glslang.git
 		GIT_TAG				master
@@ -121,8 +121,8 @@ if (TRUE)
 		TEST_COMMAND		""
 	)
 	
-	ExternalProject_Add( "External.SPIRV-Tools"
-		DEPENDS				"External.glslang"
+	ExternalProject_Add( "Extern.SPIRV-Tools"
+		DEPENDS				"Extern.glslang"
 		# download
 		GIT_REPOSITORY		https://github.com/KhronosGroup/SPIRV-Tools.git
 		GIT_TAG				master
@@ -143,9 +143,9 @@ if (TRUE)
 		TEST_COMMAND		""
 	)
 	
-	ExternalProject_Add( "External.SPIRV-Headers"
-		DEPENDS				"External.glslang"
-							"External.SPIRV-Tools"
+	ExternalProject_Add( "Extern.SPIRV-Headers"
+		DEPENDS				"Extern.glslang"
+							"Extern.SPIRV-Tools"
 		# download
 		GIT_REPOSITORY		https://github.com/KhronosGroup/SPIRV-Headers.git
 		GIT_TAG				master
@@ -168,11 +168,11 @@ if (TRUE)
 	
     set( GLSLANG_INSTALL_DIR "${VTC_EXTERNAL_INSTALL_DIR}/glslang" CACHE INTERNAL "" FORCE )
 
-	ExternalProject_Add( "External.glslang-main"
+	ExternalProject_Add( "Extern.glslang-main"
         LIST_SEPARATOR      "${VTC_LIST_SEPARATOR}"
-		DEPENDS				"External.glslang"
-							"External.SPIRV-Tools"
-							"External.SPIRV-Headers"
+		DEPENDS				"Extern.glslang"
+							"Extern.SPIRV-Tools"
+							"Extern.SPIRV-Headers"
 		# configure
         SOURCE_DIR          "${VTC_EXTERNALS_PATH}/glslang"
 		CMAKE_GENERATOR		"${CMAKE_GENERATOR}"
@@ -196,7 +196,7 @@ if (TRUE)
                             ${VTC_BUILD_TARGET_FLAGS}
 		LOG_CONFIGURE 		1
 		# build
-		BINARY_DIR			"${CMAKE_BINARY_DIR}/build-glslang"
+		BINARY_DIR			"${CMAKE_BINARY_DIR}/build-glslang2"
 		BUILD_COMMAND		"${CMAKE_COMMAND}"
 							--build .
 							--target ALL_BUILD
@@ -210,21 +210,21 @@ if (TRUE)
 		TEST_COMMAND		""
 	)
 
-	set_property( TARGET "External.SPIRV-Headers" PROPERTY FOLDER "External" )
-	set_property( TARGET "External.SPIRV-Tools" PROPERTY FOLDER "External" )
-	set_property( TARGET "External.glslang" PROPERTY FOLDER "External" )
-	set_property( TARGET "External.glslang-main" PROPERTY FOLDER "External" )
+	set_property( TARGET "Extern.SPIRV-Headers" PROPERTY FOLDER "External" )
+	set_property( TARGET "Extern.SPIRV-Tools" PROPERTY FOLDER "External" )
+	set_property( TARGET "Extern.glslang" PROPERTY FOLDER "External" )
+	set_property( TARGET "Extern.glslang-main" PROPERTY FOLDER "External" )
 	
 	# Vulkan-ValidationLayers requires both debug and release libraries
 	if (TRUE)
 		add_custom_command (
-			TARGET "External.glslang-main" POST_BUILD
+			TARGET "Extern.glslang-main" POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different	"${GLSLANG_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}SPIRV-Tools${CMAKE_STATIC_LIBRARY_SUFFIX}"
 															"${GLSLANG_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}SPIRV-Toolsd${CMAKE_STATIC_LIBRARY_SUFFIX}"
 			VERBATIM
 		)
 		add_custom_command (
-			TARGET "External.glslang-main" POST_BUILD
+			TARGET "Extern.glslang-main" POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different	"${GLSLANG_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}SPIRV-Tools-opt${CMAKE_STATIC_LIBRARY_SUFFIX}"
 															"${GLSLANG_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}SPIRV-Tools-optd${CMAKE_STATIC_LIBRARY_SUFFIX}"
 			VERBATIM
@@ -239,10 +239,10 @@ endif ()
 if (TRUE)
     set( VULKAN_VALIDATIONLAYERS_INSTALL_DIR "${VTC_EXTERNAL_INSTALL_DIR}/Vulkan-ValidationLayers" CACHE INTERNAL "" FORCE )
 
-	ExternalProject_Add( "External.Vulkan-ValidationLayers"
+	ExternalProject_Add( "Extern.Vulkan-ValidationLayers"
         LIST_SEPARATOR      "${VTC_LIST_SEPARATOR}"
-		DEPENDS				"External.Vulkan-Loader"
-							"External.glslang-main"
+		DEPENDS				"Extern.Vulkan-Loader"
+							"Extern.glslang-main"
 		# download
 		GIT_REPOSITORY		https://github.com/KhronosGroup/Vulkan-ValidationLayers.git
 		GIT_TAG				master
@@ -278,7 +278,7 @@ if (TRUE)
 		TEST_COMMAND		""
 	)
 	
-	set_property( TARGET "External.Vulkan-ValidationLayers" PROPERTY FOLDER "External" )
+	set_property( TARGET "Extern.Vulkan-ValidationLayers" PROPERTY FOLDER "External" )
     set( VTC_BUILD_TARGET_FLAGS "${VTC_BUILD_TARGET_FLAGS}" "-DVULKAN_VALIDATIONLAYERS_INSTALL_DIR=${VULKAN_VALIDATIONLAYERS_INSTALL_DIR}" )
 	
     set( VTC_CONVERTER_INCLUDE_DIRS "${VTC_CONVERTER_INCLUDE_DIRS}" "${VULKAN_VALIDATIONLAYERS_INSTALL_DIR}/include" )
@@ -289,9 +289,9 @@ endif ()
 if (TRUE)
     set( VULKAN_TOOLS_INSTALL_DIR "${VTC_EXTERNAL_INSTALL_DIR}/Vulkan-Tools" CACHE INTERNAL "" FORCE )
 
-	ExternalProject_Add( "External.Vulkan-Tools"
+	ExternalProject_Add( "Extern.Vulkan-Tools"
         LIST_SEPARATOR      "${VTC_LIST_SEPARATOR}"
-		DEPENDS				"External.Vulkan-ValidationLayers"
+		DEPENDS				"Extern.Vulkan-ValidationLayers"
 		# download
 		GIT_REPOSITORY		https://github.com/KhronosGroup/Vulkan-Tools.git
 		GIT_TAG				master
@@ -327,7 +327,7 @@ if (TRUE)
 		TEST_COMMAND		""
 	)
 	
-	set_property( TARGET "External.Vulkan-Tools" PROPERTY FOLDER "External" )
+	set_property( TARGET "Extern.Vulkan-Tools" PROPERTY FOLDER "External" )
     set( VTC_BUILD_TARGET_FLAGS "${VTC_BUILD_TARGET_FLAGS}" "-DVULKAN_TOOLS_INSTALL_DIR=${VULKAN_TOOLS_INSTALL_DIR}" )
 endif ()
 
@@ -345,9 +345,9 @@ if (TRUE)
 		set( LUNARG_VULKANTOOLS_UPDATE_EXTERNAL_SOURCES "" )	# TODO
 	endif ()
 
-	ExternalProject_Add( "External.LunarG-VulkanTools"
+	ExternalProject_Add( "Extern.LunarG-VulkanTools"
         LIST_SEPARATOR		"${VTC_LIST_SEPARATOR}"
-		DEPENDS				"External.Vulkan-ValidationLayers"
+		DEPENDS				"Extern.Vulkan-ValidationLayers"
 		# download
 		GIT_REPOSITORY		https://github.com/LunarG/VulkanTools.git
 		GIT_TAG				master
@@ -390,7 +390,7 @@ if (TRUE)
 		TEST_COMMAND		""
 	)
 
-	set_property( TARGET "External.LunarG-VulkanTools" PROPERTY FOLDER "External" )
+	set_property( TARGET "Extern.LunarG-VulkanTools" PROPERTY FOLDER "External" )
     set( VTC_BUILD_TARGET_FLAGS "${VTC_BUILD_TARGET_FLAGS}" "-DLUNARG_VULKANTOOLS_INSTALL_DIR=${LUNARG_VULKANTOOLS_INSTALL_DIR}" )
 	
     set( VTC_CONVERTER_INCLUDE_DIRS "${VTC_CONVERTER_INCLUDE_DIRS}"
@@ -398,6 +398,6 @@ if (TRUE)
                                     "${VTC_EXTERNALS_PATH}/LunarG-VulkanTools/vktrace/vktrace_replay"
 									"${CMAKE_BINARY_DIR}/build-LunarG-VulkanTools/vktrace" )
 
-    set( VTC_CONVERTER_DEPENDENCIES "${VTC_CONVERTER_DEPENDENCIES}" "External.LunarG-VulkanTools" )
+    set( VTC_CONVERTER_DEPENDENCIES "${VTC_CONVERTER_DEPENDENCIES}" "Extern.LunarG-VulkanTools" )
 endif ()
 

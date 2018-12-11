@@ -67,7 +67,7 @@ switch ( header->sType )
 		VkBufferViewCreateInfo const&  value = *BitCast<VkBufferViewCreateInfo const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID((value).buffer), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_BUFFER, ResourceID((value).buffer), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -121,6 +121,16 @@ switch ( header->sType )
 		break;
 	}
 
+	case VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NV : {
+		VkGeometryTrianglesNV const&  value = *BitCast<VkGeometryTrianglesNV const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		_AddResourceBookmark( VK_OBJECT_TYPE_BUFFER, ResourceID((value).vertexData), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_BUFFER, ResourceID((value).indexData), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_BUFFER, ResourceID((value).transformData), iter, frame_id, EResOp::Access );
+		break;
+	}
+
 	case VK_STRUCTURE_TYPE_IMAGE_FORMAT_LIST_CREATE_INFO_KHR : {
 		VkImageFormatListCreateInfoKHR const&  value = *BitCast<VkImageFormatListCreateInfoKHR const *>( header );
 		if ( (value).pNext )
@@ -139,7 +149,7 @@ switch ( header->sType )
 		VkMappedMemoryRange const&  value = *BitCast<VkMappedMemoryRange const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, ResourceID((value).memory), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_DEVICE_MEMORY, ResourceID((value).memory), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -155,13 +165,13 @@ switch ( header->sType )
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		for (uint a = 0; (value).pWaitSemaphores and a < (value).waitSemaphoreCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, ResourceID((value).pWaitSemaphores[a]), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_SEMAPHORE, ResourceID((value).pWaitSemaphores[a]), iter, frame_id, EResOp::Access );
 		}
 		for (uint a = 0; (value).pCommandBuffers and a < (value).commandBufferCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, ResourceID((value).pCommandBuffers[a]), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_COMMAND_BUFFER, ResourceID((value).pCommandBuffers[a]), iter, frame_id, EResOp::Access );
 		}
 		for (uint a = 0; (value).pSignalSemaphores and a < (value).signalSemaphoreCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, ResourceID((value).pSignalSemaphores[a]), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_SEMAPHORE, ResourceID((value).pSignalSemaphores[a]), iter, frame_id, EResOp::Access );
 		}
 		break;
 	}
@@ -177,7 +187,14 @@ switch ( header->sType )
 		VkImageViewCreateInfo const&  value = *BitCast<VkImageViewCreateInfo const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, ResourceID((value).image), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_IMAGE, ResourceID((value).image), iter, frame_id, EResOp::Access );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_FEATURES_EXT : {
+		VkPhysicalDeviceTransformFeedbackFeaturesEXT const&  value = *BitCast<VkPhysicalDeviceTransformFeedbackFeaturesEXT const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		break;
 	}
 
@@ -207,28 +224,28 @@ switch ( header->sType )
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		for (uint a = 0; (value).pWaitSemaphores and a < (value).waitSemaphoreCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, ResourceID((value).pWaitSemaphores[a]), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_SEMAPHORE, ResourceID((value).pWaitSemaphores[a]), iter, frame_id, EResOp::Access );
 		}
 		for (uint a = 0; (value).pBufferBinds and a < (value).bufferBindCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID(((value).pBufferBinds[a]).buffer), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_BUFFER, ResourceID(((value).pBufferBinds[a]).buffer), iter, frame_id, EResOp::Access );
 			for (uint b = 0; ((value).pBufferBinds[a]).pBinds and b < ((value).pBufferBinds[a]).bindCount; ++b) {
-				_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, ResourceID((((value).pBufferBinds[a]).pBinds[b]).memory), iter, frame_id, EResOp::Access );
+				_AddResourceBookmark( VK_OBJECT_TYPE_DEVICE_MEMORY, ResourceID((((value).pBufferBinds[a]).pBinds[b]).memory), iter, frame_id, EResOp::Access );
 			}
 		}
 		for (uint a = 0; (value).pImageOpaqueBinds and a < (value).imageOpaqueBindCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, ResourceID(((value).pImageOpaqueBinds[a]).image), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_IMAGE, ResourceID(((value).pImageOpaqueBinds[a]).image), iter, frame_id, EResOp::Access );
 			for (uint b = 0; ((value).pImageOpaqueBinds[a]).pBinds and b < ((value).pImageOpaqueBinds[a]).bindCount; ++b) {
-				_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, ResourceID((((value).pImageOpaqueBinds[a]).pBinds[b]).memory), iter, frame_id, EResOp::Access );
+				_AddResourceBookmark( VK_OBJECT_TYPE_DEVICE_MEMORY, ResourceID((((value).pImageOpaqueBinds[a]).pBinds[b]).memory), iter, frame_id, EResOp::Access );
 			}
 		}
 		for (uint a = 0; (value).pImageBinds and a < (value).imageBindCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, ResourceID(((value).pImageBinds[a]).image), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_IMAGE, ResourceID(((value).pImageBinds[a]).image), iter, frame_id, EResOp::Access );
 			for (uint b = 0; ((value).pImageBinds[a]).pBinds and b < ((value).pImageBinds[a]).bindCount; ++b) {
-				_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, ResourceID((((value).pImageBinds[a]).pBinds[b]).memory), iter, frame_id, EResOp::Access );
+				_AddResourceBookmark( VK_OBJECT_TYPE_DEVICE_MEMORY, ResourceID((((value).pImageBinds[a]).pBinds[b]).memory), iter, frame_id, EResOp::Access );
 			}
 		}
 		for (uint a = 0; (value).pSignalSemaphores and a < (value).signalSemaphoreCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, ResourceID((value).pSignalSemaphores[a]), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_SEMAPHORE, ResourceID((value).pSignalSemaphores[a]), iter, frame_id, EResOp::Access );
 		}
 		break;
 	}
@@ -245,7 +262,7 @@ switch ( header->sType )
 		VkSemaphoreGetWin32HandleInfoKHR const&  value = *BitCast<VkSemaphoreGetWin32HandleInfoKHR const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, ResourceID((value).semaphore), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_SEMAPHORE, ResourceID((value).semaphore), iter, frame_id, EResOp::Access );
 		#endif
 		break;
 	}
@@ -254,6 +271,17 @@ switch ( header->sType )
 		VkPipelineViewportStateCreateInfo const&  value = *BitCast<VkPipelineViewportStateCreateInfo const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_INFO_NV : {
+		VkAccelerationStructureInfoNV const&  value = *BitCast<VkAccelerationStructureInfoNV const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		for (uint a = 0; (value).pGeometries and a < (value).geometryCount; ++a) {
+			if ( ((value).pGeometries[a]).pNext )
+				_AddStructBookmsrks( BitCast<VkBaseInStructure const*>(((value).pGeometries[a]).pNext), iter, frame_id );
+		}
 		break;
 	}
 
@@ -273,13 +301,20 @@ switch ( header->sType )
 		break;
 	}
 
+	case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_STREAM_CREATE_INFO_EXT : {
+		VkPipelineRasterizationStateStreamCreateInfoEXT const&  value = *BitCast<VkPipelineRasterizationStateStreamCreateInfoEXT const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
 	case VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHR : {
 		VkAcquireNextImageInfoKHR const&  value = *BitCast<VkAcquireNextImageInfoKHR const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT, ResourceID((value).swapchain), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, ResourceID((value).semaphore), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT, ResourceID((value).fence), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_SWAPCHAIN_KHR, ResourceID((value).swapchain), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_SEMAPHORE, ResourceID((value).semaphore), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_FENCE, ResourceID((value).fence), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -308,8 +343,8 @@ switch ( header->sType )
 		VkRenderPassBeginInfo const&  value = *BitCast<VkRenderPassBeginInfo const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT, ResourceID((value).renderPass), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT, ResourceID((value).framebuffer), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_RENDER_PASS, ResourceID((value).renderPass), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_FRAMEBUFFER, ResourceID((value).framebuffer), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -366,7 +401,7 @@ switch ( header->sType )
 		VkDisplayPlaneInfo2KHR const&  value = *BitCast<VkDisplayPlaneInfo2KHR const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT, ResourceID((value).mode), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_DISPLAY_MODE_KHR, ResourceID((value).mode), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -374,7 +409,7 @@ switch ( header->sType )
 		VkPipelineShaderStageCreateInfo const&  value = *BitCast<VkPipelineShaderStageCreateInfo const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT, ResourceID((value).module), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_SHADER_MODULE, ResourceID((value).module), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -442,8 +477,8 @@ switch ( header->sType )
 		VkCommandBufferInheritanceInfo const&  value = *BitCast<VkCommandBufferInheritanceInfo const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT, ResourceID((value).renderPass), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT, ResourceID((value).framebuffer), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_RENDER_PASS, ResourceID((value).renderPass), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_FRAMEBUFFER, ResourceID((value).framebuffer), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -458,7 +493,7 @@ switch ( header->sType )
 		VkImportFenceFdInfoKHR const&  value = *BitCast<VkImportFenceFdInfoKHR const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT, ResourceID((value).fence), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_FENCE, ResourceID((value).fence), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -469,7 +504,7 @@ switch ( header->sType )
 		for (uint a = 0; (value).pStages and a < (value).stageCount; ++a) {
 			if ( ((value).pStages[a]).pNext )
 				_AddStructBookmsrks( BitCast<VkBaseInStructure const*>(((value).pStages[a]).pNext), iter, frame_id );
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT, ResourceID(((value).pStages[a]).module), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_SHADER_MODULE, ResourceID(((value).pStages[a]).module), iter, frame_id, EResOp::Access );
 		}
 		if ( (value).pVertexInputState ) {
 			if ( (*(value).pVertexInputState).pNext )
@@ -507,9 +542,9 @@ switch ( header->sType )
 			if ( (*(value).pDynamicState).pNext )
 				_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((*(value).pDynamicState).pNext), iter, frame_id );
 		}
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT, ResourceID((value).layout), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT, ResourceID((value).renderPass), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT, ResourceID((value).basePipelineHandle), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_PIPELINE_LAYOUT, ResourceID((value).layout), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_RENDER_PASS, ResourceID((value).renderPass), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_PIPELINE, ResourceID((value).basePipelineHandle), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -517,7 +552,7 @@ switch ( header->sType )
 		VkSamplerYcbcrConversionInfo const&  value = *BitCast<VkSamplerYcbcrConversionInfo const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION_EXT, ResourceID((value).conversion), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION, ResourceID((value).conversion), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -525,8 +560,8 @@ switch ( header->sType )
 		VkComputePipelineCreateInfo const&  value = *BitCast<VkComputePipelineCreateInfo const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT, ResourceID((value).layout), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT, ResourceID((value).basePipelineHandle), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_PIPELINE_LAYOUT, ResourceID((value).layout), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_PIPELINE, ResourceID((value).basePipelineHandle), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -535,7 +570,7 @@ switch ( header->sType )
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		for (uint a = 0; (value).pSetLayouts and a < (value).setLayoutCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT, ResourceID((value).pSetLayouts[a]), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, ResourceID((value).pSetLayouts[a]), iter, frame_id, EResOp::Access );
 		}
 		break;
 	}
@@ -567,19 +602,8 @@ switch ( header->sType )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		for (uint a = 0; (value).pBindings and a < (value).bindingCount; ++a) {
 			for (uint b = 0; ((value).pBindings[a]).pImmutableSamplers and b < ((value).pBindings[a]).descriptorCount; ++b) {
-				_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT, ResourceID(((value).pBindings[a]).pImmutableSamplers[b]), iter, frame_id, EResOp::Access );
+				_AddResourceBookmark( VK_OBJECT_TYPE_SAMPLER, ResourceID(((value).pBindings[a]).pImmutableSamplers[b]), iter, frame_id, EResOp::Access );
 			}
-		}
-		break;
-	}
-
-	case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NVX : {
-		VkAccelerationStructureCreateInfoNVX const&  value = *BitCast<VkAccelerationStructureCreateInfoNVX const *>( header );
-		if ( (value).pNext )
-			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		for (uint a = 0; (value).pGeometries and a < (value).geometryCount; ++a) {
-			if ( ((value).pGeometries[a]).pNext )
-				_AddStructBookmsrks( BitCast<VkBaseInStructure const*>(((value).pGeometries[a]).pNext), iter, frame_id );
 		}
 		break;
 	}
@@ -591,11 +615,18 @@ switch ( header->sType )
 		break;
 	}
 
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PROPERTIES_NV : {
+		VkPhysicalDeviceRayTracingPropertiesNV const&  value = *BitCast<VkPhysicalDeviceRayTracingPropertiesNV const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
 	case VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2 : {
 		VkImageMemoryRequirementsInfo2 const&  value = *BitCast<VkImageMemoryRequirementsInfo2 const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, ResourceID((value).image), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_IMAGE, ResourceID((value).image), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -603,9 +634,9 @@ switch ( header->sType )
 		VkDescriptorSetAllocateInfo const&  value = *BitCast<VkDescriptorSetAllocateInfo const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT, ResourceID((value).descriptorPool), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_DESCRIPTOR_POOL, ResourceID((value).descriptorPool), iter, frame_id, EResOp::Access );
 		for (uint a = 0; (value).pSetLayouts and a < (value).descriptorSetCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT, ResourceID((value).pSetLayouts[a]), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, ResourceID((value).pSetLayouts[a]), iter, frame_id, EResOp::Access );
 		}
 		break;
 	}
@@ -637,16 +668,16 @@ switch ( header->sType )
 		VkWriteDescriptorSet const&  value = *BitCast<VkWriteDescriptorSet const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT, ResourceID((value).dstSet), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_DESCRIPTOR_SET, ResourceID((value).dstSet), iter, frame_id, EResOp::Access );
 		for (uint a = 0; (value).pImageInfo and a < (value).descriptorCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT, ResourceID(((value).pImageInfo[a]).sampler), iter, frame_id, EResOp::Access );
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT, ResourceID(((value).pImageInfo[a]).imageView), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_SAMPLER, ResourceID(((value).pImageInfo[a]).sampler), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_IMAGE_VIEW, ResourceID(((value).pImageInfo[a]).imageView), iter, frame_id, EResOp::Access );
 		}
 		for (uint a = 0; (value).pBufferInfo and a < (value).descriptorCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID(((value).pBufferInfo[a]).buffer), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_BUFFER, ResourceID(((value).pBufferInfo[a]).buffer), iter, frame_id, EResOp::Access );
 		}
 		for (uint a = 0; (value).pTexelBufferView and a < (value).descriptorCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT, ResourceID((value).pTexelBufferView[a]), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_BUFFER_VIEW, ResourceID((value).pTexelBufferView[a]), iter, frame_id, EResOp::Access );
 		}
 		break;
 	}
@@ -655,8 +686,8 @@ switch ( header->sType )
 		VkCopyDescriptorSet const&  value = *BitCast<VkCopyDescriptorSet const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT, ResourceID((value).srcSet), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT, ResourceID((value).dstSet), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_DESCRIPTOR_SET, ResourceID((value).srcSet), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_DESCRIPTOR_SET, ResourceID((value).dstSet), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -671,20 +702,10 @@ switch ( header->sType )
 		VkFramebufferCreateInfo const&  value = *BitCast<VkFramebufferCreateInfo const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT, ResourceID((value).renderPass), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_RENDER_PASS, ResourceID((value).renderPass), iter, frame_id, EResOp::Access );
 		for (uint a = 0; (value).pAttachments and a < (value).attachmentCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT, ResourceID((value).pAttachments[a]), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_IMAGE_VIEW, ResourceID((value).pAttachments[a]), iter, frame_id, EResOp::Access );
 		}
-		break;
-	}
-
-	case VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NVX : {
-		VkGeometryTrianglesNVX const&  value = *BitCast<VkGeometryTrianglesNVX const *>( header );
-		if ( (value).pNext )
-			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID((value).vertexData), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID((value).indexData), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID((value).transformData), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -706,7 +727,7 @@ switch ( header->sType )
 		VkCommandBufferAllocateInfo const&  value = *BitCast<VkCommandBufferAllocateInfo const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT, ResourceID((value).commandPool), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_COMMAND_POOL, ResourceID((value).commandPool), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -717,18 +738,9 @@ switch ( header->sType )
 		if ( (value).pInheritanceInfo ) {
 			if ( (*(value).pInheritanceInfo).pNext )
 				_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((*(value).pInheritanceInfo).pNext), iter, frame_id );
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT, ResourceID((*(value).pInheritanceInfo).renderPass), iter, frame_id, EResOp::Access );
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT, ResourceID((*(value).pInheritanceInfo).framebuffer), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_RENDER_PASS, ResourceID((*(value).pInheritanceInfo).renderPass), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_FRAMEBUFFER, ResourceID((*(value).pInheritanceInfo).framebuffer), iter, frame_id, EResOp::Access );
 		}
-		break;
-	}
-
-	case VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR : {
-		#ifdef VULKAN_MIR_H_
-		VkMirSurfaceCreateInfoKHR const&  value = *BitCast<VkMirSurfaceCreateInfoKHR const *>( header );
-		if ( (value).pNext )
-			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		#endif
 		break;
 	}
 
@@ -750,7 +762,7 @@ switch ( header->sType )
 		VkBufferMemoryBarrier const&  value = *BitCast<VkBufferMemoryBarrier const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID((value).buffer), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_BUFFER, ResourceID((value).buffer), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -758,7 +770,7 @@ switch ( header->sType )
 		VkImageMemoryBarrier const&  value = *BitCast<VkImageMemoryBarrier const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, ResourceID((value).image), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_IMAGE, ResourceID((value).image), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -774,7 +786,7 @@ switch ( header->sType )
 		VkImportFenceWin32HandleInfoKHR const&  value = *BitCast<VkImportFenceWin32HandleInfoKHR const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT, ResourceID((value).fence), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_FENCE, ResourceID((value).fence), iter, frame_id, EResOp::Access );
 		#endif
 		break;
 	}
@@ -797,8 +809,8 @@ switch ( header->sType )
 		VkBindBufferMemoryInfo const&  value = *BitCast<VkBindBufferMemoryInfo const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID((value).buffer), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, ResourceID((value).memory), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_BUFFER, ResourceID((value).buffer), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_DEVICE_MEMORY, ResourceID((value).memory), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -806,8 +818,8 @@ switch ( header->sType )
 		VkBindImageMemoryInfo const&  value = *BitCast<VkBindImageMemoryInfo const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, ResourceID((value).image), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, ResourceID((value).memory), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_IMAGE, ResourceID((value).image), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_DEVICE_MEMORY, ResourceID((value).memory), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -839,12 +851,19 @@ switch ( header->sType )
 		break;
 	}
 
+	case VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_EXPLICIT_CREATE_INFO_EXT : {
+		VkImageDrmFormatModifierExplicitCreateInfoEXT const&  value = *BitCast<VkImageDrmFormatModifierExplicitCreateInfoEXT const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
 	case VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO : {
 		VkMemoryDedicatedAllocateInfo const&  value = *BitCast<VkMemoryDedicatedAllocateInfo const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, ResourceID((value).image), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID((value).buffer), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_IMAGE, ResourceID((value).image), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_BUFFER, ResourceID((value).buffer), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -902,7 +921,7 @@ switch ( header->sType )
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		for (uint a = 0; (value).physicalDevices and a < VK_MAX_DEVICE_GROUP_SIZE; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT, ResourceID((value).physicalDevices[a]), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_PHYSICAL_DEVICE, ResourceID((value).physicalDevices[a]), iter, frame_id, EResOp::Access );
 		}
 		break;
 	}
@@ -912,7 +931,7 @@ switch ( header->sType )
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		for (uint a = 0; (value).pPhysicalDevices and a < (value).physicalDeviceCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT, ResourceID((value).pPhysicalDevices[a]), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_PHYSICAL_DEVICE, ResourceID((value).pPhysicalDevices[a]), iter, frame_id, EResOp::Access );
 		}
 		break;
 	}
@@ -928,7 +947,7 @@ switch ( header->sType )
 		VkBufferMemoryRequirementsInfo2 const&  value = *BitCast<VkBufferMemoryRequirementsInfo2 const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID((value).buffer), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_BUFFER, ResourceID((value).buffer), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -936,7 +955,7 @@ switch ( header->sType )
 		VkImageSparseMemoryRequirementsInfo2 const&  value = *BitCast<VkImageSparseMemoryRequirementsInfo2 const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, ResourceID((value).image), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_IMAGE, ResourceID((value).image), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -1147,8 +1166,8 @@ switch ( header->sType )
 		VkDescriptorUpdateTemplateCreateInfo const&  value = *BitCast<VkDescriptorUpdateTemplateCreateInfo const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT, ResourceID((value).descriptorSetLayout), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT, ResourceID((value).pipelineLayout), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, ResourceID((value).descriptorSetLayout), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_PIPELINE_LAYOUT, ResourceID((value).pipelineLayout), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -1184,6 +1203,14 @@ switch ( header->sType )
 		VkExternalMemoryImageCreateInfo const&  value = *BitCast<VkExternalMemoryImageCreateInfo const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_GEOMETRY_AABB_NV : {
+		VkGeometryAABBNV const&  value = *BitCast<VkGeometryAABBNV const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		_AddResourceBookmark( VK_OBJECT_TYPE_BUFFER, ResourceID((value).aabbData), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -1291,8 +1318,8 @@ switch ( header->sType )
 		VkSwapchainCreateInfoKHR const&  value = *BitCast<VkSwapchainCreateInfoKHR const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT, ResourceID((value).surface), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT, ResourceID((value).oldSwapchain), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_SURFACE_KHR, ResourceID((value).surface), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_SWAPCHAIN_KHR, ResourceID((value).oldSwapchain), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -1301,10 +1328,10 @@ switch ( header->sType )
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		for (uint a = 0; (value).pWaitSemaphores and a < (value).waitSemaphoreCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, ResourceID((value).pWaitSemaphores[a]), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_SEMAPHORE, ResourceID((value).pWaitSemaphores[a]), iter, frame_id, EResOp::Access );
 		}
 		for (uint a = 0; (value).pSwapchains and a < (value).swapchainCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT, ResourceID((value).pSwapchains[a]), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_SWAPCHAIN_KHR, ResourceID((value).pSwapchains[a]), iter, frame_id, EResOp::Access );
 		}
 		break;
 	}
@@ -1313,7 +1340,7 @@ switch ( header->sType )
 		VkImageSwapchainCreateInfoKHR const&  value = *BitCast<VkImageSwapchainCreateInfoKHR const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT, ResourceID((value).swapchain), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_SWAPCHAIN_KHR, ResourceID((value).swapchain), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -1321,7 +1348,7 @@ switch ( header->sType )
 		VkBindImageMemorySwapchainInfoKHR const&  value = *BitCast<VkBindImageMemorySwapchainInfoKHR const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT, ResourceID((value).swapchain), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_SWAPCHAIN_KHR, ResourceID((value).swapchain), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -1338,10 +1365,10 @@ switch ( header->sType )
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		for (uint a = 0; (value).pAcquireSyncs and a < (value).acquireCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, ResourceID((value).pAcquireSyncs[a]), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_DEVICE_MEMORY, ResourceID((value).pAcquireSyncs[a]), iter, frame_id, EResOp::Access );
 		}
 		for (uint a = 0; (value).pReleaseSyncs and a < (value).releaseCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, ResourceID((value).pReleaseSyncs[a]), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_DEVICE_MEMORY, ResourceID((value).pReleaseSyncs[a]), iter, frame_id, EResOp::Access );
 		}
 		#endif
 		break;
@@ -1365,7 +1392,7 @@ switch ( header->sType )
 		VkDisplaySurfaceCreateInfoKHR const&  value = *BitCast<VkDisplaySurfaceCreateInfoKHR const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT, ResourceID((value).displayMode), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_DISPLAY_MODE_KHR, ResourceID((value).displayMode), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -1389,7 +1416,7 @@ switch ( header->sType )
 		VkMemoryGetFdInfoKHR const&  value = *BitCast<VkMemoryGetFdInfoKHR const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, ResourceID((value).memory), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_DEVICE_MEMORY, ResourceID((value).memory), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -1397,7 +1424,7 @@ switch ( header->sType )
 		VkImportSemaphoreFdInfoKHR const&  value = *BitCast<VkImportSemaphoreFdInfoKHR const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, ResourceID((value).semaphore), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_SEMAPHORE, ResourceID((value).semaphore), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -1405,7 +1432,7 @@ switch ( header->sType )
 		VkSemaphoreGetFdInfoKHR const&  value = *BitCast<VkSemaphoreGetFdInfoKHR const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, ResourceID((value).semaphore), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_SEMAPHORE, ResourceID((value).semaphore), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -1534,7 +1561,7 @@ switch ( header->sType )
 		VkFenceGetFdInfoKHR const&  value = *BitCast<VkFenceGetFdInfoKHR const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT, ResourceID((value).fence), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_FENCE, ResourceID((value).fence), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -1542,7 +1569,7 @@ switch ( header->sType )
 		VkPhysicalDeviceSurfaceInfo2KHR const&  value = *BitCast<VkPhysicalDeviceSurfaceInfo2KHR const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT, ResourceID((value).surface), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_SURFACE_KHR, ResourceID((value).surface), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -1572,7 +1599,7 @@ switch ( header->sType )
 		VkImportSemaphoreWin32HandleInfoKHR const&  value = *BitCast<VkImportSemaphoreWin32HandleInfoKHR const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, ResourceID((value).semaphore), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_SEMAPHORE, ResourceID((value).semaphore), iter, frame_id, EResOp::Access );
 		#endif
 		break;
 	}
@@ -1605,11 +1632,35 @@ switch ( header->sType )
 		break;
 	}
 
-	case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NVX : {
-		VkAccelerationStructureMemoryRequirementsInfoNVX const&  value = *BitCast<VkAccelerationStructureMemoryRequirementsInfoNVX const *>( header );
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES_KHR : {
+		VkPhysicalDeviceShaderAtomicInt64FeaturesKHR const&  value = *BitCast<VkPhysicalDeviceShaderAtomicInt64FeaturesKHR const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NVX_EXT, ResourceID((value).accelerationStructure), iter, frame_id, EResOp::Access );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_ANDROID : {
+		#ifdef VULKAN_ANDROID_H_
+		VkExternalFormatANDROID const&  value = *BitCast<VkExternalFormatANDROID const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		#endif
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV : {
+		VkDedicatedAllocationMemoryAllocateInfoNV const&  value = *BitCast<VkDedicatedAllocationMemoryAllocateInfoNV const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		_AddResourceBookmark( VK_OBJECT_TYPE_IMAGE, ResourceID((value).image), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_BUFFER, ResourceID((value).buffer), iter, frame_id, EResOp::Access );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES_KHR : {
+		VkPhysicalDeviceDriverPropertiesKHR const&  value = *BitCast<VkPhysicalDeviceDriverPropertiesKHR const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		break;
 	}
 
@@ -1629,13 +1680,6 @@ switch ( header->sType )
 
 	case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD : {
 		VkPipelineRasterizationStateRasterizationOrderAMD const&  value = *BitCast<VkPipelineRasterizationStateRasterizationOrderAMD const *>( header );
-		if ( (value).pNext )
-			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		break;
-	}
-
-	case VK_STRUCTURE_TYPE_GEOMETRY_NVX : {
-		VkGeometryNVX const&  value = *BitCast<VkGeometryNVX const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		break;
@@ -1676,21 +1720,10 @@ switch ( header->sType )
 		break;
 	}
 
-	case VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_ANDROID : {
-		#ifdef VULKAN_ANDROID_H_
-		VkExternalFormatANDROID const&  value = *BitCast<VkExternalFormatANDROID const *>( header );
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_PROPERTIES_EXT : {
+		VkPhysicalDeviceTransformFeedbackPropertiesEXT const&  value = *BitCast<VkPhysicalDeviceTransformFeedbackPropertiesEXT const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		#endif
-		break;
-	}
-
-	case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV : {
-		VkDedicatedAllocationMemoryAllocateInfoNV const&  value = *BitCast<VkDedicatedAllocationMemoryAllocateInfoNV const *>( header );
-		if ( (value).pNext )
-			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, ResourceID((value).image), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID((value).buffer), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -1698,7 +1731,7 @@ switch ( header->sType )
 		VkShaderModuleValidationCacheCreateInfoEXT const&  value = *BitCast<VkShaderModuleValidationCacheCreateInfoEXT const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT, ResourceID((value).validationCache), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_VALIDATION_CACHE_EXT, ResourceID((value).validationCache), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -1741,7 +1774,7 @@ switch ( header->sType )
 		VkConditionalRenderingBeginInfoEXT const&  value = *BitCast<VkConditionalRenderingBeginInfoEXT const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID((value).buffer), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_BUFFER, ResourceID((value).buffer), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -1786,14 +1819,14 @@ switch ( header->sType )
 		VkCmdProcessCommandsInfoNVX const&  value = *BitCast<VkCmdProcessCommandsInfoNVX const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT, ResourceID((value).objectTable), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT, ResourceID((value).indirectCommandsLayout), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_OBJECT_TABLE_NVX, ResourceID((value).objectTable), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX, ResourceID((value).indirectCommandsLayout), iter, frame_id, EResOp::Access );
 		for (uint a = 0; (value).pIndirectCommandsTokens and a < (value).indirectCommandsTokenCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID(((value).pIndirectCommandsTokens[a]).buffer), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_BUFFER, ResourceID(((value).pIndirectCommandsTokens[a]).buffer), iter, frame_id, EResOp::Access );
 		}
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, ResourceID((value).targetCommandBuffer), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID((value).sequencesCountBuffer), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID((value).sequencesIndexBuffer), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_COMMAND_BUFFER, ResourceID((value).targetCommandBuffer), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_BUFFER, ResourceID((value).sequencesCountBuffer), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_BUFFER, ResourceID((value).sequencesIndexBuffer), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -1801,8 +1834,8 @@ switch ( header->sType )
 		VkCmdReserveSpaceForCommandsInfoNVX const&  value = *BitCast<VkCmdReserveSpaceForCommandsInfoNVX const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT, ResourceID((value).objectTable), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT, ResourceID((value).indirectCommandsLayout), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_OBJECT_TABLE_NVX, ResourceID((value).objectTable), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX, ResourceID((value).indirectCommandsLayout), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -1866,20 +1899,6 @@ switch ( header->sType )
 		VkPipelineDiscardRectangleStateCreateInfoEXT const&  value = *BitCast<VkPipelineDiscardRectangleStateCreateInfoEXT const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		break;
-	}
-
-	case VK_STRUCTURE_TYPE_RAYTRACING_PIPELINE_CREATE_INFO_NVX : {
-		VkRaytracingPipelineCreateInfoNVX const&  value = *BitCast<VkRaytracingPipelineCreateInfoNVX const *>( header );
-		if ( (value).pNext )
-			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		for (uint a = 0; (value).pStages and a < (value).stageCount; ++a) {
-			if ( ((value).pStages[a]).pNext )
-				_AddStructBookmsrks( BitCast<VkBaseInStructure const*>(((value).pStages[a]).pNext), iter, frame_id );
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT, ResourceID(((value).pStages[a]).module), iter, frame_id, EResOp::Access );
-		}
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT, ResourceID((value).layout), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT, ResourceID((value).basePipelineHandle), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -2009,6 +2028,34 @@ switch ( header->sType )
 		break;
 	}
 
+	case VK_STRUCTURE_TYPE_DRM_FORMAT_MODIFIER_PROPERTIES_LIST_EXT : {
+		VkDrmFormatModifierPropertiesListEXT const&  value = *BitCast<VkDrmFormatModifierPropertiesListEXT const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_DRM_FORMAT_MODIFIER_INFO_EXT : {
+		VkPhysicalDeviceImageDrmFormatModifierInfoEXT const&  value = *BitCast<VkPhysicalDeviceImageDrmFormatModifierInfoEXT const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_LIST_CREATE_INFO_EXT : {
+		VkImageDrmFormatModifierListCreateInfoEXT const&  value = *BitCast<VkImageDrmFormatModifierListCreateInfoEXT const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_PROPERTIES_EXT : {
+		VkImageDrmFormatModifierPropertiesEXT const&  value = *BitCast<VkImageDrmFormatModifierPropertiesEXT const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT : {
 		VkPhysicalDeviceDescriptorIndexingFeaturesEXT const&  value = *BitCast<VkPhysicalDeviceDescriptorIndexingFeaturesEXT const *>( header );
 		if ( (value).pNext )
@@ -2032,37 +2079,69 @@ switch ( header->sType )
 		break;
 	}
 
-	case VK_STRUCTURE_TYPE_GEOMETRY_AABB_NVX : {
-		VkGeometryAABBNVX const&  value = *BitCast<VkGeometryAABBNVX const *>( header );
+	case VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV : {
+		VkRayTracingShaderGroupCreateInfoNV const&  value = *BitCast<VkRayTracingShaderGroupCreateInfoNV const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID((value).aabbData), iter, frame_id, EResOp::Access );
 		break;
 	}
 
-	case VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NVX : {
-		VkBindAccelerationStructureMemoryInfoNVX const&  value = *BitCast<VkBindAccelerationStructureMemoryInfoNVX const *>( header );
+	case VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_NV : {
+		VkRayTracingPipelineCreateInfoNV const&  value = *BitCast<VkRayTracingPipelineCreateInfoNV const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NVX_EXT, ResourceID((value).accelerationStructure), iter, frame_id, EResOp::Access );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, ResourceID((value).memory), iter, frame_id, EResOp::Access );
+		for (uint a = 0; (value).pStages and a < (value).stageCount; ++a) {
+			if ( ((value).pStages[a]).pNext )
+				_AddStructBookmsrks( BitCast<VkBaseInStructure const*>(((value).pStages[a]).pNext), iter, frame_id );
+			_AddResourceBookmark( VK_OBJECT_TYPE_SHADER_MODULE, ResourceID(((value).pStages[a]).module), iter, frame_id, EResOp::Access );
+		}
+		for (uint a = 0; (value).pGroups and a < (value).groupCount; ++a) {
+			if ( ((value).pGroups[a]).pNext )
+				_AddStructBookmsrks( BitCast<VkBaseInStructure const*>(((value).pGroups[a]).pNext), iter, frame_id );
+		}
+		_AddResourceBookmark( VK_OBJECT_TYPE_PIPELINE_LAYOUT, ResourceID((value).layout), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_PIPELINE, ResourceID((value).basePipelineHandle), iter, frame_id, EResOp::Access );
 		break;
 	}
 
-	case VK_STRUCTURE_TYPE_DESCRIPTOR_ACCELERATION_STRUCTURE_INFO_NVX : {
-		VkDescriptorAccelerationStructureInfoNVX const&  value = *BitCast<VkDescriptorAccelerationStructureInfoNVX const *>( header );
+	case VK_STRUCTURE_TYPE_GEOMETRY_NV : {
+		VkGeometryNV const&  value = *BitCast<VkGeometryNV const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NV : {
+		VkAccelerationStructureCreateInfoNV const&  value = *BitCast<VkAccelerationStructureCreateInfoNV const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NV : {
+		VkBindAccelerationStructureMemoryInfoNV const&  value = *BitCast<VkBindAccelerationStructureMemoryInfoNV const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		_AddResourceBookmark( VK_OBJECT_TYPE_ACCELERATION_STRUCTURE_NV, ResourceID((value).accelerationStructure), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_DEVICE_MEMORY, ResourceID((value).memory), iter, frame_id, EResOp::Access );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_NV : {
+		VkWriteDescriptorSetAccelerationStructureNV const&  value = *BitCast<VkWriteDescriptorSetAccelerationStructureNV const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		for (uint a = 0; (value).pAccelerationStructures and a < (value).accelerationStructureCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NVX_EXT, ResourceID((value).pAccelerationStructures[a]), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_ACCELERATION_STRUCTURE_NV, ResourceID((value).pAccelerationStructures[a]), iter, frame_id, EResOp::Access );
 		}
 		break;
 	}
 
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAYTRACING_PROPERTIES_NVX : {
-		VkPhysicalDeviceRaytracingPropertiesNVX const&  value = *BitCast<VkPhysicalDeviceRaytracingPropertiesNVX const *>( header );
+	case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NV : {
+		VkAccelerationStructureMemoryRequirementsInfoNV const&  value = *BitCast<VkAccelerationStructureMemoryRequirementsInfoNV const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		_AddResourceBookmark( VK_OBJECT_TYPE_ACCELERATION_STRUCTURE_NV, ResourceID((value).accelerationStructure), iter, frame_id, EResOp::Access );
 		break;
 	}
 
@@ -2080,8 +2159,22 @@ switch ( header->sType )
 		break;
 	}
 
+	case VK_STRUCTURE_TYPE_CALIBRATED_TIMESTAMP_INFO_EXT : {
+		VkCalibratedTimestampInfoEXT const&  value = *BitCast<VkCalibratedTimestampInfoEXT const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_AMD : {
 		VkPhysicalDeviceShaderCorePropertiesAMD const&  value = *BitCast<VkPhysicalDeviceShaderCorePropertiesAMD const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_DEVICE_MEMORY_OVERALLOCATION_CREATE_INFO_AMD : {
+		VkDeviceMemoryOverallocationCreateInfoAMD const&  value = *BitCast<VkDeviceMemoryOverallocationCreateInfoAMD const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		break;
@@ -2106,7 +2199,7 @@ switch ( header->sType )
 		VkFenceGetWin32HandleInfoKHR const&  value = *BitCast<VkFenceGetWin32HandleInfoKHR const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT, ResourceID((value).fence), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_FENCE, ResourceID((value).fence), iter, frame_id, EResOp::Access );
 		#endif
 		break;
 	}
@@ -2160,6 +2253,13 @@ switch ( header->sType )
 		break;
 	}
 
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT : {
+		VkPhysicalDevicePCIBusInfoPropertiesEXT const&  value = *BitCast<VkPhysicalDevicePCIBusInfoPropertiesEXT const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
 	case VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR : {
 		#ifdef VULKAN_WIN32_H_
 		VkWin32SurfaceCreateInfoKHR const&  value = *BitCast<VkWin32SurfaceCreateInfoKHR const *>( header );
@@ -2183,7 +2283,7 @@ switch ( header->sType )
 		VkMemoryGetWin32HandleInfoKHR const&  value = *BitCast<VkMemoryGetWin32HandleInfoKHR const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, ResourceID((value).memory), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_DEVICE_MEMORY, ResourceID((value).memory), iter, frame_id, EResOp::Access );
 		#endif
 		break;
 	}
@@ -2194,10 +2294,10 @@ switch ( header->sType )
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		for (uint a = 0; (value).pAcquireSyncs and a < (value).acquireCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, ResourceID((value).pAcquireSyncs[a]), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_DEVICE_MEMORY, ResourceID((value).pAcquireSyncs[a]), iter, frame_id, EResOp::Access );
 		}
 		for (uint a = 0; (value).pReleaseSyncs and a < (value).releaseCount; ++a) {
-			_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, ResourceID((value).pReleaseSyncs[a]), iter, frame_id, EResOp::Access );
+			_AddResourceBookmark( VK_OBJECT_TYPE_DEVICE_MEMORY, ResourceID((value).pReleaseSyncs[a]), iter, frame_id, EResOp::Access );
 		}
 		#endif
 		break;
@@ -2235,7 +2335,7 @@ switch ( header->sType )
 		VkMemoryGetAndroidHardwareBufferInfoANDROID const&  value = *BitCast<VkMemoryGetAndroidHardwareBufferInfoANDROID const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
-		_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, ResourceID((value).memory), iter, frame_id, EResOp::Access );
+		_AddResourceBookmark( VK_OBJECT_TYPE_DEVICE_MEMORY, ResourceID((value).memory), iter, frame_id, EResOp::Access );
 		#endif
 		break;
 	}
@@ -2263,8 +2363,8 @@ switch ( header->sType )
 	case VK_STRUCTURE_TYPE_VI_SURFACE_CREATE_INFO_NN : break;
 	case VK_STRUCTURE_TYPE_IOS_SURFACE_CREATE_INFO_MVK : break;
 	case VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK : break;
-	case VK_STRUCTURE_TYPE_GEOMETRY_INSTANCE_NVX : break;
-	case VK_STRUCTURE_TYPE_HIT_SHADER_MODULE_CREATE_INFO_NVX : break;
+	case VK_STRUCTURE_TYPE_DRM_FORMAT_MODIFIER_PROPERTIES_EXT : break;
+	case VK_STRUCTURE_TYPE_IMAGEPIPE_SURFACE_CREATE_INFO_FUCHSIA : break;
 	case VK_STRUCTURE_TYPE_RANGE_SIZE : break;
 	case VK_STRUCTURE_TYPE_MAX_ENUM : break;
 }

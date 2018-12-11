@@ -450,7 +450,7 @@ namespace VTC
 
 			for (auto& res : transfer->resources)
 			{
-				if ( res.type == VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT )
+				if ( res.type == VK_OBJECT_TYPE_BUFFER )
 				{
 					// initialize buffer memory
 					if ( _initializedResources.insert( res.id ).second )
@@ -478,7 +478,7 @@ namespace VTC
 				}
 				else
 				{
-					ASSERT( res.type == VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT );
+					ASSERT( res.type == VK_OBJECT_TYPE_IMAGE );
 
 					// initialize buffer memory
 					if ( _initializedResources.insert( res.id ).second )

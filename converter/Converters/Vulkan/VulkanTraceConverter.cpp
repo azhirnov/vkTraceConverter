@@ -11,7 +11,6 @@ namespace VTC
 	
 #	include "Generated/VulkanTraceStructPacker.h"
 #	include "Generated/VulkanTraceStructPackerImpl.h"
-#	include "Types/VulkanCreateInfo.h"
 #	include "Types/TraceFileHeader.h"
 
 /*
@@ -22,6 +21,7 @@ namespace VTC
 	bool RunConverter_VulkanPlayer (const AppTrace &trace, const ConverterConfig &config)
 	{
 		FG_TIMEPROFILER();
+		FG_LOGI( "run VulkanPlayer converter" );
 
 		VulkanTraceConverter	conv{ config };
 
@@ -56,6 +56,8 @@ namespace VTC
 		{
 			_appTrace		= &appTrace;
 			_dataCounter	= 0;
+			_lastUpdateTime	= 0;
+			_dataAccess.clear();
 
 			// request analyzers
 			_swapchainAnalyzer		= appTrace.GetAnalyzer< SwapchainAnalyzer >();
@@ -125,209 +127,6 @@ namespace VTC
 
 /*
 =================================================
-	_PackVulkanCreateInfo
-=================================================
-*/
-	bool VulkanTraceConverter::_PackVulkanCreateInfo (INOUT TracePacker &packer) const
-	{
-		using ESwapchainType	= VulkanCreateInfo::ESwapchainType;
-		using EImplFlags		= VulkanCreateInfo::EImplFlags;
-
-		VulkanCreateInfo		ci	= {};
-		TraceRange::Bookmark	pos;
-		const uint64_t			sw_count = _resourcesBookmarks->GetUniqueResourceCountByType( VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT );
-
-		CHECK_ERR( sw_count <= 1 );
-		CHECK_ERR( sw_count == 0 or not _swapchainAnalyzer->GetSwapchains().empty() );
-		CHECK_ERR( _resourcesBookmarks->GetResourceCountByType( VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT ) == 1 );
-		
-		auto		first_bm		= _appTrace->GetFrameTrace( FrameID(0) ).begin().GetBookmark();
-
-		auto&		instance		= *_resourcesBookmarks->GetResourcesByType( VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT )->begin();
-		auto*		instance_info	= _deviceAnalyzer->GetInstanceInfo( instance.first, first_bm );
-		CHECK_ERR(	instance_info and
-					instance_info->physicalDevices.size() and
-					instance_info->logicalDevices.size() == 1 );
-		
-		ResourceID	device_id		= *instance_info->logicalDevices.begin();
-		auto*		device_info		= _deviceAnalyzer->GetLogicalDeviceInfo( device_id, first_bm );
-		CHECK_ERR( device_info );
-
-		const auto	queues			= _queueAnalyzer->GetDeviceQueues( device_info->id, device_info->FirstBookmark().pos );
-		auto*		swapchain		= sw_count ? &_swapchainAnalyzer->GetSwapchains().begin()->second.front() : null;
-
-
-		Array<const char*>		inst_extensions;
-		Array<const char*>		dev_extensions;
-		Array<VkQueue>			queue_ids;
-		Array<VkQueueFlags>		queue_flags;
-		Array<float>			queue_priorities;
-		Array<VkImage>			swapchain_images;
-
-		pos = device_info->FirstBookmark().pos;
-
-		for (auto& ext : _extensionAnalyzer->GetInstanceExtensions()) {
-			inst_extensions.push_back( ext.data() );
-		}
-		for (auto& ext : _extensionAnalyzer->GetDeviceExtensions()) {
-			dev_extensions.push_back( ext.data() );
-		}
-		for (auto& queue_info : queues)
-		{
-			if ( queue_info->usageFlags == 0 and not queue_info->usedForPresent )
-				continue;
-
-			pos = std::max( pos, queue_info->FirstBookmark().pos );
-			queue_ids.push_back( VkQueue(queue_info->id) );
-			queue_flags.push_back( queue_info->usageFlags );
-			queue_priorities.push_back( queue_info->priority );
-		}
-
-		ci.instanceVersion			= _extensionAnalyzer->GetMinVersion();
-		ci.instanceExtensionCount	= uint(inst_extensions.size());
-		ci.instanceExtensions		= inst_extensions.data();
-		ci.instanceID				= VkInstance(instance.first);
-
-		ci.deviceExtensionCount		= uint(dev_extensions.size());
-		ci.deviceExtensions			= dev_extensions.data();
-		ci.physicalDeviceID			= VkPhysicalDevice(device_info->physicalDevice);
-		ci.deviceID					= VkDevice(device_info->id);
-
-		ci.queueCount				= uint(queue_ids.size());
-		ci.queueIDs					= queue_ids.data();
-		ci.queueFamilies			= queue_flags.data();
-		ci.queuePriorities			= queue_priorities.data();
-
-		ci.implementationFlags		= EImplFlags::None;
-		if ( _config.remapMemory )				ci.implementationFlags |= EImplFlags::OverrideMemoryAllocation;
-		if ( _config.remapQueueFamily )			ci.implementationFlags |= EImplFlags::RemapQueueFamilies;
-		if ( _config.indirectSwapchain )		ci.implementationFlags |= EImplFlags::IndirectSwapchain;
-		if ( _config.useUniqueResourceIndices )	ci.implementationFlags |= EImplFlags::UniqueResourceIndices;
-
-		ci.swapchainType			= ESwapchainType::WithoutSwapchain;
-
-		if ( swapchain )
-		{
-			pos = std::max( pos, swapchain->FirstBookmark().pos );
-
-			ci.swapchainID				= VkSwapchainKHR(swapchain->id);
-			ci.swapchainType			= ESwapchainType::DefaultSwapchain;
-			ci.swapchainImageWidth		= swapchain->createInfo.imageExtent.width;
-			ci.swapchainImageHeight		= swapchain->createInfo.imageExtent.height;
-			ci.swapchainColorFormat		= swapchain->createInfo.imageFormat;
-			ci.swapchainColorSpace		= swapchain->createInfo.imageColorSpace;
-			ci.swapchainMinImageCount	= swapchain->createInfo.minImageCount;
-			ci.swapchainImageArrayLayers= swapchain->createInfo.imageArrayLayers;
-			ci.swapchainPreTransform	= swapchain->createInfo.preTransform;
-			ci.swapchainPresentMode		= swapchain->createInfo.presentMode;
-			ci.swapchainCompositeAlpha	= swapchain->createInfo.compositeAlpha;
-			ci.swapchainColorImageUsage	= 0;
-			ci.swapchainImageLayout		= VK_IMAGE_LAYOUT_UNDEFINED;
-
-			for (auto& img : swapchain->images)
-			{
-				auto*	img_info = _imageAnalyzer->GetImage( img.id, img.pos );
-				CHECK_ERR( img_info );
-
-				if ( ci.swapchainImageLayout == VK_IMAGE_LAYOUT_UNDEFINED )
-				{
-					if ( img_info->layouts.find( VK_IMAGE_LAYOUT_PRESENT_SRC_KHR ) != img_info->layouts.end() )
-						ci.swapchainImageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-					
-					// not supported, yet
-					//if ( img_info->layouts.find( VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR ) != img_info->layouts.end() )
-					//	ci.swapchainImageLayout = VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR;
-
-					CHECK_ERR( ci.swapchainImageLayout != VK_IMAGE_LAYOUT_UNDEFINED );
-				}
-				else
-					CHECK_ERR( img_info->layouts.find( ci.swapchainImageLayout ) != img_info->layouts.end() );
-
-				ci.swapchainColorImageUsage |= img_info->usage;
-
-				swapchain_images.push_back( VkImage(img.id) );
-				pos = std::max( pos, img.pos );
-			}
-
-			ci.swapchainImageCount		= uint(swapchain_images.size());
-			ci.swapchainImageIDs		= swapchain_images.data();
-		}
-
-		
-		packer.SetCurrentPos( pos );
-		packer.Begin( EPacketID::VCreateDevice );
-		packer.BeginStruct();
-		
-		// instanceExtensions
-		packer.Push( ci.instanceExtensions );
-		 for (uint i = 0; i < ci.instanceExtensionCount; ++i) {
-			packer.Push( ci.instanceExtensions[i] );
-			 packer.AddString( ci.instanceExtensions[i] );
-			packer.PopAndStore( ci.instanceExtensions[i] );
-		 }
-		packer.Pop( OUT ci.instanceExtensions );
-		packer.RemapVkResource( INOUT &ci.instanceID );
-
-		// deviceExtensions
-		packer.Push( ci.deviceExtensions );
-		 for (uint i = 0; i < ci.deviceExtensionCount; ++i) {
-			packer.Push( ci.deviceExtensions[i] );
-			 packer.AddString( ci.deviceExtensions[i] );
-			packer.PopAndStore( ci.deviceExtensions[i] );
-		 }
-		packer.Pop( OUT ci.deviceExtensions );
-		packer.RemapVkResource( INOUT &ci.physicalDeviceID );
-		packer.RemapVkResource( INOUT &ci.deviceID );
-
-		// queueIDs
-		packer.Push( ci.queueIDs );
-		 for (uint i = 0; i < ci.queueCount; ++i) {
-			packer << ci.queueIDs[i];
-		 }
-		packer.Pop( OUT ci.queueIDs );
-
-		// queueFamilies
-		packer.Push( ci.queueFamilies );
-		 for (uint i = 0; i < ci.queueCount; ++i) {
-			packer << ci.queueFamilies[i];
-		 }
-		packer.Pop( OUT ci.queueFamilies );
-
-		// queuePriorities
-		packer.Push( ci.queuePriorities );
-		 for (uint i = 0; i < ci.queueCount; ++i) {
-			packer << ci.queuePriorities[i];
-		 }
-		packer.Pop( OUT ci.queuePriorities );
-		
-		// swapchainImageIDs
-		packer.Push( ci.swapchainImageIDs );
-		 for (uint i = 0; i < ci.swapchainImageCount; ++i) {
-			packer << ci.swapchainImageIDs[i];
-		 }
-		packer.Pop( OUT ci.swapchainImageIDs );
-		packer.RemapVkResource( INOUT &ci.swapchainID );
-
-		packer.EndStruct( ci );
-		packer.End( EPacketID::VCreateDevice );
-
-		return true;
-	}
-	
-/*
-=================================================
-	_SetSourceFPS
-=================================================
-*/
-	void VulkanTraceConverter::_SetSourceFPS (INOUT TracePacker &packer) const
-	{
-		packer.Begin( EPacketID::SetSourceFPS );
-		packer << uint(_fpsAnalyzer->GetAverageFPS() + 0.5);
-		packer.End( EPacketID::SetSourceFPS );
-	}
-
-/*
-=================================================
 	_AfterConverting
 =================================================
 */
@@ -356,9 +155,17 @@ namespace VTC
 
 			CHECK_ERR( _PackData( INOUT packer ));
 			
-			_SetSourceFPS( INOUT packer );
 			_InitializeResources( INOUT packer );
-			_PackVulkanCreateInfo( INOUT packer );
+			
+			using EImplFlags = VulkanCreateInfo::EImplFlags;
+
+			EImplFlags		impl_flags = EImplFlags::None;
+			if ( _config.remapMemory )				impl_flags |= EImplFlags::OverrideMemoryAllocation;
+			if ( _config.remapQueueFamily )			impl_flags |= EImplFlags::RemapQueueFamilies;
+			if ( _config.indirectSwapchain )		impl_flags |= EImplFlags::IndirectSwapchain;
+			if ( _config.useUniqueResourceIndices )	impl_flags |= EImplFlags::UniqueResourceIndices;
+
+			_PackVulkanCreateInfo( impl_flags, INOUT packer );
 
 			CHECK_ERR( file.Write( packer.GetData() ));
 		}
@@ -367,150 +174,10 @@ namespace VTC
 		_EndOfTrace( INOUT *_tracePacker );
 		CHECK_ERR( file.Write( _tracePacker->GetData() ));
 
-		CHECK_ERR( _GenMain( fname.string() ));
-		CHECK_ERR( _GenCMake() );
+		CHECK_ERR( _GenMain( _fileName, _inputFile, fname, fs::path{_directory}.append("main.cpp") ));
+		CHECK_ERR( _GenCMake( _fileName, fs::path{_directory}.append("CMakeLists.txt") ));
 
 		return true;
-	}
-	
-/*
-=================================================
-	_GenMain
-=================================================
-*/
-	bool VulkanTraceConverter::_GenMain (StringView path) const
-	{
-		auto*		swapchain	= _swapchainAnalyzer->GetSwapchains().empty() ? null : &_swapchainAnalyzer->GetSwapchains().begin()->second.front();
-		const uint	width		= swapchain ? swapchain->createInfo.imageExtent.width : 800;
-		const uint	height		= swapchain ? swapchain->createInfo.imageExtent.height : 600;
-
-		String	str;
-		str << "#ifdef _WIN32\n"
-			<< "#	include <Windows.h>\n"
-			<< "#else\n"
-			<< "#	include <dlfcn.h>\n"
-			<< "#	include <linux/limits.h>\n"
-			<< "#endif\n"
-			<< "#include <VPPlayer.h>\n"
-			<< "using namespace VTPlayer;\n\n"
-
-			<< "int main ()\n{\n"
-			<< "# ifdef _WIN32\n"
-			<< "	HMODULE module = LoadLibraryA( \"VTPlayer.dll\" );\n"
-			<< "	if ( module == nullptr )\n"
-			<< "		return -1;\n\n"
-			<< "	PFN_CreatePlayer	CreatePlayer	= reinterpret_cast<PFN_CreatePlayer>(GetProcAddress( module, \"CreatePlayer\" ));\n"
-			<< "	PFN_DestroyPlayer	DestroyPlayer	= reinterpret_cast<PFN_DestroyPlayer>(GetProcAddress( module, \"DestroyPlayer\" ));\n"
-			<< "	PFN_PlayerStart		PlayerStart		= reinterpret_cast<PFN_PlayerStart>(GetProcAddress( module, \"PlayerStart\" ));\n"
-			<< "	PFN_PlayerPause		PlayerPause		= reinterpret_cast<PFN_PlayerPause>(GetProcAddress( module, \"PlayerPause\" ));\n"
-			<< "	PFN_PlayerIsActive	PlayerIsActive	= reinterpret_cast<PFN_PlayerIsActive>(GetProcAddress( module, \"PlayerIsActive\" ));\n"
-			<< "# else\n"
-			<< "	void* module = dlopen( \"VTPlayer.so\", RTLD_NOW | RTLD_LOCAL );\n"
-			<< "	if ( module == nullptr )\n"
-			<< "		return -1;\n\n"
-			<< "	PFN_CreatePlayer	CreatePlayer	= reinterpret_cast<PFN_CreatePlayer>(dlsym( module, \"CreatePlayer\" ));\n"
-			<< "	PFN_DestroyPlayer	DestroyPlayer	= reinterpret_cast<PFN_DestroyPlayer>(dlsym( module, \"DestroyPlayer\" ));\n"
-			<< "	PFN_PlayerStart		PlayerStart		= reinterpret_cast<PFN_PlayerStart>(dlsym( module, \"PlayerStart\" ));\n"
-			<< "	PFN_PlayerPause		PlayerPause		= reinterpret_cast<PFN_PlayerPause>(dlsym( module, \"PlayerPause\" ));\n"
-			<< "	PFN_PlayerIsActive	PlayerIsActive	= reinterpret_cast<PFN_PlayerIsActive>(dlsym( module, \"PlayerIsActive\" ));\n"
-			<< "# endif\n\n"
-
-			<< "	if ( !CreatePlayer || !DestroyPlayer || !PlayerStart || !PlayerPause || !PlayerIsActive )\n"
-			<< "		return -2;\n\n"
-
-			<< "	VTPlayerInstance	player1  = nullptr;\n"
-			<< "	VTPlayerSettings	settings = {};\n"
-			<< "	settings.structSize			= sizeof(settings);\n"
-			<< "	settings.playerVersion		= VTPLAYER_VERSION_LATEST;\n"
-			<< "	settings.playerTraceFile	= \"" << ConvertToCStyleString( path ) << "\";\n"
-			<< "	settings.playerDataFile		= \"" << ConvertToCStyleString( _inputFile ) << "\";\n"
-			<< "	settings.playerDebugMode	= 0;\n"
-			<< "	settings.playerTestMode		= 0;\n"
-			<< "	settings.playerBenchmarkMode= 0;\n"
-			<< "	settings.windowWidth		= " << ToString(width) << ";\n"
-			<< "	settings.windowHeight		= " << ToString(height) << ";\n"
-			<< "	settings.windowTitle		= \"" << _fileName << "\";\n"
-			<< "	settings.windowFPSinTitle	= 1;\n"
-			<< "	settings.windowResizable	= 1;\n"
-			<< "	settings.preferredGPUName	= nullptr;\n\n"
-
-			<< "	if ( !CreatePlayer( &settings, OUT &player1 ) )\n"
-			<< "		return -3;\n\n"
-			<< "	if ( !PlayerStart( player1 ) )\n"
-			<< "		return -4;\n\n"
-			<< "	while ( PlayerIsActive( player1 ) )\n\t{\n"
-			<< "		Sleep( 1 );\n\t};\n\n"
-
-			<< "	DestroyPlayer( player1 );\n"
-			<< "# ifdef _WIN32\n"
-			<< "	FreeLibrary( module );\n"
-			<< "# else\n"
-			<< "	dlclose( module );\n"
-			<< "# endif\n"
-			<< "	return 0;\n"
-			<< "}\n";
-
-		FileWStream		file{ fs::path{_directory}.append( "main.cpp" ) };
-		CHECK_ERR( file.IsOpen() );
-		CHECK_ERR( file.Write( StringView(str) ));
-
-		return true;
-	}
-	
-/*
-=================================================
-	_GenCMake
-=================================================
-*/
-	bool VulkanTraceConverter::_GenCMake () const
-	{
-		String	str;
-		str << "cmake_minimum_required (VERSION 3.6.0)\n\n"
-			<< "project( \"" << _fileName << "\" LANGUAGES C CXX )\n\n"
-			<< "add_executable( \"" << _fileName << "\" \"main.cpp\" )\n\n";
-		
-		FileWStream		file{ fs::path{_directory}.append( "CMakeLists.txt" ) };
-		CHECK_ERR( file.IsOpen() );
-		CHECK_ERR( file.Write( StringView(str) ));
-
-		return true;
-	}
-
-/*
-=================================================
-	_PackData
-=================================================
-*/
-	bool VulkanTraceConverter::_PackData (INOUT TracePacker &packer) const
-	{
-		uint64_t	total_size = 0;
-
-		for (auto& data : _dataAccess)
-		{
-			packer.Begin( EPacketID::SetData );
-			packer << data.first.dataId;
-			packer << data.first.offset;
-			packer << data.first.size;
-			packer << data.second.min;
-			packer << data.second.max;
-			packer.End( EPacketID::SetData );
-
-			total_size += data.first.size;
-		}
-
-		FG_LOGI( "total data size: "s << ToString(BytesU(total_size)) );
-		return true;
-	}
-
-/*
-=================================================
-	_EndOfTrace
-=================================================
-*/
-	void VulkanTraceConverter::_EndOfTrace (INOUT TracePacker &packer) const
-	{
-		packer.Begin( EPacketID::End );
-		packer.End( EPacketID::End );
 	}
 
 /*
@@ -525,8 +192,8 @@ namespace VTC
 		switch ( iter->packet_id )
 		{
 			// skip some packets
-			case VKTRACE_TPI_VK_vkCreateSwapchainKHR :				break;
-			case VKTRACE_TPI_VK_vkCreateSharedSwapchainsKHR :		break;
+			case VKTRACE_TPI_VK_vkCreateSwapchainKHR :
+			case VKTRACE_TPI_VK_vkCreateSharedSwapchainsKHR :		_lastUpdateTime = iter->vktrace_begin_time;	break;
 
 			// remap queue family index
 			/*case VKTRACE_TPI_VK_vkCreateCommandPool :				CHECK_ERR( _OnCreateCommandPool( iter, INOUT *_tracePacker ));			break;
@@ -538,6 +205,7 @@ namespace VTC
 			case VKTRACE_TPI_VK_vkCreatePipelineCache :				CHECK_ERR( _OnCreatePipelineCache( iter, frameId, INOUT *_tracePacker ));					break;
 			case VKTRACE_TPI_VK_vkCmdUpdateBuffer :					CHECK_ERR( _OnCmdUpdateBuffer( iter, frameId, INOUT *_tracePacker ));						break;
 			case VKTRACE_TPI_VK_vkCmdPushDescriptorSetWithTemplateKHR :	CHECK_ERR( _OnCmdPushDescriptorSetWithTemplate( iter, frameId, INOUT *_tracePacker ));	break;
+			case VKTRACE_TPI_VK_vkUpdateDescriptorSetWithTemplateKHR :
 			case VKTRACE_TPI_VK_vkUpdateDescriptorSetWithTemplate :	CHECK_ERR( _OnUpdateDescriptorSetWithTemplate( iter, frameId, INOUT *_tracePacker ));		break;
 
 			// remap swapchain images
@@ -552,15 +220,8 @@ namespace VTC
 
 			/*
 			//case VKTRACE_TPI_VK_vkGetDeviceMemoryCommitment :		CHECK_ERR( _OnGetDeviceMemoryCommitment( iter, INOUT *_tracePacker ));	break;
-					
-			case VKTRACE_TPI_VK_vkCreatePipelineCache :				CHECK_ERR( _OnCreatePipelineCache( iter, INOUT *_tracePacker ));		break;
-			case VKTRACE_TPI_VK_vkDestroyPipelineCache :			CHECK_ERR( _OnDestroyPipelineCache( iter, INOUT *_tracePacker ));		break;
-					
-					
-			case VKTRACE_TPI_VK_vkUpdateDescriptorSetWithTemplateKHR :	break;
-			case VKTRACE_TPI_VK_vkCmdPushDescriptorSetWithTemplateKHR : break;
-			case VKTRACE_TPI_VK_vkUpdateDescriptorSetWithTemplate : break;
 			*/
+			case VKTRACE_TPI_VK_vkUpdateDescriptorSets :			CHECK_ERR( _OnUpdateDescriptorSets( iter, INOUT *_tracePacker ));		break;
 
 			// remap memory
 			case VKTRACE_TPI_VK_vkAllocateMemory :					CHECK_ERR( _OnAllocateMemory( iter, INOUT *_tracePacker ));				break;
@@ -578,7 +239,7 @@ namespace VTC
 			case VKTRACE_TPI_VK_vkDestroyBuffer :					CHECK_ERR( _OnDestroyBuffer( iter, INOUT *_tracePacker ));				break;
 			case VKTRACE_TPI_VK_vkDestroyImage :					CHECK_ERR( _OnDestroyImage( iter, INOUT *_tracePacker ));				break;
 
-			// use default serializer
+			// use default packer
 			default :												CHECK_ERR( _ConvertVkFunction( iter, INOUT *_tracePacker ));			break;
 		}
 		return true;
@@ -604,34 +265,6 @@ namespace VTC
 #		endif
 
 		return true;
-	}
-
-/*
-=================================================
-	_RequestData
-=================================================
-*/
-	VulkanTraceConverter::DataID  VulkanTraceConverter::_RequestData (uint64_t offset, uint64_t size, FrameID frameId)
-	{
-		DataAccessInfo	info{ offset, size };
-		auto			data_iter = _dataAccess.find( info );
-
-		// create new data
-		if ( data_iter == _dataAccess.end() )
-		{
-			info.dataId = _dataCounter++;
-			data_iter	= _dataAccess.insert({ info, {} }).first;
-		}
-
-		data_iter->second.min = Min( data_iter->second.min, frameId );
-		data_iter->second.max = Max( data_iter->second.max, frameId );
-
-		return data_iter->first.dataId;
-	}
-	
-	VulkanTraceConverter::DataID  VulkanTraceConverter::_RequestData (const TraceRange::Iterator &pos, const void* hdr, const void *member, uint64_t size, FrameID frameId)
-	{
-		return _RequestData( _appTrace->FullTrace().GetPositionInFile( pos, hdr, member ), size, frameId );
 	}
 	
 /*
@@ -667,7 +300,7 @@ namespace VTC
 	_OnQueuePresent
 =================================================
 */
-	bool VulkanTraceConverter::_OnQueuePresent (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
+	bool VulkanTraceConverter::_OnQueuePresent (const TraceRange::Iterator &pos, INOUT TracePacker &packer)
 	{
 		auto&	packet = pos.Cast< packet_vkQueuePresentKHR >();
 		VK_CHECK( packet.result );
@@ -677,9 +310,13 @@ namespace VTC
 		
 		auto*	swapchain = _swapchainAnalyzer->GetSwapchain( ResourceID(packet.pPresentInfo->pSwapchains[0]), pos.GetBookmark() );
 		CHECK_ERR( swapchain );
+		
+		const uint64_t	dt = pos->vktrace_begin_time - _lastUpdateTime;
+		_lastUpdateTime = pos->vktrace_begin_time;
 
 		packer.Begin( EPacketID::VQueuePresentKHR );
 		{
+			packer << dt;
 			packer << packet.queue;
 			packer << VkImage(swapchain->images[ *packet.pPresentInfo->pImageIndices ].id);
 			packer << packet.pPresentInfo->waitSemaphoreCount;
@@ -902,6 +539,83 @@ namespace VTC
 		return true;
 	}
 	
+/*
+=================================================
+	_OnUpdateDescriptorSets
+=================================================
+*/
+	bool VulkanTraceConverter::_OnUpdateDescriptorSets (const TraceRange::Iterator &pos, INOUT TracePacker &packer)
+	{
+		auto&	packet = pos.Cast< packet_vkUpdateDescriptorSets >();
+
+		for (uint i = 0; i < packet.descriptorWriteCount; ++i)
+		{
+			auto&	write		= packet.pDescriptorWrites[i];
+			auto&	image_info	= const_cast<VkDescriptorImageInfo *&>(write.pImageInfo);
+			auto&	buffer_info	= const_cast<VkDescriptorBufferInfo *&>(write.pBufferInfo);
+			auto&	buffer_view	= const_cast<VkBufferView *&>(write.pTexelBufferView);
+
+			ENABLE_ENUM_CHECKS();
+			switch ( write.descriptorType )
+			{
+				case VK_DESCRIPTOR_TYPE_SAMPLER :
+				case VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER :
+				case VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE :
+				case VK_DESCRIPTOR_TYPE_STORAGE_IMAGE :
+				case VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT :
+					buffer_info = null;
+					buffer_view = null;
+					break;
+
+				case VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER :
+				case VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER :
+					image_info = null;
+					buffer_info = null;
+					break;
+
+				case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER :
+				case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER :
+				case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC :
+				case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC :
+					image_info = null;
+					buffer_view = null;
+					break;
+
+				case VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT :
+				case VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV :
+				case VK_DESCRIPTOR_TYPE_RANGE_SIZE :
+				case VK_DESCRIPTOR_TYPE_MAX_ENUM :
+					ASSERT(false);
+					image_info = null;
+					buffer_info = null;
+					buffer_view = null;
+					break;
+			}
+			DISABLE_ENUM_CHECKS();
+
+			
+			switch ( write.descriptorType )
+			{
+				case VK_DESCRIPTOR_TYPE_SAMPLER :
+					for (uint a = 0; image_info and a < write.descriptorCount; ++a) {
+						image_info[a].imageLayout	= VK_IMAGE_LAYOUT_UNDEFINED;
+						image_info[a].imageView		= VK_NULL_HANDLE;
+					}
+					break;
+
+				case VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE :
+				case VK_DESCRIPTOR_TYPE_STORAGE_IMAGE :
+				case VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT :
+					for (uint a = 0; image_info and a < write.descriptorCount; ++a) {
+						image_info[a].sampler = VK_NULL_HANDLE;
+					}
+					break;
+			}
+		}
+
+		return _ConvertVkFunction( pos, packer );
+	}
+
 /*
 =================================================
 	_OnCmdPushDescriptorSetWithTemplate

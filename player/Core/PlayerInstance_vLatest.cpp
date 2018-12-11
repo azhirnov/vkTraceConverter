@@ -3,6 +3,7 @@
 #include "PlayerInstance_vLatest.h"
 #include "Public/VTPlayer.h"
 #include "Vulkan/VkPlayer.h"
+#include "FrameGraph/FGPlayer.h"
 #include "framework/Window/WindowGLFW.h"
 #include "framework/Window/WindowSDL2.h"
 #include "framework/Window/WindowSFML.h"
@@ -173,6 +174,10 @@ namespace VTPlayer
 		{
 			case EPacketID::_VulkanApi | EPacketID::_V100 :
 				ctor = [this] () { return new VkPlayer_v100( _vulkanSettings, _windowSettings, _playerSettings, _traceFile, _dataFile ); };
+				break;
+				
+			case EPacketID::_FrameGraphApi | EPacketID::_V100 :
+				ctor = [this] () { return new FGPlayer_v100( _vulkanSettings, _windowSettings, _playerSettings, _traceFile, _dataFile ); };
 				break;
 
 			default :

@@ -37,77 +37,33 @@ static const char	s_Help[] = R"#(
 --convert		run converters, available values:
 					vk-cpp		-- converts to c++ source with raw vulkan api calls (very large source files!).
 					vk-trace	-- converts to vulkan trace file.
-					vez-trace	-- converts to vulkan-ez trace file.
-					fg-trace	-- converts to framegraph trace file.
-					gl-trace	-- converts to opengl trace file.
+					vez-trace	-- converts to vulkan-ez trace file (WIP).
+					fg-trace	-- converts to framegraph trace file (WIP).
 					graphviz	-- converts to dot file.
-					screenshot	-- play vktrace and make screenshots.
 					all			-- enable all converters.
--e
---extension		extension passes, available values:
-					rem-redundant
-					opt-renderpass
-					opt-dedicated	-- dedicated allocation.
-					opt-mem			-- optimize memory.
-					opt-barrier		-- optimize pipeline barriers.
-					gpu-bench
-					cpu-bench
-					all
 
---cfg-vk-cpp			configure 'vk-cpp' converter:
-							multithreaded=[true/false] -- enable/disable multithread submiting to queue.
-							async-load=[true/false] -- enable/disable async data loading.
-							begin=[N] -- start converting on N frame, default is 0.
-							end=[N] -- stop converting on N frame, default is -1.
-							remap-mem=[true/false] -- enable this for portability.
-							remap-queue=[true/false] -- enable this for portability.
+--cfg-vk-cpp		configure 'vk-cpp' converter:
+						multithreaded=[true/false] -- enable/disable multithread submiting to queue.
+						async-load=[true/false] -- enable/disable async data loading.
+						begin=[N] -- start converting on N frame, default is 0.
+						end=[N] -- stop converting on N frame, default is -1.
+						remap-mem=[true/false] -- enable this for portability.
+						remap-queue=[true/false] -- enable this for portability.
 
---cfg-vk-trace			configure 'vk-trace' converter:
-							end=[N] -- stop converting on N frame, default is -1.
-							remap-mem=[true/false] -- enable this for portability.
-							remap-queue=[true/false] -- enable this for portability.
-							indirect-swapchain=[true/false] -- enable this for portability.
+--cfg-vk-trace		configure 'vk-trace' converter:
+						end=[N] -- stop converting on N frame, default is -1.
+						remap-mem=[true/false] -- enable this for portability.
+						remap-queue=[true/false] -- enable this for portability.
+						indirect-swapchain=[true/false] -- enable this for portability.
 
---cfg-vez-trace			configure 'vez-trace' converter:
+--cfg-vez-trace		configure 'vez-trace' converter:
 
---cfg-fg-trace			configure 'fg-trace' converter:
+--cfg-fg-trace		configure 'fg-trace' converter:
 
---cfg-gl-cpp			configure 'gl-cpp' converter:
-
---cfg-graphviz			configure 'graphviz' converter:
-							begin=[N] -- start converting on N frame, default is 0.
-							end=[N] -- stop converting on N frame, default is -1.
-							show-sync=[true/false] -- show/hide barriers, events, semaphores, fences, subpass dependencies.
-
---cfg-screenshot		configure 'screenshot' converter:
-							freq=[1..N] -- make screenshot every N frames, default is 30.
-							begin=[N] -- start recording on N frame, default is 0.
-							end=[N] -- stop recording on N frame, default is -1.
-							marker-trigger="name" -- make screenshot on vkCmdDebugMarkerInsertEXT if pMarkerName == "name".
-							begin-renderpass-trigger=[ID / "name"] -- make screenshot on vkCmdBeginRenderPass if renderPass == ID or 
-													is renderPass was named by vkDebugMarkerSetObjectNameEXT and pObjectName == "name".
-							end-renderpass-trigger=[ID / "name"] -- same as above.
-
---cfg-rem-redundant		configure 'rem-redundant' extension pass:
-
---cfg-opt-renderpass	configure 'opt-renderpass' extension pass:
-
---cfg-opt-dedicated		configure 'dedicated-on' extension pass:
-							disable-all -- remove all usage of dedicated allocation.
-							enable-auto -- use dedicated allocation if it is required for resource by implementation.
-							enable-all -- always use dedicated allocation.
-							enable-rt-only -- use dedicated allocation only for render targets.
-							min-limit-kb=[1..N] -- set minimal resource size in Kb.
-							min-limit-mb=[1..N] -- set minimal resource size in Mb.
-
---cfg-opt-mem			configure 'opt-mem' extension pass:
-
---cfg-opt-barrier		configure 'opt-barrier' extension pass:
-
---cfg-gpu-bench			configure 'gpu-bench' extension pass:
-
---cfg-cpu-bench			configure 'cpu-bench' extension pass:
-
+--cfg-graphviz		configure 'graphviz' converter:
+						begin=[N] -- start converting on N frame, default is 0.
+						end=[N] -- stop converting on N frame, default is -1.
+						show-sync=[true/false] -- show/hide barriers, events, semaphores, fences, subpass dependencies.
 )#";
 
 /*
@@ -129,43 +85,10 @@ static bool ParseConverters (const int argc, const char** argv, INOUT int &i, IN
 		if ( name == "vk-trace" or name == "all" )		{ config.vulkanTrace.isEnabled = true;  	match = true; }
 		if ( name == "vez-trace" or name == "all" )		{ config.vulkanEZTrace.isEnabled = true;	match = true; }
 		if ( name == "fg-trace" or name == "all" )		{ config.frameGraphTrace.isEnabled = true;	match = true; }
-		if ( name == "gl-trace" or name == "all" )		{ config.openGLTrace.isEnabled = true;		match = true; }
 		if ( name == "graphviz" or name == "all" )		{ config.graphviz.isEnabled = true;			match = true; }
-		if ( name == "screenshot" or name == "all" )	{ config.screenshot.isEnabled = true;		match = true; }
 
 		if ( not match ) {
 			FG_LOGE( "unknown converter type: \""s << name << '"' );
-			continue;
-		}
-	}
-	return true;
-}
-
-/*
-=================================================
-	ParseExtensionPasses
-=================================================
-*/
-static bool ParseExtensionPasses (const int argc, const char** argv, INOUT int &i, INOUT ConverterConfig::ExtensionPasses &config)
-{
-	for (; i < argc; ++i)
-	{
-		StringView	name	= argv[i];
-		bool		match	= false;
-		
-		if ( name.length() > 0 and name[0] == '-' )
-			return true;
-
-		if ( name == "rem-redundant" or name == "all" )		{ config.remRedundant.isEnabled = true;		match = true; }
-		if ( name == "opt-renderpass" or name == "all" )	{ config.optRenderpass.isEnabled = true;	match = true; }
-		if ( name == "opt-dedicated" or name == "all" )		{ config.optDedicated.isEnabled = true;		match = true; }
-		if ( name == "opt-mem" or name == "all" )			{ config.optMemory.isEnabled = true;		match = true; }
-		if ( name == "opt-barrier" or name == "all" )		{ config.optBarrier.isEnabled = true;		match = true; }
-		if ( name == "gpu-bench" or name == "all" )			{ config.gpuBench.isEnabled = true;			match = true; }
-		if ( name == "cpu-bench" or name == "all" )			{ config.cpuBench.isEnabled = true;			match = true; }
-		
-		if ( not match ) {
-			FG_LOGE( "unknown extension pass: \""s << name << '"' );
 			continue;
 		}
 	}
@@ -181,12 +104,14 @@ static bool ParseVkCppConfig (StringView param, StringView value, INOUT Converte
 {
 	auto&	cfg = mainConfig.conveters.vulkanCppSource;
 
-	if ( param == "begin" )				{ cfg.firstFrame = FrameID(std::stoll( String(value) ));	return true; }
-	if ( param == "end" )				{ cfg.lastFrame = FrameID(std::stoll( String(value) ));		return true; }
-	if ( param == "remap-mem" )			{ cfg.remapMemory = (value == "true");						return true; }
-	if ( param == "remap-queue" )		{ cfg.remapQueueFamily = (value == "true");					return true; }
-	if ( param == "multithreaded" )		{ /*cfg.isMultithreaded = (value == "true");*/				return true; }
-	if ( param == "async-load" )		{ /*cfg.isAsyncLoadEnabled = (value == "true");*/			return true; }
+	if ( param == "begin" )				{ cfg.firstFrame = FrameID(std::stoll( String(value) ));			return true; }
+	if ( param == "end" )				{ cfg.lastFrame = FrameID(std::stoll( String(value) ));				return true; }
+	if ( param == "remap-mem" )			{ cfg.remapMemory = (value.empty() or value == "true");				return true; }
+	if ( param == "remap-queue" )		{ cfg.remapQueueFamily = (value.empty() or value == "true");		return true; }
+	if ( param == "multithreaded" )		{ /*cfg.isMultithreaded = (value.empty() or value == "true");*/		return true; }
+	if ( param == "async-load" )		{ /*cfg.isAsyncLoadEnabled = (value.empty() or value == "true");*/	return true; }
+	if ( param == "divide-by-threads" )	{ cfg.divideByThreads = (value.empty() or value == "true");			return true; }
+	if ( param == "divide-by-passes" )	{ cfg.divideByPasses = (value.empty() or value == "true");			return true; }
 
 	RETURN_ERR( "unknown parameter for --cfg-vk-cpp: \""s << param << '"' );
 }
@@ -200,12 +125,12 @@ static bool ParseVkTraceConfig (StringView param, StringView value, INOUT Conver
 {
 	auto&	cfg = mainConfig.conveters.vulkanTrace;
 
-	if ( param == "end" )				{ cfg.lastFrame = FrameID(std::stoll( String(value) ));		return true; }
-	if ( param == "remap-mem" )			{ cfg.remapMemory = (value == "true");						return true; }
-	if ( param == "remap-queue" )		{ cfg.remapQueueFamily = (value == "true");					return true; }
-	if ( param == "indirect-swapchain" ){ cfg.indirectSwapchain = (value == "true");				return true; }
-	if ( param == "multithreaded" )		{ /*cfg.isMultithreaded = (value == "true");*/				return true; }
-	if ( param == "async-load" )		{ /*cfg.isAsyncLoadEnabled = (value == "true");*/			return true; }
+	if ( param == "end" )				{ cfg.lastFrame = FrameID(std::stoll( String(value) ));				return true; }
+	if ( param == "remap-mem" )			{ cfg.remapMemory = (value.empty() or value == "true");				return true; }
+	if ( param == "remap-queue" )		{ cfg.remapQueueFamily = (value.empty() or value == "true");		return true; }
+	if ( param == "indirect-swapchain" ){ cfg.indirectSwapchain = (value.empty() or value == "true");		return true; }
+	if ( param == "multithreaded" )		{ /*cfg.isMultithreaded = (value.empty() or value == "true");*/		return true; }
+	if ( param == "async-load" )		{ /*cfg.isAsyncLoadEnabled = (value.empty() or value == "true");*/	return true; }
 
 	RETURN_ERR( "unknown parameter for --cfg-vk-trace: \""s << param << '"' );
 }
@@ -221,7 +146,7 @@ static bool ParseGraphVizConfig (StringView param, StringView value, INOUT Conve
 	
 	if ( param == "begin" )				{ cfg.firstFrame = FrameID(std::stoll( String(value) ));	return true; }
 	if ( param == "end" )				{ cfg.lastFrame = FrameID(std::stoll( String(value) ));		return true; }
-	if ( param == "show-sync" )			{ cfg.showSync = (value == "true");							return true; }
+	if ( param == "show-sync" )			{ cfg.showSync = (value.empty() or value == "true");		return true; }
 
 	RETURN_ERR( "unknown parameter for --cfg-graphviz: \""s << param << '"' );
 }
@@ -240,9 +165,7 @@ static bool ParseAdditionalConfig (const int argc, const char** argv, StringView
 		{ "--cfg-vk-trace",			&ParseVkTraceConfig },
 		{ "--cfg-vez-trace",		[] (StringView, StringView, ConverterConfig &) { return false; } },
 		{ "--cfg-fg-trace",			[] (StringView, StringView, ConverterConfig &) { return false; } },
-		{ "--cfg-gl-trace",			[] (StringView, StringView, ConverterConfig &) { return false; } },
 		{ "--cfg-graphviz",			&ParseGraphVizConfig },
-		{ "--cfg-screenshot",		[] (StringView, StringView, ConverterConfig &) { return false; } },
 		{ "--cfg-rem-redundant",	[] (StringView, StringView, ConverterConfig &) { return false; } },
 		{ "--cfg-opt-renderpass",	[] (StringView, StringView, ConverterConfig &) { return false; } },
 		{ "--cfg-opt-dedicated",	[] (StringView, StringView, ConverterConfig &) { return false; } },
@@ -297,34 +220,6 @@ int main (int argc, const char** argv)
 {
 	ConverterConfig		config;
 
-	// temp
-	#if 1
-		const char*	test_commands[] = {
-			"TODO: path to exe",
-			//"--convert",		"vk-cpp",	"--cfg-vk-cpp",		"begin=2000", "end=2010",
-			"--convert",		"vk-trace",	"--cfg-vk-trace",	"indirect-swapchain=false",	"remap-mem=true",
-			//"--convert",		"graphviz",	"--cfg-graphviz",	"begin=0", "end=3", "show-sync=true",
-			#if 0
-				"--open",		R"(D:\VkTraceOutput\doom1.vktrace)",
-				"--output-dir",	R"(D:\VkTraceOutput\converted\doom1)",
-			#elif 0
-				"--open",		R"(D:\VkTraceOutput\multithreading_1.vktrace)",
-				"--output-dir",	R"(D:\VkTraceOutput\converted\multithreading)",
-			#elif 0
-				"--open",		R"(D:\VkTraceOutput\dota2_1.vktrace)",
-				"--output-dir",	R"(D:\VkTraceOutput\converted\dota2)",
-			#elif 1
-				"--open",		R"(D:\VkTraceOutput\parallaxmapping_1.vktrace)",
-				"--output-dir",	R"(D:\VkTraceOutput\converted\parallaxmapping)",
-			#elif 0
-				"--open",		R"(D:\VkTraceOutput\mgf_events.vktrace)",
-				"--output-dir",	R"(D:\VkTraceOutput\converted\mgf_events)",
-			#endif
-		};
-		argv = test_commands;
-		argc = int(CountOf( test_commands ));
-	#endif
-
 
 	// parse arguments
 	for (int i = 1; i < argc; ++i)
@@ -353,14 +248,6 @@ int main (int argc, const char** argv)
 		if ( curr == "-c" or curr == "--convert" )
 		{
 			CHECK( ParseConverters( argc, argv, INOUT ++i, INOUT config.conveters ));
-			--i;
-			continue;
-		}
-
-		// 'add extension pass' command
-		if ( curr == "-e" or curr == "--extension" )
-		{
-			CHECK( ParseExtensionPasses( argc, argv, INOUT ++i, INOUT config.passes ));
 			--i;
 			continue;
 		}
@@ -396,7 +283,7 @@ int main (int argc, const char** argv)
 	app_trace.AddAnalyzer(AnalyzerPtr{ new MemoryObjAnalyzer() });
 	app_trace.AddAnalyzer(AnalyzerPtr{ new RenderPassAnalyzer() });
 	app_trace.AddAnalyzer(AnalyzerPtr{ new MemoryTransferAnalyzer() });
-	//app_trace.AddAnalyzer(AnalyzerPtr{ new SynchronizationsAnalyzer() });
+	//app_trace.AddAnalyzer(AnalyzerPtr{ new SynchronizationsAnalyzer( 3101, 3104 ) });
 	app_trace.AddAnalyzer(AnalyzerPtr{ new FPSAnalyzer() });
 	app_trace.AddAnalyzer(AnalyzerPtr{ new ExtensionAnalyzer() });
 
@@ -408,6 +295,7 @@ int main (int argc, const char** argv)
 	if ( config.conveters.vulkanCppSource.isEnabled )	CHECK_ERR( RunConverter_VulkanCppSource( app_trace, config ), -130 );
 	if ( config.conveters.vulkanTrace.isEnabled )		CHECK_ERR( RunConverter_VulkanPlayer( app_trace, config ), -131 );
 	if ( config.conveters.graphviz.isEnabled )			CHECK_ERR( RunConverter_GraphViz( app_trace, config ), -132 );
+	if ( config.conveters.frameGraphTrace.isEnabled )	CHECK_ERR( RunConverter_FrameGraph( app_trace, config ), -133 );
 
 	return 0;
 }

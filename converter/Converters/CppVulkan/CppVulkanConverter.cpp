@@ -16,6 +16,7 @@ namespace VTC
 	bool RunConverter_VulkanCppSource (const AppTrace &trace, const ConverterConfig &config)
 	{
 		FG_TIMEPROFILER();
+		FG_LOGI( "run VulkanCppSource converter" );
 
 		CppVulkanConverter	conv{ config };
 
@@ -318,14 +319,6 @@ namespace VTC
             << "set( FG_EXTERNALS_PATH \"" VTC_FRAMEGRAPH_EXTERNAL_PATH "\" )\n"
             << "include( \"" VTC_FRAMEGRAPH_SOURCE_PATH "/cmake/download_vk.cmake\" )\n\n";
 
-#		if 0 //def FG_ENABLE_SDL2
-        str << "set( VTC_ENABLE_SDL2 ON CACHE BOOL \"\" )\n";
-#		endif
-
-#		ifdef FG_ENABLE_GLFW
-        str << "set( VTC_ENABLE_GLFW ON CACHE BOOL \"\" )\n";
-#		endif
-
         str << "link_directories( \"" VTC_FRAMEGRAPH_LIBRARY_PATH "\" )\n\n";
 
 		str << "set( SOURCES ";
@@ -356,13 +349,7 @@ namespace VTC
 			<< "target_compile_options( \"" << _projName << "\" PRIVATE $<$<CONFIG:Profile>: ${PROJECTS_SHARED_CXX_FLAGS_PROFILE}> )\n"
 			<< "set_target_properties( \"" << _projName << "\" PROPERTIES LINK_FLAGS_PROFILE ${PROJECTS_SHARED_LINKER_FLAGS_PROFILE} )\n\n";
 
-		str << "target_link_libraries( \"" << _projName << "\" \"STL\" \"VulkanLoader\" \"Framework\" )\n"
-            << "if (${VTC_ENABLE_SDL2})\n"
-			<< "	target_link_libraries( \"" << _projName << "\" \"SDL2\" )\n"
-			<< "endif ()\n"
-            << "if (${VTC_ENABLE_GLFW})\n"
-			<< "	target_link_libraries( \"" << _projName << "\" \"glfw3\" )\n"
-			<< "endif ()\n\n";
+		str << "target_link_libraries( \"" << _projName << "\" \"STL\" \"VulkanLoader\" \"Framework\" )\n\n";
 
 		//str << "add_definitions( \"-DDATA_PATH=\\\"" << ConvertToCStyleString( _dataDir.string() ) << "\\\"\" )\n";
 		
@@ -391,7 +378,7 @@ namespace VTC
 */
 	bool CppVulkanConverter::_GenMain (const FrameID first, const FrameID last) const
 	{
-		const uint64_t	sw_count = _resourcesBookmarks->GetUniqueResourceCountByType( VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT );
+		const uint64_t	sw_count = _resourcesBookmarks->GetUniqueResourceCountByType( VK_OBJECT_TYPE_SWAPCHAIN_KHR );
 
 		CHECK_ERR( sw_count <= 1 );
 		CHECK_ERR( sw_count == 0 or not _swapchainAnalyzer->GetSwapchains().empty() );
@@ -437,34 +424,34 @@ namespace VTC
 	bool CppVulkanConverter::_InitializeResources (INOUT String &str) const
 	{
 		const Pair<EResourceType, StringView> resources[] = {
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT,				"InstanceID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT,		"PhysicalDeviceID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT,				"DeviceID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT,				"QueueID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT,			"SemaphoreID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT,		"CommandBufferID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT,				"FenceID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT,		"DeviceMemoryID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT,				"BufferID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT,				"ImageID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT,				"EventID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT,			"QueryPoolID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT,			"BufferViewID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT,			"ImageViewID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT,		"ShaderModuleID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_CACHE_EXT,		"PipelineCacheID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT,		"PipelineLayoutID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT,			"RenderPassID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT,				"PipelineID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT,"DescriptorSetLayoutID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT,				"SamplerID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT,		"DescriptorPoolID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT,		"DescriptorSetID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT,			"FramebufferID" },
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT,			"CommandPoolID" },
-			//{ VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT,		"SurfaceKHRID" }
-			{ VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT,		"SwapchainKHRID" }
-			//{ VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT,		"DisplayKHRID" }
+			{ VK_OBJECT_TYPE_INSTANCE,				"InstanceID" },
+			{ VK_OBJECT_TYPE_PHYSICAL_DEVICE,		"PhysicalDeviceID" },
+			{ VK_OBJECT_TYPE_DEVICE,				"DeviceID" },
+			{ VK_OBJECT_TYPE_QUEUE,					"QueueID" },
+			{ VK_OBJECT_TYPE_SEMAPHORE,				"SemaphoreID" },
+			{ VK_OBJECT_TYPE_COMMAND_BUFFER,		"CommandBufferID" },
+			{ VK_OBJECT_TYPE_FENCE,					"FenceID" },
+			{ VK_OBJECT_TYPE_DEVICE_MEMORY,			"DeviceMemoryID" },
+			{ VK_OBJECT_TYPE_BUFFER,				"BufferID" },
+			{ VK_OBJECT_TYPE_IMAGE,					"ImageID" },
+			{ VK_OBJECT_TYPE_EVENT,					"EventID" },
+			{ VK_OBJECT_TYPE_QUERY_POOL,			"QueryPoolID" },
+			{ VK_OBJECT_TYPE_BUFFER_VIEW,			"BufferViewID" },
+			{ VK_OBJECT_TYPE_IMAGE_VIEW,			"ImageViewID" },
+			{ VK_OBJECT_TYPE_SHADER_MODULE,			"ShaderModuleID" },
+			{ VK_OBJECT_TYPE_PIPELINE_CACHE,		"PipelineCacheID" },
+			{ VK_OBJECT_TYPE_PIPELINE_LAYOUT,		"PipelineLayoutID" },
+			{ VK_OBJECT_TYPE_RENDER_PASS,			"RenderPassID" },
+			{ VK_OBJECT_TYPE_PIPELINE,				"PipelineID" },
+			{ VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT,	"DescriptorSetLayoutID" },
+			{ VK_OBJECT_TYPE_SAMPLER,				"SamplerID" },
+			{ VK_OBJECT_TYPE_DESCRIPTOR_POOL,		"DescriptorPoolID" },
+			{ VK_OBJECT_TYPE_DESCRIPTOR_SET,		"DescriptorSetID" },
+			{ VK_OBJECT_TYPE_FRAMEBUFFER,			"FramebufferID" },
+			{ VK_OBJECT_TYPE_COMMAND_POOL,			"CommandPoolID" },
+			//{ VK_OBJECT_TYPE_SURFACE_KHR,			"SurfaceKHRID" }
+			{ VK_OBJECT_TYPE_SWAPCHAIN_KHR,			"SwapchainKHRID" }
+			//{ VK_OBJECT_TYPE_DISPLAY_KHR,			"DisplayKHRID" }
 		};
 
 		for (auto& res_type : resources)
@@ -486,9 +473,9 @@ namespace VTC
 */
 	bool CppVulkanConverter::_SetupDevice (TraceRange::Bookmark pos, INOUT String &str) const
 	{
-		CHECK_ERR( _resourcesBookmarks->GetResourceCountByType( VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT ) == 1 );
+		CHECK_ERR( _resourcesBookmarks->GetResourceCountByType( VK_OBJECT_TYPE_INSTANCE ) == 1 );
 
-		auto&	instance		= *_resourcesBookmarks->GetResourcesByType( VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT )->begin();
+		auto&	instance		= *_resourcesBookmarks->GetResourcesByType( VK_OBJECT_TYPE_INSTANCE )->begin();
 		auto*	instance_info	= _deviceAnalyzer->GetInstanceInfo( instance.first, pos );
 		CHECK_ERR(	instance_info and
 					instance_info->physicalDevices.size() and
@@ -501,9 +488,9 @@ namespace VTC
 		_resRemapper->SetCurrentPos( device_info->FirstBookmark().pos );
 
 		str << "	CHECK_ERR( app.CreateDevice(\n"
-			<< "			/*instance*/ InstanceID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT, instance.first ) << "),\n"
-			<< "			/*physicalDevice*/ PhysicalDeviceID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT, device_info->physicalDevice ) << "),\n"
-			<< "			/*logicalDevice*/ DeviceID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, device_id ) << "),\n"
+			<< "			/*instance*/ InstanceID(" << (*_resRemapper)( VK_OBJECT_TYPE_INSTANCE, instance.first ) << "),\n"
+			<< "			/*physicalDevice*/ PhysicalDeviceID(" << (*_resRemapper)( VK_OBJECT_TYPE_PHYSICAL_DEVICE, device_info->physicalDevice ) << "),\n"
+			<< "			/*logicalDevice*/ DeviceID(" << (*_resRemapper)( VK_OBJECT_TYPE_DEVICE, device_id ) << "),\n"
 			<< "			/*gpuDeviceName*/ \"\",\n"
 			<< "			/*apiVersion*/ VK_API_VERSION_1_1,\n"
 			<< "			/*queues*/ {";
@@ -542,7 +529,7 @@ namespace VTC
 			is_first = false;
 			_resRemapper->SetCurrentPos( queue_info->FirstBookmark().pos );
 
-			str << "{ QueueID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT, queue_info->id ) << "), VkQueueFlags("
+			str << "{ QueueID(" << (*_resRemapper)( VK_OBJECT_TYPE_QUEUE, queue_info->id ) << "), VkQueueFlags("
 				<< (queue_info->usedForPresent ? "VK_QUEUE_PRESENT_BIT | " : "")
 				<< Serialize_VkQueueFlags( queue_info->usageFlags )
 				<< "), " << FloatToString(queue_info->priority) << " }";
@@ -563,14 +550,14 @@ namespace VTC
 		_resRemapper->SetCurrentPos( swapchain.LastBookmark().pos );
 
 		str << "	CHECK_ERR( app.CreateSwapchain(\n";
-		str << "			/*swapchain*/ SwapchainKHRID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT, swapchain.id ) << "),\n";
+		str << "			/*swapchain*/ SwapchainKHRID(" << (*_resRemapper)( VK_OBJECT_TYPE_SWAPCHAIN_KHR, swapchain.id ) << "),\n";
 		str << "			/*swapchainImages*/ { ";
 	
 		for (size_t i = 0; i < images.size(); ++i)
 		{
 			CHECK_ERR( images[i].index == i );
 
-			str << (i ? ", " : "") << "ImageID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, images[i].id ) << ")";
+			str << (i ? ", " : "") << "ImageID(" << (*_resRemapper)( VK_OBJECT_TYPE_IMAGE, images[i].id ) << ")";
 		}
 		str << " },\n";
 

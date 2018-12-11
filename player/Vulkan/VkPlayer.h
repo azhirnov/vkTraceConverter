@@ -4,7 +4,7 @@
 
 #include "Core/IPlayer.h"
 #include "Reader/TraceReader.h"
-#include "stl/Containers/PoolAllocator.h"
+#include "stl/Memory/LinearAllocator.h"
 #include <chrono>
 
 #undef NOMINMAX
@@ -129,10 +129,11 @@ namespace VTPlayer
 		IWindow *				_window				= null;
 
 		FrameID					_currFrameId		= 0;
-		uint					_sourceFPS			= 0;
 		bool					_isPaused			= false;
 		bool					_playOneFrame		= false;
 		bool					_isFinished			= false;
+		bool					_playWithSourceFPS	= true;
+		TimePoint_t				_lastPresentTime;
 		
 		ResourceMap_t			_vkResources;
 		VmaAllocator			_memAllocator		= null;
@@ -169,7 +170,7 @@ namespace VTPlayer
 		PengingQueueSubmits_t	_pendingSubmits;		// will be inserted in nearest vkQueueSubmit call
 		Array<VkSemaphore>		_semaphorePool;			// currently unused semaphores
 
-		PoolAllocator			_perPacketAllocator;
+		LinearAllocator<>		_perPacketAllocator;	// allocate memory when process packet and recycle before processing next packet
 
 		DataMap_t				_loadableData;
 		LoadEvents_t			_loadEvents;
@@ -199,10 +200,11 @@ namespace VTPlayer
 	// IWindowEventListener implementation
 	public:
 		void OnResize (const uint2 &size) override;
-		void OnRefrash () override {}
+		void OnRefresh () override {}
 		void OnDestroy () override;
 		void OnUpdate () override {}
 		void OnKey (StringView, EKeyAction) override;
+		void OnMouseMove (const float2 &) override {}
 
 
 	private:
@@ -221,12 +223,13 @@ namespace VTPlayer
 		bool _InsertQueryOnAcquireImage (INOUT VkSemaphore &);
 		bool _InsertQueryOnPresent (OUT VkSubmitInfo &submit, size_t queueId);
 		
-		bool _CreateSwapchain (const struct VulkanCreateInfo &);
-		bool _InitSwapchain (const struct VulkanCreateInfo &);
+		bool _CreateSwapchain (struct VulkanCreateInfo &);
+		bool _InitDirectSwapchain (const struct VulkanCreateInfo &);
 		bool _InitIndirectSwapchain (const struct VulkanCreateInfo &);
 		void _DestroyIndirectSwapchain ();
 		bool _AcquireIndirectSwapchainImage (size_t imageId);
-		bool _QueuePresentToIndirectSwapchain (size_t queueId, VkQueue queue, VkImage image, uint waitSemaphoreCount, const VkSemaphore* waitSemaphores);
+		bool _QueuePresentToIndirectSwapchain (size_t queueId, VkQueue queue, VkImage image, ArrayView<VkSemaphore> waitSemaphores);
+		bool _QueuePresentToDirectSwapchain (size_t queueId, VkQueue queue, VkImage image, ArrayView<VkSemaphore> waitSemaphores);
 
 		bool _CreateSemaphores ();
 		void _DestroySemaphores ();
@@ -236,7 +239,7 @@ namespace VTPlayer
 
 		bool _LoadDataToVMAMemory (VkDevice dev, MemAllocationInfo &mem, DataID dataId, VkDeviceSize offset, VkDeviceSize size) const;
 
-		ND_ DataBuffer_t  _LoadData (DataID id) const;
+		ND_ ArrayView<uint8_t>  _LoadData (DataID id) const;
 
 		ND_ bool  _IsOriginMemoryModel () const;
 		ND_ bool  _IsQueueFamilyRemappingEnabled () const;
@@ -245,7 +248,6 @@ namespace VTPlayer
 
 		ND_ bool  _OverridePacketProcessor (EVulkanPacketID, VUnpacker &);
 
-		bool _SetSourceFPS (VUnpacker &);
 		bool _SetData (VUnpacker &);
 		bool _CreateDevice (VUnpacker &);
 		bool _Initializeresource (VUnpacker &);

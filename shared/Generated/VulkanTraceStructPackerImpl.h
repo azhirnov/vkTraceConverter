@@ -486,6 +486,12 @@ void VPackStruct (const VkBaseInStructure *ptr, VPacker &packer)
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV : {
+			VkDedicatedAllocationMemoryAllocateInfoNV const *  obj = BitCast<VkDedicatedAllocationMemoryAllocateInfoNV const *>( ptr );
+			VPack_VkDedicatedAllocationMemoryAllocateInfoNV( obj, packer );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD : {
 			VkPipelineRasterizationStateRasterizationOrderAMD const *  obj = BitCast<VkPipelineRasterizationStateRasterizationOrderAMD const *>( ptr );
 			VPack_VkPipelineRasterizationStateRasterizationOrderAMD( obj, packer );
@@ -513,12 +519,6 @@ void VPackStruct (const VkBaseInStructure *ptr, VPacker &packer)
 		case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_BUFFER_CREATE_INFO_NV : {
 			VkDedicatedAllocationBufferCreateInfoNV const *  obj = BitCast<VkDedicatedAllocationBufferCreateInfoNV const *>( ptr );
 			VPack_VkDedicatedAllocationBufferCreateInfoNV( obj, packer );
-			break;
-		}
-
-		case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV : {
-			VkDedicatedAllocationMemoryAllocateInfoNV const *  obj = BitCast<VkDedicatedAllocationMemoryAllocateInfoNV const *>( ptr );
-			VPack_VkDedicatedAllocationMemoryAllocateInfoNV( obj, packer );
 			break;
 		}
 
@@ -675,11 +675,13 @@ void VPackStruct (const VkBaseInStructure *ptr, VPacker &packer)
 		case VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR : ASSERT(false); break;
-		case VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_FEATURES_EXT : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_PROPERTIES_EXT : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_STREAM_CREATE_INFO_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_TEXTURE_LOD_GATHER_FORMAT_PROPERTIES_AMD : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CORNER_SAMPLED_IMAGE_FEATURES_NV : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO_NV : ASSERT(false); break;
@@ -758,6 +760,12 @@ void VPackStruct (const VkBaseInStructure *ptr, VPacker &packer)
 		case VK_STRUCTURE_TYPE_MULTISAMPLE_PROPERTIES_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_FEATURES_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_PROPERTIES_EXT : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_DRM_FORMAT_MODIFIER_PROPERTIES_LIST_EXT : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_DRM_FORMAT_MODIFIER_PROPERTIES_EXT : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_DRM_FORMAT_MODIFIER_INFO_EXT : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_LIST_CREATE_INFO_EXT : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_EXPLICIT_CREATE_INFO_EXT : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_PROPERTIES_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_VALIDATION_CACHE_CREATE_INFO_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_SHADER_MODULE_VALIDATION_CACHE_CREATE_INFO_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT : ASSERT(false); break;
@@ -765,26 +773,30 @@ void VPackStruct (const VkBaseInStructure *ptr, VPacker &packer)
 		case VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_LAYOUT_SUPPORT_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_FEATURES_NV : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_PROPERTIES_NV : ASSERT(false); break;
-		case VK_STRUCTURE_TYPE_RAYTRACING_PIPELINE_CREATE_INFO_NVX : ASSERT(false); break;
-		case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NVX : ASSERT(false); break;
-		case VK_STRUCTURE_TYPE_GEOMETRY_INSTANCE_NVX : ASSERT(false); break;
-		case VK_STRUCTURE_TYPE_GEOMETRY_NVX : ASSERT(false); break;
-		case VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NVX : ASSERT(false); break;
-		case VK_STRUCTURE_TYPE_GEOMETRY_AABB_NVX : ASSERT(false); break;
-		case VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NVX : ASSERT(false); break;
-		case VK_STRUCTURE_TYPE_DESCRIPTOR_ACCELERATION_STRUCTURE_INFO_NVX : ASSERT(false); break;
-		case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NVX : ASSERT(false); break;
-		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAYTRACING_PROPERTIES_NVX : ASSERT(false); break;
-		case VK_STRUCTURE_TYPE_HIT_SHADER_MODULE_CREATE_INFO_NVX : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_NV : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NV : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_GEOMETRY_NV : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NV : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_GEOMETRY_AABB_NV : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NV : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_NV : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NV : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PROPERTIES_NV : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_INFO_NV : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_REPRESENTATIVE_FRAGMENT_TEST_FEATURES_NV : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_IMPORT_MEMORY_HOST_POINTER_INFO_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_MEMORY_HOST_POINTER_PROPERTIES_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_HOST_PROPERTIES_EXT : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES_KHR : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_CALIBRATED_TIMESTAMP_INFO_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_AMD : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_DEVICE_MEMORY_OVERALLOCATION_CREATE_INFO_AMD : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_PROPERTIES_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES_KHR : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMPUTE_SHADER_DERIVATIVES_FEATURES_NV : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_NV : ASSERT(false); break;
@@ -794,6 +806,8 @@ void VPackStruct (const VkBaseInStructure *ptr, VPacker &packer)
 		case VK_STRUCTURE_TYPE_CHECKPOINT_DATA_NV : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_QUEUE_FAMILY_CHECKPOINT_PROPERTIES_NV : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES_KHR : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_IMAGEPIPE_SURFACE_CREATE_INFO_FUCHSIA : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_RANGE_SIZE : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_MAX_ENUM : ASSERT(false); break;
 	}
@@ -2609,6 +2623,20 @@ void VPack_VkDescriptorSetVariableDescriptorCountAllocateInfoEXT (const VkDescri
 }
 
 
+void VPack_VkDedicatedAllocationMemoryAllocateInfoNV (const VkDedicatedAllocationMemoryAllocateInfoNV *obj, VPacker &packer)
+{
+	if ( obj == null ) return;
+	packer.BeginStruct();
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV );
+	packer.Push( obj->pNext );
+	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
+	packer.Pop( OUT obj->pNext );
+	packer.RemapVkResource( INOUT &obj->image );
+	packer.RemapVkResource( INOUT &obj->buffer );
+	packer.EndStruct( *obj );
+}
+
+
 void VPack_VkPipelineRasterizationStateRasterizationOrderAMD (const VkPipelineRasterizationStateRasterizationOrderAMD *obj, VPacker &packer)
 {
 	if ( obj == null ) return;
@@ -2671,20 +2699,6 @@ void VPack_VkDedicatedAllocationBufferCreateInfoNV (const VkDedicatedAllocationB
 	packer.Push( obj->pNext );
 	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
 	packer.Pop( OUT obj->pNext );
-	packer.EndStruct( *obj );
-}
-
-
-void VPack_VkDedicatedAllocationMemoryAllocateInfoNV (const VkDedicatedAllocationMemoryAllocateInfoNV *obj, VPacker &packer)
-{
-	if ( obj == null ) return;
-	packer.BeginStruct();
-	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV );
-	packer.Push( obj->pNext );
-	 VPackStruct( BitCast<VkBaseInStructure const *>(obj->pNext), packer );
-	packer.Pop( OUT obj->pNext );
-	packer.RemapVkResource( INOUT &obj->image );
-	packer.RemapVkResource( INOUT &obj->buffer );
 	packer.EndStruct( *obj );
 }
 

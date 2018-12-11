@@ -37,16 +37,6 @@ int main (int argc, const char** argv)
 			RETURN_ERR( "unsupported command arg: "s << key, 1 );
 	}
 
-	// temp
-#if 1
-	vulkan_headers = "C:/Projects/VkTraceConvertor/build/install/Vulkan-Headers/include/vulkan";
-	vktrace_ids = "C:/Projects/VkTraceConvertor/external/LunarG-VulkanTools/vktrace/vktrace_common/vktrace_trace_packet_identifiers.h";
-	output = "C:/Projects/VkTraceConvertor/shared/Generated";
-	FG_LOGI( "vulkan_headers: "s << vulkan_headers );
-	FG_LOGI( "vktrace_ids: "s << vktrace_ids );
-	FG_LOGI( "output: "s << output );
-#endif
-
 	
 	Generator	generator;
 
@@ -72,15 +62,16 @@ int main (int argc, const char** argv)
 	CHECK_ERR( generator.GenEnumToString( fs::path(output).append( "VkEnumToString.h" ), fs::path(output).append( "VkEnumToStringImpl.h" )), -16 );
 	CHECK_ERR( generator.GenStructToString( fs::path(output).append( "VkStructToString.h" ), fs::path(output).append( "VkStructToStringImpl.h" )), -17 );
 	CHECK_ERR( generator.GenStructTypeHelpers( fs::path(output).append( "VkStructTypes.h" )), -18 );
+	CHECK_ERR( generator.GenFormatHelpers( fs::path(output).append( "VkFormatHelpers.h" )), -19 );
 
 	CHECK_ERR( generator.GenVulkanTracePacker( fs::path(output).append( "VulkanTracePacketIDs.h" ),
 											   fs::path(output).append( "VulkanTraceStructPacker.h" ),
 											   fs::path(output).append( "VulkanTraceStructPackerImpl.h" ),
-											   fs::path(output).append( "VulkanTraceFuncPacker.h" )), -19 );
+											   fs::path(output).append( "VulkanTraceFuncPacker.h" )), -20 );
 	
 	CHECK_ERR( generator.GenVulkanTracePlayer( fs::path(output).append( "VulkanTraceStructUnpacker.h" ),
 											   fs::path(output).append( "VulkanTraceStructUnpackerImpl.h" ),
-											   fs::path(output).append( "VulkanTraceFuncUnpacker.h" )), -20 );
+											   fs::path(output).append( "VulkanTraceFuncUnpacker.h" )), -21 );
 
 	return 0;
 }

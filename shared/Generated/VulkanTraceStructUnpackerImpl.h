@@ -485,6 +485,12 @@ void VUnpackStruct (VkBaseOutStructure *ptr, const VUnpacker &unpacker)
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV : {
+			VkDedicatedAllocationMemoryAllocateInfoNV*  obj = BitCast<VkDedicatedAllocationMemoryAllocateInfoNV*>( ptr );
+			VUnpack_VkDedicatedAllocationMemoryAllocateInfoNV( obj, unpacker );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD : {
 			VkPipelineRasterizationStateRasterizationOrderAMD*  obj = BitCast<VkPipelineRasterizationStateRasterizationOrderAMD*>( ptr );
 			VUnpack_VkPipelineRasterizationStateRasterizationOrderAMD( obj, unpacker );
@@ -512,12 +518,6 @@ void VUnpackStruct (VkBaseOutStructure *ptr, const VUnpacker &unpacker)
 		case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_BUFFER_CREATE_INFO_NV : {
 			VkDedicatedAllocationBufferCreateInfoNV*  obj = BitCast<VkDedicatedAllocationBufferCreateInfoNV*>( ptr );
 			VUnpack_VkDedicatedAllocationBufferCreateInfoNV( obj, unpacker );
-			break;
-		}
-
-		case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV : {
-			VkDedicatedAllocationMemoryAllocateInfoNV*  obj = BitCast<VkDedicatedAllocationMemoryAllocateInfoNV*>( ptr );
-			VUnpack_VkDedicatedAllocationMemoryAllocateInfoNV( obj, unpacker );
 			break;
 		}
 
@@ -1839,6 +1839,16 @@ void VUnpack_VkDescriptorSetVariableDescriptorCountAllocateInfoEXT (VkDescriptor
 }
 
 
+void VUnpack_VkDedicatedAllocationMemoryAllocateInfoNV (VkDedicatedAllocationMemoryAllocateInfoNV *ptr, const VUnpacker &unpacker)
+{
+	if ( ptr == null ) return;
+	unpacker.UnpackPtr( INOUT ptr->pNext );
+	unpacker.RemapVkResources( INOUT &ptr->image, 1 );
+	unpacker.RemapVkResources( INOUT &ptr->buffer, 1 );
+	VUnpackStruct( Cast<VkBaseOutStructure>(const_cast<void*>(ptr->pNext)), unpacker );
+}
+
+
 void VUnpack_VkPipelineRasterizationStateRasterizationOrderAMD (VkPipelineRasterizationStateRasterizationOrderAMD *ptr, const VUnpacker &unpacker)
 {
 	if ( ptr == null ) return;
@@ -1877,16 +1887,6 @@ void VUnpack_VkDedicatedAllocationBufferCreateInfoNV (VkDedicatedAllocationBuffe
 {
 	if ( ptr == null ) return;
 	unpacker.UnpackPtr( INOUT ptr->pNext );
-	VUnpackStruct( Cast<VkBaseOutStructure>(const_cast<void*>(ptr->pNext)), unpacker );
-}
-
-
-void VUnpack_VkDedicatedAllocationMemoryAllocateInfoNV (VkDedicatedAllocationMemoryAllocateInfoNV *ptr, const VUnpacker &unpacker)
-{
-	if ( ptr == null ) return;
-	unpacker.UnpackPtr( INOUT ptr->pNext );
-	unpacker.RemapVkResources( INOUT &ptr->image, 1 );
-	unpacker.RemapVkResources( INOUT &ptr->buffer, 1 );
 	VUnpackStruct( Cast<VkBaseOutStructure>(const_cast<void*>(ptr->pNext)), unpacker );
 }
 

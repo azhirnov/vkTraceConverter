@@ -17,7 +17,7 @@ namespace VTC
 	// types
 	public:
 		using AttachmentsRef_t		= Array< VkAttachmentReference >;
-		using DepthStencilRef_t		= std::optional< VkAttachmentReference >;
+		using DepthStencilRef_t		= Optional< VkAttachmentReference >;
 		using Dependencies_t		= Array< VkSubpassDependency >;
 		using Preserves_t			= Array< uint >;
 
@@ -38,11 +38,11 @@ namespace VTC
 
 		struct RenderPassInfo
 		{
-			ResourceID				id			= 0;
-			VkRenderPassCreateFlags	flags		= 0;
-			Attachments_t			attachments;
-			Subpasses_t				subpasses;
-			Dependencies_t			dependencies;
+			ResourceID					id			= 0;
+			VkRenderPassCreateFlags		flags		= 0;
+			Attachments_t				attachments;
+			Subpasses_t					subpasses;
+			Dependencies_t				dependencies;
 		};
 
 		using RenderPassesMap_t	= ResourceTracker< RenderPassInfo, DefaultBookmark, true  >;

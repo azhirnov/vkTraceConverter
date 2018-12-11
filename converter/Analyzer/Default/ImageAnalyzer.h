@@ -44,6 +44,7 @@ namespace VTC
 		{
 			ResourceID					id				= 0;
 			ResourceID					memId			= 0;
+			VkDeviceSize				memOffset		= 0;
 			ResourceID					deviceId		= 0;
 			VkImageCreateInfo			createInfo		= {};
 			ResourceID					swapchain		= 0;
@@ -86,8 +87,8 @@ namespace VTC
 	public:
 		ImageAnalyzer ();
 		
-		ND_ ImageInfo_t const*		GetImage (ResourceID id, TraceRange::Bookmark pos) const		{ return _images.FindIn( id, pos ); }
-		ND_ ImageViewInfo_t const*	GetImageView (ResourceID id, TraceRange::Bookmark pos) const	{ return _imageViews.FindIn( id, pos ); }
+		ND_ ImageInfo_t const*		GetImage (ResourceID id, TraceRange::Bookmark pos, bool strict = true) const		{ return _images.FindIn( id, pos, strict ); }
+		ND_ ImageViewInfo_t const*	GetImageView (ResourceID id, TraceRange::Bookmark pos, bool strict = true) const	{ return _imageViews.FindIn( id, pos, strict ); }
 
 
 	// IAnalyzer implementation

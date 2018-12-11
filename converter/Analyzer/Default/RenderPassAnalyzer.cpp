@@ -35,8 +35,8 @@ namespace VTC
 	{
 		switch ( type )
 		{
-			case VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT :	CHECK( _ProcessFramebufferUsage( pos, id, op ));	break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT :	CHECK( _ProcessRenderPassUsage( pos, id, op ));		break;
+			case VK_OBJECT_TYPE_FRAMEBUFFER :	CHECK( _ProcessFramebufferUsage( pos, id, op ));	break;
+			case VK_OBJECT_TYPE_RENDER_PASS :	CHECK( _ProcessRenderPassUsage( pos, id, op ));		break;
 		}
 	}
 	

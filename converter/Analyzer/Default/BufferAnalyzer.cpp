@@ -71,8 +71,8 @@ namespace VTC
 	{
 		switch ( type )
 		{
-			case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT :		CHECK( _ProcessBufferUsage( pos, id, op ));		break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT :	CHECK( _ProcessBufferViewUsage( pos, id, op ));	break;
+			case VK_OBJECT_TYPE_BUFFER :		CHECK( _ProcessBufferUsage( pos, id, op ));		break;
+			case VK_OBJECT_TYPE_BUFFER_VIEW :	CHECK( _ProcessBufferViewUsage( pos, id, op ));	break;
 		}
 	}
 	
@@ -185,7 +185,8 @@ namespace VTC
 		auto&	packet = pos.Cast< packet_vkBindBufferMemory >();
 		CHECK_ERR( buffer.id == ResourceID(packet.buffer) );
 
-		buffer.memId = ResourceID(packet.memory);
+		buffer.memId	 = ResourceID(packet.memory);
+		buffer.memOffset = packet.memoryOffset;
 		return true;
 	}
 	
@@ -206,7 +207,8 @@ namespace VTC
 			{
 				ASSERT( packet.pBindInfos[i].pNext == null );	// add support if triggered
 
-				buffer.memId = ResourceID(packet.pBindInfos[i].memory);
+				buffer.memId	 = ResourceID(packet.pBindInfos[i].memory);
+				buffer.memOffset = packet.pBindInfos[i].memoryOffset;
 				break;
 			}
 		}
@@ -433,30 +435,44 @@ namespace VTC
 		{
 			auto&	write = packet.pDescriptorWrites[i];
 			ASSERT( write.pNext == null );				// add support if triggered
-			ASSERT( write.pTexelBufferView == null );	// not supported, yet
+			//ASSERT( write.pTexelBufferView == null );	// not supported, yet
 
-			if ( not write.pBufferInfo )
-				continue;
+			VkAccessFlags			access			= 0;
+			VkPipelineStageFlags	stage			= 0;	// TODO
+			bool					is_buffer		= false;
+			bool					is_buffer_view	= false;
 
-			VkAccessFlags			access	= 0;
-			VkPipelineStageFlags	stage	= 0;	// TODO
-			
-			if ( write.descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER or
-				 write.descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC )
-				access = VK_ACCESS_UNIFORM_READ_BIT;
-
-			if ( write.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER or
-				 write.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC )
-				access = VK_ACCESS_SHADER_READ_BIT;
-
-			for (uint j = 0; j < write.descriptorCount; ++j)
+			switch ( write.descriptorType )
 			{
-				auto&	buf		= write.pBufferInfo[j];
-				auto*	info	= _buffers.FindIn( ResourceID(buf.buffer), pos );
-				CHECK_ERR( info );
+				case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER :
+				case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC :
+					access = VK_ACCESS_UNIFORM_READ_BIT;
+					is_buffer = true;
+					break;
 
-				_AddBufferUsage( *info, stage, access );
-				_AddBufferAccess( *info, pos.GetBookmark() );
+				case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER :
+				case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC :
+					access = VK_ACCESS_SHADER_READ_BIT;
+					is_buffer = true;
+					break;
+
+				case VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER :
+				case VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER :
+					is_buffer_view = true;
+					break;
+			}
+
+			if ( is_buffer )
+			{
+				for (uint j = 0; j < write.descriptorCount; ++j)
+				{
+					auto&	buf		= write.pBufferInfo[j];
+					auto*	info	= _buffers.FindIn( ResourceID(buf.buffer), pos );
+					CHECK_ERR( info );
+
+					_AddBufferUsage( *info, stage, access );
+					_AddBufferAccess( *info, pos.GetBookmark() );
+				}
 			}
 		}
 		return true;

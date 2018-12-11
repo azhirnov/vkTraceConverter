@@ -162,10 +162,10 @@ namespace VTC
 			<< "\t	" << ci_name << ".codeSize = spirv_data.size();\n"
 			<< "\t	" << ci_name << ".pCode = BitCast<uint const*>(spirv_data.data());\n"
 			<< "\t	VK_CALL( app.vkCreateShaderModule(\n"
-			<< "\t				/*device*/ app.GetResource(DeviceID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, packet.device ) << ")),\n"
+			<< "\t				/*device*/ app.GetResource(DeviceID(" << (*_resRemapper)( VK_OBJECT_TYPE_DEVICE, packet.device ) << ")),\n"
 			<< "\t				/*pCreateInfo*/ &" << ci_name << ",\n"
 			<< "\t				/*pAllocator*/ null,\n"
-			<< "\t				/*pShaderModule*/ &app.EditResource(ShaderModuleID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT, *packet.pShaderModule ) << ")) ));\n"
+			<< "\t				/*pShaderModule*/ &app.EditResource(ShaderModuleID(" << (*_resRemapper)( VK_OBJECT_TYPE_SHADER_MODULE, *packet.pShaderModule ) << ")) ));\n"
 			<< "\t}\n";
 
 		return true;
@@ -202,8 +202,8 @@ namespace VTC
 		CHECK_ERR( *packet.pImageIndex < swapchain->images.size() );
 
 		src << "\tCHECK( app.AcquireImage( "
-			<< "ImageID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, swapchain->images[ *packet.pImageIndex ].id ) << "), "
-			<< "SemaphoreID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, packet.semaphore ) << ") ));\n";
+			<< "ImageID(" << (*_resRemapper)( VK_OBJECT_TYPE_IMAGE, swapchain->images[ *packet.pImageIndex ].id ) << "), "
+			<< "SemaphoreID(" << (*_resRemapper)( VK_OBJECT_TYPE_SEMAPHORE, packet.semaphore ) << ") ));\n";
 
 		return true;
 	}
@@ -225,9 +225,9 @@ namespace VTC
 		CHECK_ERR( swapchain );
 
 		src << "\tCHECK( app.Present( "
-			<< "QueueID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT, packet.queue ) << "), "
-			<< "ImageID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, swapchain->images[ *packet.pPresentInfo->pImageIndices ].id ) << "), "
-			<< "SemaphoreID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, *packet.pPresentInfo->pWaitSemaphores ) << ") ));\n";
+			<< "QueueID(" << (*_resRemapper)( VK_OBJECT_TYPE_QUEUE, packet.queue ) << "), "
+			<< "ImageID(" << (*_resRemapper)( VK_OBJECT_TYPE_IMAGE, swapchain->images[ *packet.pPresentInfo->pImageIndices ].id ) << "), "
+			<< "SemaphoreID(" << (*_resRemapper)( VK_OBJECT_TYPE_SEMAPHORE, *packet.pPresentInfo->pWaitSemaphores ) << ") ));\n";
 
 		return true;
 	}

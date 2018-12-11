@@ -19,7 +19,7 @@ namespace VTC
 		struct ResourceInfo
 		{
 			String				name;
-			EResourceType		type		= VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT;
+			EResourceType		type		= VK_OBJECT_TYPE_UNKNOWN;
 			ResourceID			id			= 0;
 			uint64_t			localIndex	= ~0ull;
 			uint64_t			uniqueIndex	= ~0ull;

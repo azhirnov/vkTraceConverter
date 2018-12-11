@@ -21,7 +21,7 @@ namespace VTC
 */
 	void SwapchainAnalyzer::AddResourceUsage (const TraceRange::Iterator &pos, EResourceType type, ResourceID id, FrameID frameId, EResOp op)
 	{
-		if ( type != VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT )
+		if ( type != VK_OBJECT_TYPE_SWAPCHAIN_KHR )
 			return;
 		
 		if ( pos->packet_id == VKTRACE_TPI_VK_vkCreateSwapchainKHR )

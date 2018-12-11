@@ -242,7 +242,7 @@ namespace VTC
 		};
 		using PacketIDs_t		= Array< PacketInfo >;
 
-		using EResourceType		= VkDebugReportObjectTypeEXT;
+		using EResourceType		= VkObjectType;
 
 
 		struct ResourceTypeInfo
@@ -318,6 +318,7 @@ namespace VTC
 		bool GenEnumToString (const fs::path &headerFile, const fs::path &sourceFile) const;
 		bool GenStructToString (const fs::path &headerFile, const fs::path &sourceFile) const;
 		bool GenStructTypeHelpers (const fs::path &output) const;
+		bool GenFormatHelpers (const fs::path &output) const;
 
 		bool GenFuncErrorChecks (const fs::path &output) const;
 		bool GenUnpacker (const fs::path &output) const;

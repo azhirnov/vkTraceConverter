@@ -70,9 +70,9 @@ namespace VTC
 	{
 		switch ( type )
 		{
-			case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT :			CHECK( _ProcessImageUsage( pos, id, op ));		break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT :		CHECK( _ProcessImageViewUsage( pos, id, op ));	break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT :		CHECK( _ProcessRenderPass( pos, id ));			break;
+			case VK_OBJECT_TYPE_IMAGE :			CHECK( _ProcessImageUsage( pos, id, op ));		break;
+			case VK_OBJECT_TYPE_IMAGE_VIEW :	CHECK( _ProcessImageViewUsage( pos, id, op ));	break;
+			case VK_OBJECT_TYPE_RENDER_PASS :	CHECK( _ProcessRenderPass( pos, id ));			break;
 		}
 	}
 	
@@ -359,7 +359,8 @@ namespace VTC
 		auto&	packet = pos.Cast< packet_vkBindImageMemory >();
 		CHECK_ERR( image.id == ResourceID(packet.image) );
 
-		image.memId = ResourceID(packet.memory);
+		image.memId		= ResourceID(packet.memory);
+		image.memOffset	= packet.memoryOffset;
 		return true;
 	}
 	
@@ -380,7 +381,8 @@ namespace VTC
 			{
 				ASSERT( packet.pBindInfos[i].pNext == null );	// add support if triggered
 
-				image.memId = ResourceID(packet.pBindInfos[i].memory);
+				image.memId		= ResourceID(packet.pBindInfos[i].memory);
+				image.memOffset	= packet.pBindInfos[i].memoryOffset;
 				break;
 			}
 		}

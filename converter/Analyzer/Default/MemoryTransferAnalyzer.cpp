@@ -123,7 +123,7 @@ namespace VTC
 					res_data.fileOffset	= block.fileOffset + (block.memOffset - res_data.memOffset);
 					res_data.id			= buffer.id;
 					res_data.pos		= buffer.pos;
-					res_data.type		= VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT;
+					res_data.type		= VK_OBJECT_TYPE_BUFFER;
 
 					item.second.resources.push_back( std::move(res_data) );
 				}
@@ -151,7 +151,7 @@ namespace VTC
 					res_data.fileOffset	= block.fileOffset + (block.memOffset - res_data.memOffset);
 					res_data.id			= image.id;
 					res_data.pos		= image.pos;
-					res_data.type		= VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT;
+					res_data.type		= VK_OBJECT_TYPE_IMAGE;
 
 					item.second.resources.push_back( std::move(res_data) );
 				}

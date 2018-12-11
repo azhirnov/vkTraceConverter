@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Core/Settings.h"
-#include "stl/Containers/AlignedBuffer.h"
+#include "../utils/AlignedBuffer.h"
 #include "stl/CompileTime/TypeList.h"
 
 namespace VTPlayer

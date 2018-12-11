@@ -10,7 +10,7 @@ namespace VTC
 	constructor
 =================================================
 */
-	TracePacker::TracePacker (const AllResourcesBookmarks *rbm, bool uniqueIndices) :
+	TracePacker::TracePacker (Ptr<const AllResourcesBookmarks> rbm, bool uniqueIndices) :
 		_resBookmarks{ rbm },
 		_useUniqueIndices{ uniqueIndices },
 		_currPacket{ EPacketID::Unknown }
@@ -53,7 +53,11 @@ namespace VTC
 */
 	void TracePacker::AddArray (const void *data, size_t size)
 	{
-		_Store( data, size, alignof(void*) );
+		if ( size )
+		{
+			ASSERT( data and size );
+			_Store( data, size, alignof(void*) );
+		}
 	}
 	
 /*
@@ -63,6 +67,7 @@ namespace VTC
 */
 	void TracePacker::AddString (const char *str)
 	{
+		ASSERT( str );
 		_Store( str, strlen(str) + 1, alignof(char*) );
 	}
 
@@ -162,6 +167,19 @@ namespace VTC
 			_file.Write( _tempData.data(), BytesU(_tempData.size()) );
 
 		_tempData.clear();
+	}
+	
+/*
+=================================================
+	Append
+=================================================
+*/
+	void TracePacker::Append (const TracePacker &other)
+	{
+		if ( other.GetData().empty() )
+			return;
+
+		CHECK( _file.Write( other.GetData() ));
 	}
 
 

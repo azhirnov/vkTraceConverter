@@ -85,12 +85,12 @@
 	ND_ String  Serialize_VkExternalSemaphoreHandleTypeFlagBits (VkExternalSemaphoreHandleTypeFlagBits);
 	ND_ String  Serialize_VkExternalSemaphoreFeatureFlagBits (VkExternalSemaphoreFeatureFlagBits);
 	ND_ String  Serialize_VkColorSpaceKHR (VkColorSpaceKHR);
-	ND_ String  Serialize_VkAccelerationStructureTypeNVX (VkAccelerationStructureTypeNVX);
 	ND_ String  Serialize_VkPresentModeKHR (VkPresentModeKHR);
 	ND_ String  Serialize_VkSurfaceTransformFlagBitsKHR (VkSurfaceTransformFlagBitsKHR);
 	ND_ String  Serialize_VkCompositeAlphaFlagBitsKHR (VkCompositeAlphaFlagBitsKHR);
 	ND_ String  Serialize_VkBlendOverlapEXT (VkBlendOverlapEXT);
 	ND_ String  Serialize_VkDisplayPlaneAlphaFlagBitsKHR (VkDisplayPlaneAlphaFlagBitsKHR);
+	ND_ String  Serialize_VkDriverIdKHR (VkDriverIdKHR);
 	ND_ String  Serialize_VkDebugReportObjectTypeEXT (VkDebugReportObjectTypeEXT);
 	ND_ String  Serialize_VkRasterizationOrderAMD (VkRasterizationOrderAMD);
 	ND_ String  Serialize_VkValidationCheckEXT (VkValidationCheckEXT);
@@ -106,7 +106,12 @@
 	ND_ String  Serialize_VkCoverageModulationModeNV (VkCoverageModulationModeNV);
 	ND_ String  Serialize_VkShadingRatePaletteEntryNV (VkShadingRatePaletteEntryNV);
 	ND_ String  Serialize_VkCoarseSampleOrderTypeNV (VkCoarseSampleOrderTypeNV);
-	ND_ String  Serialize_VkGeometryTypeNVX (VkGeometryTypeNVX);
+	ND_ String  Serialize_VkRayTracingShaderGroupTypeNV (VkRayTracingShaderGroupTypeNV);
+	ND_ String  Serialize_VkGeometryTypeNV (VkGeometryTypeNV);
+	ND_ String  Serialize_VkAccelerationStructureTypeNV (VkAccelerationStructureTypeNV);
+	ND_ String  Serialize_VkAccelerationStructureMemoryRequirementsTypeNV (VkAccelerationStructureMemoryRequirementsTypeNV);
+	ND_ String  Serialize_VkTimeDomainEXT (VkTimeDomainEXT);
+	ND_ String  Serialize_VkMemoryOverallocationBehaviorAMD (VkMemoryOverallocationBehaviorAMD);
 	ND_ String  Serialize_VkDisplayPlaneAlphaFlagsKHR (VkDisplayPlaneAlphaFlagsKHR);
 	ND_ String  Serialize_VkQueueFlags (VkQueueFlags);
 	ND_ String  Serialize_VkCommandPoolTrimFlags (VkCommandPoolTrimFlags);
@@ -190,6 +195,7 @@
 	ND_ String  Serialize_VkDeviceGroupPresentModeFlagsKHR (VkDeviceGroupPresentModeFlagsKHR);
 	ND_ String  Serialize_VkDisplayModeCreateFlagsKHR (VkDisplayModeCreateFlagsKHR);
 	ND_ String  Serialize_VkDisplaySurfaceCreateFlagsKHR (VkDisplaySurfaceCreateFlagsKHR);
+	ND_ String  Serialize_VkPipelineRasterizationStateStreamCreateFlagsEXT (VkPipelineRasterizationStateStreamCreateFlagsEXT);
 	ND_ String  Serialize_VkExternalMemoryHandleTypeFlagsNV (VkExternalMemoryHandleTypeFlagsNV);
 	ND_ String  Serialize_VkConditionalRenderingFlagsEXT (VkConditionalRenderingFlagsEXT);
 	ND_ String  Serialize_VkPipelineCoverageToColorStateCreateFlagsNV (VkPipelineCoverageToColorStateCreateFlagsNV);
@@ -201,16 +207,13 @@
 	ND_ String  Serialize_VkPipelineRasterizationConservativeStateCreateFlagsEXT (VkPipelineRasterizationConservativeStateCreateFlagsEXT);
 	ND_ String  Serialize_VkValidationCacheCreateFlagsEXT (VkValidationCacheCreateFlagsEXT);
 	ND_ String  Serialize_VkDescriptorBindingFlagsEXT (VkDescriptorBindingFlagsEXT);
-	ND_ String  Serialize_VkGeometryFlagsNVX (VkGeometryFlagsNVX);
-	ND_ String  Serialize_VkBuildAccelerationStructureFlagsNVX (VkBuildAccelerationStructureFlagsNVX);
+	ND_ String  Serialize_VkGeometryFlagsNV (VkGeometryFlagsNV);
+	ND_ String  Serialize_VkBuildAccelerationStructureFlagsNV (VkBuildAccelerationStructureFlagsNV);
 #ifdef VULKAN_ANDROID_H_
 	ND_ String  Serialize_VkAndroidSurfaceCreateFlagsKHR (VkAndroidSurfaceCreateFlagsKHR);
 #endif
 #ifdef VULKAN_XCB_H_
 	ND_ String  Serialize_VkXcbSurfaceCreateFlagsKHR (VkXcbSurfaceCreateFlagsKHR);
-#endif
-#ifdef VULKAN_MIR_H_
-	ND_ String  Serialize_VkMirSurfaceCreateFlagsKHR (VkMirSurfaceCreateFlagsKHR);
 #endif
 #ifdef VULKAN_WAYLAND_H_
 	ND_ String  Serialize_VkWaylandSurfaceCreateFlagsKHR (VkWaylandSurfaceCreateFlagsKHR);

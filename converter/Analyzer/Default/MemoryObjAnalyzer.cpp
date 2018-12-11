@@ -123,7 +123,7 @@ namespace VTC
 	{
 		switch ( type )
 		{
-			case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT :	CHECK( _ProcessMemoryUsage( pos, id, op ));		break;
+			case VK_OBJECT_TYPE_DEVICE_MEMORY :	CHECK( _ProcessMemoryUsage( pos, id, op ));		break;
 		}
 	}
 	

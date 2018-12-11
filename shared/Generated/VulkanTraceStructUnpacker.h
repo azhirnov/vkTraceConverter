@@ -129,12 +129,12 @@ void VUnpack_VkSubpassDependency2KHR (VkSubpassDependency2KHR*, const VUnpacker&
 void VUnpack_VkRenderPassCreateInfo2KHR (VkRenderPassCreateInfo2KHR*, const VUnpacker&);
 void VUnpack_VkSubpassBeginInfoKHR (VkSubpassBeginInfoKHR*, const VUnpacker&);
 void VUnpack_VkDescriptorSetVariableDescriptorCountAllocateInfoEXT (VkDescriptorSetVariableDescriptorCountAllocateInfoEXT*, const VUnpacker&);
+void VUnpack_VkDedicatedAllocationMemoryAllocateInfoNV (VkDedicatedAllocationMemoryAllocateInfoNV*, const VUnpacker&);
 void VUnpack_VkPipelineRasterizationStateRasterizationOrderAMD (VkPipelineRasterizationStateRasterizationOrderAMD*, const VUnpacker&);
 void VUnpack_VkDebugMarkerObjectNameInfoEXT (VkDebugMarkerObjectNameInfoEXT*, const VUnpacker&);
 void VUnpack_VkDebugMarkerMarkerInfoEXT (VkDebugMarkerMarkerInfoEXT*, const VUnpacker&);
 void VUnpack_VkDedicatedAllocationImageCreateInfoNV (VkDedicatedAllocationImageCreateInfoNV*, const VUnpacker&);
 void VUnpack_VkDedicatedAllocationBufferCreateInfoNV (VkDedicatedAllocationBufferCreateInfoNV*, const VUnpacker&);
-void VUnpack_VkDedicatedAllocationMemoryAllocateInfoNV (VkDedicatedAllocationMemoryAllocateInfoNV*, const VUnpacker&);
 void VUnpack_VkCoarseSampleOrderCustomNV (VkCoarseSampleOrderCustomNV*, const VUnpacker&);
 void VUnpack_VkImageViewASTCDecodeModeEXT (VkImageViewASTCDecodeModeEXT*, const VUnpacker&);
 void VUnpack_VkCommandBufferInheritanceConditionalRenderingInfoEXT (VkCommandBufferInheritanceConditionalRenderingInfoEXT*, const VUnpacker&);
@@ -284,12 +284,12 @@ template <> inline VkSubpassDependency2KHR*  VUnpacker::_GetPtr<> (VkSubpassDepe
 template <> inline VkRenderPassCreateInfo2KHR*  VUnpacker::_GetPtr<> (VkRenderPassCreateInfo2KHR *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkRenderPassCreateInfo2KHR( &ptr[i], *this );  return ptr; }
 template <> inline VkSubpassBeginInfoKHR*  VUnpacker::_GetPtr<> (VkSubpassBeginInfoKHR *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkSubpassBeginInfoKHR( &ptr[i], *this );  return ptr; }
 template <> inline VkDescriptorSetVariableDescriptorCountAllocateInfoEXT*  VUnpacker::_GetPtr<> (VkDescriptorSetVariableDescriptorCountAllocateInfoEXT *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkDescriptorSetVariableDescriptorCountAllocateInfoEXT( &ptr[i], *this );  return ptr; }
+template <> inline VkDedicatedAllocationMemoryAllocateInfoNV*  VUnpacker::_GetPtr<> (VkDedicatedAllocationMemoryAllocateInfoNV *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkDedicatedAllocationMemoryAllocateInfoNV( &ptr[i], *this );  return ptr; }
 template <> inline VkPipelineRasterizationStateRasterizationOrderAMD*  VUnpacker::_GetPtr<> (VkPipelineRasterizationStateRasterizationOrderAMD *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkPipelineRasterizationStateRasterizationOrderAMD( &ptr[i], *this );  return ptr; }
 template <> inline VkDebugMarkerObjectNameInfoEXT*  VUnpacker::_GetPtr<> (VkDebugMarkerObjectNameInfoEXT *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkDebugMarkerObjectNameInfoEXT( &ptr[i], *this );  return ptr; }
 template <> inline VkDebugMarkerMarkerInfoEXT*  VUnpacker::_GetPtr<> (VkDebugMarkerMarkerInfoEXT *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkDebugMarkerMarkerInfoEXT( &ptr[i], *this );  return ptr; }
 template <> inline VkDedicatedAllocationImageCreateInfoNV*  VUnpacker::_GetPtr<> (VkDedicatedAllocationImageCreateInfoNV *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkDedicatedAllocationImageCreateInfoNV( &ptr[i], *this );  return ptr; }
 template <> inline VkDedicatedAllocationBufferCreateInfoNV*  VUnpacker::_GetPtr<> (VkDedicatedAllocationBufferCreateInfoNV *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkDedicatedAllocationBufferCreateInfoNV( &ptr[i], *this );  return ptr; }
-template <> inline VkDedicatedAllocationMemoryAllocateInfoNV*  VUnpacker::_GetPtr<> (VkDedicatedAllocationMemoryAllocateInfoNV *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkDedicatedAllocationMemoryAllocateInfoNV( &ptr[i], *this );  return ptr; }
 template <> inline VkCoarseSampleOrderCustomNV*  VUnpacker::_GetPtr<> (VkCoarseSampleOrderCustomNV *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkCoarseSampleOrderCustomNV( &ptr[i], *this );  return ptr; }
 template <> inline VkImageViewASTCDecodeModeEXT*  VUnpacker::_GetPtr<> (VkImageViewASTCDecodeModeEXT *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkImageViewASTCDecodeModeEXT( &ptr[i], *this );  return ptr; }
 template <> inline VkCommandBufferInheritanceConditionalRenderingInfoEXT*  VUnpacker::_GetPtr<> (VkCommandBufferInheritanceConditionalRenderingInfoEXT *ptr, uint count) { for (uint i = 0; i < count; ++i) VUnpack_VkCommandBufferInheritanceConditionalRenderingInfoEXT( &ptr[i], *this );  return ptr; }

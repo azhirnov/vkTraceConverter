@@ -109,6 +109,14 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NV : {
+			VkGeometryTrianglesNV const *  obj = BitCast<VkGeometryTrianglesNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "geometryTrianglesNV"s );
+			result << indent << "VkGeometryTrianglesNV  " << name << " = {};\n";
+			Serialize2_VkGeometryTrianglesNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_IMAGE_FORMAT_LIST_CREATE_INFO_KHR : {
 			VkImageFormatListCreateInfoKHR const *  obj = BitCast<VkImageFormatListCreateInfoKHR const *>( ptr );
 			const String  name = nameSer.MakeUnique( obj, "imageFormatListCreateInfo"s, "createInfo"s );
@@ -165,6 +173,14 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_FEATURES_EXT : {
+			VkPhysicalDeviceTransformFeedbackFeaturesEXT const *  obj = BitCast<VkPhysicalDeviceTransformFeedbackFeaturesEXT const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceTransformFeedbackFeatures"s, "features"s );
+			result << indent << "VkPhysicalDeviceTransformFeedbackFeaturesEXT  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceTransformFeedbackFeaturesEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO : {
 			VkPipelineTessellationStateCreateInfo const *  obj = BitCast<VkPipelineTessellationStateCreateInfo const *>( ptr );
 			const String  name = nameSer.MakeUnique( obj, "pipelineTessellationStateCreateInfo"s, "createInfo"s );
@@ -215,6 +231,14 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_INFO_NV : {
+			VkAccelerationStructureInfoNV const *  obj = BitCast<VkAccelerationStructureInfoNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "accelerationStructureInfoNV"s, "info"s );
+			result << indent << "VkAccelerationStructureInfoNV  " << name << " = {};\n";
+			Serialize2_VkAccelerationStructureInfoNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO : {
 			VkPipelineVertexInputStateCreateInfo const *  obj = BitCast<VkPipelineVertexInputStateCreateInfo const *>( ptr );
 			const String  name = nameSer.MakeUnique( obj, "pipelineVertexInputStateCreateInfo"s, "createInfo"s );
@@ -230,6 +254,14 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			result << indent << "VkExportSemaphoreWin32HandleInfoKHR  " << name << " = {};\n";
 			Serialize2_VkExportSemaphoreWin32HandleInfoKHR( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			#endif
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_STREAM_CREATE_INFO_EXT : {
+			VkPipelineRasterizationStateStreamCreateInfoEXT const *  obj = BitCast<VkPipelineRasterizationStateStreamCreateInfoEXT const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "pipelineRasterizationStateStreamCreateInfo"s, "createInfo"s );
+			result << indent << "VkPipelineRasterizationStateStreamCreateInfoEXT  " << name << " = {};\n";
+			Serialize2_VkPipelineRasterizationStateStreamCreateInfoEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
@@ -485,19 +517,19 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
-		case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NVX : {
-			VkAccelerationStructureCreateInfoNVX const *  obj = BitCast<VkAccelerationStructureCreateInfoNVX const *>( ptr );
-			const String  name = nameSer.MakeUnique( obj, "accelerationStructureCreateInfoNVX"s, "createInfo"s );
-			result << indent << "VkAccelerationStructureCreateInfoNVX  " << name << " = {};\n";
-			Serialize2_VkAccelerationStructureCreateInfoNVX( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
-			break;
-		}
-
 		case VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO : {
 			VkDescriptorPoolCreateInfo const *  obj = BitCast<VkDescriptorPoolCreateInfo const *>( ptr );
 			const String  name = nameSer.MakeUnique( obj, "descriptorPoolCreateInfo"s, "createInfo"s );
 			result << indent << "VkDescriptorPoolCreateInfo  " << name << " = {};\n";
 			Serialize2_VkDescriptorPoolCreateInfo( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PROPERTIES_NV : {
+			VkPhysicalDeviceRayTracingPropertiesNV const *  obj = BitCast<VkPhysicalDeviceRayTracingPropertiesNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceRayTracingPropertiesNV"s, "properties"s );
+			result << indent << "VkPhysicalDeviceRayTracingPropertiesNV  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceRayTracingPropertiesNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
@@ -575,14 +607,6 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
-		case VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NVX : {
-			VkGeometryTrianglesNVX const *  obj = BitCast<VkGeometryTrianglesNVX const *>( ptr );
-			const String  name = nameSer.MakeUnique( obj, "geometryTrianglesNVX"s );
-			result << indent << "VkGeometryTrianglesNVX  " << name << " = {};\n";
-			Serialize2_VkGeometryTrianglesNVX( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
-			break;
-		}
-
 		case VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO : {
 			VkRenderPassCreateInfo const *  obj = BitCast<VkRenderPassCreateInfo const *>( ptr );
 			const String  name = nameSer.MakeUnique( obj, "renderPassCreateInfo"s, "createInfo"s );
@@ -612,16 +636,6 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			const String  name = nameSer.MakeUnique( obj, "commandBufferBeginInfo"s, "info"s );
 			result << indent << "VkCommandBufferBeginInfo  " << name << " = {};\n";
 			Serialize2_VkCommandBufferBeginInfo( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
-			break;
-		}
-
-		case VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR : {
-			#ifdef VULKAN_MIR_H_
-			VkMirSurfaceCreateInfoKHR const *  obj = BitCast<VkMirSurfaceCreateInfoKHR const *>( ptr );
-			const String  name = nameSer.MakeUnique( obj, "mirSurfaceCreateInfo"s, "createInfo"s );
-			result << indent << "VkMirSurfaceCreateInfoKHR  " << name << " = {};\n";
-			Serialize2_VkMirSurfaceCreateInfoKHR( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
-			#endif
 			break;
 		}
 
@@ -736,6 +750,14 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			const String  name = nameSer.MakeUnique( obj, "physicalDeviceShadingRateImagePropertiesNV"s, "properties"s );
 			result << indent << "VkPhysicalDeviceShadingRateImagePropertiesNV  " << name << " = {};\n";
 			Serialize2_VkPhysicalDeviceShadingRateImagePropertiesNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_EXPLICIT_CREATE_INFO_EXT : {
+			VkImageDrmFormatModifierExplicitCreateInfoEXT const *  obj = BitCast<VkImageDrmFormatModifierExplicitCreateInfoEXT const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "imageDrmFormatModifierExplicitCreateInfo"s, "createInfo"s );
+			result << indent << "VkImageDrmFormatModifierExplicitCreateInfoEXT  " << name << " = {};\n";
+			Serialize2_VkImageDrmFormatModifierExplicitCreateInfoEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
@@ -1120,6 +1142,14 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			const String  name = nameSer.MakeUnique( obj, "externalMemoryImageCreateInfo"s, "createInfo"s );
 			result << indent << "VkExternalMemoryImageCreateInfo  " << name << " = {};\n";
 			Serialize2_VkExternalMemoryImageCreateInfo( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_GEOMETRY_AABB_NV : {
+			VkGeometryAABBNV const *  obj = BitCast<VkGeometryAABBNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "geometryAABBNV"s );
+			result << indent << "VkGeometryAABBNV  " << name << " = {};\n";
+			Serialize2_VkGeometryAABBNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
@@ -1513,11 +1543,37 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
-		case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NVX : {
-			VkAccelerationStructureMemoryRequirementsInfoNVX const *  obj = BitCast<VkAccelerationStructureMemoryRequirementsInfoNVX const *>( ptr );
-			const String  name = nameSer.MakeUnique( obj, "accelerationStructureMemoryRequirementsInfoNVX"s, "info"s );
-			result << indent << "VkAccelerationStructureMemoryRequirementsInfoNVX  " << name << " = {};\n";
-			Serialize2_VkAccelerationStructureMemoryRequirementsInfoNVX( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES_KHR : {
+			VkPhysicalDeviceShaderAtomicInt64FeaturesKHR const *  obj = BitCast<VkPhysicalDeviceShaderAtomicInt64FeaturesKHR const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceShaderAtomicInt64Features"s, "features"s );
+			result << indent << "VkPhysicalDeviceShaderAtomicInt64FeaturesKHR  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceShaderAtomicInt64FeaturesKHR( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_ANDROID : {
+			#ifdef VULKAN_ANDROID_H_
+			VkExternalFormatANDROID const *  obj = BitCast<VkExternalFormatANDROID const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "externalFormatANDROID"s );
+			result << indent << "VkExternalFormatANDROID  " << name << " = {};\n";
+			Serialize2_VkExternalFormatANDROID( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			#endif
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV : {
+			VkDedicatedAllocationMemoryAllocateInfoNV const *  obj = BitCast<VkDedicatedAllocationMemoryAllocateInfoNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "dedicatedAllocationMemoryAllocateInfoNV"s, "info"s );
+			result << indent << "VkDedicatedAllocationMemoryAllocateInfoNV  " << name << " = {};\n";
+			Serialize2_VkDedicatedAllocationMemoryAllocateInfoNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES_KHR : {
+			VkPhysicalDeviceDriverPropertiesKHR const *  obj = BitCast<VkPhysicalDeviceDriverPropertiesKHR const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceDriverProperties"s, "properties"s );
+			result << indent << "VkPhysicalDeviceDriverPropertiesKHR  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceDriverPropertiesKHR( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
@@ -1534,14 +1590,6 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			const String  name = nameSer.MakeUnique( obj, "pipelineRasterizationStateRasterizationOrderAMD"s );
 			result << indent << "VkPipelineRasterizationStateRasterizationOrderAMD  " << name << " = {};\n";
 			Serialize2_VkPipelineRasterizationStateRasterizationOrderAMD( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
-			break;
-		}
-
-		case VK_STRUCTURE_TYPE_GEOMETRY_NVX : {
-			VkGeometryNVX const *  obj = BitCast<VkGeometryNVX const *>( ptr );
-			const String  name = nameSer.MakeUnique( obj, "geometryNVX"s );
-			result << indent << "VkGeometryNVX  " << name << " = {};\n";
-			Serialize2_VkGeometryNVX( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
@@ -1577,21 +1625,11 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
-		case VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_ANDROID : {
-			#ifdef VULKAN_ANDROID_H_
-			VkExternalFormatANDROID const *  obj = BitCast<VkExternalFormatANDROID const *>( ptr );
-			const String  name = nameSer.MakeUnique( obj, "externalFormatANDROID"s );
-			result << indent << "VkExternalFormatANDROID  " << name << " = {};\n";
-			Serialize2_VkExternalFormatANDROID( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
-			#endif
-			break;
-		}
-
-		case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV : {
-			VkDedicatedAllocationMemoryAllocateInfoNV const *  obj = BitCast<VkDedicatedAllocationMemoryAllocateInfoNV const *>( ptr );
-			const String  name = nameSer.MakeUnique( obj, "dedicatedAllocationMemoryAllocateInfoNV"s, "info"s );
-			result << indent << "VkDedicatedAllocationMemoryAllocateInfoNV  " << name << " = {};\n";
-			Serialize2_VkDedicatedAllocationMemoryAllocateInfoNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_PROPERTIES_EXT : {
+			VkPhysicalDeviceTransformFeedbackPropertiesEXT const *  obj = BitCast<VkPhysicalDeviceTransformFeedbackPropertiesEXT const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceTransformFeedbackProperties"s, "properties"s );
+			result << indent << "VkPhysicalDeviceTransformFeedbackPropertiesEXT  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceTransformFeedbackPropertiesEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
@@ -1781,14 +1819,6 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
-		case VK_STRUCTURE_TYPE_RAYTRACING_PIPELINE_CREATE_INFO_NVX : {
-			VkRaytracingPipelineCreateInfoNVX const *  obj = BitCast<VkRaytracingPipelineCreateInfoNVX const *>( ptr );
-			const String  name = nameSer.MakeUnique( obj, "raytracingPipelineCreateInfoNVX"s, "createInfo"s );
-			result << indent << "VkRaytracingPipelineCreateInfoNVX  " << name << " = {};\n";
-			Serialize2_VkRaytracingPipelineCreateInfoNVX( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
-			break;
-		}
-
 		case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_CONSERVATIVE_STATE_CREATE_INFO_EXT : {
 			VkPipelineRasterizationConservativeStateCreateInfoEXT const *  obj = BitCast<VkPipelineRasterizationConservativeStateCreateInfoEXT const *>( ptr );
 			const String  name = nameSer.MakeUnique( obj, "pipelineRasterizationConservativeStateCreateInfo"s, "createInfo"s );
@@ -1909,6 +1939,38 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_DRM_FORMAT_MODIFIER_PROPERTIES_LIST_EXT : {
+			VkDrmFormatModifierPropertiesListEXT const *  obj = BitCast<VkDrmFormatModifierPropertiesListEXT const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "drmFormatModifierPropertiesList"s, "properties"s );
+			result << indent << "VkDrmFormatModifierPropertiesListEXT  " << name << " = {};\n";
+			Serialize2_VkDrmFormatModifierPropertiesListEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_DRM_FORMAT_MODIFIER_INFO_EXT : {
+			VkPhysicalDeviceImageDrmFormatModifierInfoEXT const *  obj = BitCast<VkPhysicalDeviceImageDrmFormatModifierInfoEXT const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceImageDrmFormatModifierInfo"s, "info"s );
+			result << indent << "VkPhysicalDeviceImageDrmFormatModifierInfoEXT  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceImageDrmFormatModifierInfoEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_LIST_CREATE_INFO_EXT : {
+			VkImageDrmFormatModifierListCreateInfoEXT const *  obj = BitCast<VkImageDrmFormatModifierListCreateInfoEXT const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "imageDrmFormatModifierListCreateInfo"s, "createInfo"s );
+			result << indent << "VkImageDrmFormatModifierListCreateInfoEXT  " << name << " = {};\n";
+			Serialize2_VkImageDrmFormatModifierListCreateInfoEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_PROPERTIES_EXT : {
+			VkImageDrmFormatModifierPropertiesEXT const *  obj = BitCast<VkImageDrmFormatModifierPropertiesEXT const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "imageDrmFormatModifierProperties"s, "properties"s );
+			result << indent << "VkImageDrmFormatModifierPropertiesEXT  " << name << " = {};\n";
+			Serialize2_VkImageDrmFormatModifierPropertiesEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT : {
 			VkPhysicalDeviceDescriptorIndexingFeaturesEXT const *  obj = BitCast<VkPhysicalDeviceDescriptorIndexingFeaturesEXT const *>( ptr );
 			const String  name = nameSer.MakeUnique( obj, "physicalDeviceDescriptorIndexingFeatures"s, "features"s );
@@ -1935,35 +1997,59 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
-		case VK_STRUCTURE_TYPE_GEOMETRY_AABB_NVX : {
-			VkGeometryAABBNVX const *  obj = BitCast<VkGeometryAABBNVX const *>( ptr );
-			const String  name = nameSer.MakeUnique( obj, "geometryAABBNVX"s );
-			result << indent << "VkGeometryAABBNVX  " << name << " = {};\n";
-			Serialize2_VkGeometryAABBNVX( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+		case VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV : {
+			VkRayTracingShaderGroupCreateInfoNV const *  obj = BitCast<VkRayTracingShaderGroupCreateInfoNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "rayTracingShaderGroupCreateInfoNV"s, "createInfo"s );
+			result << indent << "VkRayTracingShaderGroupCreateInfoNV  " << name << " = {};\n";
+			Serialize2_VkRayTracingShaderGroupCreateInfoNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
-		case VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NVX : {
-			VkBindAccelerationStructureMemoryInfoNVX const *  obj = BitCast<VkBindAccelerationStructureMemoryInfoNVX const *>( ptr );
-			const String  name = nameSer.MakeUnique( obj, "bindAccelerationStructureMemoryInfoNVX"s, "info"s );
-			result << indent << "VkBindAccelerationStructureMemoryInfoNVX  " << name << " = {};\n";
-			Serialize2_VkBindAccelerationStructureMemoryInfoNVX( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+		case VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_NV : {
+			VkRayTracingPipelineCreateInfoNV const *  obj = BitCast<VkRayTracingPipelineCreateInfoNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "rayTracingPipelineCreateInfoNV"s, "createInfo"s );
+			result << indent << "VkRayTracingPipelineCreateInfoNV  " << name << " = {};\n";
+			Serialize2_VkRayTracingPipelineCreateInfoNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
-		case VK_STRUCTURE_TYPE_DESCRIPTOR_ACCELERATION_STRUCTURE_INFO_NVX : {
-			VkDescriptorAccelerationStructureInfoNVX const *  obj = BitCast<VkDescriptorAccelerationStructureInfoNVX const *>( ptr );
-			const String  name = nameSer.MakeUnique( obj, "descriptorAccelerationStructureInfoNVX"s, "info"s );
-			result << indent << "VkDescriptorAccelerationStructureInfoNVX  " << name << " = {};\n";
-			Serialize2_VkDescriptorAccelerationStructureInfoNVX( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+		case VK_STRUCTURE_TYPE_GEOMETRY_NV : {
+			VkGeometryNV const *  obj = BitCast<VkGeometryNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "geometryNV"s );
+			result << indent << "VkGeometryNV  " << name << " = {};\n";
+			Serialize2_VkGeometryNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
-		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAYTRACING_PROPERTIES_NVX : {
-			VkPhysicalDeviceRaytracingPropertiesNVX const *  obj = BitCast<VkPhysicalDeviceRaytracingPropertiesNVX const *>( ptr );
-			const String  name = nameSer.MakeUnique( obj, "physicalDeviceRaytracingPropertiesNVX"s, "properties"s );
-			result << indent << "VkPhysicalDeviceRaytracingPropertiesNVX  " << name << " = {};\n";
-			Serialize2_VkPhysicalDeviceRaytracingPropertiesNVX( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+		case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NV : {
+			VkAccelerationStructureCreateInfoNV const *  obj = BitCast<VkAccelerationStructureCreateInfoNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "accelerationStructureCreateInfoNV"s, "createInfo"s );
+			result << indent << "VkAccelerationStructureCreateInfoNV  " << name << " = {};\n";
+			Serialize2_VkAccelerationStructureCreateInfoNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NV : {
+			VkBindAccelerationStructureMemoryInfoNV const *  obj = BitCast<VkBindAccelerationStructureMemoryInfoNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "bindAccelerationStructureMemoryInfoNV"s, "info"s );
+			result << indent << "VkBindAccelerationStructureMemoryInfoNV  " << name << " = {};\n";
+			Serialize2_VkBindAccelerationStructureMemoryInfoNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_NV : {
+			VkWriteDescriptorSetAccelerationStructureNV const *  obj = BitCast<VkWriteDescriptorSetAccelerationStructureNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "writeDescriptorSetAccelerationStructureNV"s );
+			result << indent << "VkWriteDescriptorSetAccelerationStructureNV  " << name << " = {};\n";
+			Serialize2_VkWriteDescriptorSetAccelerationStructureNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NV : {
+			VkAccelerationStructureMemoryRequirementsInfoNV const *  obj = BitCast<VkAccelerationStructureMemoryRequirementsInfoNV const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "accelerationStructureMemoryRequirementsInfoNV"s, "info"s );
+			result << indent << "VkAccelerationStructureMemoryRequirementsInfoNV  " << name << " = {};\n";
+			Serialize2_VkAccelerationStructureMemoryRequirementsInfoNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
@@ -1983,11 +2069,27 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_CALIBRATED_TIMESTAMP_INFO_EXT : {
+			VkCalibratedTimestampInfoEXT const *  obj = BitCast<VkCalibratedTimestampInfoEXT const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "calibratedTimestampInfo"s, "info"s );
+			result << indent << "VkCalibratedTimestampInfoEXT  " << name << " = {};\n";
+			Serialize2_VkCalibratedTimestampInfoEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_AMD : {
 			VkPhysicalDeviceShaderCorePropertiesAMD const *  obj = BitCast<VkPhysicalDeviceShaderCorePropertiesAMD const *>( ptr );
 			const String  name = nameSer.MakeUnique( obj, "physicalDeviceShaderCorePropertiesAMD"s, "properties"s );
 			result << indent << "VkPhysicalDeviceShaderCorePropertiesAMD  " << name << " = {};\n";
 			Serialize2_VkPhysicalDeviceShaderCorePropertiesAMD( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_DEVICE_MEMORY_OVERALLOCATION_CREATE_INFO_AMD : {
+			VkDeviceMemoryOverallocationCreateInfoAMD const *  obj = BitCast<VkDeviceMemoryOverallocationCreateInfoAMD const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "deviceMemoryOverallocationCreateInfoAMD"s, "createInfo"s );
+			result << indent << "VkDeviceMemoryOverallocationCreateInfoAMD  " << name << " = {};\n";
+			Serialize2_VkDeviceMemoryOverallocationCreateInfoAMD( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
@@ -2062,6 +2164,14 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			const String  name = nameSer.MakeUnique( obj, "physicalDeviceShaderImageFootprintFeaturesNV"s, "features"s );
 			result << indent << "VkPhysicalDeviceShaderImageFootprintFeaturesNV  " << name << " = {};\n";
 			Serialize2_VkPhysicalDeviceShaderImageFootprintFeaturesNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT : {
+			VkPhysicalDevicePCIBusInfoPropertiesEXT const *  obj = BitCast<VkPhysicalDevicePCIBusInfoPropertiesEXT const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDevicePCIBusInfoProperties"s, "info"s );
+			result << indent << "VkPhysicalDevicePCIBusInfoPropertiesEXT  " << name << " = {};\n";
+			Serialize2_VkPhysicalDevicePCIBusInfoPropertiesEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
@@ -2171,11 +2281,11 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 		case VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_TAG_INFO_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_INLINE_UNIFORM_BLOCK_EXT : ASSERT(false); break;
-		case VK_STRUCTURE_TYPE_GEOMETRY_INSTANCE_NVX : ASSERT(false); break;
-		case VK_STRUCTURE_TYPE_HIT_SHADER_MODULE_CREATE_INFO_NVX : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_DRM_FORMAT_MODIFIER_PROPERTIES_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_IMPORT_MEMORY_HOST_POINTER_INFO_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_MEMORY_HOST_POINTER_PROPERTIES_EXT : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_CHECKPOINT_DATA_NV : ASSERT(false); break;
+		case VK_STRUCTURE_TYPE_IMAGEPIPE_SURFACE_CREATE_INFO_FUCHSIA : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_RANGE_SIZE : ASSERT(false); break;
 		case VK_STRUCTURE_TYPE_MAX_ENUM : ASSERT(false); break;
 	}
@@ -2458,7 +2568,7 @@ void  Serialize2_VkBufferViewCreateInfo (const VkBufferViewCreateInfo *obj, Stri
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO );
 	result << indent << name << ".flags = " << Serialize_VkBufferViewCreateFlags( obj->flags ) << ";\n";
-	result << indent << name << ".buffer = " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->buffer ) << "))" << ";\n";
+	result << indent << name << ".buffer = " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->buffer ) << "))" << ";\n";
 	result << indent << name << ".format = " << Serialize_VkFormat( obj->format ) << ";\n";
 	result << indent << name << ".offset = " << IntToString(obj->offset) << ";\n";
 	result << indent << name << ".range = " << IntToString(obj->range) << ";\n";
@@ -2554,6 +2664,25 @@ void  Serialize2_VkMemoryWin32HandlePropertiesKHR (const VkMemoryWin32HandleProp
 	result << indent << name << ".memoryTypeBits = " << IntToString(obj->memoryTypeBits) << ";\n";
 }
 #endif
+
+ND_ String  Serialize_VkSubresourceLayout (const VkSubresourceLayout *obj, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)
+{
+	String	result, before;
+	if ( obj == null ) return result;
+	const String  name = nameSer.MakeUnique( obj, "subresourceLayout"s );
+	result << indent << "VkSubresourceLayout  " << name << " = {};\n";
+	Serialize2_VkSubresourceLayout( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+	return before + result;
+}
+
+void  Serialize2_VkSubresourceLayout (const VkSubresourceLayout *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	result << indent << name << ".offset = " << IntToString(obj->offset) << ";\n";
+	result << indent << name << ".size = " << IntToString(obj->size) << ";\n";
+	result << indent << name << ".rowPitch = " << IntToString(obj->rowPitch) << ";\n";
+	result << indent << name << ".arrayPitch = " << IntToString(obj->arrayPitch) << ";\n";
+	result << indent << name << ".depthPitch = " << IntToString(obj->depthPitch) << ";\n";
+}
 
 ND_ String  Serialize_VkPhysicalDeviceFeatures (const VkPhysicalDeviceFeatures *obj, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)
 {
@@ -2708,7 +2837,7 @@ void  Serialize2_VkSparseBufferMemoryBindInfo (const VkSparseBufferMemoryBindInf
 			Serialize2_VkSparseMemoryBind( obj->pBinds + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
 		}
 	}
-	result << indent << name << ".buffer = " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->buffer ) << "))" << ";\n";
+	result << indent << name << ".buffer = " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->buffer ) << "))" << ";\n";
 	result << indent << name << ".bindCount = " << IntToString(obj->bindCount) << ";\n";
 	result << indent << name << ".pBinds = " << nameSer.Get( &obj->pBinds ) << ";\n";
 }
@@ -2745,6 +2874,25 @@ void  Serialize2_VkMemoryType (const VkMemoryType *obj, StringView name, NameSer
 {
 	result << indent << name << ".propertyFlags = " << Serialize_VkMemoryPropertyFlags( obj->propertyFlags ) << ";\n";
 	result << indent << name << ".heapIndex = " << IntToString(obj->heapIndex) << ";\n";
+}
+
+void  Serialize2_VkGeometryTrianglesNV (const VkGeometryTrianglesNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NV );
+	result << indent << name << ".vertexData = " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->vertexData ) << "))" << ";\n";
+	result << indent << name << ".vertexOffset = " << IntToString(obj->vertexOffset) << ";\n";
+	result << indent << name << ".vertexCount = " << IntToString(obj->vertexCount) << ";\n";
+	result << indent << name << ".vertexStride = " << IntToString(obj->vertexStride) << ";\n";
+	result << indent << name << ".vertexFormat = " << Serialize_VkFormat( obj->vertexFormat ) << ";\n";
+	result << indent << name << ".indexData = " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->indexData ) << "))" << ";\n";
+	result << indent << name << ".indexOffset = " << IntToString(obj->indexOffset) << ";\n";
+	result << indent << name << ".indexCount = " << IntToString(obj->indexCount) << ";\n";
+	result << indent << name << ".indexType = " << Serialize_VkIndexType( obj->indexType ) << ";\n";
+	result << indent << name << ".transformData = " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->transformData ) << "))" << ";\n";
+	result << indent << name << ".transformOffset = " << IntToString(obj->transformOffset) << ";\n";
 }
 
 ND_ String  Serialize_VkMemoryHeap (const VkMemoryHeap *obj, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)
@@ -2846,7 +2994,7 @@ void  Serialize2_VkMappedMemoryRange (const VkMappedMemoryRange *obj, StringView
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE );
-	result << indent << name << ".memory = " << "app.GetResource(DeviceMemoryID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, obj->memory ) << "))" << ";\n";
+	result << indent << name << ".memory = " << "app.GetResource(DeviceMemoryID(" << remapper( VK_OBJECT_TYPE_DEVICE_MEMORY, obj->memory ) << "))" << ";\n";
 	result << indent << name << ".offset = " << IntToString(obj->offset) << ";\n";
 	result << indent << name << ".size = " << IntToString(obj->size) << ";\n";
 }
@@ -2882,7 +3030,7 @@ void  Serialize2_VkSubmitInfo (const VkSubmitInfo *obj, StringView name, NameSer
 		CHECK( obj->waitSemaphoreCount > 0 );
 		before << indent << "const VkSemaphore  " << nameSer.MakeUnique( &obj->pWaitSemaphores, "waitSemaphores"s, "semaphore"s ) << "[] = {";
 		for (uint i = 0; i < obj->waitSemaphoreCount; ++i) {
-			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SemaphoreID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, obj->pWaitSemaphores[i] ) << "))";
+			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SemaphoreID(" << remapper( VK_OBJECT_TYPE_SEMAPHORE, obj->pWaitSemaphores[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
 		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pWaitSemaphores ) << ") == " << IntToString(obj->waitSemaphoreCount) << " );\n\n";
@@ -2900,7 +3048,7 @@ void  Serialize2_VkSubmitInfo (const VkSubmitInfo *obj, StringView name, NameSer
 		CHECK( obj->commandBufferCount > 0 );
 		before << indent << "const VkCommandBuffer  " << nameSer.MakeUnique( &obj->pCommandBuffers, "commandBuffers"s, "commandBuffer"s ) << "[] = {";
 		for (uint i = 0; i < obj->commandBufferCount; ++i) {
-			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->pCommandBuffers[i] ) << "))";
+			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->pCommandBuffers[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
 		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pCommandBuffers ) << ") == " << IntToString(obj->commandBufferCount) << " );\n\n";
@@ -2909,7 +3057,7 @@ void  Serialize2_VkSubmitInfo (const VkSubmitInfo *obj, StringView name, NameSer
 		CHECK( obj->signalSemaphoreCount > 0 );
 		before << indent << "const VkSemaphore  " << nameSer.MakeUnique( &obj->pSignalSemaphores, "signalSemaphores"s, "semaphore"s ) << "[] = {";
 		for (uint i = 0; i < obj->signalSemaphoreCount; ++i) {
-			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SemaphoreID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, obj->pSignalSemaphores[i] ) << "))";
+			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SemaphoreID(" << remapper( VK_OBJECT_TYPE_SEMAPHORE, obj->pSignalSemaphores[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
 		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pSignalSemaphores ) << ") == " << IntToString(obj->signalSemaphoreCount) << " );\n\n";
@@ -2957,7 +3105,7 @@ void  Serialize2_VkSparseMemoryBind (const VkSparseMemoryBind *obj, StringView n
 {
 	result << indent << name << ".resourceOffset = " << IntToString(obj->resourceOffset) << ";\n";
 	result << indent << name << ".size = " << IntToString(obj->size) << ";\n";
-	result << indent << name << ".memory = " << "app.GetResource(DeviceMemoryID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, obj->memory ) << "))" << ";\n";
+	result << indent << name << ".memory = " << "app.GetResource(DeviceMemoryID(" << remapper( VK_OBJECT_TYPE_DEVICE_MEMORY, obj->memory ) << "))" << ";\n";
 	result << indent << name << ".memoryOffset = " << IntToString(obj->memoryOffset) << ";\n";
 	result << indent << name << ".flags = " << Serialize_VkSparseMemoryBindFlags( obj->flags ) << ";\n";
 }
@@ -2969,11 +3117,21 @@ void  Serialize2_VkImageViewCreateInfo (const VkImageViewCreateInfo *obj, String
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO );
 	result << indent << name << ".flags = " << Serialize_VkImageViewCreateFlags( obj->flags ) << ";\n";
-	result << indent << name << ".image = " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->image ) << "))" << ";\n";
+	result << indent << name << ".image = " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->image ) << "))" << ";\n";
 	result << indent << name << ".viewType = " << Serialize_VkImageViewType( obj->viewType ) << ";\n";
 	result << indent << name << ".format = " << Serialize_VkFormat( obj->format ) << ";\n";
 	Serialize2_VkComponentMapping( &obj->components, String(name) << ".components", nameSer, remapper, indent, INOUT result, INOUT before );
 	Serialize2_VkImageSubresourceRange( &obj->subresourceRange, String(name) << ".subresourceRange", nameSer, remapper, indent, INOUT result, INOUT before );
+}
+
+void  Serialize2_VkPhysicalDeviceTransformFeedbackFeaturesEXT (const VkPhysicalDeviceTransformFeedbackFeaturesEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_FEATURES_EXT;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_FEATURES_EXT );
+	result << indent << name << ".transformFeedback = " << BoolToString(obj->transformFeedback) << ";\n";
+	result << indent << name << ".geometryStreams = " << BoolToString(obj->geometryStreams) << ";\n";
 }
 
 void  Serialize2_VkPipelineTessellationStateCreateInfo (const VkPipelineTessellationStateCreateInfo *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -3077,7 +3235,7 @@ void  Serialize2_VkBindSparseInfo (const VkBindSparseInfo *obj, StringView name,
 		CHECK( obj->waitSemaphoreCount > 0 );
 		before << indent << "const VkSemaphore  " << nameSer.MakeUnique( &obj->pWaitSemaphores, "waitSemaphores"s, "semaphore"s ) << "[] = {";
 		for (uint i = 0; i < obj->waitSemaphoreCount; ++i) {
-			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SemaphoreID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, obj->pWaitSemaphores[i] ) << "))";
+			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SemaphoreID(" << remapper( VK_OBJECT_TYPE_SEMAPHORE, obj->pWaitSemaphores[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
 		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pWaitSemaphores ) << ") == " << IntToString(obj->waitSemaphoreCount) << " );\n\n";
@@ -3110,7 +3268,7 @@ void  Serialize2_VkBindSparseInfo (const VkBindSparseInfo *obj, StringView name,
 		CHECK( obj->signalSemaphoreCount > 0 );
 		before << indent << "const VkSemaphore  " << nameSer.MakeUnique( &obj->pSignalSemaphores, "signalSemaphores"s, "semaphore"s ) << "[] = {";
 		for (uint i = 0; i < obj->signalSemaphoreCount; ++i) {
-			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SemaphoreID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, obj->pSignalSemaphores[i] ) << "))";
+			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SemaphoreID(" << remapper( VK_OBJECT_TYPE_SEMAPHORE, obj->pSignalSemaphores[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
 		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pSignalSemaphores ) << ") == " << IntToString(obj->signalSemaphoreCount) << " );\n\n";
@@ -3183,7 +3341,7 @@ void  Serialize2_VkSemaphoreGetWin32HandleInfoKHR (const VkSemaphoreGetWin32Hand
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_SEMAPHORE_GET_WIN32_HANDLE_INFO_KHR;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_SEMAPHORE_GET_WIN32_HANDLE_INFO_KHR );
-	result << indent << name << ".semaphore = " << "app.GetResource(SemaphoreID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, obj->semaphore ) << "))" << ";\n";
+	result << indent << name << ".semaphore = " << "app.GetResource(SemaphoreID(" << remapper( VK_OBJECT_TYPE_SEMAPHORE, obj->semaphore ) << "))" << ";\n";
 	result << indent << name << ".handleType = " << Serialize_VkExternalSemaphoreHandleTypeFlagBits( obj->handleType ) << ";\n";
 }
 #endif
@@ -3208,7 +3366,7 @@ void  Serialize2_VkSparseImageOpaqueMemoryBindInfo (const VkSparseImageOpaqueMem
 			Serialize2_VkSparseMemoryBind( obj->pBinds + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
 		}
 	}
-	result << indent << name << ".image = " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->image ) << "))" << ";\n";
+	result << indent << name << ".image = " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->image ) << "))" << ";\n";
 	result << indent << name << ".bindCount = " << IntToString(obj->bindCount) << ";\n";
 	result << indent << name << ".pBinds = " << nameSer.Get( &obj->pBinds ) << ";\n";
 }
@@ -3240,6 +3398,27 @@ void  Serialize2_VkPipelineViewportStateCreateInfo (const VkPipelineViewportStat
 	result << indent << name << ".pViewports = " << nameSer.Get( &obj->pViewports ) << ";\n";
 	result << indent << name << ".scissorCount = " << IntToString(obj->scissorCount) << ";\n";
 	result << indent << name << ".pScissors = " << nameSer.Get( &obj->pScissors ) << ";\n";
+}
+
+void  Serialize2_VkAccelerationStructureInfoNV (const VkAccelerationStructureInfoNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_INFO_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_INFO_NV );
+	if ( obj->pGeometries ) {
+		CHECK( obj->geometryCount > 0 );
+		const String arr_name = nameSer.MakeUnique( &obj->pGeometries, "geometries"s, "geometryNV"s );
+		before << indent << "VkGeometryNV  " << arr_name << "[" << IntToString(obj->geometryCount) << "] = {};\n";
+		for (uint i = 0; i < obj->geometryCount; ++i) {
+			Serialize2_VkGeometryNV( obj->pGeometries + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
+		}
+	}
+	result << indent << name << ".type = " << Serialize_VkAccelerationStructureTypeNV( obj->type ) << ";\n";
+	result << indent << name << ".flags = " << Serialize_VkBuildAccelerationStructureFlagsNV( obj->flags ) << ";\n";
+	result << indent << name << ".instanceCount = " << IntToString(obj->instanceCount) << ";\n";
+	result << indent << name << ".geometryCount = " << IntToString(obj->geometryCount) << ";\n";
+	result << indent << name << ".pGeometries = " << nameSer.Get( &obj->pGeometries ) << ";\n";
 }
 
 void  Serialize2_VkPipelineVertexInputStateCreateInfo (const VkPipelineVertexInputStateCreateInfo *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -3316,16 +3495,26 @@ void  Serialize2_VkOffset3D (const VkOffset3D *obj, StringView name, NameSeriali
 	result << indent << name << " = { " << IntToString(obj->x) << ", " << IntToString(obj->y) << ", " << IntToString(obj->z) << " };\n";
 }
 
+void  Serialize2_VkPipelineRasterizationStateStreamCreateInfoEXT (const VkPipelineRasterizationStateStreamCreateInfoEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_STREAM_CREATE_INFO_EXT;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_STREAM_CREATE_INFO_EXT );
+	result << indent << name << ".flags = " << Serialize_VkPipelineRasterizationStateStreamCreateFlagsEXT( obj->flags ) << ";\n";
+	result << indent << name << ".rasterizationStream = " << IntToString(obj->rasterizationStream) << ";\n";
+}
+
 void  Serialize2_VkAcquireNextImageInfoKHR (const VkAcquireNextImageInfoKHR *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHR;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHR );
-	result << indent << name << ".swapchain = " << "app.GetResource(SwapchainKHRID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT, obj->swapchain ) << "))" << ";\n";
+	result << indent << name << ".swapchain = " << "app.GetResource(SwapchainKHRID(" << remapper( VK_OBJECT_TYPE_SWAPCHAIN_KHR, obj->swapchain ) << "))" << ";\n";
 	result << indent << name << ".timeout = " << IntToString(obj->timeout) << ";\n";
-	result << indent << name << ".semaphore = " << "app.GetResource(SemaphoreID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, obj->semaphore ) << "))" << ";\n";
-	result << indent << name << ".fence = " << "app.GetResource(FenceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT, obj->fence ) << "))" << ";\n";
+	result << indent << name << ".semaphore = " << "app.GetResource(SemaphoreID(" << remapper( VK_OBJECT_TYPE_SEMAPHORE, obj->semaphore ) << "))" << ";\n";
+	result << indent << name << ".fence = " << "app.GetResource(FenceID(" << remapper( VK_OBJECT_TYPE_FENCE, obj->fence ) << "))" << ";\n";
 	result << indent << name << ".deviceMask = " << IntToString(obj->deviceMask) << ";\n";
 }
 
@@ -3353,7 +3542,7 @@ void  Serialize2_VkSparseImageMemoryBind (const VkSparseImageMemoryBind *obj, St
 	Serialize2_VkImageSubresource( &obj->subresource, String(name) << ".subresource", nameSer, remapper, indent, INOUT result, INOUT before );
 	Serialize2_VkOffset3D( &obj->offset, String(name) << ".offset", nameSer, remapper, indent, INOUT result, INOUT before );
 	Serialize2_VkExtent3D( &obj->extent, String(name) << ".extent", nameSer, remapper, indent, INOUT result, INOUT before );
-	result << indent << name << ".memory = " << "app.GetResource(DeviceMemoryID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, obj->memory ) << "))" << ";\n";
+	result << indent << name << ".memory = " << "app.GetResource(DeviceMemoryID(" << remapper( VK_OBJECT_TYPE_DEVICE_MEMORY, obj->memory ) << "))" << ";\n";
 	result << indent << name << ".memoryOffset = " << IntToString(obj->memoryOffset) << ";\n";
 	result << indent << name << ".flags = " << Serialize_VkSparseMemoryBindFlags( obj->flags ) << ";\n";
 }
@@ -3378,7 +3567,7 @@ void  Serialize2_VkSparseImageMemoryBindInfo (const VkSparseImageMemoryBindInfo 
 			Serialize2_VkSparseImageMemoryBind( obj->pBinds + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
 		}
 	}
-	result << indent << name << ".image = " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->image ) << "))" << ";\n";
+	result << indent << name << ".image = " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->image ) << "))" << ";\n";
 	result << indent << name << ".bindCount = " << IntToString(obj->bindCount) << ";\n";
 	result << indent << name << ".pBinds = " << nameSer.Get( &obj->pBinds ) << ";\n";
 }
@@ -3415,8 +3604,8 @@ void  Serialize2_VkRenderPassBeginInfo (const VkRenderPassBeginInfo *obj, String
 			Serialize2_VkClearValue( obj->pClearValues + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
 		}
 	}
-	result << indent << name << ".renderPass = " << "app.GetResource(RenderPassID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT, obj->renderPass ) << "))" << ";\n";
-	result << indent << name << ".framebuffer = " << "app.GetResource(FramebufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT, obj->framebuffer ) << "))" << ";\n";
+	result << indent << name << ".renderPass = " << "app.GetResource(RenderPassID(" << remapper( VK_OBJECT_TYPE_RENDER_PASS, obj->renderPass ) << "))" << ";\n";
+	result << indent << name << ".framebuffer = " << "app.GetResource(FramebufferID(" << remapper( VK_OBJECT_TYPE_FRAMEBUFFER, obj->framebuffer ) << "))" << ";\n";
 	Serialize2_VkRect2D( &obj->renderArea, String(name) << ".renderArea", nameSer, remapper, indent, INOUT result, INOUT before );
 	result << indent << name << ".clearValueCount = " << IntToString(obj->clearValueCount) << ";\n";
 	result << indent << name << ".pClearValues = " << nameSer.Get( &obj->pClearValues ) << ";\n";
@@ -3593,7 +3782,7 @@ void  Serialize2_VkDisplayPlaneInfo2KHR (const VkDisplayPlaneInfo2KHR *obj, Stri
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_DISPLAY_PLANE_INFO_2_KHR;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DISPLAY_PLANE_INFO_2_KHR );
-	result << indent << name << ".mode = " << "app.GetResource(DisplayModeKHRID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT, obj->mode ) << "))" << ";\n";
+	result << indent << name << ".mode = " << "app.GetResource(DisplayModeKHRID(" << remapper( VK_OBJECT_TYPE_DISPLAY_MODE_KHR, obj->mode ) << "))" << ";\n";
 	result << indent << name << ".planeIndex = " << IntToString(obj->planeIndex) << ";\n";
 }
 
@@ -3641,7 +3830,7 @@ void  Serialize2_VkPipelineShaderStageCreateInfo (const VkPipelineShaderStageCre
 	}
 	result << indent << name << ".flags = " << Serialize_VkPipelineShaderStageCreateFlags( obj->flags ) << ";\n";
 	result << indent << name << ".stage = " << Serialize_VkShaderStageFlagBits( obj->stage ) << ";\n";
-	result << indent << name << ".module = " << "app.GetResource(ShaderModuleID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT, obj->module ) << "))" << ";\n";
+	result << indent << name << ".module = " << "app.GetResource(ShaderModuleID(" << remapper( VK_OBJECT_TYPE_SHADER_MODULE, obj->module ) << "))" << ";\n";
 	result << indent << name << ".pName = " << '"' << obj->pName << '"' << ";\n";
 	result << indent << name << ".pSpecializationInfo = " << nameSer.GetPtr( obj->pSpecializationInfo ) << ";\n";
 }
@@ -3873,9 +4062,9 @@ void  Serialize2_VkCommandBufferInheritanceInfo (const VkCommandBufferInheritanc
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO );
-	result << indent << name << ".renderPass = " << "app.GetResource(RenderPassID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT, obj->renderPass ) << "))" << ";\n";
+	result << indent << name << ".renderPass = " << "app.GetResource(RenderPassID(" << remapper( VK_OBJECT_TYPE_RENDER_PASS, obj->renderPass ) << "))" << ";\n";
 	result << indent << name << ".subpass = " << IntToString(obj->subpass) << ";\n";
-	result << indent << name << ".framebuffer = " << "app.GetResource(FramebufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT, obj->framebuffer ) << "))" << ";\n";
+	result << indent << name << ".framebuffer = " << "app.GetResource(FramebufferID(" << remapper( VK_OBJECT_TYPE_FRAMEBUFFER, obj->framebuffer ) << "))" << ";\n";
 	result << indent << name << ".occlusionQueryEnable = " << BoolToString(obj->occlusionQueryEnable) << ";\n";
 	result << indent << name << ".queryFlags = " << Serialize_VkQueryControlFlags( obj->queryFlags ) << ";\n";
 	result << indent << name << ".pipelineStatistics = " << Serialize_VkQueryPipelineStatisticFlags( obj->pipelineStatistics ) << ";\n";
@@ -3913,7 +4102,7 @@ void  Serialize2_VkImportFenceFdInfoKHR (const VkImportFenceFdInfoKHR *obj, Stri
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_IMPORT_FENCE_FD_INFO_KHR;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_IMPORT_FENCE_FD_INFO_KHR );
-	result << indent << name << ".fence = " << "app.GetResource(FenceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT, obj->fence ) << "))" << ";\n";
+	result << indent << name << ".fence = " << "app.GetResource(FenceID(" << remapper( VK_OBJECT_TYPE_FENCE, obj->fence ) << "))" << ";\n";
 	result << indent << name << ".flags = " << Serialize_VkFenceImportFlags( obj->flags ) << ";\n";
 	result << indent << name << ".handleType = " << Serialize_VkExternalFenceHandleTypeFlagBits( obj->handleType ) << ";\n";
 	result << indent << name << ".fd = " << IntToString(obj->fd) << ";\n";
@@ -3972,10 +4161,10 @@ void  Serialize2_VkGraphicsPipelineCreateInfo (const VkGraphicsPipelineCreateInf
 	result << indent << name << ".pDepthStencilState = " << nameSer.GetPtr( obj->pDepthStencilState ) << ";\n";
 	result << indent << name << ".pColorBlendState = " << nameSer.GetPtr( obj->pColorBlendState ) << ";\n";
 	result << indent << name << ".pDynamicState = " << nameSer.GetPtr( obj->pDynamicState ) << ";\n";
-	result << indent << name << ".layout = " << "app.GetResource(PipelineLayoutID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT, obj->layout ) << "))" << ";\n";
-	result << indent << name << ".renderPass = " << "app.GetResource(RenderPassID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT, obj->renderPass ) << "))" << ";\n";
+	result << indent << name << ".layout = " << "app.GetResource(PipelineLayoutID(" << remapper( VK_OBJECT_TYPE_PIPELINE_LAYOUT, obj->layout ) << "))" << ";\n";
+	result << indent << name << ".renderPass = " << "app.GetResource(RenderPassID(" << remapper( VK_OBJECT_TYPE_RENDER_PASS, obj->renderPass ) << "))" << ";\n";
 	result << indent << name << ".subpass = " << IntToString(obj->subpass) << ";\n";
-	result << indent << name << ".basePipelineHandle = " << "app.GetResource(PipelineID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT, obj->basePipelineHandle ) << "))" << ";\n";
+	result << indent << name << ".basePipelineHandle = " << "app.GetResource(PipelineID(" << remapper( VK_OBJECT_TYPE_PIPELINE, obj->basePipelineHandle ) << "))" << ";\n";
 	result << indent << name << ".basePipelineIndex = " << IntToString(obj->basePipelineIndex) << ";\n";
 }
 
@@ -3985,7 +4174,7 @@ void  Serialize2_VkSamplerYcbcrConversionInfo (const VkSamplerYcbcrConversionInf
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_INFO;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_INFO );
-	result << indent << name << ".conversion = " << "app.GetResource(SamplerYcbcrConversionID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION_EXT, obj->conversion ) << "))" << ";\n";
+	result << indent << name << ".conversion = " << "app.GetResource(SamplerYcbcrConversionID(" << remapper( VK_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION, obj->conversion ) << "))" << ";\n";
 }
 
 void  Serialize2_VkComputePipelineCreateInfo (const VkComputePipelineCreateInfo *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -3997,8 +4186,8 @@ void  Serialize2_VkComputePipelineCreateInfo (const VkComputePipelineCreateInfo 
 	before << SerializeStruct( BitCast<VkBaseInStructure const*>(&obj->stage), nameSer, remapper, indent );
 	result << indent << name << ".flags = " << Serialize_VkPipelineCreateFlags( obj->flags ) << ";\n";
 	result << indent << name << ".stage = " << nameSer.Get( &obj->stage ) << ";\n";
-	result << indent << name << ".layout = " << "app.GetResource(PipelineLayoutID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT, obj->layout ) << "))" << ";\n";
-	result << indent << name << ".basePipelineHandle = " << "app.GetResource(PipelineID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT, obj->basePipelineHandle ) << "))" << ";\n";
+	result << indent << name << ".layout = " << "app.GetResource(PipelineLayoutID(" << remapper( VK_OBJECT_TYPE_PIPELINE_LAYOUT, obj->layout ) << "))" << ";\n";
+	result << indent << name << ".basePipelineHandle = " << "app.GetResource(PipelineID(" << remapper( VK_OBJECT_TYPE_PIPELINE, obj->basePipelineHandle ) << "))" << ";\n";
 	result << indent << name << ".basePipelineIndex = " << IntToString(obj->basePipelineIndex) << ";\n";
 }
 
@@ -4029,7 +4218,7 @@ void  Serialize2_VkPipelineLayoutCreateInfo (const VkPipelineLayoutCreateInfo *o
 		CHECK( obj->setLayoutCount > 0 );
 		before << indent << "const VkDescriptorSetLayout  " << nameSer.MakeUnique( &obj->pSetLayouts, "setLayouts"s, "descriptorSetLayout"s ) << "[] = {";
 		for (uint i = 0; i < obj->setLayoutCount; ++i) {
-			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(DescriptorSetLayoutID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT, obj->pSetLayouts[i] ) << "))";
+			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(DescriptorSetLayoutID(" << remapper( VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, obj->pSetLayouts[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
 		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pSetLayouts ) << ") == " << IntToString(obj->setLayoutCount) << " );\n\n";
@@ -4081,7 +4270,7 @@ ND_ String  Serialize_VkDisplayPlanePropertiesKHR (const VkDisplayPlanePropertie
 
 void  Serialize2_VkDisplayPlanePropertiesKHR (const VkDisplayPlanePropertiesKHR *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
-	result << indent << name << ".currentDisplay = " << "app.GetResource(DisplayKHRID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT, obj->currentDisplay ) << "))" << ";\n";
+	result << indent << name << ".currentDisplay = " << "app.GetResource(DisplayKHRID(" << remapper( VK_OBJECT_TYPE_DISPLAY_KHR, obj->currentDisplay ) << "))" << ";\n";
 	result << indent << name << ".currentStackIndex = " << IntToString(obj->currentStackIndex) << ";\n";
 }
 
@@ -4125,7 +4314,7 @@ void  Serialize2_VkDescriptorSetLayoutBinding (const VkDescriptorSetLayoutBindin
 		CHECK( obj->descriptorCount > 0 );
 		before << indent << "const VkSampler  " << nameSer.MakeUnique( &obj->pImmutableSamplers, "immutableSamplers"s, "sampler"s ) << "[] = {";
 		for (uint i = 0; i < obj->descriptorCount; ++i) {
-			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SamplerID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT, obj->pImmutableSamplers[i] ) << "))";
+			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SamplerID(" << remapper( VK_OBJECT_TYPE_SAMPLER, obj->pImmutableSamplers[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
 		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pImmutableSamplers ) << ") == " << IntToString(obj->descriptorCount) << " );\n\n";
@@ -4172,28 +4361,6 @@ void  Serialize2_VkDescriptorPoolSize (const VkDescriptorPoolSize *obj, StringVi
 	result << indent << name << ".descriptorCount = " << IntToString(obj->descriptorCount) << ";\n";
 }
 
-void  Serialize2_VkAccelerationStructureCreateInfoNVX (const VkAccelerationStructureCreateInfoNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
-{
-	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
-	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
-	result << indent << name << ".sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NVX;\n";
-	ASSERT( obj->sType == VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NVX );
-	if ( obj->pGeometries ) {
-		CHECK( obj->geometryCount > 0 );
-		const String arr_name = nameSer.MakeUnique( &obj->pGeometries, "geometries"s, "geometryNVX"s );
-		before << indent << "VkGeometryNVX  " << arr_name << "[" << IntToString(obj->geometryCount) << "] = {};\n";
-		for (uint i = 0; i < obj->geometryCount; ++i) {
-			Serialize2_VkGeometryNVX( obj->pGeometries + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
-		}
-	}
-	result << indent << name << ".type = " << Serialize_VkAccelerationStructureTypeNVX( obj->type ) << ";\n";
-	result << indent << name << ".flags = " << Serialize_VkBuildAccelerationStructureFlagsNVX( obj->flags ) << ";\n";
-	result << indent << name << ".compactedSize = " << IntToString(obj->compactedSize) << ";\n";
-	result << indent << name << ".instanceCount = " << IntToString(obj->instanceCount) << ";\n";
-	result << indent << name << ".geometryCount = " << IntToString(obj->geometryCount) << ";\n";
-	result << indent << name << ".pGeometries = " << nameSer.Get( &obj->pGeometries ) << ";\n";
-}
-
 void  Serialize2_VkDescriptorPoolCreateInfo (const VkDescriptorPoolCreateInfo *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
@@ -4214,13 +4381,29 @@ void  Serialize2_VkDescriptorPoolCreateInfo (const VkDescriptorPoolCreateInfo *o
 	result << indent << name << ".pPoolSizes = " << nameSer.Get( &obj->pPoolSizes ) << ";\n";
 }
 
+void  Serialize2_VkPhysicalDeviceRayTracingPropertiesNV (const VkPhysicalDeviceRayTracingPropertiesNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PROPERTIES_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PROPERTIES_NV );
+	result << indent << name << ".shaderGroupHandleSize = " << IntToString(obj->shaderGroupHandleSize) << ";\n";
+	result << indent << name << ".maxRecursionDepth = " << IntToString(obj->maxRecursionDepth) << ";\n";
+	result << indent << name << ".maxShaderGroupStride = " << IntToString(obj->maxShaderGroupStride) << ";\n";
+	result << indent << name << ".shaderGroupBaseAlignment = " << IntToString(obj->shaderGroupBaseAlignment) << ";\n";
+	result << indent << name << ".maxGeometryCount = " << IntToString(obj->maxGeometryCount) << ";\n";
+	result << indent << name << ".maxInstanceCount = " << IntToString(obj->maxInstanceCount) << ";\n";
+	result << indent << name << ".maxTriangleCount = " << IntToString(obj->maxTriangleCount) << ";\n";
+	result << indent << name << ".maxDescriptorSetAccelerationStructures = " << IntToString(obj->maxDescriptorSetAccelerationStructures) << ";\n";
+}
+
 void  Serialize2_VkImageMemoryRequirementsInfo2 (const VkImageMemoryRequirementsInfo2 *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2 );
-	result << indent << name << ".image = " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->image ) << "))" << ";\n";
+	result << indent << name << ".image = " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->image ) << "))" << ";\n";
 }
 
 void  Serialize2_VkDescriptorSetAllocateInfo (const VkDescriptorSetAllocateInfo *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -4233,12 +4416,12 @@ void  Serialize2_VkDescriptorSetAllocateInfo (const VkDescriptorSetAllocateInfo 
 		CHECK( obj->descriptorSetCount > 0 );
 		before << indent << "const VkDescriptorSetLayout  " << nameSer.MakeUnique( &obj->pSetLayouts, "setLayouts"s, "descriptorSetLayout"s ) << "[] = {";
 		for (uint i = 0; i < obj->descriptorSetCount; ++i) {
-			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(DescriptorSetLayoutID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT, obj->pSetLayouts[i] ) << "))";
+			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(DescriptorSetLayoutID(" << remapper( VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, obj->pSetLayouts[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
 		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pSetLayouts ) << ") == " << IntToString(obj->descriptorSetCount) << " );\n\n";
 	}
-	result << indent << name << ".descriptorPool = " << "app.GetResource(DescriptorPoolID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT, obj->descriptorPool ) << "))" << ";\n";
+	result << indent << name << ".descriptorPool = " << "app.GetResource(DescriptorPoolID(" << remapper( VK_OBJECT_TYPE_DESCRIPTOR_POOL, obj->descriptorPool ) << "))" << ";\n";
 	result << indent << name << ".descriptorSetCount = " << IntToString(obj->descriptorSetCount) << ";\n";
 	result << indent << name << ".pSetLayouts = " << nameSer.Get( &obj->pSetLayouts ) << ";\n";
 }
@@ -4292,7 +4475,7 @@ ND_ String  Serialize_VkClearValue (const VkClearValue *obj, NameSerializer &nam
 
 void  Serialize2_VkClearValue (const VkClearValue *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
-	result << indent << "// current clear value depends of render pass\n";
+	result << indent << "// current clear value depends on render pass\n";
 	result << indent << "// .depthStencil = { " << FloatToString(obj->depthStencil.depth) << ", " << IntToString(obj->depthStencil.stencil) << " }\n";
 	result << indent << "// .color.uint32 = { " << IntToString(obj->color.uint32[0]) << ", " << IntToString(obj->color.uint32[1]) << ", " << IntToString(obj->color.uint32[2]) << ", " << IntToString(obj->color.uint32[3]) << " }\n";
 	result << indent << name << ".color = { " << FloatToString(obj->color.float32[0]) << ", " << FloatToString(obj->color.float32[1]) << ", " << FloatToString(obj->color.float32[2]) << ", " << FloatToString(obj->color.float32[3]) << " };\n";
@@ -4310,8 +4493,8 @@ ND_ String  Serialize_VkDescriptorImageInfo (const VkDescriptorImageInfo *obj, N
 
 void  Serialize2_VkDescriptorImageInfo (const VkDescriptorImageInfo *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
-	result << indent << name << ".sampler = " << "app.GetResource(SamplerID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT, obj->sampler ) << "))" << ";\n";
-	result << indent << name << ".imageView = " << "app.GetResource(ImageViewID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT, obj->imageView ) << "))" << ";\n";
+	result << indent << name << ".sampler = " << "app.GetResource(SamplerID(" << remapper( VK_OBJECT_TYPE_SAMPLER, obj->sampler ) << "))" << ";\n";
+	result << indent << name << ".imageView = " << "app.GetResource(ImageViewID(" << remapper( VK_OBJECT_TYPE_IMAGE_VIEW, obj->imageView ) << "))" << ";\n";
 	result << indent << name << ".imageLayout = " << Serialize_VkImageLayout( obj->imageLayout ) << ";\n";
 }
 
@@ -4327,7 +4510,7 @@ ND_ String  Serialize_VkDescriptorBufferInfo (const VkDescriptorBufferInfo *obj,
 
 void  Serialize2_VkDescriptorBufferInfo (const VkDescriptorBufferInfo *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
-	result << indent << name << ".buffer = " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->buffer ) << "))" << ";\n";
+	result << indent << name << ".buffer = " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->buffer ) << "))" << ";\n";
 	result << indent << name << ".offset = " << IntToString(obj->offset) << ";\n";
 	result << indent << name << ".range = " << IntToString(obj->range) << ";\n";
 }
@@ -4358,12 +4541,12 @@ void  Serialize2_VkWriteDescriptorSet (const VkWriteDescriptorSet *obj, StringVi
 		CHECK( obj->descriptorCount > 0 );
 		before << indent << "const VkBufferView  " << nameSer.MakeUnique( &obj->pTexelBufferView, "texelBufferView"s, "bufferView"s ) << "[] = {";
 		for (uint i = 0; i < obj->descriptorCount; ++i) {
-			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(BufferViewID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT, obj->pTexelBufferView[i] ) << "))";
+			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(BufferViewID(" << remapper( VK_OBJECT_TYPE_BUFFER_VIEW, obj->pTexelBufferView[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
 		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pTexelBufferView ) << ") == " << IntToString(obj->descriptorCount) << " );\n\n";
 	}
-	result << indent << name << ".dstSet = " << "app.GetResource(DescriptorSetID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT, obj->dstSet ) << "))" << ";\n";
+	result << indent << name << ".dstSet = " << "app.GetResource(DescriptorSetID(" << remapper( VK_OBJECT_TYPE_DESCRIPTOR_SET, obj->dstSet ) << "))" << ";\n";
 	result << indent << name << ".dstBinding = " << IntToString(obj->dstBinding) << ";\n";
 	result << indent << name << ".dstArrayElement = " << IntToString(obj->dstArrayElement) << ";\n";
 	result << indent << name << ".descriptorCount = " << IntToString(obj->descriptorCount) << ";\n";
@@ -4379,10 +4562,10 @@ void  Serialize2_VkCopyDescriptorSet (const VkCopyDescriptorSet *obj, StringView
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET );
-	result << indent << name << ".srcSet = " << "app.GetResource(DescriptorSetID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT, obj->srcSet ) << "))" << ";\n";
+	result << indent << name << ".srcSet = " << "app.GetResource(DescriptorSetID(" << remapper( VK_OBJECT_TYPE_DESCRIPTOR_SET, obj->srcSet ) << "))" << ";\n";
 	result << indent << name << ".srcBinding = " << IntToString(obj->srcBinding) << ";\n";
 	result << indent << name << ".srcArrayElement = " << IntToString(obj->srcArrayElement) << ";\n";
-	result << indent << name << ".dstSet = " << "app.GetResource(DescriptorSetID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT, obj->dstSet ) << "))" << ";\n";
+	result << indent << name << ".dstSet = " << "app.GetResource(DescriptorSetID(" << remapper( VK_OBJECT_TYPE_DESCRIPTOR_SET, obj->dstSet ) << "))" << ";\n";
 	result << indent << name << ".dstBinding = " << IntToString(obj->dstBinding) << ";\n";
 	result << indent << name << ".dstArrayElement = " << IntToString(obj->dstArrayElement) << ";\n";
 	result << indent << name << ".descriptorCount = " << IntToString(obj->descriptorCount) << ";\n";
@@ -4408,13 +4591,13 @@ void  Serialize2_VkFramebufferCreateInfo (const VkFramebufferCreateInfo *obj, St
 		CHECK( obj->attachmentCount > 0 );
 		before << indent << "const VkImageView  " << nameSer.MakeUnique( &obj->pAttachments, "attachments"s, "imageView"s ) << "[] = {";
 		for (uint i = 0; i < obj->attachmentCount; ++i) {
-			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(ImageViewID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT, obj->pAttachments[i] ) << "))";
+			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(ImageViewID(" << remapper( VK_OBJECT_TYPE_IMAGE_VIEW, obj->pAttachments[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
 		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pAttachments ) << ") == " << IntToString(obj->attachmentCount) << " );\n\n";
 	}
 	result << indent << name << ".flags = " << Serialize_VkFramebufferCreateFlags( obj->flags ) << ";\n";
-	result << indent << name << ".renderPass = " << "app.GetResource(RenderPassID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT, obj->renderPass ) << "))" << ";\n";
+	result << indent << name << ".renderPass = " << "app.GetResource(RenderPassID(" << remapper( VK_OBJECT_TYPE_RENDER_PASS, obj->renderPass ) << "))" << ";\n";
 	result << indent << name << ".attachmentCount = " << IntToString(obj->attachmentCount) << ";\n";
 	result << indent << name << ".pAttachments = " << nameSer.Get( &obj->pAttachments ) << ";\n";
 	result << indent << name << ".width = " << IntToString(obj->width) << ";\n";
@@ -4459,25 +4642,6 @@ void  Serialize2_VkAttachmentReference (const VkAttachmentReference *obj, String
 {
 	result << indent << name << ".attachment = " << IntToString(obj->attachment) << ";\n";
 	result << indent << name << ".layout = " << Serialize_VkImageLayout( obj->layout ) << ";\n";
-}
-
-void  Serialize2_VkGeometryTrianglesNVX (const VkGeometryTrianglesNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
-{
-	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
-	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
-	result << indent << name << ".sType = VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NVX;\n";
-	ASSERT( obj->sType == VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NVX );
-	result << indent << name << ".vertexData = " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->vertexData ) << "))" << ";\n";
-	result << indent << name << ".vertexOffset = " << IntToString(obj->vertexOffset) << ";\n";
-	result << indent << name << ".vertexCount = " << IntToString(obj->vertexCount) << ";\n";
-	result << indent << name << ".vertexStride = " << IntToString(obj->vertexStride) << ";\n";
-	result << indent << name << ".vertexFormat = " << Serialize_VkFormat( obj->vertexFormat ) << ";\n";
-	result << indent << name << ".indexData = " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->indexData ) << "))" << ";\n";
-	result << indent << name << ".indexOffset = " << IntToString(obj->indexOffset) << ";\n";
-	result << indent << name << ".indexCount = " << IntToString(obj->indexCount) << ";\n";
-	result << indent << name << ".indexType = " << Serialize_VkIndexType( obj->indexType ) << ";\n";
-	result << indent << name << ".transformData = " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->transformData ) << "))" << ";\n";
-	result << indent << name << ".transformOffset = " << IntToString(obj->transformOffset) << ";\n";
 }
 
 ND_ String  Serialize_VkSubpassDescription (const VkSubpassDescription *obj, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)
@@ -4616,7 +4780,7 @@ void  Serialize2_VkCommandBufferAllocateInfo (const VkCommandBufferAllocateInfo 
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO );
-	result << indent << name << ".commandPool = " << "app.GetResource(CommandPoolID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT, obj->commandPool ) << "))" << ";\n";
+	result << indent << name << ".commandPool = " << "app.GetResource(CommandPoolID(" << remapper( VK_OBJECT_TYPE_COMMAND_POOL, obj->commandPool ) << "))" << ";\n";
 	result << indent << name << ".level = " << Serialize_VkCommandBufferLevel( obj->level ) << ";\n";
 	result << indent << name << ".commandBufferCount = " << IntToString(obj->commandBufferCount) << ";\n";
 }
@@ -4663,7 +4827,7 @@ ND_ String  Serialize_VkDisplayModePropertiesKHR (const VkDisplayModePropertiesK
 
 void  Serialize2_VkDisplayModePropertiesKHR (const VkDisplayModePropertiesKHR *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
-	result << indent << name << ".displayMode = " << "app.GetResource(DisplayModeKHRID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT, obj->displayMode ) << "))" << ";\n";
+	result << indent << name << ".displayMode = " << "app.GetResource(DisplayModeKHRID(" << remapper( VK_OBJECT_TYPE_DISPLAY_MODE_KHR, obj->displayMode ) << "))" << ";\n";
 	Serialize2_VkDisplayModeParametersKHR( &obj->parameters, String(name) << ".parameters", nameSer, remapper, indent, INOUT result, INOUT before );
 }
 
@@ -4719,19 +4883,6 @@ void  Serialize2_VkImageBlit (const VkImageBlit *obj, StringView name, NameSeria
 	result << indent << name << ".dstOffsets = " << nameSer.Get( &obj->dstOffsets ) << ";\n";
 }
 
-#ifdef VULKAN_MIR_H_
-void  Serialize2_VkMirSurfaceCreateInfoKHR (const VkMirSurfaceCreateInfoKHR *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
-{
-	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
-	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
-	result << indent << name << ".sType = VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR;\n";
-	ASSERT( obj->sType == VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR );
-	result << indent << name << ".flags = " << Serialize_VkMirSurfaceCreateFlagsKHR( obj->flags ) << ";\n";
-	result << indent << name << ".connection = " << "BitCast<MirConnection*>(" << HexToString(obj->connection) << ")" << ";\n";
-	result << indent << name << ".mirSurface = " << "BitCast<MirSurface*>(" << HexToString(obj->mirSurface) << ")" << ";\n";
-}
-#endif
-
 ND_ String  Serialize_VkBufferImageCopy (const VkBufferImageCopy *obj, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)
 {
 	String	result, before;
@@ -4773,7 +4924,7 @@ ND_ String  Serialize_VkClearColorValue (const VkClearColorValue *obj, NameSeria
 
 void  Serialize2_VkClearColorValue (const VkClearColorValue *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
-	result << indent << "// current clear value depends of render pass\n";
+	result << indent << "// current clear value depends on render pass\n";
 	result << indent << "// .uint32 = { " << IntToString(obj->uint32[0]) << ", " << IntToString(obj->uint32[1]) << ", " << IntToString(obj->uint32[2]) << ", " << IntToString(obj->uint32[3]) << " }\n";
 	result << indent << name << " = { " << FloatToString(obj->float32[0]) << ", " << FloatToString(obj->float32[1]) << ", " << FloatToString(obj->float32[2]) << ", " << FloatToString(obj->float32[3]) << " };\n";
 }
@@ -4869,7 +5020,7 @@ void  Serialize2_VkBufferMemoryBarrier (const VkBufferMemoryBarrier *obj, String
 	result << indent << name << ".dstAccessMask = " << Serialize_VkAccessFlags( obj->dstAccessMask ) << ";\n";
 	result << indent << name << ".srcQueueFamilyIndex = " << IntToString(obj->srcQueueFamilyIndex) << ";\n";
 	result << indent << name << ".dstQueueFamilyIndex = " << IntToString(obj->dstQueueFamilyIndex) << ";\n";
-	result << indent << name << ".buffer = " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->buffer ) << "))" << ";\n";
+	result << indent << name << ".buffer = " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->buffer ) << "))" << ";\n";
 	result << indent << name << ".offset = " << IntToString(obj->offset) << ";\n";
 	result << indent << name << ".size = " << IntToString(obj->size) << ";\n";
 }
@@ -4886,7 +5037,7 @@ void  Serialize2_VkImageMemoryBarrier (const VkImageMemoryBarrier *obj, StringVi
 	result << indent << name << ".newLayout = " << Serialize_VkImageLayout( obj->newLayout ) << ";\n";
 	result << indent << name << ".srcQueueFamilyIndex = " << IntToString(obj->srcQueueFamilyIndex) << ";\n";
 	result << indent << name << ".dstQueueFamilyIndex = " << IntToString(obj->dstQueueFamilyIndex) << ";\n";
-	result << indent << name << ".image = " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->image ) << "))" << ";\n";
+	result << indent << name << ".image = " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->image ) << "))" << ";\n";
 	Serialize2_VkImageSubresourceRange( &obj->subresourceRange, String(name) << ".subresourceRange", nameSer, remapper, indent, INOUT result, INOUT before );
 }
 
@@ -4908,7 +5059,7 @@ void  Serialize2_VkImportFenceWin32HandleInfoKHR (const VkImportFenceWin32Handle
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_IMPORT_FENCE_WIN32_HANDLE_INFO_KHR;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_IMPORT_FENCE_WIN32_HANDLE_INFO_KHR );
-	result << indent << name << ".fence = " << "app.GetResource(FenceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT, obj->fence ) << "))" << ";\n";
+	result << indent << name << ".fence = " << "app.GetResource(FenceID(" << remapper( VK_OBJECT_TYPE_FENCE, obj->fence ) << "))" << ";\n";
 	result << indent << name << ".flags = " << Serialize_VkFenceImportFlags( obj->flags ) << ";\n";
 	result << indent << name << ".handleType = " << Serialize_VkExternalFenceHandleTypeFlagBits( obj->handleType ) << ";\n";
 	result << indent << name << ".handle = " << "BitCast<HANDLE>(" << HexToString(obj->handle) << ")" << ";\n";
@@ -4968,8 +5119,8 @@ void  Serialize2_VkBindBufferMemoryInfo (const VkBindBufferMemoryInfo *obj, Stri
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_INFO;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_INFO );
-	result << indent << name << ".buffer = " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->buffer ) << "))" << ";\n";
-	result << indent << name << ".memory = " << "app.GetResource(DeviceMemoryID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, obj->memory ) << "))" << ";\n";
+	result << indent << name << ".buffer = " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->buffer ) << "))" << ";\n";
+	result << indent << name << ".memory = " << "app.GetResource(DeviceMemoryID(" << remapper( VK_OBJECT_TYPE_DEVICE_MEMORY, obj->memory ) << "))" << ";\n";
 	result << indent << name << ".memoryOffset = " << IntToString(obj->memoryOffset) << ";\n";
 }
 
@@ -4979,8 +5130,8 @@ void  Serialize2_VkBindImageMemoryInfo (const VkBindImageMemoryInfo *obj, String
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO );
-	result << indent << name << ".image = " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->image ) << "))" << ";\n";
-	result << indent << name << ".memory = " << "app.GetResource(DeviceMemoryID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, obj->memory ) << "))" << ";\n";
+	result << indent << name << ".image = " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->image ) << "))" << ";\n";
+	result << indent << name << ".memory = " << "app.GetResource(DeviceMemoryID(" << remapper( VK_OBJECT_TYPE_DEVICE_MEMORY, obj->memory ) << "))" << ";\n";
 	result << indent << name << ".memoryOffset = " << IntToString(obj->memoryOffset) << ";\n";
 }
 
@@ -5025,14 +5176,33 @@ void  Serialize2_VkPhysicalDeviceShadingRateImagePropertiesNV (const VkPhysicalD
 	result << indent << name << ".shadingRateMaxCoarseSamples = " << IntToString(obj->shadingRateMaxCoarseSamples) << ";\n";
 }
 
+void  Serialize2_VkImageDrmFormatModifierExplicitCreateInfoEXT (const VkImageDrmFormatModifierExplicitCreateInfoEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_EXPLICIT_CREATE_INFO_EXT;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_EXPLICIT_CREATE_INFO_EXT );
+	if ( obj->pPlaneLayouts ) {
+		CHECK( obj->drmFormatModifierPlaneCount > 0 );
+		const String arr_name = nameSer.MakeUnique( &obj->pPlaneLayouts, "planeLayouts"s, "subresourceLayout"s );
+		before << indent << "VkSubresourceLayout  " << arr_name << "[" << IntToString(obj->drmFormatModifierPlaneCount) << "] = {};\n";
+		for (uint i = 0; i < obj->drmFormatModifierPlaneCount; ++i) {
+			Serialize2_VkSubresourceLayout( obj->pPlaneLayouts + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
+		}
+	}
+	result << indent << name << ".drmFormatModifier = " << IntToString(obj->drmFormatModifier) << ";\n";
+	result << indent << name << ".drmFormatModifierPlaneCount = " << IntToString(obj->drmFormatModifierPlaneCount) << ";\n";
+	result << indent << name << ".pPlaneLayouts = " << nameSer.Get( &obj->pPlaneLayouts ) << ";\n";
+}
+
 void  Serialize2_VkMemoryDedicatedAllocateInfo (const VkMemoryDedicatedAllocateInfo *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO );
-	result << indent << name << ".image = " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->image ) << "))" << ";\n";
-	result << indent << name << ".buffer = " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->buffer ) << "))" << ";\n";
+	result << indent << name << ".image = " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->image ) << "))" << ";\n";
+	result << indent << name << ".buffer = " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->buffer ) << "))" << ";\n";
 }
 
 void  Serialize2_VkMemoryAllocateFlagsInfo (const VkMemoryAllocateFlagsInfo *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -5182,7 +5352,7 @@ void  Serialize2_VkPhysicalDeviceGroupProperties (const VkPhysicalDeviceGroupPro
 		CHECK( CountOf(obj->physicalDevices) > 0 );
 		before << indent << "const VkPhysicalDevice  " << nameSer.MakeUnique( &obj->physicalDevices, "physicalDevices"s, "physicalDevice"s ) << "[] = {";
 		for (uint i = 0; i < CountOf(obj->physicalDevices); ++i) {
-			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(PhysicalDeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT, obj->physicalDevices[i] ) << "))";
+			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(PhysicalDeviceID(" << remapper( VK_OBJECT_TYPE_PHYSICAL_DEVICE, obj->physicalDevices[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
 		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->physicalDevices ) << ") == " << IntToString(CountOf(obj->physicalDevices)) << " );\n\n";
@@ -5202,7 +5372,7 @@ void  Serialize2_VkDeviceGroupDeviceCreateInfo (const VkDeviceGroupDeviceCreateI
 		CHECK( obj->physicalDeviceCount > 0 );
 		before << indent << "const VkPhysicalDevice  " << nameSer.MakeUnique( &obj->pPhysicalDevices, "physicalDevices"s, "physicalDevice"s ) << "[] = {";
 		for (uint i = 0; i < obj->physicalDeviceCount; ++i) {
-			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(PhysicalDeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT, obj->pPhysicalDevices[i] ) << "))";
+			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(PhysicalDeviceID(" << remapper( VK_OBJECT_TYPE_PHYSICAL_DEVICE, obj->pPhysicalDevices[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
 		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pPhysicalDevices ) << ") == " << IntToString(obj->physicalDeviceCount) << " );\n\n";
@@ -5226,7 +5396,7 @@ void  Serialize2_VkBufferMemoryRequirementsInfo2 (const VkBufferMemoryRequiremen
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_REQUIREMENTS_INFO_2;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_BUFFER_MEMORY_REQUIREMENTS_INFO_2 );
-	result << indent << name << ".buffer = " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->buffer ) << "))" << ";\n";
+	result << indent << name << ".buffer = " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->buffer ) << "))" << ";\n";
 }
 
 void  Serialize2_VkImageSparseMemoryRequirementsInfo2 (const VkImageSparseMemoryRequirementsInfo2 *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -5235,7 +5405,7 @@ void  Serialize2_VkImageSparseMemoryRequirementsInfo2 (const VkImageSparseMemory
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_IMAGE_SPARSE_MEMORY_REQUIREMENTS_INFO_2;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_IMAGE_SPARSE_MEMORY_REQUIREMENTS_INFO_2 );
-	result << indent << name << ".image = " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->image ) << "))" << ";\n";
+	result << indent << name << ".image = " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->image ) << "))" << ";\n";
 }
 
 void  Serialize2_VkAttachmentReference2KHR (const VkAttachmentReference2KHR *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -5614,9 +5784,9 @@ void  Serialize2_VkDescriptorUpdateTemplateCreateInfo (const VkDescriptorUpdateT
 	result << indent << name << ".descriptorUpdateEntryCount = " << IntToString(obj->descriptorUpdateEntryCount) << ";\n";
 	result << indent << name << ".pDescriptorUpdateEntries = " << nameSer.Get( &obj->pDescriptorUpdateEntries ) << ";\n";
 	result << indent << name << ".templateType = " << Serialize_VkDescriptorUpdateTemplateType( obj->templateType ) << ";\n";
-	result << indent << name << ".descriptorSetLayout = " << "app.GetResource(DescriptorSetLayoutID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT, obj->descriptorSetLayout ) << "))" << ";\n";
+	result << indent << name << ".descriptorSetLayout = " << "app.GetResource(DescriptorSetLayoutID(" << remapper( VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, obj->descriptorSetLayout ) << "))" << ";\n";
 	result << indent << name << ".pipelineBindPoint = " << Serialize_VkPipelineBindPoint( obj->pipelineBindPoint ) << ";\n";
-	result << indent << name << ".pipelineLayout = " << "app.GetResource(PipelineLayoutID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT, obj->pipelineLayout ) << "))" << ";\n";
+	result << indent << name << ".pipelineLayout = " << "app.GetResource(PipelineLayoutID(" << remapper( VK_OBJECT_TYPE_PIPELINE_LAYOUT, obj->pipelineLayout ) << "))" << ";\n";
 	result << indent << name << ".set = " << IntToString(obj->set) << ";\n";
 }
 
@@ -5701,6 +5871,18 @@ void  Serialize2_VkExternalMemoryImageCreateInfo (const VkExternalMemoryImageCre
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO );
 	result << indent << name << ".handleTypes = " << Serialize_VkExternalMemoryHandleTypeFlags( obj->handleTypes ) << ";\n";
+}
+
+void  Serialize2_VkGeometryAABBNV (const VkGeometryAABBNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_GEOMETRY_AABB_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_GEOMETRY_AABB_NV );
+	result << indent << name << ".aabbData = " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->aabbData ) << "))" << ";\n";
+	result << indent << name << ".numAABBs = " << IntToString(obj->numAABBs) << ";\n";
+	result << indent << name << ".stride = " << IntToString(obj->stride) << ";\n";
+	result << indent << name << ".offset = " << IntToString(obj->offset) << ";\n";
 }
 
 void  Serialize2_VkPhysicalDeviceCornerSampledImageFeaturesNV (const VkPhysicalDeviceCornerSampledImageFeaturesNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -5929,7 +6111,7 @@ void  Serialize2_VkSwapchainCreateInfoKHR (const VkSwapchainCreateInfoKHR *obj, 
 		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pQueueFamilyIndices ) << ") == " << IntToString(obj->queueFamilyIndexCount) << " );\n\n";
 	}
 	result << indent << name << ".flags = " << Serialize_VkSwapchainCreateFlagsKHR( obj->flags ) << ";\n";
-	result << indent << name << ".surface = " << "app.GetResource(SurfaceKHRID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT, obj->surface ) << "))" << ";\n";
+	result << indent << name << ".surface = " << "app.GetResource(SurfaceKHRID(" << remapper( VK_OBJECT_TYPE_SURFACE_KHR, obj->surface ) << "))" << ";\n";
 	result << indent << name << ".minImageCount = " << IntToString(obj->minImageCount) << ";\n";
 	result << indent << name << ".imageFormat = " << Serialize_VkFormat( obj->imageFormat ) << ";\n";
 	result << indent << name << ".imageColorSpace = " << Serialize_VkColorSpaceKHR( obj->imageColorSpace ) << ";\n";
@@ -5943,7 +6125,7 @@ void  Serialize2_VkSwapchainCreateInfoKHR (const VkSwapchainCreateInfoKHR *obj, 
 	result << indent << name << ".compositeAlpha = " << Serialize_VkCompositeAlphaFlagBitsKHR( obj->compositeAlpha ) << ";\n";
 	result << indent << name << ".presentMode = " << Serialize_VkPresentModeKHR( obj->presentMode ) << ";\n";
 	result << indent << name << ".clipped = " << BoolToString(obj->clipped) << ";\n";
-	result << indent << name << ".oldSwapchain = " << "app.GetResource(SwapchainKHRID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT, obj->oldSwapchain ) << "))" << ";\n";
+	result << indent << name << ".oldSwapchain = " << "app.GetResource(SwapchainKHRID(" << remapper( VK_OBJECT_TYPE_SWAPCHAIN_KHR, obj->oldSwapchain ) << "))" << ";\n";
 }
 
 void  Serialize2_VkPresentInfoKHR (const VkPresentInfoKHR *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -5956,7 +6138,7 @@ void  Serialize2_VkPresentInfoKHR (const VkPresentInfoKHR *obj, StringView name,
 		CHECK( obj->waitSemaphoreCount > 0 );
 		before << indent << "const VkSemaphore  " << nameSer.MakeUnique( &obj->pWaitSemaphores, "waitSemaphores"s, "semaphore"s ) << "[] = {";
 		for (uint i = 0; i < obj->waitSemaphoreCount; ++i) {
-			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SemaphoreID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, obj->pWaitSemaphores[i] ) << "))";
+			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SemaphoreID(" << remapper( VK_OBJECT_TYPE_SEMAPHORE, obj->pWaitSemaphores[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
 		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pWaitSemaphores ) << ") == " << IntToString(obj->waitSemaphoreCount) << " );\n\n";
@@ -5965,7 +6147,7 @@ void  Serialize2_VkPresentInfoKHR (const VkPresentInfoKHR *obj, StringView name,
 		CHECK( obj->swapchainCount > 0 );
 		before << indent << "const VkSwapchainKHR  " << nameSer.MakeUnique( &obj->pSwapchains, "swapchains"s, "swapchain"s ) << "[] = {";
 		for (uint i = 0; i < obj->swapchainCount; ++i) {
-			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SwapchainKHRID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT, obj->pSwapchains[i] ) << "))";
+			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SwapchainKHRID(" << remapper( VK_OBJECT_TYPE_SWAPCHAIN_KHR, obj->pSwapchains[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
 		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pSwapchains ) << ") == " << IntToString(obj->swapchainCount) << " );\n\n";
@@ -6002,7 +6184,7 @@ void  Serialize2_VkImageSwapchainCreateInfoKHR (const VkImageSwapchainCreateInfo
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_IMAGE_SWAPCHAIN_CREATE_INFO_KHR;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_IMAGE_SWAPCHAIN_CREATE_INFO_KHR );
-	result << indent << name << ".swapchain = " << "app.GetResource(SwapchainKHRID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT, obj->swapchain ) << "))" << ";\n";
+	result << indent << name << ".swapchain = " << "app.GetResource(SwapchainKHRID(" << remapper( VK_OBJECT_TYPE_SWAPCHAIN_KHR, obj->swapchain ) << "))" << ";\n";
 }
 
 void  Serialize2_VkBindImageMemorySwapchainInfoKHR (const VkBindImageMemorySwapchainInfoKHR *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -6011,7 +6193,7 @@ void  Serialize2_VkBindImageMemorySwapchainInfoKHR (const VkBindImageMemorySwapc
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_SWAPCHAIN_INFO_KHR;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_SWAPCHAIN_INFO_KHR );
-	result << indent << name << ".swapchain = " << "app.GetResource(SwapchainKHRID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT, obj->swapchain ) << "))" << ";\n";
+	result << indent << name << ".swapchain = " << "app.GetResource(SwapchainKHRID(" << remapper( VK_OBJECT_TYPE_SWAPCHAIN_KHR, obj->swapchain ) << "))" << ";\n";
 	result << indent << name << ".imageIndex = " << IntToString(obj->imageIndex) << ";\n";
 }
 
@@ -6104,7 +6286,7 @@ ND_ String  Serialize_VkDisplayPropertiesKHR (const VkDisplayPropertiesKHR *obj,
 
 void  Serialize2_VkDisplayPropertiesKHR (const VkDisplayPropertiesKHR *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
-	result << indent << name << ".display = " << "app.GetResource(DisplayKHRID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT, obj->display ) << "))" << ";\n";
+	result << indent << name << ".display = " << "app.GetResource(DisplayKHRID(" << remapper( VK_OBJECT_TYPE_DISPLAY_KHR, obj->display ) << "))" << ";\n";
 	result << indent << name << ".displayName = " << '"' << obj->displayName << '"' << ";\n";
 	Serialize2_VkExtent2D( &obj->physicalDimensions, String(name) << ".physicalDimensions", nameSer, remapper, indent, INOUT result, INOUT before );
 	Serialize2_VkExtent2D( &obj->physicalResolution, String(name) << ".physicalResolution", nameSer, remapper, indent, INOUT result, INOUT before );
@@ -6143,7 +6325,7 @@ void  Serialize2_VkDisplaySurfaceCreateInfoKHR (const VkDisplaySurfaceCreateInfo
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR );
 	result << indent << name << ".flags = " << Serialize_VkDisplaySurfaceCreateFlagsKHR( obj->flags ) << ";\n";
-	result << indent << name << ".displayMode = " << "app.GetResource(DisplayModeKHRID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT, obj->displayMode ) << "))" << ";\n";
+	result << indent << name << ".displayMode = " << "app.GetResource(DisplayModeKHRID(" << remapper( VK_OBJECT_TYPE_DISPLAY_MODE_KHR, obj->displayMode ) << "))" << ";\n";
 	result << indent << name << ".planeIndex = " << IntToString(obj->planeIndex) << ";\n";
 	result << indent << name << ".planeStackIndex = " << IntToString(obj->planeStackIndex) << ";\n";
 	result << indent << name << ".transform = " << Serialize_VkSurfaceTransformFlagBitsKHR( obj->transform ) << ";\n";
@@ -6197,7 +6379,7 @@ void  Serialize2_VkMemoryGetFdInfoKHR (const VkMemoryGetFdInfoKHR *obj, StringVi
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_MEMORY_GET_FD_INFO_KHR;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_MEMORY_GET_FD_INFO_KHR );
-	result << indent << name << ".memory = " << "app.GetResource(DeviceMemoryID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, obj->memory ) << "))" << ";\n";
+	result << indent << name << ".memory = " << "app.GetResource(DeviceMemoryID(" << remapper( VK_OBJECT_TYPE_DEVICE_MEMORY, obj->memory ) << "))" << ";\n";
 	result << indent << name << ".handleType = " << Serialize_VkExternalMemoryHandleTypeFlagBits( obj->handleType ) << ";\n";
 }
 
@@ -6207,7 +6389,7 @@ void  Serialize2_VkImportSemaphoreFdInfoKHR (const VkImportSemaphoreFdInfoKHR *o
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_FD_INFO_KHR;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_FD_INFO_KHR );
-	result << indent << name << ".semaphore = " << "app.GetResource(SemaphoreID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, obj->semaphore ) << "))" << ";\n";
+	result << indent << name << ".semaphore = " << "app.GetResource(SemaphoreID(" << remapper( VK_OBJECT_TYPE_SEMAPHORE, obj->semaphore ) << "))" << ";\n";
 	result << indent << name << ".flags = " << Serialize_VkSemaphoreImportFlags( obj->flags ) << ";\n";
 	result << indent << name << ".handleType = " << Serialize_VkExternalSemaphoreHandleTypeFlagBits( obj->handleType ) << ";\n";
 	result << indent << name << ".fd = " << IntToString(obj->fd) << ";\n";
@@ -6219,7 +6401,7 @@ void  Serialize2_VkSemaphoreGetFdInfoKHR (const VkSemaphoreGetFdInfoKHR *obj, St
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_SEMAPHORE_GET_FD_INFO_KHR;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_SEMAPHORE_GET_FD_INFO_KHR );
-	result << indent << name << ".semaphore = " << "app.GetResource(SemaphoreID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, obj->semaphore ) << "))" << ";\n";
+	result << indent << name << ".semaphore = " << "app.GetResource(SemaphoreID(" << remapper( VK_OBJECT_TYPE_SEMAPHORE, obj->semaphore ) << "))" << ";\n";
 	result << indent << name << ".handleType = " << Serialize_VkExternalSemaphoreHandleTypeFlagBits( obj->handleType ) << ";\n";
 }
 
@@ -6317,6 +6499,24 @@ void  Serialize2_VkAttachmentDescription2KHR (const VkAttachmentDescription2KHR 
 	result << indent << name << ".stencilStoreOp = " << Serialize_VkAttachmentStoreOp( obj->stencilStoreOp ) << ";\n";
 	result << indent << name << ".initialLayout = " << Serialize_VkImageLayout( obj->initialLayout ) << ";\n";
 	result << indent << name << ".finalLayout = " << Serialize_VkImageLayout( obj->finalLayout ) << ";\n";
+}
+
+ND_ String  Serialize_VkConformanceVersionKHR (const VkConformanceVersionKHR *obj, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)
+{
+	String	result, before;
+	if ( obj == null ) return result;
+	const String  name = nameSer.MakeUnique( obj, "conformanceVersion"s );
+	result << indent << "VkConformanceVersionKHR  " << name << " = {};\n";
+	Serialize2_VkConformanceVersionKHR( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+	return before + result;
+}
+
+void  Serialize2_VkConformanceVersionKHR (const VkConformanceVersionKHR *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	result << indent << name << ".major = " << IntToString(obj->major) << ";\n";
+	result << indent << name << ".minor = " << IntToString(obj->minor) << ";\n";
+	result << indent << name << ".subminor = " << IntToString(obj->subminor) << ";\n";
+	result << indent << name << ".patch = " << IntToString(obj->patch) << ";\n";
 }
 
 void  Serialize2_VkSubpassDescription2KHR (const VkSubpassDescription2KHR *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -6492,7 +6692,7 @@ void  Serialize2_VkFenceGetFdInfoKHR (const VkFenceGetFdInfoKHR *obj, StringView
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_FENCE_GET_FD_INFO_KHR;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_FENCE_GET_FD_INFO_KHR );
-	result << indent << name << ".fence = " << "app.GetResource(FenceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT, obj->fence ) << "))" << ";\n";
+	result << indent << name << ".fence = " << "app.GetResource(FenceID(" << remapper( VK_OBJECT_TYPE_FENCE, obj->fence ) << "))" << ";\n";
 	result << indent << name << ".handleType = " << Serialize_VkExternalFenceHandleTypeFlagBits( obj->handleType ) << ";\n";
 }
 
@@ -6502,7 +6702,7 @@ void  Serialize2_VkPhysicalDeviceSurfaceInfo2KHR (const VkPhysicalDeviceSurfaceI
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SURFACE_INFO_2_KHR;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SURFACE_INFO_2_KHR );
-	result << indent << name << ".surface = " << "app.GetResource(SurfaceKHRID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT, obj->surface ) << "))" << ";\n";
+	result << indent << name << ".surface = " << "app.GetResource(SurfaceKHRID(" << remapper( VK_OBJECT_TYPE_SURFACE_KHR, obj->surface ) << "))" << ";\n";
 }
 
 void  Serialize2_VkSurfaceCapabilities2KHR (const VkSurfaceCapabilities2KHR *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -6539,7 +6739,7 @@ void  Serialize2_VkImportSemaphoreWin32HandleInfoKHR (const VkImportSemaphoreWin
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_WIN32_HANDLE_INFO_KHR;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_WIN32_HANDLE_INFO_KHR );
-	result << indent << name << ".semaphore = " << "app.GetResource(SemaphoreID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, obj->semaphore ) << "))" << ";\n";
+	result << indent << name << ".semaphore = " << "app.GetResource(SemaphoreID(" << remapper( VK_OBJECT_TYPE_SEMAPHORE, obj->semaphore ) << "))" << ";\n";
 	result << indent << name << ".flags = " << Serialize_VkSemaphoreImportFlags( obj->flags ) << ";\n";
 	result << indent << name << ".handleType = " << Serialize_VkExternalSemaphoreHandleTypeFlagBits( obj->handleType ) << ";\n";
 	result << indent << name << ".handle = " << "BitCast<HANDLE>(" << HexToString(obj->handle) << ")" << ";\n";
@@ -6595,13 +6795,47 @@ void  Serialize2_VkPhysicalDevice8BitStorageFeaturesKHR (const VkPhysicalDevice8
 	result << indent << name << ".storagePushConstant8 = " << BoolToString(obj->storagePushConstant8) << ";\n";
 }
 
-void  Serialize2_VkAccelerationStructureMemoryRequirementsInfoNVX (const VkAccelerationStructureMemoryRequirementsInfoNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+void  Serialize2_VkPhysicalDeviceShaderAtomicInt64FeaturesKHR (const VkPhysicalDeviceShaderAtomicInt64FeaturesKHR *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
-	result << indent << name << ".sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NVX;\n";
-	ASSERT( obj->sType == VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NVX );
-	result << indent << name << ".accelerationStructure = " << "app.GetResource(AccelerationStructureNVXID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NVX_EXT, obj->accelerationStructure ) << "))" << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES_KHR;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES_KHR );
+	result << indent << name << ".shaderBufferInt64Atomics = " << BoolToString(obj->shaderBufferInt64Atomics) << ";\n";
+	result << indent << name << ".shaderSharedInt64Atomics = " << BoolToString(obj->shaderSharedInt64Atomics) << ";\n";
+}
+
+#ifdef VULKAN_ANDROID_H_
+void  Serialize2_VkExternalFormatANDROID (const VkExternalFormatANDROID *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_ANDROID;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_ANDROID );
+	result << indent << name << ".externalFormat = " << IntToString(obj->externalFormat) << ";\n";
+}
+#endif
+
+void  Serialize2_VkDedicatedAllocationMemoryAllocateInfoNV (const VkDedicatedAllocationMemoryAllocateInfoNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV );
+	result << indent << name << ".image = " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->image ) << "))" << ";\n";
+	result << indent << name << ".buffer = " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->buffer ) << "))" << ";\n";
+}
+
+void  Serialize2_VkPhysicalDeviceDriverPropertiesKHR (const VkPhysicalDeviceDriverPropertiesKHR *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES_KHR;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES_KHR );
+	result << indent << name << ".driverID = " << Serialize_VkDriverIdKHR( obj->driverID ) << ";\n";
+	result << indent << name << ".driverName = " << '"' << obj->driverName << '"' << ";\n";
+	result << indent << name << ".driverInfo = " << '"' << obj->driverInfo << '"' << ";\n";
+	Serialize2_VkConformanceVersionKHR( &obj->conformanceVersion, String(name) << ".conformanceVersion", nameSer, remapper, indent, INOUT result, INOUT before );
 }
 
 void  Serialize2_VkPhysicalDeviceVulkanMemoryModelFeaturesKHR (const VkPhysicalDeviceVulkanMemoryModelFeaturesKHR *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -6621,17 +6855,6 @@ void  Serialize2_VkPipelineRasterizationStateRasterizationOrderAMD (const VkPipe
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD );
 	result << indent << name << ".rasterizationOrder = " << Serialize_VkRasterizationOrderAMD( obj->rasterizationOrder ) << ";\n";
-}
-
-void  Serialize2_VkGeometryNVX (const VkGeometryNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
-{
-	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
-	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
-	result << indent << name << ".sType = VK_STRUCTURE_TYPE_GEOMETRY_NVX;\n";
-	ASSERT( obj->sType == VK_STRUCTURE_TYPE_GEOMETRY_NVX );
-	result << indent << name << ".geometryType = " << Serialize_VkGeometryTypeNVX( obj->geometryType ) << ";\n";
-	Serialize2_VkGeometryDataNVX( &obj->geometry, String(name) << ".geometry", nameSer, remapper, indent, INOUT result, INOUT before );
-	result << indent << name << ".flags = " << Serialize_VkGeometryFlagsNVX( obj->flags ) << ";\n";
 }
 
 void  Serialize2_VkDebugMarkerObjectNameInfoEXT (const VkDebugMarkerObjectNameInfoEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -6677,25 +6900,22 @@ void  Serialize2_VkDedicatedAllocationBufferCreateInfoNV (const VkDedicatedAlloc
 	result << indent << name << ".dedicatedAllocation = " << BoolToString(obj->dedicatedAllocation) << ";\n";
 }
 
-#ifdef VULKAN_ANDROID_H_
-void  Serialize2_VkExternalFormatANDROID (const VkExternalFormatANDROID *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+void  Serialize2_VkPhysicalDeviceTransformFeedbackPropertiesEXT (const VkPhysicalDeviceTransformFeedbackPropertiesEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
-	result << indent << name << ".sType = VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_ANDROID;\n";
-	ASSERT( obj->sType == VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_ANDROID );
-	result << indent << name << ".externalFormat = " << IntToString(obj->externalFormat) << ";\n";
-}
-#endif
-
-void  Serialize2_VkDedicatedAllocationMemoryAllocateInfoNV (const VkDedicatedAllocationMemoryAllocateInfoNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
-{
-	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
-	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
-	result << indent << name << ".sType = VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV;\n";
-	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV );
-	result << indent << name << ".image = " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->image ) << "))" << ";\n";
-	result << indent << name << ".buffer = " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->buffer ) << "))" << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_PROPERTIES_EXT;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_PROPERTIES_EXT );
+	result << indent << name << ".maxTransformFeedbackStreams = " << IntToString(obj->maxTransformFeedbackStreams) << ";\n";
+	result << indent << name << ".maxTransformFeedbackBuffers = " << IntToString(obj->maxTransformFeedbackBuffers) << ";\n";
+	result << indent << name << ".maxTransformFeedbackBufferSize = " << IntToString(obj->maxTransformFeedbackBufferSize) << ";\n";
+	result << indent << name << ".maxTransformFeedbackStreamDataSize = " << IntToString(obj->maxTransformFeedbackStreamDataSize) << ";\n";
+	result << indent << name << ".maxTransformFeedbackBufferDataSize = " << IntToString(obj->maxTransformFeedbackBufferDataSize) << ";\n";
+	result << indent << name << ".maxTransformFeedbackBufferDataStride = " << IntToString(obj->maxTransformFeedbackBufferDataStride) << ";\n";
+	result << indent << name << ".transformFeedbackQueries = " << BoolToString(obj->transformFeedbackQueries) << ";\n";
+	result << indent << name << ".transformFeedbackStreamsLinesTriangles = " << BoolToString(obj->transformFeedbackStreamsLinesTriangles) << ";\n";
+	result << indent << name << ".transformFeedbackRasterizationStreamSelect = " << BoolToString(obj->transformFeedbackRasterizationStreamSelect) << ";\n";
+	result << indent << name << ".transformFeedbackDraw = " << BoolToString(obj->transformFeedbackDraw) << ";\n";
 }
 
 void  Serialize2_VkShaderModuleValidationCacheCreateInfoEXT (const VkShaderModuleValidationCacheCreateInfoEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -6704,7 +6924,7 @@ void  Serialize2_VkShaderModuleValidationCacheCreateInfoEXT (const VkShaderModul
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_SHADER_MODULE_VALIDATION_CACHE_CREATE_INFO_EXT;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_SHADER_MODULE_VALIDATION_CACHE_CREATE_INFO_EXT );
-	result << indent << name << ".validationCache = " << "app.GetResource(ValidationCacheEXTID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT, obj->validationCache ) << "))" << ";\n";
+	result << indent << name << ".validationCache = " << "app.GetResource(ValidationCacheEXTID(" << remapper( VK_OBJECT_TYPE_VALIDATION_CACHE_EXT, obj->validationCache ) << "))" << ";\n";
 }
 
 void  Serialize2_VkPhysicalDeviceConservativeRasterizationPropertiesEXT (const VkPhysicalDeviceConservativeRasterizationPropertiesEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -6802,7 +7022,7 @@ void  Serialize2_VkConditionalRenderingBeginInfoEXT (const VkConditionalRenderin
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_CONDITIONAL_RENDERING_BEGIN_INFO_EXT;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_CONDITIONAL_RENDERING_BEGIN_INFO_EXT );
-	result << indent << name << ".buffer = " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->buffer ) << "))" << ";\n";
+	result << indent << name << ".buffer = " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->buffer ) << "))" << ";\n";
 	result << indent << name << ".offset = " << IntToString(obj->offset) << ";\n";
 	result << indent << name << ".flags = " << Serialize_VkConditionalRenderingFlagsEXT( obj->flags ) << ";\n";
 }
@@ -6870,7 +7090,7 @@ ND_ String  Serialize_VkIndirectCommandsTokenNVX (const VkIndirectCommandsTokenN
 void  Serialize2_VkIndirectCommandsTokenNVX (const VkIndirectCommandsTokenNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	result << indent << name << ".tokenType = " << Serialize_VkIndirectCommandsTokenTypeNVX( obj->tokenType ) << ";\n";
-	result << indent << name << ".buffer = " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->buffer ) << "))" << ";\n";
+	result << indent << name << ".buffer = " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->buffer ) << "))" << ";\n";
 	result << indent << name << ".offset = " << IntToString(obj->offset) << ";\n";
 }
 
@@ -6917,15 +7137,15 @@ void  Serialize2_VkCmdProcessCommandsInfoNVX (const VkCmdProcessCommandsInfoNVX 
 			Serialize2_VkIndirectCommandsTokenNVX( obj->pIndirectCommandsTokens + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
 		}
 	}
-	result << indent << name << ".objectTable = " << "app.GetResource(ObjectTableNVXID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT, obj->objectTable ) << "))" << ";\n";
-	result << indent << name << ".indirectCommandsLayout = " << "app.GetResource(IndirectCommandsLayoutNVXID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT, obj->indirectCommandsLayout ) << "))" << ";\n";
+	result << indent << name << ".objectTable = " << "app.GetResource(ObjectTableNVXID(" << remapper( VK_OBJECT_TYPE_OBJECT_TABLE_NVX, obj->objectTable ) << "))" << ";\n";
+	result << indent << name << ".indirectCommandsLayout = " << "app.GetResource(IndirectCommandsLayoutNVXID(" << remapper( VK_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX, obj->indirectCommandsLayout ) << "))" << ";\n";
 	result << indent << name << ".indirectCommandsTokenCount = " << IntToString(obj->indirectCommandsTokenCount) << ";\n";
 	result << indent << name << ".pIndirectCommandsTokens = " << nameSer.Get( &obj->pIndirectCommandsTokens ) << ";\n";
 	result << indent << name << ".maxSequencesCount = " << IntToString(obj->maxSequencesCount) << ";\n";
-	result << indent << name << ".targetCommandBuffer = " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->targetCommandBuffer ) << "))" << ";\n";
-	result << indent << name << ".sequencesCountBuffer = " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->sequencesCountBuffer ) << "))" << ";\n";
+	result << indent << name << ".targetCommandBuffer = " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->targetCommandBuffer ) << "))" << ";\n";
+	result << indent << name << ".sequencesCountBuffer = " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->sequencesCountBuffer ) << "))" << ";\n";
 	result << indent << name << ".sequencesCountOffset = " << IntToString(obj->sequencesCountOffset) << ";\n";
-	result << indent << name << ".sequencesIndexBuffer = " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->sequencesIndexBuffer ) << "))" << ";\n";
+	result << indent << name << ".sequencesIndexBuffer = " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->sequencesIndexBuffer ) << "))" << ";\n";
 	result << indent << name << ".sequencesIndexOffset = " << IntToString(obj->sequencesIndexOffset) << ";\n";
 }
 
@@ -6935,8 +7155,8 @@ void  Serialize2_VkCmdReserveSpaceForCommandsInfoNVX (const VkCmdReserveSpaceFor
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_CMD_RESERVE_SPACE_FOR_COMMANDS_INFO_NVX;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_CMD_RESERVE_SPACE_FOR_COMMANDS_INFO_NVX );
-	result << indent << name << ".objectTable = " << "app.GetResource(ObjectTableNVXID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT, obj->objectTable ) << "))" << ";\n";
-	result << indent << name << ".indirectCommandsLayout = " << "app.GetResource(IndirectCommandsLayoutNVXID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT, obj->indirectCommandsLayout ) << "))" << ";\n";
+	result << indent << name << ".objectTable = " << "app.GetResource(ObjectTableNVXID(" << remapper( VK_OBJECT_TYPE_OBJECT_TABLE_NVX, obj->objectTable ) << "))" << ";\n";
+	result << indent << name << ".indirectCommandsLayout = " << "app.GetResource(IndirectCommandsLayoutNVXID(" << remapper( VK_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX, obj->indirectCommandsLayout ) << "))" << ";\n";
 	result << indent << name << ".maxSequencesCount = " << IntToString(obj->maxSequencesCount) << ";\n";
 }
 
@@ -7080,6 +7300,23 @@ void  Serialize2_VkSwapchainCounterCreateInfoEXT (const VkSwapchainCounterCreate
 	result << indent << name << ".surfaceCounters = " << Serialize_VkSurfaceCounterFlagsEXT( obj->surfaceCounters ) << ";\n";
 }
 
+ND_ String  Serialize_VkDrmFormatModifierPropertiesEXT (const VkDrmFormatModifierPropertiesEXT *obj, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)
+{
+	String	result, before;
+	if ( obj == null ) return result;
+	const String  name = nameSer.MakeUnique( obj, "drmFormatModifierProperties"s, "properties"s );
+	result << indent << "VkDrmFormatModifierPropertiesEXT  " << name << " = {};\n";
+	Serialize2_VkDrmFormatModifierPropertiesEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+	return before + result;
+}
+
+void  Serialize2_VkDrmFormatModifierPropertiesEXT (const VkDrmFormatModifierPropertiesEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	result << indent << name << ".drmFormatModifier = " << IntToString(obj->drmFormatModifier) << ";\n";
+	result << indent << name << ".drmFormatModifierPlaneCount = " << IntToString(obj->drmFormatModifierPlaneCount) << ";\n";
+	result << indent << name << ".drmFormatModifierTilingFeatures = " << Serialize_VkFormatFeatureFlags( obj->drmFormatModifierTilingFeatures ) << ";\n";
+}
+
 ND_ String  Serialize_VkPresentTimeGOOGLE (const VkPresentTimeGOOGLE *obj, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)
 {
 	String	result, before;
@@ -7142,39 +7379,6 @@ void  Serialize2_VkPipelineDiscardRectangleStateCreateInfoEXT (const VkPipelineD
 	result << indent << name << ".discardRectangleMode = " << Serialize_VkDiscardRectangleModeEXT( obj->discardRectangleMode ) << ";\n";
 	result << indent << name << ".discardRectangleCount = " << IntToString(obj->discardRectangleCount) << ";\n";
 	result << indent << name << ".pDiscardRectangles = " << nameSer.Get( &obj->pDiscardRectangles ) << ";\n";
-}
-
-void  Serialize2_VkRaytracingPipelineCreateInfoNVX (const VkRaytracingPipelineCreateInfoNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
-{
-	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
-	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
-	result << indent << name << ".sType = VK_STRUCTURE_TYPE_RAYTRACING_PIPELINE_CREATE_INFO_NVX;\n";
-	ASSERT( obj->sType == VK_STRUCTURE_TYPE_RAYTRACING_PIPELINE_CREATE_INFO_NVX );
-	if ( obj->pStages ) {
-		CHECK( obj->stageCount > 0 );
-		const String arr_name = nameSer.MakeUnique( &obj->pStages, "stages"s, "pipelineShaderStageCreateInfo"s, "createInfo"s );
-		before << indent << "VkPipelineShaderStageCreateInfo  " << arr_name << "[" << IntToString(obj->stageCount) << "] = {};\n";
-		for (uint i = 0; i < obj->stageCount; ++i) {
-			Serialize2_VkPipelineShaderStageCreateInfo( obj->pStages + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
-		}
-	}
-	if ( obj->pGroupNumbers ) {
-		CHECK( obj->stageCount > 0 );
-		before << indent << "const uint32_t  " << nameSer.MakeUnique( &obj->pGroupNumbers, "groupNumbers"s ) << "[] = { ";
-		for (uint i = 0; i < obj->stageCount; ++i) {
-			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pGroupNumbers[i]);
-		}
-		before << indent << " };\n";
-		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pGroupNumbers ) << ") == " << IntToString(obj->stageCount) << " );\n\n";
-	}
-	result << indent << name << ".flags = " << Serialize_VkPipelineCreateFlags( obj->flags ) << ";\n";
-	result << indent << name << ".stageCount = " << IntToString(obj->stageCount) << ";\n";
-	result << indent << name << ".pStages = " << nameSer.Get( &obj->pStages ) << ";\n";
-	result << indent << name << ".pGroupNumbers = " << nameSer.Get( &obj->pGroupNumbers ) << ";\n";
-	result << indent << name << ".maxRecursionDepth = " << IntToString(obj->maxRecursionDepth) << ";\n";
-	result << indent << name << ".layout = " << "app.GetResource(PipelineLayoutID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT, obj->layout ) << "))" << ";\n";
-	result << indent << name << ".basePipelineHandle = " << "app.GetResource(PipelineID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT, obj->basePipelineHandle ) << "))" << ";\n";
-	result << indent << name << ".basePipelineIndex = " << IntToString(obj->basePipelineIndex) << ";\n";
 }
 
 void  Serialize2_VkPipelineRasterizationConservativeStateCreateInfoEXT (const VkPipelineRasterizationConservativeStateCreateInfoEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -7430,6 +7634,73 @@ void  Serialize2_VkPipelineCoverageModulationStateCreateInfoNV (const VkPipeline
 	result << indent << name << ".pCoverageModulationTable = " << nameSer.Get( &obj->pCoverageModulationTable ) << ";\n";
 }
 
+void  Serialize2_VkDrmFormatModifierPropertiesListEXT (const VkDrmFormatModifierPropertiesListEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_DRM_FORMAT_MODIFIER_PROPERTIES_LIST_EXT;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DRM_FORMAT_MODIFIER_PROPERTIES_LIST_EXT );
+	if ( obj->pDrmFormatModifierProperties ) {
+		CHECK( obj->drmFormatModifierCount > 0 );
+		const String arr_name = nameSer.MakeUnique( &obj->pDrmFormatModifierProperties, "drmFormatModifierProperties"s, "drmFormatModifierProperties"s, "properties"s );
+		before << indent << "VkDrmFormatModifierPropertiesEXT  " << arr_name << "[" << IntToString(obj->drmFormatModifierCount) << "] = {};\n";
+		for (uint i = 0; i < obj->drmFormatModifierCount; ++i) {
+			Serialize2_VkDrmFormatModifierPropertiesEXT( obj->pDrmFormatModifierProperties + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
+		}
+	}
+	result << indent << name << ".drmFormatModifierCount = " << IntToString(obj->drmFormatModifierCount) << ";\n";
+	result << indent << name << ".pDrmFormatModifierProperties = " << nameSer.Get( &obj->pDrmFormatModifierProperties ) << ";\n";
+}
+
+void  Serialize2_VkPhysicalDeviceImageDrmFormatModifierInfoEXT (const VkPhysicalDeviceImageDrmFormatModifierInfoEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_DRM_FORMAT_MODIFIER_INFO_EXT;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_DRM_FORMAT_MODIFIER_INFO_EXT );
+	if ( obj->pQueueFamilyIndices ) {
+		CHECK( obj->queueFamilyIndexCount > 0 );
+		before << indent << "const uint32_t  " << nameSer.MakeUnique( &obj->pQueueFamilyIndices, "queueFamilyIndices"s ) << "[] = { ";
+		for (uint i = 0; i < obj->queueFamilyIndexCount; ++i) {
+			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pQueueFamilyIndices[i]);
+		}
+		before << indent << " };\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pQueueFamilyIndices ) << ") == " << IntToString(obj->queueFamilyIndexCount) << " );\n\n";
+	}
+	result << indent << name << ".drmFormatModifier = " << IntToString(obj->drmFormatModifier) << ";\n";
+	result << indent << name << ".sharingMode = " << Serialize_VkSharingMode( obj->sharingMode ) << ";\n";
+	result << indent << name << ".queueFamilyIndexCount = " << IntToString(obj->queueFamilyIndexCount) << ";\n";
+	result << indent << name << ".pQueueFamilyIndices = " << nameSer.Get( &obj->pQueueFamilyIndices ) << ";\n";
+}
+
+void  Serialize2_VkImageDrmFormatModifierListCreateInfoEXT (const VkImageDrmFormatModifierListCreateInfoEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_LIST_CREATE_INFO_EXT;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_LIST_CREATE_INFO_EXT );
+	if ( obj->pDrmFormatModifiers ) {
+		CHECK( obj->drmFormatModifierCount > 0 );
+		before << indent << "const uint64_t  " << nameSer.MakeUnique( &obj->pDrmFormatModifiers, "drmFormatModifiers"s ) << "[] = { ";
+		for (uint i = 0; i < obj->drmFormatModifierCount; ++i) {
+			before << (i ? ", " : "") << (i%16 == 0 ? "\n\t"s << indent : " ") << IntToString(obj->pDrmFormatModifiers[i]);
+		}
+		before << indent << " };\n";
+		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pDrmFormatModifiers ) << ") == " << IntToString(obj->drmFormatModifierCount) << " );\n\n";
+	}
+	result << indent << name << ".drmFormatModifierCount = " << IntToString(obj->drmFormatModifierCount) << ";\n";
+	result << indent << name << ".pDrmFormatModifiers = " << nameSer.Get( &obj->pDrmFormatModifiers ) << ";\n";
+}
+
+void  Serialize2_VkImageDrmFormatModifierPropertiesEXT (const VkImageDrmFormatModifierPropertiesEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_PROPERTIES_EXT;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_PROPERTIES_EXT );
+	result << indent << name << ".drmFormatModifier = " << IntToString(obj->drmFormatModifier) << ";\n";
+}
+
 void  Serialize2_VkPhysicalDeviceDescriptorIndexingFeaturesEXT (const VkPhysicalDeviceDescriptorIndexingFeaturesEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
@@ -7507,29 +7778,63 @@ void  Serialize2_VkPhysicalDeviceDescriptorIndexingPropertiesEXT (const VkPhysic
 	result << indent << name << ".maxDescriptorSetUpdateAfterBindInputAttachments = " << IntToString(obj->maxDescriptorSetUpdateAfterBindInputAttachments) << ";\n";
 }
 
-void  Serialize2_VkGeometryAABBNVX (const VkGeometryAABBNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+void  Serialize2_VkRayTracingShaderGroupCreateInfoNV (const VkRayTracingShaderGroupCreateInfoNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
-	result << indent << name << ".sType = VK_STRUCTURE_TYPE_GEOMETRY_AABB_NVX;\n";
-	ASSERT( obj->sType == VK_STRUCTURE_TYPE_GEOMETRY_AABB_NVX );
-	result << indent << name << ".aabbData = " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->aabbData ) << "))" << ";\n";
-	result << indent << name << ".numAABBs = " << IntToString(obj->numAABBs) << ";\n";
-	result << indent << name << ".stride = " << IntToString(obj->stride) << ";\n";
-	result << indent << name << ".offset = " << IntToString(obj->offset) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV );
+	result << indent << name << ".type = " << Serialize_VkRayTracingShaderGroupTypeNV( obj->type ) << ";\n";
+	result << indent << name << ".generalShader = " << IntToString(obj->generalShader) << ";\n";
+	result << indent << name << ".closestHitShader = " << IntToString(obj->closestHitShader) << ";\n";
+	result << indent << name << ".anyHitShader = " << IntToString(obj->anyHitShader) << ";\n";
+	result << indent << name << ".intersectionShader = " << IntToString(obj->intersectionShader) << ";\n";
 }
 
-ND_ String  Serialize_VkGeometryDataNVX (const VkGeometryDataNVX *obj, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)
+void  Serialize2_VkRayTracingPipelineCreateInfoNV (const VkRayTracingPipelineCreateInfoNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_NV );
+	if ( obj->pStages ) {
+		CHECK( obj->stageCount > 0 );
+		const String arr_name = nameSer.MakeUnique( &obj->pStages, "stages"s, "pipelineShaderStageCreateInfo"s, "createInfo"s );
+		before << indent << "VkPipelineShaderStageCreateInfo  " << arr_name << "[" << IntToString(obj->stageCount) << "] = {};\n";
+		for (uint i = 0; i < obj->stageCount; ++i) {
+			Serialize2_VkPipelineShaderStageCreateInfo( obj->pStages + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
+		}
+	}
+	if ( obj->pGroups ) {
+		CHECK( obj->groupCount > 0 );
+		const String arr_name = nameSer.MakeUnique( &obj->pGroups, "groups"s, "rayTracingShaderGroupCreateInfoNV"s, "createInfo"s );
+		before << indent << "VkRayTracingShaderGroupCreateInfoNV  " << arr_name << "[" << IntToString(obj->groupCount) << "] = {};\n";
+		for (uint i = 0; i < obj->groupCount; ++i) {
+			Serialize2_VkRayTracingShaderGroupCreateInfoNV( obj->pGroups + i, String(arr_name) << "[" << IntToString(i) << "]", nameSer, remapper, indent, INOUT result, INOUT before );
+		}
+	}
+	result << indent << name << ".flags = " << Serialize_VkPipelineCreateFlags( obj->flags ) << ";\n";
+	result << indent << name << ".stageCount = " << IntToString(obj->stageCount) << ";\n";
+	result << indent << name << ".pStages = " << nameSer.Get( &obj->pStages ) << ";\n";
+	result << indent << name << ".groupCount = " << IntToString(obj->groupCount) << ";\n";
+	result << indent << name << ".pGroups = " << nameSer.Get( &obj->pGroups ) << ";\n";
+	result << indent << name << ".maxRecursionDepth = " << IntToString(obj->maxRecursionDepth) << ";\n";
+	result << indent << name << ".layout = " << "app.GetResource(PipelineLayoutID(" << remapper( VK_OBJECT_TYPE_PIPELINE_LAYOUT, obj->layout ) << "))" << ";\n";
+	result << indent << name << ".basePipelineHandle = " << "app.GetResource(PipelineID(" << remapper( VK_OBJECT_TYPE_PIPELINE, obj->basePipelineHandle ) << "))" << ";\n";
+	result << indent << name << ".basePipelineIndex = " << IntToString(obj->basePipelineIndex) << ";\n";
+}
+
+ND_ String  Serialize_VkGeometryDataNV (const VkGeometryDataNV *obj, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)
 {
 	String	result, before;
 	if ( obj == null ) return result;
-	const String  name = nameSer.MakeUnique( obj, "geometryDataNVX"s );
-	result << indent << "VkGeometryDataNVX  " << name << " = {};\n";
-	Serialize2_VkGeometryDataNVX( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+	const String  name = nameSer.MakeUnique( obj, "geometryDataNV"s );
+	result << indent << "VkGeometryDataNV  " << name << " = {};\n";
+	Serialize2_VkGeometryDataNV( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 	return before + result;
 }
 
-void  Serialize2_VkGeometryDataNVX (const VkGeometryDataNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+void  Serialize2_VkGeometryDataNV (const VkGeometryDataNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const*>(&obj->triangles), nameSer, remapper, indent );
 	before << SerializeStruct( BitCast<VkBaseInStructure const*>(&obj->aabbs), nameSer, remapper, indent );
@@ -7537,12 +7842,34 @@ void  Serialize2_VkGeometryDataNVX (const VkGeometryDataNVX *obj, StringView nam
 	result << indent << name << ".aabbs = " << nameSer.Get( &obj->aabbs ) << ";\n";
 }
 
-void  Serialize2_VkBindAccelerationStructureMemoryInfoNVX (const VkBindAccelerationStructureMemoryInfoNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+void  Serialize2_VkGeometryNV (const VkGeometryNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
-	result << indent << name << ".sType = VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NVX;\n";
-	ASSERT( obj->sType == VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NVX );
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_GEOMETRY_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_GEOMETRY_NV );
+	result << indent << name << ".geometryType = " << Serialize_VkGeometryTypeNV( obj->geometryType ) << ";\n";
+	Serialize2_VkGeometryDataNV( &obj->geometry, String(name) << ".geometry", nameSer, remapper, indent, INOUT result, INOUT before );
+	result << indent << name << ".flags = " << Serialize_VkGeometryFlagsNV( obj->flags ) << ";\n";
+}
+
+void  Serialize2_VkAccelerationStructureCreateInfoNV (const VkAccelerationStructureCreateInfoNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NV );
+	before << SerializeStruct( BitCast<VkBaseInStructure const*>(&obj->info), nameSer, remapper, indent );
+	result << indent << name << ".compactedSize = " << IntToString(obj->compactedSize) << ";\n";
+	result << indent << name << ".info = " << nameSer.Get( &obj->info ) << ";\n";
+}
+
+void  Serialize2_VkBindAccelerationStructureMemoryInfoNV (const VkBindAccelerationStructureMemoryInfoNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NV );
 	if ( obj->pDeviceIndices ) {
 		CHECK( obj->deviceIndexCount > 0 );
 		before << indent << "const uint32_t  " << nameSer.MakeUnique( &obj->pDeviceIndices, "deviceIndices"s ) << "[] = { ";
@@ -7552,24 +7879,24 @@ void  Serialize2_VkBindAccelerationStructureMemoryInfoNVX (const VkBindAccelerat
 		before << indent << " };\n";
 		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pDeviceIndices ) << ") == " << IntToString(obj->deviceIndexCount) << " );\n\n";
 	}
-	result << indent << name << ".accelerationStructure = " << "app.GetResource(AccelerationStructureNVXID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NVX_EXT, obj->accelerationStructure ) << "))" << ";\n";
-	result << indent << name << ".memory = " << "app.GetResource(DeviceMemoryID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, obj->memory ) << "))" << ";\n";
+	result << indent << name << ".accelerationStructure = " << "app.GetResource(AccelerationStructureNVID(" << remapper( VK_OBJECT_TYPE_ACCELERATION_STRUCTURE_NV, obj->accelerationStructure ) << "))" << ";\n";
+	result << indent << name << ".memory = " << "app.GetResource(DeviceMemoryID(" << remapper( VK_OBJECT_TYPE_DEVICE_MEMORY, obj->memory ) << "))" << ";\n";
 	result << indent << name << ".memoryOffset = " << IntToString(obj->memoryOffset) << ";\n";
 	result << indent << name << ".deviceIndexCount = " << IntToString(obj->deviceIndexCount) << ";\n";
 	result << indent << name << ".pDeviceIndices = " << nameSer.Get( &obj->pDeviceIndices ) << ";\n";
 }
 
-void  Serialize2_VkDescriptorAccelerationStructureInfoNVX (const VkDescriptorAccelerationStructureInfoNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+void  Serialize2_VkWriteDescriptorSetAccelerationStructureNV (const VkWriteDescriptorSetAccelerationStructureNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
-	result << indent << name << ".sType = VK_STRUCTURE_TYPE_DESCRIPTOR_ACCELERATION_STRUCTURE_INFO_NVX;\n";
-	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DESCRIPTOR_ACCELERATION_STRUCTURE_INFO_NVX );
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_NV );
 	if ( obj->pAccelerationStructures ) {
 		CHECK( obj->accelerationStructureCount > 0 );
-		before << indent << "const VkAccelerationStructureNVX  " << nameSer.MakeUnique( &obj->pAccelerationStructures, "accelerationStructures"s, "accelerationStructureNVX"s ) << "[] = {";
+		before << indent << "const VkAccelerationStructureNV  " << nameSer.MakeUnique( &obj->pAccelerationStructures, "accelerationStructures"s, "accelerationStructureNV"s ) << "[] = {";
 		for (uint i = 0; i < obj->accelerationStructureCount; ++i) {
-			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(AccelerationStructureNVXID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NVX_EXT, obj->pAccelerationStructures[i] ) << "))";
+			before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(AccelerationStructureNVID(" << remapper( VK_OBJECT_TYPE_ACCELERATION_STRUCTURE_NV, obj->pAccelerationStructures[i] ) << "))";
 		}
 		before << "\n" << indent << "};\n";
 		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pAccelerationStructures ) << ") == " << IntToString(obj->accelerationStructureCount) << " );\n\n";
@@ -7578,15 +7905,14 @@ void  Serialize2_VkDescriptorAccelerationStructureInfoNVX (const VkDescriptorAcc
 	result << indent << name << ".pAccelerationStructures = " << nameSer.Get( &obj->pAccelerationStructures ) << ";\n";
 }
 
-void  Serialize2_VkPhysicalDeviceRaytracingPropertiesNVX (const VkPhysicalDeviceRaytracingPropertiesNVX *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+void  Serialize2_VkAccelerationStructureMemoryRequirementsInfoNV (const VkAccelerationStructureMemoryRequirementsInfoNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
-	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAYTRACING_PROPERTIES_NVX;\n";
-	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAYTRACING_PROPERTIES_NVX );
-	result << indent << name << ".shaderHeaderSize = " << IntToString(obj->shaderHeaderSize) << ";\n";
-	result << indent << name << ".maxRecursionDepth = " << IntToString(obj->maxRecursionDepth) << ";\n";
-	result << indent << name << ".maxGeometryCount = " << IntToString(obj->maxGeometryCount) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NV;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NV );
+	result << indent << name << ".type = " << Serialize_VkAccelerationStructureMemoryRequirementsTypeNV( obj->type ) << ";\n";
+	result << indent << name << ".accelerationStructure = " << "app.GetResource(AccelerationStructureNVID(" << remapper( VK_OBJECT_TYPE_ACCELERATION_STRUCTURE_NV, obj->accelerationStructure ) << "))" << ";\n";
 }
 
 void  Serialize2_VkPipelineRepresentativeFragmentTestStateCreateInfoNV (const VkPipelineRepresentativeFragmentTestStateCreateInfoNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -7605,6 +7931,15 @@ void  Serialize2_VkDeviceQueueGlobalPriorityCreateInfoEXT (const VkDeviceQueueGl
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_EXT;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_EXT );
 	result << indent << name << ".globalPriority = " << Serialize_VkQueueGlobalPriorityEXT( obj->globalPriority ) << ";\n";
+}
+
+void  Serialize2_VkCalibratedTimestampInfoEXT (const VkCalibratedTimestampInfoEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_CALIBRATED_TIMESTAMP_INFO_EXT;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_CALIBRATED_TIMESTAMP_INFO_EXT );
+	result << indent << name << ".timeDomain = " << Serialize_VkTimeDomainEXT( obj->timeDomain ) << ";\n";
 }
 
 void  Serialize2_VkPhysicalDeviceShaderCorePropertiesAMD (const VkPhysicalDeviceShaderCorePropertiesAMD *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -7627,6 +7962,15 @@ void  Serialize2_VkPhysicalDeviceShaderCorePropertiesAMD (const VkPhysicalDevice
 	result << indent << name << ".minVgprAllocation = " << IntToString(obj->minVgprAllocation) << ";\n";
 	result << indent << name << ".maxVgprAllocation = " << IntToString(obj->maxVgprAllocation) << ";\n";
 	result << indent << name << ".vgprAllocationGranularity = " << IntToString(obj->vgprAllocationGranularity) << ";\n";
+}
+
+void  Serialize2_VkDeviceMemoryOverallocationCreateInfoAMD (const VkDeviceMemoryOverallocationCreateInfoAMD *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_DEVICE_MEMORY_OVERALLOCATION_CREATE_INFO_AMD;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_DEVICE_MEMORY_OVERALLOCATION_CREATE_INFO_AMD );
+	result << indent << name << ".overallocationBehavior = " << Serialize_VkMemoryOverallocationBehaviorAMD( obj->overallocationBehavior ) << ";\n";
 }
 
 void  Serialize2_VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT (const VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -7663,7 +8007,7 @@ void  Serialize2_VkFenceGetWin32HandleInfoKHR (const VkFenceGetWin32HandleInfoKH
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_FENCE_GET_WIN32_HANDLE_INFO_KHR;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_FENCE_GET_WIN32_HANDLE_INFO_KHR );
-	result << indent << name << ".fence = " << "app.GetResource(FenceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT, obj->fence ) << "))" << ";\n";
+	result << indent << name << ".fence = " << "app.GetResource(FenceID(" << remapper( VK_OBJECT_TYPE_FENCE, obj->fence ) << "))" << ";\n";
 	result << indent << name << ".handleType = " << Serialize_VkExternalFenceHandleTypeFlagBits( obj->handleType ) << ";\n";
 }
 #endif
@@ -7745,6 +8089,18 @@ void  Serialize2_VkPhysicalDeviceShaderImageFootprintFeaturesNV (const VkPhysica
 	result << indent << name << ".imageFootprint = " << BoolToString(obj->imageFootprint) << ";\n";
 }
 
+void  Serialize2_VkPhysicalDevicePCIBusInfoPropertiesEXT (const VkPhysicalDevicePCIBusInfoPropertiesEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT );
+	result << indent << name << ".pciDomain = " << IntToString(obj->pciDomain) << ";\n";
+	result << indent << name << ".pciBus = " << IntToString(obj->pciBus) << ";\n";
+	result << indent << name << ".pciDevice = " << IntToString(obj->pciDevice) << ";\n";
+	result << indent << name << ".pciFunction = " << IntToString(obj->pciFunction) << ";\n";
+}
+
 #ifdef VULKAN_WIN32_H_
 void  Serialize2_VkWin32SurfaceCreateInfoKHR (const VkWin32SurfaceCreateInfoKHR *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
@@ -7778,7 +8134,7 @@ void  Serialize2_VkMemoryGetWin32HandleInfoKHR (const VkMemoryGetWin32HandleInfo
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_MEMORY_GET_WIN32_HANDLE_INFO_KHR;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_MEMORY_GET_WIN32_HANDLE_INFO_KHR );
-	result << indent << name << ".memory = " << "app.GetResource(DeviceMemoryID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, obj->memory ) << "))" << ";\n";
+	result << indent << name << ".memory = " << "app.GetResource(DeviceMemoryID(" << remapper( VK_OBJECT_TYPE_DEVICE_MEMORY, obj->memory ) << "))" << ";\n";
 	result << indent << name << ".handleType = " << Serialize_VkExternalMemoryHandleTypeFlagBits( obj->handleType ) << ";\n";
 }
 #endif
@@ -7826,7 +8182,7 @@ void  Serialize2_VkMemoryGetAndroidHardwareBufferInfoANDROID (const VkMemoryGetA
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
 	result << indent << name << ".sType = VK_STRUCTURE_TYPE_MEMORY_GET_ANDROID_HARDWARE_BUFFER_INFO_ANDROID;\n";
 	ASSERT( obj->sType == VK_STRUCTURE_TYPE_MEMORY_GET_ANDROID_HARDWARE_BUFFER_INFO_ANDROID );
-	result << indent << name << ".memory = " << "app.GetResource(DeviceMemoryID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, obj->memory ) << "))" << ";\n";
+	result << indent << name << ".memory = " << "app.GetResource(DeviceMemoryID(" << remapper( VK_OBJECT_TYPE_DEVICE_MEMORY, obj->memory ) << "))" << ";\n";
 }
 #endif
 

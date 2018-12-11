@@ -168,13 +168,13 @@ namespace VTC
 		src << "\t{\n"
 			<< "\t	void*  mappedMem = null;\n"
 			<< "\t	VK_CALL( app.vkMapMemory(\n"
-			<< "\t				/*device*/ app.GetResource(DeviceID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, packet.device ) << ")),\n"
-			<< "\t				/*memory*/ app.GetResource(DeviceMemoryID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, packet.memory ) << ")),\n"
+			<< "\t				/*device*/ app.GetResource(DeviceID(" << (*_resRemapper)( VK_OBJECT_TYPE_DEVICE, packet.device ) << ")),\n"
+			<< "\t				/*memory*/ app.GetResource(DeviceMemoryID(" << (*_resRemapper)( VK_OBJECT_TYPE_DEVICE_MEMORY, packet.memory ) << ")),\n"
 			<< "\t				/*offset*/ " << IntToString( packet.offset ) << ",\n"
 			<< "\t				/*size*/ " << IntToString( packet.size ) << ",\n"
 			<< "\t				/*flags*/ " << Serialize_VkMemoryMapFlags( packet.flags ) << ",\n"
 			<< "\t				/*ppData*/ &mappedMem ));\n"
-			<< "\t	app.OnMapMemory( DeviceMemoryID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, packet.memory ) << "), mappedMem, "
+			<< "\t	app.OnMapMemory( DeviceMemoryID(" << (*_resRemapper)( VK_OBJECT_TYPE_DEVICE_MEMORY, packet.memory ) << "), mappedMem, "
 						<< IntToString( packet.offset ) << ", " << IntToString( packet.size ) << " );\n"
 			<< "\t}\n";
 
@@ -191,9 +191,9 @@ namespace VTC
 		auto&	packet = iter.Cast< packet_vkUnmapMemory >();
 
 		src << "\tapp.vkUnmapMemory(\n"
-			<< "\t		/*device*/ app.GetResource(DeviceID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, packet.device ) << ")),\n"
-			<< "\t		/*memory*/ app.GetResource(DeviceMemoryID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, packet.memory ) << ")) );\n"
-			<< "\tapp.OnUnmapMemory( DeviceMemoryID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, packet.memory ) << ") );\n";
+			<< "\t		/*device*/ app.GetResource(DeviceID(" << (*_resRemapper)( VK_OBJECT_TYPE_DEVICE, packet.device ) << ")),\n"
+			<< "\t		/*memory*/ app.GetResource(DeviceMemoryID(" << (*_resRemapper)( VK_OBJECT_TYPE_DEVICE_MEMORY, packet.memory ) << ")) );\n"
+			<< "\tapp.OnUnmapMemory( DeviceMemoryID(" << (*_resRemapper)( VK_OBJECT_TYPE_DEVICE_MEMORY, packet.memory ) << ") );\n";
 
 		return true;
 	}
@@ -238,7 +238,7 @@ namespace VTC
 				DataID	data_id = _RequestData( _inputFile, block.fileOffset, block.dataSize, frameId );
 				CHECK_ERR( data_id != ~DataID(0) );
 
-				src << indent << "app.LoadDataToMappedMemory( DeviceMemoryID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, mem_id ) << "), "
+				src << indent << "app.LoadDataToMappedMemory( DeviceMemoryID(" << (*_resRemapper)( VK_OBJECT_TYPE_DEVICE_MEMORY, mem_id ) << "), "
 					<< "DataID(" << IntToString( data_id ) << "), "
 					<< IntToString( block.memOffset ) << ", "
 					<< IntToString( block.dataSize ) << " );\n";
@@ -253,7 +253,7 @@ namespace VTC
 		}
 
 		result << indent << "VK_CALL( app.vkFlushMappedMemoryRanges( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, packet.device ) << ")),\n";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << (*_resRemapper)( VK_OBJECT_TYPE_DEVICE, packet.device ) << ")),\n";
 		result << indent << "		/*memoryRangeCount*/ " << IntToString( range_count ) << ",\n";
 		result << indent << "		/*pMemoryRanges*/ " << _nameSerializer.Get( &packet.pMemoryRanges ) << " ));\n";
 
@@ -337,7 +337,7 @@ namespace VTC
 		CHECK( mem->dedicatedResource == ResourceID(0) or mem->dedicatedResource == ResourceID(packet.buffer) );
 
 		src << "\tapp.AllocateBufferMemory( "
-			<< "BufferID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, packet.buffer ) << "), "
+			<< "BufferID(" << (*_resRemapper)( VK_OBJECT_TYPE_BUFFER, packet.buffer ) << "), "
 			<< ConvertVmaAllocationCreateFlagsAndMemoryUsage( mem->propertyFlags, mem->usage ) << " );\n";
 
 		return true;
@@ -361,7 +361,7 @@ namespace VTC
 		CHECK( mem->dedicatedResource == ResourceID(0) or mem->dedicatedResource == ResourceID(packet.image) );
 
 		src << "\tapp.AllocateImageMemory( "
-			<< "ImageID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, packet.image ) << "), "
+			<< "ImageID(" << (*_resRemapper)( VK_OBJECT_TYPE_IMAGE, packet.image ) << "), "
 			<< ConvertVmaAllocationCreateFlagsAndMemoryUsage( mem->propertyFlags, mem->usage ) << " );\n";
 
 		return true;
@@ -389,7 +389,7 @@ namespace VTC
 			CHECK( mem->dedicatedResource == ResourceID(0) or mem->dedicatedResource == ResourceID(binding.buffer) );
 
 			src << "\tapp.AllocateBufferMemory( "
-				<< "BufferID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, binding.buffer ) << "), "
+				<< "BufferID(" << (*_resRemapper)( VK_OBJECT_TYPE_BUFFER, binding.buffer ) << "), "
 				<< ConvertVmaAllocationCreateFlagsAndMemoryUsage( mem->propertyFlags, mem->usage ) << " );\n";
 		}
 		return true;
@@ -417,7 +417,7 @@ namespace VTC
 			CHECK( mem->dedicatedResource == ResourceID(0) or mem->dedicatedResource == ResourceID(binding.image) );
 			
 			src << "\tapp.AllocateImageMemory( "
-				<< "ImageID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, binding.image ) << "), "
+				<< "ImageID(" << (*_resRemapper)( VK_OBJECT_TYPE_IMAGE, binding.image ) << "), "
 				<< ConvertVmaAllocationCreateFlagsAndMemoryUsage( mem->propertyFlags, mem->usage ) << " );\n";
 		}
 		return true;
@@ -443,7 +443,7 @@ namespace VTC
 			
 			for (auto& res : transfer->resources)
 			{
-				if ( res.type == VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT )
+				if ( res.type == VK_OBJECT_TYPE_BUFFER )
 				{
 					// initialize buffer memory
 					if ( _initializedResources.insert( res.id ).second )
@@ -451,21 +451,21 @@ namespace VTC
 						ASSERT( iter.GetBookmark() < res.pos );
 						
 						src << "\tapp.AllocateBufferMemory( "
-							<< "BufferID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, res.id ) << "), "
+							<< "BufferID(" << (*_resRemapper)( VK_OBJECT_TYPE_BUFFER, res.id ) << "), "
 							<< ConvertVmaAllocationCreateFlagsAndMemoryUsage( mem->propertyFlags, mem->usage ) << " );\n";
 					}
 					
 					DataID	data_id = _RequestData( _inputFile, res.fileOffset, res.dataSize, frameId );
 					CHECK_ERR( data_id != ~DataID(0) );
 
-					src << "\tapp.LoadDataToBuffer( BufferID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, res.id ) << "), "
+					src << "\tapp.LoadDataToBuffer( BufferID(" << (*_resRemapper)( VK_OBJECT_TYPE_BUFFER, res.id ) << "), "
 						<< "DataID(" << IntToString( data_id ) << "), "
 						<< IntToString( res.resOffset ) << ", "
 						<< IntToString( res.dataSize ) << " );\n";
 				}
 				else
 				{
-					ASSERT( res.type == VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT );
+					ASSERT( res.type == VK_OBJECT_TYPE_IMAGE );
 					
 					// initialize buffer memory
 					if ( _initializedResources.insert( res.id ).second )
@@ -473,14 +473,14 @@ namespace VTC
 						ASSERT( iter.GetBookmark() < res.pos );
 
 						src << "\tapp.AllocateImageMemory( "
-							<< "ImageID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, res.id ) << "), "
+							<< "ImageID(" << (*_resRemapper)( VK_OBJECT_TYPE_IMAGE, res.id ) << "), "
 							<< ConvertVmaAllocationCreateFlagsAndMemoryUsage( mem->propertyFlags, mem->usage ) << " );\n";
 					}
 
 					DataID	data_id = _RequestData( _inputFile, res.fileOffset, res.dataSize, frameId );
 					CHECK_ERR( data_id != ~DataID(0) );
 
-					src << "\tapp.LoadDataToImage( ImageID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, res.id ) << "), "
+					src << "\tapp.LoadDataToImage( ImageID(" << (*_resRemapper)( VK_OBJECT_TYPE_IMAGE, res.id ) << "), "
 						<< "DataID(" << IntToString( data_id ) << "), "
 						<< IntToString( res.resOffset ) << ", "
 						<< IntToString( res.dataSize ) << " );\n";
@@ -502,10 +502,10 @@ namespace VTC
 		CHECK( _initializedResources.erase( ResourceID(packet.image) ) == 1 );
 
 		src << "\tapp.vkDestroyImage( \n"
-			<< "\t		/*device*/ " << "app.GetResource(DeviceID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, packet.device ) << ")),\n"
-			<< "\t		/*image*/ " << "app.GetResource(ImageID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, packet.image ) << ")),\n"
+			<< "\t		/*device*/ " << "app.GetResource(DeviceID(" << (*_resRemapper)( VK_OBJECT_TYPE_DEVICE, packet.device ) << ")),\n"
+			<< "\t		/*image*/ " << "app.GetResource(ImageID(" << (*_resRemapper)( VK_OBJECT_TYPE_IMAGE, packet.image ) << ")),\n"
 			<< "\t		/*pAllocator*/ null );\n"
-			<< "\tapp.FreeImageMemory( ImageID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, packet.image ) << ") );\n";
+			<< "\tapp.FreeImageMemory( ImageID(" << (*_resRemapper)( VK_OBJECT_TYPE_IMAGE, packet.image ) << ") );\n";
 
 		return true;
 	}
@@ -522,10 +522,10 @@ namespace VTC
 		CHECK( _initializedResources.erase( ResourceID(packet.buffer) ) == 1 );
 
 		src << "\tapp.vkDestroyBuffer( \n"
-			<< "\t		/*device*/ " << "app.GetResource(DeviceID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, packet.device ) << ")),\n"
-			<< "\t		/*buffer*/ " << "app.GetResource(BufferID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, packet.buffer ) << ")),\n"
+			<< "\t		/*device*/ " << "app.GetResource(DeviceID(" << (*_resRemapper)( VK_OBJECT_TYPE_DEVICE, packet.device ) << ")),\n"
+			<< "\t		/*buffer*/ " << "app.GetResource(BufferID(" << (*_resRemapper)( VK_OBJECT_TYPE_BUFFER, packet.buffer ) << ")),\n"
 			<< "\t		/*pAllocator*/ null );\n"
-			<< "\tapp.FreeBufferMemory( BufferID(" << (*_resRemapper)( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, packet.buffer ) << ") );\n";
+			<< "\tapp.FreeBufferMemory( BufferID(" << (*_resRemapper)( VK_OBJECT_TYPE_BUFFER, packet.buffer ) << ") );\n";
 
 		return true;
 	}

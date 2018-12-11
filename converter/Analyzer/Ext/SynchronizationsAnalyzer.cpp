@@ -64,13 +64,13 @@ namespace VTC
 
 		switch ( type )
 		{
-			case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT :			CHECK( _ProcessDevice( pos, id, frameId, op ));		break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT :			CHECK( _ProcessQueue( pos, id, frameId, op ));		break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT :	CHECK( _ProcessSwapchain( pos, id, frameId, op ));	break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT :	CHECK( _ProcessCommandBuffer( pos, id, op ));		break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT :		CHECK( _ProcessSemaphore( pos, id, op ));			break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT :			CHECK( _ProcessEvent( pos, id, op ));				break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT :			CHECK( _ProcessImage( pos, id, frameId, op ));		break;
+			case VK_OBJECT_TYPE_DEVICE :			CHECK( _ProcessDevice( pos, id, frameId, op ));		break;
+			case VK_OBJECT_TYPE_QUEUE :				CHECK( _ProcessQueue( pos, id, frameId, op ));		break;
+			case VK_OBJECT_TYPE_SWAPCHAIN_KHR :		CHECK( _ProcessSwapchain( pos, id, frameId, op ));	break;
+			case VK_OBJECT_TYPE_COMMAND_BUFFER :	CHECK( _ProcessCommandBuffer( pos, id, op ));		break;
+			case VK_OBJECT_TYPE_SEMAPHORE :			CHECK( _ProcessSemaphore( pos, id, op ));			break;
+			case VK_OBJECT_TYPE_EVENT :				CHECK( _ProcessEvent( pos, id, op ));				break;
+			case VK_OBJECT_TYPE_IMAGE :				CHECK( _ProcessImage( pos, id, frameId, op ));		break;
 		}
 	}
 	

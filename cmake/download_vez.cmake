@@ -1,7 +1,7 @@
 # download and install Vulkan-EZ library
 
 if (FALSE)
-	ExternalProject_Add( "External.Vulkan-EZ"
+	ExternalProject_Add( "Extern.Vulkan-EZ"
         LIST_SEPARATOR		"${VTC_LIST_SEPARATOR}"
 		# download
 		GIT_REPOSITORY		https://github.com/GPUOpen-LibrariesAndSDKs/V-EZ.git
@@ -36,5 +36,5 @@ if (FALSE)
 		TEST_COMMAND		""
 	)
 	
-	set_property( TARGET "External.Vulkan-EZ" PROPERTY FOLDER "External" )
+	set_property( TARGET "Extern.Vulkan-EZ" PROPERTY FOLDER "External" )
 endif ()

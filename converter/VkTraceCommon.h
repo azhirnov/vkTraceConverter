@@ -28,7 +28,7 @@ namespace VTC
 	using FrameID		= uint32_t;
 	using PacketID		= decltype(vktrace_trace_packet_header::packet_id);
 	using ThreadID		= decltype(vktrace_trace_packet_header::thread_id);
-	using EResourceType = VkDebugReportObjectTypeEXT;
+	using EResourceType = VkObjectType;
 
 
 	enum class EResOp

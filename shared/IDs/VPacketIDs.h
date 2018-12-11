@@ -1,7 +1,6 @@
 
 	// initialization
 	VInitializeResource			= 0x01 | _CustomBit | _VulkanApi | _V100,
-	VCreateDevice				= 0x02 | _CustomBit | _VulkanApi | _V100,
 
 	// original memory model
 	VMapMemory					= 0x11 | _CustomBit | _VulkanApi | _V100,

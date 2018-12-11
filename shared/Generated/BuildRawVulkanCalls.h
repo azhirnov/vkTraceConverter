@@ -15,13 +15,13 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdDrawIndirectCountAMD : {
 		auto const*  obj = iter.Cast< packet_vkCmdDrawIndirectCountAMD *>();
 		result << indent << "app.vkCmdDrawIndirectCountAMD( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*buffer*/ " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->buffer ) << "))";
+		result << indent << "		/*buffer*/ " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->buffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*offset*/ " << IntToString(obj->offset);
 		result << ",\n";
-		result << indent << "		/*countBuffer*/ " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->countBuffer ) << "))";
+		result << indent << "		/*countBuffer*/ " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->countBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*countBufferOffset*/ " << IntToString(obj->countBufferOffset);
 		result << ",\n";
@@ -35,13 +35,13 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdDrawIndexedIndirectCountAMD : {
 		auto const*  obj = iter.Cast< packet_vkCmdDrawIndexedIndirectCountAMD *>();
 		result << indent << "app.vkCmdDrawIndexedIndirectCountAMD( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*buffer*/ " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->buffer ) << "))";
+		result << indent << "		/*buffer*/ " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->buffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*offset*/ " << IntToString(obj->offset);
 		result << ",\n";
-		result << indent << "		/*countBuffer*/ " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->countBuffer ) << "))";
+		result << indent << "		/*countBuffer*/ " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->countBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*countBufferOffset*/ " << IntToString(obj->countBufferOffset);
 		result << ",\n";
@@ -63,7 +63,7 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkDebugMarkerSetObjectNameEXT( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pNameInfo*/ " << nameSer.GetPtr( obj->pNameInfo );
 		result << " ));\n";
@@ -76,7 +76,7 @@ switch ( iter->packet_id )
 			before << SerializeStruct( BitCast<VkBaseInStructure const*>(obj->pMarkerInfo), nameSer, remapper, indent );
 		}
 		result << indent << "app.vkCmdDebugMarkerBeginEXT( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*pMarkerInfo*/ " << nameSer.GetPtr( obj->pMarkerInfo );
 		result << " );\n";
@@ -86,7 +86,7 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdDebugMarkerEndEXT : {
 		auto const*  obj = iter.Cast< packet_vkCmdDebugMarkerEndEXT *>();
 		result << indent << "app.vkCmdDebugMarkerEndEXT( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << " );\n";
 		break;
 	}
@@ -97,7 +97,7 @@ switch ( iter->packet_id )
 			before << SerializeStruct( BitCast<VkBaseInStructure const*>(obj->pMarkerInfo), nameSer, remapper, indent );
 		}
 		result << indent << "app.vkCmdDebugMarkerInsertEXT( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*pMarkerInfo*/ " << nameSer.GetPtr( obj->pMarkerInfo );
 		result << " );\n";
@@ -134,13 +134,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkQueueSubmit( \n";
-		result << indent << "		/*queue*/ " << "app.GetResource(QueueID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT, obj->queue ) << "))";
+		result << indent << "		/*queue*/ " << "app.GetResource(QueueID(" << remapper( VK_OBJECT_TYPE_QUEUE, obj->queue ) << "))";
 		result << ",\n";
 		result << indent << "		/*submitCount*/ " << IntToString(obj->submitCount);
 		result << ",\n";
 		result << indent << "		/*pSubmits*/ " << nameSer.Get( &obj->pSubmits );
 		result << ",\n";
-		result << indent << "		/*fence*/ " << "app.GetResource(FenceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT, obj->fence ) << "))";
+		result << indent << "		/*fence*/ " << "app.GetResource(FenceID(" << remapper( VK_OBJECT_TYPE_FENCE, obj->fence ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -149,7 +149,7 @@ switch ( iter->packet_id )
 		auto const*  obj = iter.Cast< packet_vkQueueWaitIdle *>();
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkQueueWaitIdle( \n";
-		result << indent << "		/*queue*/ " << "app.GetResource(QueueID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT, obj->queue ) << "))";
+		result << indent << "		/*queue*/ " << "app.GetResource(QueueID(" << remapper( VK_OBJECT_TYPE_QUEUE, obj->queue ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -158,7 +158,7 @@ switch ( iter->packet_id )
 		auto const*  obj = iter.Cast< packet_vkDeviceWaitIdle *>();
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkDeviceWaitIdle( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -170,13 +170,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkAllocateMemory( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocateInfo*/ " << nameSer.GetPtr( obj->pAllocateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pMemory*/ " << "&app.EditResource(DeviceMemoryID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, *obj->pMemory ) << "))";
+		result << indent << "		/*pMemory*/ " << "&app.EditResource(DeviceMemoryID(" << remapper( VK_OBJECT_TYPE_DEVICE_MEMORY, *obj->pMemory ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -184,9 +184,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkFreeMemory : {
 		auto const*  obj = iter.Cast< packet_vkFreeMemory *>();
 		result << indent << "app.vkFreeMemory( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*memory*/ " << "app.GetResource(DeviceMemoryID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, obj->memory ) << "))";
+		result << indent << "		/*memory*/ " << "app.GetResource(DeviceMemoryID(" << remapper( VK_OBJECT_TYPE_DEVICE_MEMORY, obj->memory ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -207,7 +207,7 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkFlushMappedMemoryRanges( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*memoryRangeCount*/ " << IntToString(obj->memoryRangeCount);
 		result << ",\n";
@@ -228,7 +228,7 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkInvalidateMappedMemoryRanges( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*memoryRangeCount*/ " << IntToString(obj->memoryRangeCount);
 		result << ",\n";
@@ -242,11 +242,11 @@ switch ( iter->packet_id )
 		auto const*  obj = iter.Cast< packet_vkBindBufferMemory *>();
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkBindBufferMemory( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*buffer*/ " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->buffer ) << "))";
+		result << indent << "		/*buffer*/ " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->buffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*memory*/ " << "app.GetResource(DeviceMemoryID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, obj->memory ) << "))";
+		result << indent << "		/*memory*/ " << "app.GetResource(DeviceMemoryID(" << remapper( VK_OBJECT_TYPE_DEVICE_MEMORY, obj->memory ) << "))";
 		result << ",\n";
 		result << indent << "		/*memoryOffset*/ " << IntToString(obj->memoryOffset);
 		result << " ));\n";
@@ -257,11 +257,11 @@ switch ( iter->packet_id )
 		auto const*  obj = iter.Cast< packet_vkBindImageMemory *>();
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkBindImageMemory( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*image*/ " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->image ) << "))";
+		result << indent << "		/*image*/ " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->image ) << "))";
 		result << ",\n";
-		result << indent << "		/*memory*/ " << "app.GetResource(DeviceMemoryID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT, obj->memory ) << "))";
+		result << indent << "		/*memory*/ " << "app.GetResource(DeviceMemoryID(" << remapper( VK_OBJECT_TYPE_DEVICE_MEMORY, obj->memory ) << "))";
 		result << ",\n";
 		result << indent << "		/*memoryOffset*/ " << IntToString(obj->memoryOffset);
 		result << " ));\n";
@@ -284,13 +284,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkQueueBindSparse( \n";
-		result << indent << "		/*queue*/ " << "app.GetResource(QueueID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT, obj->queue ) << "))";
+		result << indent << "		/*queue*/ " << "app.GetResource(QueueID(" << remapper( VK_OBJECT_TYPE_QUEUE, obj->queue ) << "))";
 		result << ",\n";
 		result << indent << "		/*bindInfoCount*/ " << IntToString(obj->bindInfoCount);
 		result << ",\n";
 		result << indent << "		/*pBindInfo*/ " << nameSer.Get( &obj->pBindInfo );
 		result << ",\n";
-		result << indent << "		/*fence*/ " << "app.GetResource(FenceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT, obj->fence ) << "))";
+		result << indent << "		/*fence*/ " << "app.GetResource(FenceID(" << remapper( VK_OBJECT_TYPE_FENCE, obj->fence ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -302,13 +302,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateFence( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pFence*/ " << "&app.EditResource(FenceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT, *obj->pFence ) << "))";
+		result << indent << "		/*pFence*/ " << "&app.EditResource(FenceID(" << remapper( VK_OBJECT_TYPE_FENCE, *obj->pFence ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -316,9 +316,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroyFence : {
 		auto const*  obj = iter.Cast< packet_vkDestroyFence *>();
 		result << indent << "app.vkDestroyFence( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*fence*/ " << "app.GetResource(FenceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT, obj->fence ) << "))";
+		result << indent << "		/*fence*/ " << "app.GetResource(FenceID(" << remapper( VK_OBJECT_TYPE_FENCE, obj->fence ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -331,14 +331,14 @@ switch ( iter->packet_id )
 			CHECK( obj->fenceCount > 0 );
 			before << indent << "const VkFence  " << nameSer.MakeUnique( &obj->pFences, "fences"s, "fence"s ) << "[] = {";
 			for (uint i = 0; i < obj->fenceCount; ++i) {
-				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(FenceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT, obj->pFences[i] ) << "))";
+				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(FenceID(" << remapper( VK_OBJECT_TYPE_FENCE, obj->pFences[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
 			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pFences ) << ") == " << IntToString(obj->fenceCount) << " );\n\n";
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkResetFences( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*fenceCount*/ " << IntToString(obj->fenceCount);
 		result << ",\n";
@@ -354,14 +354,14 @@ switch ( iter->packet_id )
 			CHECK( obj->fenceCount > 0 );
 			before << indent << "const VkFence  " << nameSer.MakeUnique( &obj->pFences, "fences"s, "fence"s ) << "[] = {";
 			for (uint i = 0; i < obj->fenceCount; ++i) {
-				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(FenceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT, obj->pFences[i] ) << "))";
+				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(FenceID(" << remapper( VK_OBJECT_TYPE_FENCE, obj->pFences[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
 			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pFences ) << ") == " << IntToString(obj->fenceCount) << " );\n\n";
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkWaitForFences( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*fenceCount*/ " << IntToString(obj->fenceCount);
 		result << ",\n";
@@ -381,13 +381,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateSemaphore( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pSemaphore*/ " << "&app.EditResource(SemaphoreID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, *obj->pSemaphore ) << "))";
+		result << indent << "		/*pSemaphore*/ " << "&app.EditResource(SemaphoreID(" << remapper( VK_OBJECT_TYPE_SEMAPHORE, *obj->pSemaphore ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -395,9 +395,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroySemaphore : {
 		auto const*  obj = iter.Cast< packet_vkDestroySemaphore *>();
 		result << indent << "app.vkDestroySemaphore( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*semaphore*/ " << "app.GetResource(SemaphoreID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT, obj->semaphore ) << "))";
+		result << indent << "		/*semaphore*/ " << "app.GetResource(SemaphoreID(" << remapper( VK_OBJECT_TYPE_SEMAPHORE, obj->semaphore ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -411,13 +411,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateEvent( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pEvent*/ " << "&app.EditResource(EventID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT, *obj->pEvent ) << "))";
+		result << indent << "		/*pEvent*/ " << "&app.EditResource(EventID(" << remapper( VK_OBJECT_TYPE_EVENT, *obj->pEvent ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -425,9 +425,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroyEvent : {
 		auto const*  obj = iter.Cast< packet_vkDestroyEvent *>();
 		result << indent << "app.vkDestroyEvent( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*event*/ " << "app.GetResource(EventID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT, obj->event ) << "))";
+		result << indent << "		/*event*/ " << "app.GetResource(EventID(" << remapper( VK_OBJECT_TYPE_EVENT, obj->event ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -439,9 +439,9 @@ switch ( iter->packet_id )
 		auto const*  obj = iter.Cast< packet_vkSetEvent *>();
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkSetEvent( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*event*/ " << "app.GetResource(EventID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT, obj->event ) << "))";
+		result << indent << "		/*event*/ " << "app.GetResource(EventID(" << remapper( VK_OBJECT_TYPE_EVENT, obj->event ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -450,9 +450,9 @@ switch ( iter->packet_id )
 		auto const*  obj = iter.Cast< packet_vkResetEvent *>();
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkResetEvent( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*event*/ " << "app.GetResource(EventID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT, obj->event ) << "))";
+		result << indent << "		/*event*/ " << "app.GetResource(EventID(" << remapper( VK_OBJECT_TYPE_EVENT, obj->event ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -464,13 +464,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateQueryPool( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pQueryPool*/ " << "&app.EditResource(QueryPoolID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT, *obj->pQueryPool ) << "))";
+		result << indent << "		/*pQueryPool*/ " << "&app.EditResource(QueryPoolID(" << remapper( VK_OBJECT_TYPE_QUERY_POOL, *obj->pQueryPool ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -478,9 +478,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroyQueryPool : {
 		auto const*  obj = iter.Cast< packet_vkDestroyQueryPool *>();
 		result << indent << "app.vkDestroyQueryPool( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*queryPool*/ " << "app.GetResource(QueryPoolID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT, obj->queryPool ) << "))";
+		result << indent << "		/*queryPool*/ " << "app.GetResource(QueryPoolID(" << remapper( VK_OBJECT_TYPE_QUERY_POOL, obj->queryPool ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -495,13 +495,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateBuffer( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pBuffer*/ " << "&app.EditResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, *obj->pBuffer ) << "))";
+		result << indent << "		/*pBuffer*/ " << "&app.EditResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, *obj->pBuffer ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -509,9 +509,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroyBuffer : {
 		auto const*  obj = iter.Cast< packet_vkDestroyBuffer *>();
 		result << indent << "app.vkDestroyBuffer( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*buffer*/ " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->buffer ) << "))";
+		result << indent << "		/*buffer*/ " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->buffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -525,13 +525,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateBufferView( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pView*/ " << "&app.EditResource(BufferViewID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT, *obj->pView ) << "))";
+		result << indent << "		/*pView*/ " << "&app.EditResource(BufferViewID(" << remapper( VK_OBJECT_TYPE_BUFFER_VIEW, *obj->pView ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -539,9 +539,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroyBufferView : {
 		auto const*  obj = iter.Cast< packet_vkDestroyBufferView *>();
 		result << indent << "app.vkDestroyBufferView( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*bufferView*/ " << "app.GetResource(BufferViewID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT, obj->bufferView ) << "))";
+		result << indent << "		/*bufferView*/ " << "app.GetResource(BufferViewID(" << remapper( VK_OBJECT_TYPE_BUFFER_VIEW, obj->bufferView ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -555,13 +555,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateImage( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pImage*/ " << "&app.EditResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, *obj->pImage ) << "))";
+		result << indent << "		/*pImage*/ " << "&app.EditResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, *obj->pImage ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -569,9 +569,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroyImage : {
 		auto const*  obj = iter.Cast< packet_vkDestroyImage *>();
 		result << indent << "app.vkDestroyImage( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*image*/ " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->image ) << "))";
+		result << indent << "		/*image*/ " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->image ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -586,13 +586,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateImageView( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pView*/ " << "&app.EditResource(ImageViewID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT, *obj->pView ) << "))";
+		result << indent << "		/*pView*/ " << "&app.EditResource(ImageViewID(" << remapper( VK_OBJECT_TYPE_IMAGE_VIEW, *obj->pView ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -600,9 +600,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroyImageView : {
 		auto const*  obj = iter.Cast< packet_vkDestroyImageView *>();
 		result << indent << "app.vkDestroyImageView( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*imageView*/ " << "app.GetResource(ImageViewID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT, obj->imageView ) << "))";
+		result << indent << "		/*imageView*/ " << "app.GetResource(ImageViewID(" << remapper( VK_OBJECT_TYPE_IMAGE_VIEW, obj->imageView ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -613,9 +613,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroyShaderModule : {
 		auto const*  obj = iter.Cast< packet_vkDestroyShaderModule *>();
 		result << indent << "app.vkDestroyShaderModule( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*shaderModule*/ " << "app.GetResource(ShaderModuleID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT, obj->shaderModule ) << "))";
+		result << indent << "		/*shaderModule*/ " << "app.GetResource(ShaderModuleID(" << remapper( VK_OBJECT_TYPE_SHADER_MODULE, obj->shaderModule ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -629,13 +629,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreatePipelineCache( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pPipelineCache*/ " << "&app.EditResource(PipelineCacheID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_CACHE_EXT, *obj->pPipelineCache ) << "))";
+		result << indent << "		/*pPipelineCache*/ " << "&app.EditResource(PipelineCacheID(" << remapper( VK_OBJECT_TYPE_PIPELINE_CACHE, *obj->pPipelineCache ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -648,16 +648,16 @@ switch ( iter->packet_id )
 			CHECK( obj->srcCacheCount > 0 );
 			before << indent << "const VkPipelineCache  " << nameSer.MakeUnique( &obj->pSrcCaches, "srcCaches"s, "pipelineCache"s ) << "[] = {";
 			for (uint i = 0; i < obj->srcCacheCount; ++i) {
-				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(PipelineCacheID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_CACHE_EXT, obj->pSrcCaches[i] ) << "))";
+				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(PipelineCacheID(" << remapper( VK_OBJECT_TYPE_PIPELINE_CACHE, obj->pSrcCaches[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
 			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pSrcCaches ) << ") == " << IntToString(obj->srcCacheCount) << " );\n\n";
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkMergePipelineCaches( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*dstCache*/ " << "app.GetResource(PipelineCacheID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_CACHE_EXT, obj->dstCache ) << "))";
+		result << indent << "		/*dstCache*/ " << "app.GetResource(PipelineCacheID(" << remapper( VK_OBJECT_TYPE_PIPELINE_CACHE, obj->dstCache ) << "))";
 		result << ",\n";
 		result << indent << "		/*srcCacheCount*/ " << IntToString(obj->srcCacheCount);
 		result << ",\n";
@@ -679,9 +679,9 @@ switch ( iter->packet_id )
 		before << "		VkPipeline " << nameSer.MakeUnique( &obj->pPipelines, "pipelines"s, "pipeline"s ) << "[" << IntToString(obj->createInfoCount) << "] = {};\n";
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateGraphicsPipelines( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*pipelineCache*/ " << "app.GetResource(PipelineCacheID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_CACHE_EXT, obj->pipelineCache ) << "))";
+		result << indent << "		/*pipelineCache*/ " << "app.GetResource(PipelineCacheID(" << remapper( VK_OBJECT_TYPE_PIPELINE_CACHE, obj->pipelineCache ) << "))";
 		result << ",\n";
 		result << indent << "		/*createInfoCount*/ " << IntToString(obj->createInfoCount);
 		result << ",\n";
@@ -692,7 +692,7 @@ switch ( iter->packet_id )
 		result << indent << "		/*pPipelines*/ " << nameSer.Get( &obj->pPipelines );
 		result << " ));\n";
 		for (uint i = 0; i < obj->createInfoCount; ++i) {
-			result << indent << "app.EditResource(PipelineID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT, obj->pPipelines[i] ) << ")) = " << nameSer.Get( &obj->pPipelines ) << "[" << IntToString(i) << "];\n";
+			result << indent << "app.EditResource(PipelineID(" << remapper( VK_OBJECT_TYPE_PIPELINE, obj->pPipelines[i] ) << ")) = " << nameSer.Get( &obj->pPipelines ) << "[" << IntToString(i) << "];\n";
 		}
 		break;
 	}
@@ -710,9 +710,9 @@ switch ( iter->packet_id )
 		before << "		VkPipeline " << nameSer.MakeUnique( &obj->pPipelines, "pipelines"s, "pipeline"s ) << "[" << IntToString(obj->createInfoCount) << "] = {};\n";
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateComputePipelines( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*pipelineCache*/ " << "app.GetResource(PipelineCacheID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_CACHE_EXT, obj->pipelineCache ) << "))";
+		result << indent << "		/*pipelineCache*/ " << "app.GetResource(PipelineCacheID(" << remapper( VK_OBJECT_TYPE_PIPELINE_CACHE, obj->pipelineCache ) << "))";
 		result << ",\n";
 		result << indent << "		/*createInfoCount*/ " << IntToString(obj->createInfoCount);
 		result << ",\n";
@@ -723,7 +723,7 @@ switch ( iter->packet_id )
 		result << indent << "		/*pPipelines*/ " << nameSer.Get( &obj->pPipelines );
 		result << " ));\n";
 		for (uint i = 0; i < obj->createInfoCount; ++i) {
-			result << indent << "app.EditResource(PipelineID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT, obj->pPipelines[i] ) << ")) = " << nameSer.Get( &obj->pPipelines ) << "[" << IntToString(i) << "];\n";
+			result << indent << "app.EditResource(PipelineID(" << remapper( VK_OBJECT_TYPE_PIPELINE, obj->pPipelines[i] ) << ")) = " << nameSer.Get( &obj->pPipelines ) << "[" << IntToString(i) << "];\n";
 		}
 		break;
 	}
@@ -731,9 +731,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroyPipeline : {
 		auto const*  obj = iter.Cast< packet_vkDestroyPipeline *>();
 		result << indent << "app.vkDestroyPipeline( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*pipeline*/ " << "app.GetResource(PipelineID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT, obj->pipeline ) << "))";
+		result << indent << "		/*pipeline*/ " << "app.GetResource(PipelineID(" << remapper( VK_OBJECT_TYPE_PIPELINE, obj->pipeline ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -747,13 +747,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreatePipelineLayout( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pPipelineLayout*/ " << "&app.EditResource(PipelineLayoutID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT, *obj->pPipelineLayout ) << "))";
+		result << indent << "		/*pPipelineLayout*/ " << "&app.EditResource(PipelineLayoutID(" << remapper( VK_OBJECT_TYPE_PIPELINE_LAYOUT, *obj->pPipelineLayout ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -761,9 +761,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroyPipelineLayout : {
 		auto const*  obj = iter.Cast< packet_vkDestroyPipelineLayout *>();
 		result << indent << "app.vkDestroyPipelineLayout( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*pipelineLayout*/ " << "app.GetResource(PipelineLayoutID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT, obj->pipelineLayout ) << "))";
+		result << indent << "		/*pipelineLayout*/ " << "app.GetResource(PipelineLayoutID(" << remapper( VK_OBJECT_TYPE_PIPELINE_LAYOUT, obj->pipelineLayout ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -777,13 +777,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateSampler( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pSampler*/ " << "&app.EditResource(SamplerID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT, *obj->pSampler ) << "))";
+		result << indent << "		/*pSampler*/ " << "&app.EditResource(SamplerID(" << remapper( VK_OBJECT_TYPE_SAMPLER, *obj->pSampler ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -791,9 +791,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroySampler : {
 		auto const*  obj = iter.Cast< packet_vkDestroySampler *>();
 		result << indent << "app.vkDestroySampler( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*sampler*/ " << "app.GetResource(SamplerID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT, obj->sampler ) << "))";
+		result << indent << "		/*sampler*/ " << "app.GetResource(SamplerID(" << remapper( VK_OBJECT_TYPE_SAMPLER, obj->sampler ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -807,13 +807,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateDescriptorSetLayout( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pSetLayout*/ " << "&app.EditResource(DescriptorSetLayoutID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT, *obj->pSetLayout ) << "))";
+		result << indent << "		/*pSetLayout*/ " << "&app.EditResource(DescriptorSetLayoutID(" << remapper( VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, *obj->pSetLayout ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -821,9 +821,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroyDescriptorSetLayout : {
 		auto const*  obj = iter.Cast< packet_vkDestroyDescriptorSetLayout *>();
 		result << indent << "app.vkDestroyDescriptorSetLayout( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*descriptorSetLayout*/ " << "app.GetResource(DescriptorSetLayoutID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT, obj->descriptorSetLayout ) << "))";
+		result << indent << "		/*descriptorSetLayout*/ " << "app.GetResource(DescriptorSetLayoutID(" << remapper( VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, obj->descriptorSetLayout ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -837,13 +837,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateDescriptorPool( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pDescriptorPool*/ " << "&app.EditResource(DescriptorPoolID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT, *obj->pDescriptorPool ) << "))";
+		result << indent << "		/*pDescriptorPool*/ " << "&app.EditResource(DescriptorPoolID(" << remapper( VK_OBJECT_TYPE_DESCRIPTOR_POOL, *obj->pDescriptorPool ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -851,9 +851,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroyDescriptorPool : {
 		auto const*  obj = iter.Cast< packet_vkDestroyDescriptorPool *>();
 		result << indent << "app.vkDestroyDescriptorPool( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*descriptorPool*/ " << "app.GetResource(DescriptorPoolID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT, obj->descriptorPool ) << "))";
+		result << indent << "		/*descriptorPool*/ " << "app.GetResource(DescriptorPoolID(" << remapper( VK_OBJECT_TYPE_DESCRIPTOR_POOL, obj->descriptorPool ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -864,9 +864,9 @@ switch ( iter->packet_id )
 		auto const*  obj = iter.Cast< packet_vkResetDescriptorPool *>();
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkResetDescriptorPool( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*descriptorPool*/ " << "app.GetResource(DescriptorPoolID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT, obj->descriptorPool ) << "))";
+		result << indent << "		/*descriptorPool*/ " << "app.GetResource(DescriptorPoolID(" << remapper( VK_OBJECT_TYPE_DESCRIPTOR_POOL, obj->descriptorPool ) << "))";
 		result << ",\n";
 		result << indent << "		/*flags*/ " << Serialize_VkDescriptorPoolResetFlags( obj->flags );
 		result << " ));\n";
@@ -881,14 +881,14 @@ switch ( iter->packet_id )
 		before << "		VkDescriptorSet " << nameSer.MakeUnique( &obj->pDescriptorSets, "descriptorSets"s, "descriptorSet"s ) << "[" << IntToString(obj->pAllocateInfo->descriptorSetCount) << "] = {};\n";
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkAllocateDescriptorSets( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocateInfo*/ " << nameSer.GetPtr( obj->pAllocateInfo );
 		result << ",\n";
 		result << indent << "		/*pDescriptorSets*/ " << nameSer.Get( &obj->pDescriptorSets );
 		result << " ));\n";
 		for (uint i = 0; i < obj->pAllocateInfo->descriptorSetCount; ++i) {
-			result << indent << "app.EditResource(DescriptorSetID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT, obj->pDescriptorSets[i] ) << ")) = " << nameSer.Get( &obj->pDescriptorSets ) << "[" << IntToString(i) << "];\n";
+			result << indent << "app.EditResource(DescriptorSetID(" << remapper( VK_OBJECT_TYPE_DESCRIPTOR_SET, obj->pDescriptorSets[i] ) << ")) = " << nameSer.Get( &obj->pDescriptorSets ) << "[" << IntToString(i) << "];\n";
 		}
 		break;
 	}
@@ -899,16 +899,16 @@ switch ( iter->packet_id )
 			CHECK( obj->descriptorSetCount > 0 );
 			before << indent << "const VkDescriptorSet  " << nameSer.MakeUnique( &obj->pDescriptorSets, "descriptorSets"s, "descriptorSet"s ) << "[] = {";
 			for (uint i = 0; i < obj->descriptorSetCount; ++i) {
-				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(DescriptorSetID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT, obj->pDescriptorSets[i] ) << "))";
+				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(DescriptorSetID(" << remapper( VK_OBJECT_TYPE_DESCRIPTOR_SET, obj->pDescriptorSets[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
 			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pDescriptorSets ) << ") == " << IntToString(obj->descriptorSetCount) << " );\n\n";
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkFreeDescriptorSets( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*descriptorPool*/ " << "app.GetResource(DescriptorPoolID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT, obj->descriptorPool ) << "))";
+		result << indent << "		/*descriptorPool*/ " << "app.GetResource(DescriptorPoolID(" << remapper( VK_OBJECT_TYPE_DESCRIPTOR_POOL, obj->descriptorPool ) << "))";
 		result << ",\n";
 		result << indent << "		/*descriptorSetCount*/ " << IntToString(obj->descriptorSetCount);
 		result << ",\n";
@@ -936,7 +936,7 @@ switch ( iter->packet_id )
 			}
 		}
 		result << indent << "app.vkUpdateDescriptorSets( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*descriptorWriteCount*/ " << IntToString(obj->descriptorWriteCount);
 		result << ",\n";
@@ -956,13 +956,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateFramebuffer( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pFramebuffer*/ " << "&app.EditResource(FramebufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT, *obj->pFramebuffer ) << "))";
+		result << indent << "		/*pFramebuffer*/ " << "&app.EditResource(FramebufferID(" << remapper( VK_OBJECT_TYPE_FRAMEBUFFER, *obj->pFramebuffer ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -970,9 +970,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroyFramebuffer : {
 		auto const*  obj = iter.Cast< packet_vkDestroyFramebuffer *>();
 		result << indent << "app.vkDestroyFramebuffer( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*framebuffer*/ " << "app.GetResource(FramebufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT, obj->framebuffer ) << "))";
+		result << indent << "		/*framebuffer*/ " << "app.GetResource(FramebufferID(" << remapper( VK_OBJECT_TYPE_FRAMEBUFFER, obj->framebuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -986,13 +986,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateRenderPass( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pRenderPass*/ " << "&app.EditResource(RenderPassID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT, *obj->pRenderPass ) << "))";
+		result << indent << "		/*pRenderPass*/ " << "&app.EditResource(RenderPassID(" << remapper( VK_OBJECT_TYPE_RENDER_PASS, *obj->pRenderPass ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -1000,9 +1000,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroyRenderPass : {
 		auto const*  obj = iter.Cast< packet_vkDestroyRenderPass *>();
 		result << indent << "app.vkDestroyRenderPass( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*renderPass*/ " << "app.GetResource(RenderPassID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT, obj->renderPass ) << "))";
+		result << indent << "		/*renderPass*/ " << "app.GetResource(RenderPassID(" << remapper( VK_OBJECT_TYPE_RENDER_PASS, obj->renderPass ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -1017,13 +1017,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateCommandPool( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pCommandPool*/ " << "&app.EditResource(CommandPoolID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT, *obj->pCommandPool ) << "))";
+		result << indent << "		/*pCommandPool*/ " << "&app.EditResource(CommandPoolID(" << remapper( VK_OBJECT_TYPE_COMMAND_POOL, *obj->pCommandPool ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -1031,9 +1031,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroyCommandPool : {
 		auto const*  obj = iter.Cast< packet_vkDestroyCommandPool *>();
 		result << indent << "app.vkDestroyCommandPool( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*commandPool*/ " << "app.GetResource(CommandPoolID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT, obj->commandPool ) << "))";
+		result << indent << "		/*commandPool*/ " << "app.GetResource(CommandPoolID(" << remapper( VK_OBJECT_TYPE_COMMAND_POOL, obj->commandPool ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -1044,9 +1044,9 @@ switch ( iter->packet_id )
 		auto const*  obj = iter.Cast< packet_vkResetCommandPool *>();
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkResetCommandPool( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*commandPool*/ " << "app.GetResource(CommandPoolID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT, obj->commandPool ) << "))";
+		result << indent << "		/*commandPool*/ " << "app.GetResource(CommandPoolID(" << remapper( VK_OBJECT_TYPE_COMMAND_POOL, obj->commandPool ) << "))";
 		result << ",\n";
 		result << indent << "		/*flags*/ " << Serialize_VkCommandPoolResetFlags( obj->flags );
 		result << " ));\n";
@@ -1061,14 +1061,14 @@ switch ( iter->packet_id )
 		before << "		VkCommandBuffer " << nameSer.MakeUnique( &obj->pCommandBuffers, "commandBuffers"s, "commandBuffer"s ) << "[" << IntToString(obj->pAllocateInfo->commandBufferCount) << "] = {};\n";
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkAllocateCommandBuffers( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocateInfo*/ " << nameSer.GetPtr( obj->pAllocateInfo );
 		result << ",\n";
 		result << indent << "		/*pCommandBuffers*/ " << nameSer.Get( &obj->pCommandBuffers );
 		result << " ));\n";
 		for (uint i = 0; i < obj->pAllocateInfo->commandBufferCount; ++i) {
-			result << indent << "app.EditResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->pCommandBuffers[i] ) << ")) = " << nameSer.Get( &obj->pCommandBuffers ) << "[" << IntToString(i) << "];\n";
+			result << indent << "app.EditResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->pCommandBuffers[i] ) << ")) = " << nameSer.Get( &obj->pCommandBuffers ) << "[" << IntToString(i) << "];\n";
 		}
 		break;
 	}
@@ -1079,15 +1079,15 @@ switch ( iter->packet_id )
 			CHECK( obj->commandBufferCount > 0 );
 			before << indent << "const VkCommandBuffer  " << nameSer.MakeUnique( &obj->pCommandBuffers, "commandBuffers"s, "commandBuffer"s ) << "[] = {";
 			for (uint i = 0; i < obj->commandBufferCount; ++i) {
-				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->pCommandBuffers[i] ) << "))";
+				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->pCommandBuffers[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
 			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pCommandBuffers ) << ") == " << IntToString(obj->commandBufferCount) << " );\n\n";
 		}
 		result << indent << "app.vkFreeCommandBuffers( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*commandPool*/ " << "app.GetResource(CommandPoolID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT, obj->commandPool ) << "))";
+		result << indent << "		/*commandPool*/ " << "app.GetResource(CommandPoolID(" << remapper( VK_OBJECT_TYPE_COMMAND_POOL, obj->commandPool ) << "))";
 		result << ",\n";
 		result << indent << "		/*commandBufferCount*/ " << IntToString(obj->commandBufferCount);
 		result << ",\n";
@@ -1103,7 +1103,7 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkBeginCommandBuffer( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*pBeginInfo*/ " << nameSer.GetPtr( obj->pBeginInfo );
 		result << " ));\n";
@@ -1114,7 +1114,7 @@ switch ( iter->packet_id )
 		auto const*  obj = iter.Cast< packet_vkEndCommandBuffer *>();
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkEndCommandBuffer( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -1123,7 +1123,7 @@ switch ( iter->packet_id )
 		auto const*  obj = iter.Cast< packet_vkResetCommandBuffer *>();
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkResetCommandBuffer( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*flags*/ " << Serialize_VkCommandBufferResetFlags( obj->flags );
 		result << " ));\n";
@@ -1133,11 +1133,11 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdBindPipeline : {
 		auto const*  obj = iter.Cast< packet_vkCmdBindPipeline *>();
 		result << indent << "app.vkCmdBindPipeline( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*pipelineBindPoint*/ " << Serialize_VkPipelineBindPoint( obj->pipelineBindPoint );
 		result << ",\n";
-		result << indent << "		/*pipeline*/ " << "app.GetResource(PipelineID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT, obj->pipeline ) << "))";
+		result << indent << "		/*pipeline*/ " << "app.GetResource(PipelineID(" << remapper( VK_OBJECT_TYPE_PIPELINE, obj->pipeline ) << "))";
 		result << " );\n";
 		break;
 	}
@@ -1153,7 +1153,7 @@ switch ( iter->packet_id )
 			}
 		}
 		result << indent << "app.vkCmdSetViewport( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*firstViewport*/ " << IntToString(obj->firstViewport);
 		result << ",\n";
@@ -1175,7 +1175,7 @@ switch ( iter->packet_id )
 			}
 		}
 		result << indent << "app.vkCmdSetScissor( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*firstScissor*/ " << IntToString(obj->firstScissor);
 		result << ",\n";
@@ -1189,7 +1189,7 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdSetLineWidth : {
 		auto const*  obj = iter.Cast< packet_vkCmdSetLineWidth *>();
 		result << indent << "app.vkCmdSetLineWidth( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*lineWidth*/ " << FloatToString(obj->lineWidth);
 		result << " );\n";
@@ -1199,7 +1199,7 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdSetDepthBias : {
 		auto const*  obj = iter.Cast< packet_vkCmdSetDepthBias *>();
 		result << indent << "app.vkCmdSetDepthBias( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*depthBiasConstantFactor*/ " << FloatToString(obj->depthBiasConstantFactor);
 		result << ",\n";
@@ -1213,7 +1213,7 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdSetBlendConstants : {
 		auto const*  obj = iter.Cast< packet_vkCmdSetBlendConstants *>();
 		result << indent << "app.vkCmdSetBlendConstants( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*blendConstants*/ " << "StaticArray<float, " << IntToString(CountOf(obj->blendConstants)) << ">{ ";
 		for (uint i = 0; i < CountOf(obj->blendConstants); ++i) {
@@ -1227,7 +1227,7 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdSetDepthBounds : {
 		auto const*  obj = iter.Cast< packet_vkCmdSetDepthBounds *>();
 		result << indent << "app.vkCmdSetDepthBounds( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*minDepthBounds*/ " << FloatToString(obj->minDepthBounds);
 		result << ",\n";
@@ -1239,7 +1239,7 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdSetStencilCompareMask : {
 		auto const*  obj = iter.Cast< packet_vkCmdSetStencilCompareMask *>();
 		result << indent << "app.vkCmdSetStencilCompareMask( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*faceMask*/ " << Serialize_VkStencilFaceFlags( obj->faceMask );
 		result << ",\n";
@@ -1251,7 +1251,7 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdSetStencilWriteMask : {
 		auto const*  obj = iter.Cast< packet_vkCmdSetStencilWriteMask *>();
 		result << indent << "app.vkCmdSetStencilWriteMask( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*faceMask*/ " << Serialize_VkStencilFaceFlags( obj->faceMask );
 		result << ",\n";
@@ -1263,7 +1263,7 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdSetStencilReference : {
 		auto const*  obj = iter.Cast< packet_vkCmdSetStencilReference *>();
 		result << indent << "app.vkCmdSetStencilReference( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*faceMask*/ " << Serialize_VkStencilFaceFlags( obj->faceMask );
 		result << ",\n";
@@ -1278,7 +1278,7 @@ switch ( iter->packet_id )
 			CHECK( obj->descriptorSetCount > 0 );
 			before << indent << "const VkDescriptorSet  " << nameSer.MakeUnique( &obj->pDescriptorSets, "descriptorSets"s, "descriptorSet"s ) << "[] = {";
 			for (uint i = 0; i < obj->descriptorSetCount; ++i) {
-				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(DescriptorSetID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT, obj->pDescriptorSets[i] ) << "))";
+				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(DescriptorSetID(" << remapper( VK_OBJECT_TYPE_DESCRIPTOR_SET, obj->pDescriptorSets[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
 			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pDescriptorSets ) << ") == " << IntToString(obj->descriptorSetCount) << " );\n\n";
@@ -1293,11 +1293,11 @@ switch ( iter->packet_id )
 			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pDynamicOffsets ) << ") == " << IntToString(obj->dynamicOffsetCount) << " );\n\n";
 		}
 		result << indent << "app.vkCmdBindDescriptorSets( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*pipelineBindPoint*/ " << Serialize_VkPipelineBindPoint( obj->pipelineBindPoint );
 		result << ",\n";
-		result << indent << "		/*layout*/ " << "app.GetResource(PipelineLayoutID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT, obj->layout ) << "))";
+		result << indent << "		/*layout*/ " << "app.GetResource(PipelineLayoutID(" << remapper( VK_OBJECT_TYPE_PIPELINE_LAYOUT, obj->layout ) << "))";
 		result << ",\n";
 		result << indent << "		/*firstSet*/ " << IntToString(obj->firstSet);
 		result << ",\n";
@@ -1315,9 +1315,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdBindIndexBuffer : {
 		auto const*  obj = iter.Cast< packet_vkCmdBindIndexBuffer *>();
 		result << indent << "app.vkCmdBindIndexBuffer( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*buffer*/ " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->buffer ) << "))";
+		result << indent << "		/*buffer*/ " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->buffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*offset*/ " << IntToString(obj->offset);
 		result << ",\n";
@@ -1332,7 +1332,7 @@ switch ( iter->packet_id )
 			CHECK( obj->bindingCount > 0 );
 			before << indent << "const VkBuffer  " << nameSer.MakeUnique( &obj->pBuffers, "buffers"s, "buffer"s ) << "[] = {";
 			for (uint i = 0; i < obj->bindingCount; ++i) {
-				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->pBuffers[i] ) << "))";
+				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->pBuffers[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
 			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pBuffers ) << ") == " << IntToString(obj->bindingCount) << " );\n\n";
@@ -1347,7 +1347,7 @@ switch ( iter->packet_id )
 			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pOffsets ) << ") == " << IntToString(obj->bindingCount) << " );\n\n";
 		}
 		result << indent << "app.vkCmdBindVertexBuffers( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*firstBinding*/ " << IntToString(obj->firstBinding);
 		result << ",\n";
@@ -1363,7 +1363,7 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdDraw : {
 		auto const*  obj = iter.Cast< packet_vkCmdDraw *>();
 		result << indent << "app.vkCmdDraw( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*vertexCount*/ " << IntToString(obj->vertexCount);
 		result << ",\n";
@@ -1379,7 +1379,7 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdDrawIndexed : {
 		auto const*  obj = iter.Cast< packet_vkCmdDrawIndexed *>();
 		result << indent << "app.vkCmdDrawIndexed( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*indexCount*/ " << IntToString(obj->indexCount);
 		result << ",\n";
@@ -1397,9 +1397,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdDrawIndirect : {
 		auto const*  obj = iter.Cast< packet_vkCmdDrawIndirect *>();
 		result << indent << "app.vkCmdDrawIndirect( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*buffer*/ " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->buffer ) << "))";
+		result << indent << "		/*buffer*/ " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->buffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*offset*/ " << IntToString(obj->offset);
 		result << ",\n";
@@ -1413,9 +1413,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdDrawIndexedIndirect : {
 		auto const*  obj = iter.Cast< packet_vkCmdDrawIndexedIndirect *>();
 		result << indent << "app.vkCmdDrawIndexedIndirect( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*buffer*/ " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->buffer ) << "))";
+		result << indent << "		/*buffer*/ " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->buffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*offset*/ " << IntToString(obj->offset);
 		result << ",\n";
@@ -1429,7 +1429,7 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdDispatch : {
 		auto const*  obj = iter.Cast< packet_vkCmdDispatch *>();
 		result << indent << "app.vkCmdDispatch( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*groupCountX*/ " << IntToString(obj->groupCountX);
 		result << ",\n";
@@ -1443,9 +1443,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdDispatchIndirect : {
 		auto const*  obj = iter.Cast< packet_vkCmdDispatchIndirect *>();
 		result << indent << "app.vkCmdDispatchIndirect( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*buffer*/ " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->buffer ) << "))";
+		result << indent << "		/*buffer*/ " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->buffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*offset*/ " << IntToString(obj->offset);
 		result << " );\n";
@@ -1463,11 +1463,11 @@ switch ( iter->packet_id )
 			}
 		}
 		result << indent << "app.vkCmdCopyBuffer( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*srcBuffer*/ " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->srcBuffer ) << "))";
+		result << indent << "		/*srcBuffer*/ " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->srcBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*dstBuffer*/ " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->dstBuffer ) << "))";
+		result << indent << "		/*dstBuffer*/ " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->dstBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*regionCount*/ " << IntToString(obj->regionCount);
 		result << ",\n";
@@ -1487,13 +1487,13 @@ switch ( iter->packet_id )
 			}
 		}
 		result << indent << "app.vkCmdCopyImage( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*srcImage*/ " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->srcImage ) << "))";
+		result << indent << "		/*srcImage*/ " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->srcImage ) << "))";
 		result << ",\n";
 		result << indent << "		/*srcImageLayout*/ " << Serialize_VkImageLayout( obj->srcImageLayout );
 		result << ",\n";
-		result << indent << "		/*dstImage*/ " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->dstImage ) << "))";
+		result << indent << "		/*dstImage*/ " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->dstImage ) << "))";
 		result << ",\n";
 		result << indent << "		/*dstImageLayout*/ " << Serialize_VkImageLayout( obj->dstImageLayout );
 		result << ",\n";
@@ -1515,13 +1515,13 @@ switch ( iter->packet_id )
 			}
 		}
 		result << indent << "app.vkCmdBlitImage( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*srcImage*/ " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->srcImage ) << "))";
+		result << indent << "		/*srcImage*/ " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->srcImage ) << "))";
 		result << ",\n";
 		result << indent << "		/*srcImageLayout*/ " << Serialize_VkImageLayout( obj->srcImageLayout );
 		result << ",\n";
-		result << indent << "		/*dstImage*/ " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->dstImage ) << "))";
+		result << indent << "		/*dstImage*/ " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->dstImage ) << "))";
 		result << ",\n";
 		result << indent << "		/*dstImageLayout*/ " << Serialize_VkImageLayout( obj->dstImageLayout );
 		result << ",\n";
@@ -1545,11 +1545,11 @@ switch ( iter->packet_id )
 			}
 		}
 		result << indent << "app.vkCmdCopyBufferToImage( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*srcBuffer*/ " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->srcBuffer ) << "))";
+		result << indent << "		/*srcBuffer*/ " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->srcBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*dstImage*/ " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->dstImage ) << "))";
+		result << indent << "		/*dstImage*/ " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->dstImage ) << "))";
 		result << ",\n";
 		result << indent << "		/*dstImageLayout*/ " << Serialize_VkImageLayout( obj->dstImageLayout );
 		result << ",\n";
@@ -1571,13 +1571,13 @@ switch ( iter->packet_id )
 			}
 		}
 		result << indent << "app.vkCmdCopyImageToBuffer( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*srcImage*/ " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->srcImage ) << "))";
+		result << indent << "		/*srcImage*/ " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->srcImage ) << "))";
 		result << ",\n";
 		result << indent << "		/*srcImageLayout*/ " << Serialize_VkImageLayout( obj->srcImageLayout );
 		result << ",\n";
-		result << indent << "		/*dstBuffer*/ " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->dstBuffer ) << "))";
+		result << indent << "		/*dstBuffer*/ " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->dstBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*regionCount*/ " << IntToString(obj->regionCount);
 		result << ",\n";
@@ -1596,9 +1596,9 @@ switch ( iter->packet_id )
 		before << '\n' << indent << "};\n";
 		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pData ) << ") == " << IntToString(obj->dataSize) << " );\n\n";
 		result << indent << "app.vkCmdUpdateBuffer( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*dstBuffer*/ " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->dstBuffer ) << "))";
+		result << indent << "		/*dstBuffer*/ " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->dstBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*dstOffset*/ " << IntToString(obj->dstOffset);
 		result << ",\n";
@@ -1612,9 +1612,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdFillBuffer : {
 		auto const*  obj = iter.Cast< packet_vkCmdFillBuffer *>();
 		result << indent << "app.vkCmdFillBuffer( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*dstBuffer*/ " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->dstBuffer ) << "))";
+		result << indent << "		/*dstBuffer*/ " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->dstBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*dstOffset*/ " << IntToString(obj->dstOffset);
 		result << ",\n";
@@ -1639,9 +1639,9 @@ switch ( iter->packet_id )
 			}
 		}
 		result << indent << "app.vkCmdClearColorImage( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*image*/ " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->image ) << "))";
+		result << indent << "		/*image*/ " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->image ) << "))";
 		result << ",\n";
 		result << indent << "		/*imageLayout*/ " << Serialize_VkImageLayout( obj->imageLayout );
 		result << ",\n";
@@ -1668,9 +1668,9 @@ switch ( iter->packet_id )
 			}
 		}
 		result << indent << "app.vkCmdClearDepthStencilImage( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*image*/ " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->image ) << "))";
+		result << indent << "		/*image*/ " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->image ) << "))";
 		result << ",\n";
 		result << indent << "		/*imageLayout*/ " << Serialize_VkImageLayout( obj->imageLayout );
 		result << ",\n";
@@ -1702,7 +1702,7 @@ switch ( iter->packet_id )
 			}
 		}
 		result << indent << "app.vkCmdClearAttachments( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*attachmentCount*/ " << IntToString(obj->attachmentCount);
 		result << ",\n";
@@ -1726,13 +1726,13 @@ switch ( iter->packet_id )
 			}
 		}
 		result << indent << "app.vkCmdResolveImage( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*srcImage*/ " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->srcImage ) << "))";
+		result << indent << "		/*srcImage*/ " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->srcImage ) << "))";
 		result << ",\n";
 		result << indent << "		/*srcImageLayout*/ " << Serialize_VkImageLayout( obj->srcImageLayout );
 		result << ",\n";
-		result << indent << "		/*dstImage*/ " << "app.GetResource(ImageID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, obj->dstImage ) << "))";
+		result << indent << "		/*dstImage*/ " << "app.GetResource(ImageID(" << remapper( VK_OBJECT_TYPE_IMAGE, obj->dstImage ) << "))";
 		result << ",\n";
 		result << indent << "		/*dstImageLayout*/ " << Serialize_VkImageLayout( obj->dstImageLayout );
 		result << ",\n";
@@ -1746,9 +1746,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdSetEvent : {
 		auto const*  obj = iter.Cast< packet_vkCmdSetEvent *>();
 		result << indent << "app.vkCmdSetEvent( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*event*/ " << "app.GetResource(EventID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT, obj->event ) << "))";
+		result << indent << "		/*event*/ " << "app.GetResource(EventID(" << remapper( VK_OBJECT_TYPE_EVENT, obj->event ) << "))";
 		result << ",\n";
 		result << indent << "		/*stageMask*/ " << Serialize_VkPipelineStageFlags( obj->stageMask );
 		result << " );\n";
@@ -1758,9 +1758,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdResetEvent : {
 		auto const*  obj = iter.Cast< packet_vkCmdResetEvent *>();
 		result << indent << "app.vkCmdResetEvent( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*event*/ " << "app.GetResource(EventID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT, obj->event ) << "))";
+		result << indent << "		/*event*/ " << "app.GetResource(EventID(" << remapper( VK_OBJECT_TYPE_EVENT, obj->event ) << "))";
 		result << ",\n";
 		result << indent << "		/*stageMask*/ " << Serialize_VkPipelineStageFlags( obj->stageMask );
 		result << " );\n";
@@ -1773,7 +1773,7 @@ switch ( iter->packet_id )
 			CHECK( obj->eventCount > 0 );
 			before << indent << "const VkEvent  " << nameSer.MakeUnique( &obj->pEvents, "events"s, "event"s ) << "[] = {";
 			for (uint i = 0; i < obj->eventCount; ++i) {
-				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(EventID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT, obj->pEvents[i] ) << "))";
+				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(EventID(" << remapper( VK_OBJECT_TYPE_EVENT, obj->pEvents[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
 			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pEvents ) << ") == " << IntToString(obj->eventCount) << " );\n\n";
@@ -1803,7 +1803,7 @@ switch ( iter->packet_id )
 			}
 		}
 		result << indent << "app.vkCmdWaitEvents( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*eventCount*/ " << IntToString(obj->eventCount);
 		result << ",\n";
@@ -1855,7 +1855,7 @@ switch ( iter->packet_id )
 			}
 		}
 		result << indent << "app.vkCmdPipelineBarrier( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*srcStageMask*/ " << Serialize_VkPipelineStageFlags( obj->srcStageMask );
 		result << ",\n";
@@ -1881,9 +1881,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdBeginQuery : {
 		auto const*  obj = iter.Cast< packet_vkCmdBeginQuery *>();
 		result << indent << "app.vkCmdBeginQuery( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*queryPool*/ " << "app.GetResource(QueryPoolID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT, obj->queryPool ) << "))";
+		result << indent << "		/*queryPool*/ " << "app.GetResource(QueryPoolID(" << remapper( VK_OBJECT_TYPE_QUERY_POOL, obj->queryPool ) << "))";
 		result << ",\n";
 		result << indent << "		/*query*/ " << IntToString(obj->query);
 		result << ",\n";
@@ -1895,9 +1895,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdEndQuery : {
 		auto const*  obj = iter.Cast< packet_vkCmdEndQuery *>();
 		result << indent << "app.vkCmdEndQuery( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*queryPool*/ " << "app.GetResource(QueryPoolID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT, obj->queryPool ) << "))";
+		result << indent << "		/*queryPool*/ " << "app.GetResource(QueryPoolID(" << remapper( VK_OBJECT_TYPE_QUERY_POOL, obj->queryPool ) << "))";
 		result << ",\n";
 		result << indent << "		/*query*/ " << IntToString(obj->query);
 		result << " );\n";
@@ -1907,9 +1907,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdResetQueryPool : {
 		auto const*  obj = iter.Cast< packet_vkCmdResetQueryPool *>();
 		result << indent << "app.vkCmdResetQueryPool( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*queryPool*/ " << "app.GetResource(QueryPoolID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT, obj->queryPool ) << "))";
+		result << indent << "		/*queryPool*/ " << "app.GetResource(QueryPoolID(" << remapper( VK_OBJECT_TYPE_QUERY_POOL, obj->queryPool ) << "))";
 		result << ",\n";
 		result << indent << "		/*firstQuery*/ " << IntToString(obj->firstQuery);
 		result << ",\n";
@@ -1921,11 +1921,11 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdWriteTimestamp : {
 		auto const*  obj = iter.Cast< packet_vkCmdWriteTimestamp *>();
 		result << indent << "app.vkCmdWriteTimestamp( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*pipelineStage*/ " << Serialize_VkPipelineStageFlagBits( obj->pipelineStage );
 		result << ",\n";
-		result << indent << "		/*queryPool*/ " << "app.GetResource(QueryPoolID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT, obj->queryPool ) << "))";
+		result << indent << "		/*queryPool*/ " << "app.GetResource(QueryPoolID(" << remapper( VK_OBJECT_TYPE_QUERY_POOL, obj->queryPool ) << "))";
 		result << ",\n";
 		result << indent << "		/*query*/ " << IntToString(obj->query);
 		result << " );\n";
@@ -1935,15 +1935,15 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdCopyQueryPoolResults : {
 		auto const*  obj = iter.Cast< packet_vkCmdCopyQueryPoolResults *>();
 		result << indent << "app.vkCmdCopyQueryPoolResults( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*queryPool*/ " << "app.GetResource(QueryPoolID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT, obj->queryPool ) << "))";
+		result << indent << "		/*queryPool*/ " << "app.GetResource(QueryPoolID(" << remapper( VK_OBJECT_TYPE_QUERY_POOL, obj->queryPool ) << "))";
 		result << ",\n";
 		result << indent << "		/*firstQuery*/ " << IntToString(obj->firstQuery);
 		result << ",\n";
 		result << indent << "		/*queryCount*/ " << IntToString(obj->queryCount);
 		result << ",\n";
-		result << indent << "		/*dstBuffer*/ " << "app.GetResource(BufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, obj->dstBuffer ) << "))";
+		result << indent << "		/*dstBuffer*/ " << "app.GetResource(BufferID(" << remapper( VK_OBJECT_TYPE_BUFFER, obj->dstBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*dstOffset*/ " << IntToString(obj->dstOffset);
 		result << ",\n";
@@ -1964,9 +1964,9 @@ switch ( iter->packet_id )
 		before << '\n' << indent << "};\n";
 		before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pValues ) << ") == " << IntToString(obj->size) << " );\n\n";
 		result << indent << "app.vkCmdPushConstants( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
-		result << indent << "		/*layout*/ " << "app.GetResource(PipelineLayoutID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT, obj->layout ) << "))";
+		result << indent << "		/*layout*/ " << "app.GetResource(PipelineLayoutID(" << remapper( VK_OBJECT_TYPE_PIPELINE_LAYOUT, obj->layout ) << "))";
 		result << ",\n";
 		result << indent << "		/*stageFlags*/ " << Serialize_VkShaderStageFlags( obj->stageFlags );
 		result << ",\n";
@@ -1985,7 +1985,7 @@ switch ( iter->packet_id )
 			before << SerializeStruct( BitCast<VkBaseInStructure const*>(obj->pRenderPassBegin), nameSer, remapper, indent );
 		}
 		result << indent << "app.vkCmdBeginRenderPass( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*pRenderPassBegin*/ " << nameSer.GetPtr( obj->pRenderPassBegin );
 		result << ",\n";
@@ -1997,7 +1997,7 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdNextSubpass : {
 		auto const*  obj = iter.Cast< packet_vkCmdNextSubpass *>();
 		result << indent << "app.vkCmdNextSubpass( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*contents*/ " << Serialize_VkSubpassContents( obj->contents );
 		result << " );\n";
@@ -2007,7 +2007,7 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdEndRenderPass : {
 		auto const*  obj = iter.Cast< packet_vkCmdEndRenderPass *>();
 		result << indent << "app.vkCmdEndRenderPass( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << " );\n";
 		break;
 	}
@@ -2018,13 +2018,13 @@ switch ( iter->packet_id )
 			CHECK( obj->commandBufferCount > 0 );
 			before << indent << "const VkCommandBuffer  " << nameSer.MakeUnique( &obj->pCommandBuffers, "commandBuffers"s, "commandBuffer"s ) << "[] = {";
 			for (uint i = 0; i < obj->commandBufferCount; ++i) {
-				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->pCommandBuffers[i] ) << "))";
+				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->pCommandBuffers[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
 			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pCommandBuffers ) << ") == " << IntToString(obj->commandBufferCount) << " );\n\n";
 		}
 		result << indent << "app.vkCmdExecuteCommands( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*commandBufferCount*/ " << IntToString(obj->commandBufferCount);
 		result << ",\n";
@@ -2045,13 +2045,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateSwapchainKHR( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pSwapchain*/ " << "&app.EditResource(SwapchainKHRID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT, *obj->pSwapchain ) << "))";
+		result << indent << "		/*pSwapchain*/ " << "&app.EditResource(SwapchainKHRID(" << remapper( VK_OBJECT_TYPE_SWAPCHAIN_KHR, *obj->pSwapchain ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -2073,7 +2073,7 @@ switch ( iter->packet_id )
 		before << "		VkSwapchainKHR " << nameSer.MakeUnique( &obj->pSwapchains, "swapchains"s, "swapchain"s ) << "[" << IntToString(obj->swapchainCount) << "] = {};\n";
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateSharedSwapchainsKHR( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*swapchainCount*/ " << IntToString(obj->swapchainCount);
 		result << ",\n";
@@ -2084,7 +2084,7 @@ switch ( iter->packet_id )
 		result << indent << "		/*pSwapchains*/ " << nameSer.Get( &obj->pSwapchains );
 		result << " ));\n";
 		for (uint i = 0; i < obj->swapchainCount; ++i) {
-			result << indent << "app.EditResource(SwapchainKHRID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT, obj->pSwapchains[i] ) << ")) = " << nameSer.Get( &obj->pSwapchains ) << "[" << IntToString(i) << "];\n";
+			result << indent << "app.EditResource(SwapchainKHRID(" << remapper( VK_OBJECT_TYPE_SWAPCHAIN_KHR, obj->pSwapchains[i] ) << ")) = " << nameSer.Get( &obj->pSwapchains ) << "[" << IntToString(i) << "];\n";
 		}
 		break;
 	}
@@ -2104,13 +2104,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateDescriptorUpdateTemplateKHR( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pDescriptorUpdateTemplate*/ " << "&app.EditResource(DescriptorUpdateTemplateID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_EXT, *obj->pDescriptorUpdateTemplate ) << "))";
+		result << indent << "		/*pDescriptorUpdateTemplate*/ " << "&app.EditResource(DescriptorUpdateTemplateID(" << remapper( VK_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE, *obj->pDescriptorUpdateTemplate ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -2118,9 +2118,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroyDescriptorUpdateTemplateKHR : {
 		auto const*  obj = iter.Cast< packet_vkDestroyDescriptorUpdateTemplateKHR *>();
 		result << indent << "app.vkDestroyDescriptorUpdateTemplateKHR( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*descriptorUpdateTemplate*/ " << "app.GetResource(DescriptorUpdateTemplateID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_EXT, obj->descriptorUpdateTemplate ) << "))";
+		result << indent << "		/*descriptorUpdateTemplate*/ " << "app.GetResource(DescriptorUpdateTemplateID(" << remapper( VK_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE, obj->descriptorUpdateTemplate ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -2152,9 +2152,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkTrimCommandPoolKHR : {
 		auto const*  obj = iter.Cast< packet_vkTrimCommandPoolKHR *>();
 		result << indent << "app.vkTrimCommandPoolKHR( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*commandPool*/ " << "app.GetResource(CommandPoolID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT, obj->commandPool ) << "))";
+		result << indent << "		/*commandPool*/ " << "app.GetResource(CommandPoolID(" << remapper( VK_OBJECT_TYPE_COMMAND_POOL, obj->commandPool ) << "))";
 		result << ",\n";
 		result << indent << "		/*flags*/ " << Serialize_VkCommandPoolTrimFlags( obj->flags );
 		result << " );\n";
@@ -2172,7 +2172,7 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkImportSemaphoreFdKHR( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pImportSemaphoreFdInfo*/ " << nameSer.GetPtr( obj->pImportSemaphoreFdInfo );
 		result << " ));\n";
@@ -2191,11 +2191,11 @@ switch ( iter->packet_id )
 			}
 		}
 		result << indent << "app.vkCmdPushDescriptorSetKHR( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*pipelineBindPoint*/ " << Serialize_VkPipelineBindPoint( obj->pipelineBindPoint );
 		result << ",\n";
-		result << indent << "		/*layout*/ " << "app.GetResource(PipelineLayoutID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT, obj->layout ) << "))";
+		result << indent << "		/*layout*/ " << "app.GetResource(PipelineLayoutID(" << remapper( VK_OBJECT_TYPE_PIPELINE_LAYOUT, obj->layout ) << "))";
 		result << ",\n";
 		result << indent << "		/*set*/ " << IntToString(obj->set);
 		result << ",\n";
@@ -2221,7 +2221,7 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkBindBufferMemory2KHR( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*bindInfoCount*/ " << IntToString(obj->bindInfoCount);
 		result << ",\n";
@@ -2242,7 +2242,7 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkBindImageMemory2KHR( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*bindInfoCount*/ " << IntToString(obj->bindInfoCount);
 		result << ",\n";
@@ -2264,7 +2264,7 @@ switch ( iter->packet_id )
 			before << SerializeStruct( BitCast<VkBaseInStructure const*>(obj->pProcessCommandsInfo), nameSer, remapper, indent );
 		}
 		result << indent << "app.vkCmdProcessCommandsNVX( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*pProcessCommandsInfo*/ " << nameSer.GetPtr( obj->pProcessCommandsInfo );
 		result << " );\n";
@@ -2277,7 +2277,7 @@ switch ( iter->packet_id )
 			before << SerializeStruct( BitCast<VkBaseInStructure const*>(obj->pReserveSpaceInfo), nameSer, remapper, indent );
 		}
 		result << indent << "app.vkCmdReserveSpaceForCommandsNVX( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*pReserveSpaceInfo*/ " << nameSer.GetPtr( obj->pReserveSpaceInfo );
 		result << " );\n";
@@ -2291,13 +2291,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateIndirectCommandsLayoutNVX( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pIndirectCommandsLayout*/ " << "&app.EditResource(IndirectCommandsLayoutNVXID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT, *obj->pIndirectCommandsLayout ) << "))";
+		result << indent << "		/*pIndirectCommandsLayout*/ " << "&app.EditResource(IndirectCommandsLayoutNVXID(" << remapper( VK_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX, *obj->pIndirectCommandsLayout ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -2305,9 +2305,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroyIndirectCommandsLayoutNVX : {
 		auto const*  obj = iter.Cast< packet_vkDestroyIndirectCommandsLayoutNVX *>();
 		result << indent << "app.vkDestroyIndirectCommandsLayoutNVX( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*indirectCommandsLayout*/ " << "app.GetResource(IndirectCommandsLayoutNVXID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT, obj->indirectCommandsLayout ) << "))";
+		result << indent << "		/*indirectCommandsLayout*/ " << "app.GetResource(IndirectCommandsLayoutNVXID(" << remapper( VK_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX, obj->indirectCommandsLayout ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -2321,13 +2321,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateObjectTableNVX( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pObjectTable*/ " << "&app.EditResource(ObjectTableNVXID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT, *obj->pObjectTable ) << "))";
+		result << indent << "		/*pObjectTable*/ " << "&app.EditResource(ObjectTableNVXID(" << remapper( VK_OBJECT_TYPE_OBJECT_TABLE_NVX, *obj->pObjectTable ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -2335,9 +2335,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroyObjectTableNVX : {
 		auto const*  obj = iter.Cast< packet_vkDestroyObjectTableNVX *>();
 		result << indent << "app.vkDestroyObjectTableNVX( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*objectTable*/ " << "app.GetResource(ObjectTableNVXID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT, obj->objectTable ) << "))";
+		result << indent << "		/*objectTable*/ " << "app.GetResource(ObjectTableNVXID(" << remapper( VK_OBJECT_TYPE_OBJECT_TABLE_NVX, obj->objectTable ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -2368,9 +2368,9 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkRegisterObjectsNVX( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*objectTable*/ " << "app.GetResource(ObjectTableNVXID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT, obj->objectTable ) << "))";
+		result << indent << "		/*objectTable*/ " << "app.GetResource(ObjectTableNVXID(" << remapper( VK_OBJECT_TYPE_OBJECT_TABLE_NVX, obj->objectTable ) << "))";
 		result << ",\n";
 		result << indent << "		/*objectCount*/ " << IntToString(obj->objectCount);
 		result << ",\n";
@@ -2403,9 +2403,9 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkUnregisterObjectsNVX( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*objectTable*/ " << "app.GetResource(ObjectTableNVXID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT, obj->objectTable ) << "))";
+		result << indent << "		/*objectTable*/ " << "app.GetResource(ObjectTableNVXID(" << remapper( VK_OBJECT_TYPE_OBJECT_TABLE_NVX, obj->objectTable ) << "))";
 		result << ",\n";
 		result << indent << "		/*objectCount*/ " << IntToString(obj->objectCount);
 		result << ",\n";
@@ -2428,7 +2428,7 @@ switch ( iter->packet_id )
 			}
 		}
 		result << indent << "app.vkCmdSetViewportWScalingNV( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*firstViewport*/ " << IntToString(obj->firstViewport);
 		result << ",\n";
@@ -2454,7 +2454,7 @@ switch ( iter->packet_id )
 			}
 		}
 		result << indent << "app.vkCmdSetDiscardRectangleEXT( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*firstDiscardRectangle*/ " << IntToString(obj->firstDiscardRectangle);
 		result << ",\n";
@@ -2471,7 +2471,7 @@ switch ( iter->packet_id )
 			CHECK( obj->swapchainCount > 0 );
 			before << indent << "const VkSwapchainKHR  " << nameSer.MakeUnique( &obj->pSwapchains, "swapchains"s, "swapchain"s ) << "[] = {";
 			for (uint i = 0; i < obj->swapchainCount; ++i) {
-				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SwapchainKHRID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT, obj->pSwapchains[i] ) << "))";
+				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(SwapchainKHRID(" << remapper( VK_OBJECT_TYPE_SWAPCHAIN_KHR, obj->pSwapchains[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
 			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pSwapchains ) << ") == " << IntToString(obj->swapchainCount) << " );\n\n";
@@ -2485,7 +2485,7 @@ switch ( iter->packet_id )
 			}
 		}
 		result << indent << "app.vkSetHdrMetadataEXT( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*swapchainCount*/ " << IntToString(obj->swapchainCount);
 		result << ",\n";
@@ -2505,9 +2505,9 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkDisplayPowerControlEXT( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*display*/ " << "app.GetResource(DisplayKHRID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT, obj->display ) << "))";
+		result << indent << "		/*display*/ " << "app.GetResource(DisplayKHRID(" << remapper( VK_OBJECT_TYPE_DISPLAY_KHR, obj->display ) << "))";
 		result << ",\n";
 		result << indent << "		/*pDisplayPowerInfo*/ " << nameSer.GetPtr( obj->pDisplayPowerInfo );
 		result << " ));\n";
@@ -2521,13 +2521,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkRegisterDeviceEventEXT( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pDeviceEventInfo*/ " << nameSer.GetPtr( obj->pDeviceEventInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pFence*/ " << "&app.EditResource(FenceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT, *obj->pFence ) << "))";
+		result << indent << "		/*pFence*/ " << "&app.EditResource(FenceID(" << remapper( VK_OBJECT_TYPE_FENCE, *obj->pFence ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -2539,15 +2539,15 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkRegisterDisplayEventEXT( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*display*/ " << "app.GetResource(DisplayKHRID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT, obj->display ) << "))";
+		result << indent << "		/*display*/ " << "app.GetResource(DisplayKHRID(" << remapper( VK_OBJECT_TYPE_DISPLAY_KHR, obj->display ) << "))";
 		result << ",\n";
 		result << indent << "		/*pDisplayEventInfo*/ " << nameSer.GetPtr( obj->pDisplayEventInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pFence*/ " << "&app.EditResource(FenceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT, *obj->pFence ) << "))";
+		result << indent << "		/*pFence*/ " << "&app.EditResource(FenceID(" << remapper( VK_OBJECT_TYPE_FENCE, *obj->pFence ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -2559,7 +2559,7 @@ switch ( iter->packet_id )
 			before << SerializeStruct( BitCast<VkBaseInStructure const*>(obj->pSampleLocationsInfo), nameSer, remapper, indent );
 		}
 		result << indent << "app.vkCmdSetSampleLocationsEXT( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*pSampleLocationsInfo*/ " << nameSer.GetPtr( obj->pSampleLocationsInfo );
 		result << " );\n";
@@ -2574,13 +2574,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateSamplerYcbcrConversionKHR( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pYcbcrConversion*/ " << "&app.EditResource(SamplerYcbcrConversionID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION_EXT, *obj->pYcbcrConversion ) << "))";
+		result << indent << "		/*pYcbcrConversion*/ " << "&app.EditResource(SamplerYcbcrConversionID(" << remapper( VK_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION, *obj->pYcbcrConversion ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -2588,9 +2588,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroySamplerYcbcrConversionKHR : {
 		auto const*  obj = iter.Cast< packet_vkDestroySamplerYcbcrConversionKHR *>();
 		result << indent << "app.vkDestroySamplerYcbcrConversionKHR( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*ycbcrConversion*/ " << "app.GetResource(SamplerYcbcrConversionID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION_EXT, obj->ycbcrConversion ) << "))";
+		result << indent << "		/*ycbcrConversion*/ " << "app.GetResource(SamplerYcbcrConversionID(" << remapper( VK_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION, obj->ycbcrConversion ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -2605,7 +2605,7 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkImportFenceFdKHR( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pImportFenceFdInfo*/ " << nameSer.GetPtr( obj->pImportFenceFdInfo );
 		result << " ));\n";
@@ -2620,7 +2620,7 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkImportFenceWin32HandleKHR( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pImportFenceWin32HandleInfo*/ " << nameSer.GetPtr( obj->pImportFenceWin32HandleInfo );
 		result << " ));\n";
@@ -2637,7 +2637,7 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkImportSemaphoreWin32HandleKHR( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pImportSemaphoreWin32HandleInfo*/ " << nameSer.GetPtr( obj->pImportSemaphoreWin32HandleInfo );
 		result << " ));\n";
@@ -2653,13 +2653,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateValidationCacheEXT( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pValidationCache*/ " << "&app.EditResource(ValidationCacheEXTID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT, *obj->pValidationCache ) << "))";
+		result << indent << "		/*pValidationCache*/ " << "&app.EditResource(ValidationCacheEXTID(" << remapper( VK_OBJECT_TYPE_VALIDATION_CACHE_EXT, *obj->pValidationCache ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -2667,9 +2667,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroyValidationCacheEXT : {
 		auto const*  obj = iter.Cast< packet_vkDestroyValidationCacheEXT *>();
 		result << indent << "app.vkDestroyValidationCacheEXT( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*validationCache*/ " << "app.GetResource(ValidationCacheEXTID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT, obj->validationCache ) << "))";
+		result << indent << "		/*validationCache*/ " << "app.GetResource(ValidationCacheEXTID(" << remapper( VK_OBJECT_TYPE_VALIDATION_CACHE_EXT, obj->validationCache ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -2682,16 +2682,16 @@ switch ( iter->packet_id )
 			CHECK( obj->srcCacheCount > 0 );
 			before << indent << "const VkValidationCacheEXT  " << nameSer.MakeUnique( &obj->pSrcCaches, "srcCaches"s, "validationCache"s ) << "[] = {";
 			for (uint i = 0; i < obj->srcCacheCount; ++i) {
-				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(ValidationCacheEXTID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT, obj->pSrcCaches[i] ) << "))";
+				before << (i ? "," : "") << (i%4 == 0 ? "\n\t"s << indent : " ") << "app.GetResource(ValidationCacheEXTID(" << remapper( VK_OBJECT_TYPE_VALIDATION_CACHE_EXT, obj->pSrcCaches[i] ) << "))";
 			}
 			before << "\n" << indent << "};\n";
 			before << indent << "STATIC_ASSERT( CountOf(" << nameSer.Get( &obj->pSrcCaches ) << ") == " << IntToString(obj->srcCacheCount) << " );\n\n";
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkMergeValidationCachesEXT( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*dstCache*/ " << "app.GetResource(ValidationCacheEXTID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT, obj->dstCache ) << "))";
+		result << indent << "		/*dstCache*/ " << "app.GetResource(ValidationCacheEXTID(" << remapper( VK_OBJECT_TYPE_VALIDATION_CACHE_EXT, obj->dstCache ) << "))";
 		result << ",\n";
 		result << indent << "		/*srcCacheCount*/ " << IntToString(obj->srcCacheCount);
 		result << ",\n";
@@ -2721,7 +2721,7 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkBindBufferMemory2( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*bindInfoCount*/ " << IntToString(obj->bindInfoCount);
 		result << ",\n";
@@ -2742,7 +2742,7 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkBindImageMemory2( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*bindInfoCount*/ " << IntToString(obj->bindInfoCount);
 		result << ",\n";
@@ -2755,7 +2755,7 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdSetDeviceMask : {
 		auto const*  obj = iter.Cast< packet_vkCmdSetDeviceMask *>();
 		result << indent << "app.vkCmdSetDeviceMask( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*deviceMask*/ " << IntToString(obj->deviceMask);
 		result << " );\n";
@@ -2765,7 +2765,7 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkCmdDispatchBase : {
 		auto const*  obj = iter.Cast< packet_vkCmdDispatchBase *>();
 		result << indent << "app.vkCmdDispatchBase( \n";
-		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT, obj->commandBuffer ) << "))";
+		result << indent << "		/*commandBuffer*/ " << "app.GetResource(CommandBufferID(" << remapper( VK_OBJECT_TYPE_COMMAND_BUFFER, obj->commandBuffer ) << "))";
 		result << ",\n";
 		result << indent << "		/*baseGroupX*/ " << IntToString(obj->baseGroupX);
 		result << ",\n";
@@ -2796,9 +2796,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkTrimCommandPool : {
 		auto const*  obj = iter.Cast< packet_vkTrimCommandPool *>();
 		result << indent << "app.vkTrimCommandPool( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*commandPool*/ " << "app.GetResource(CommandPoolID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT, obj->commandPool ) << "))";
+		result << indent << "		/*commandPool*/ " << "app.GetResource(CommandPoolID(" << remapper( VK_OBJECT_TYPE_COMMAND_POOL, obj->commandPool ) << "))";
 		result << ",\n";
 		result << indent << "		/*flags*/ " << Serialize_VkCommandPoolTrimFlags( obj->flags );
 		result << " );\n";
@@ -2812,13 +2812,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateSamplerYcbcrConversion( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pYcbcrConversion*/ " << "&app.EditResource(SamplerYcbcrConversionID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION_EXT, *obj->pYcbcrConversion ) << "))";
+		result << indent << "		/*pYcbcrConversion*/ " << "&app.EditResource(SamplerYcbcrConversionID(" << remapper( VK_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION, *obj->pYcbcrConversion ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -2826,9 +2826,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroySamplerYcbcrConversion : {
 		auto const*  obj = iter.Cast< packet_vkDestroySamplerYcbcrConversion *>();
 		result << indent << "app.vkDestroySamplerYcbcrConversion( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*ycbcrConversion*/ " << "app.GetResource(SamplerYcbcrConversionID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION_EXT, obj->ycbcrConversion ) << "))";
+		result << indent << "		/*ycbcrConversion*/ " << "app.GetResource(SamplerYcbcrConversionID(" << remapper( VK_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION, obj->ycbcrConversion ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";
@@ -2842,13 +2842,13 @@ switch ( iter->packet_id )
 		}
 		VK_CALL( obj->result );
 		result << indent << "VK_CALL( app.vkCreateDescriptorUpdateTemplate( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
 		result << indent << "		/*pCreateInfo*/ " << nameSer.GetPtr( obj->pCreateInfo );
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << ",\n";
-		result << indent << "		/*pDescriptorUpdateTemplate*/ " << "&app.EditResource(DescriptorUpdateTemplateID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_EXT, *obj->pDescriptorUpdateTemplate ) << "))";
+		result << indent << "		/*pDescriptorUpdateTemplate*/ " << "&app.EditResource(DescriptorUpdateTemplateID(" << remapper( VK_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE, *obj->pDescriptorUpdateTemplate ) << "))";
 		result << " ));\n";
 		break;
 	}
@@ -2856,9 +2856,9 @@ switch ( iter->packet_id )
 	case VKTRACE_TPI_VK_vkDestroyDescriptorUpdateTemplate : {
 		auto const*  obj = iter.Cast< packet_vkDestroyDescriptorUpdateTemplate *>();
 		result << indent << "app.vkDestroyDescriptorUpdateTemplate( \n";
-		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT, obj->device ) << "))";
+		result << indent << "		/*device*/ " << "app.GetResource(DeviceID(" << remapper( VK_OBJECT_TYPE_DEVICE, obj->device ) << "))";
 		result << ",\n";
-		result << indent << "		/*descriptorUpdateTemplate*/ " << "app.GetResource(DescriptorUpdateTemplateID(" << remapper( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_EXT, obj->descriptorUpdateTemplate ) << "))";
+		result << indent << "		/*descriptorUpdateTemplate*/ " << "app.GetResource(DescriptorUpdateTemplateID(" << remapper( VK_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE, obj->descriptorUpdateTemplate ) << "))";
 		result << ",\n";
 		result << indent << "		/*pAllocator*/ " << "null";
 		result << " );\n";

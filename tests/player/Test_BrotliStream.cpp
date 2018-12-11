@@ -30,4 +30,6 @@ extern void Test_BrotliStream ()
 
 		TEST( str1 == str2 );
 	}
+
+    FG_LOGI( "Test_BrotliStream finished" );
 }

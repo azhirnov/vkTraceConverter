@@ -5,7 +5,7 @@
 #include "stl/Math/Bytes.h"
 #include "stl/Math/Math.h"
 #include "stl/Algorithms/EnumUtils.h"
-#include "stl/Containers/PoolAllocator.h"
+#include "stl/Memory/LinearAllocator.h"
 
 #include "extensions/vulkan_loader/VulkanLoader.h"
 #include "Types/VkResourceTypes.h"
@@ -27,9 +27,9 @@ static void VPackerTest1 (const AppTrace &appTrace)
 	auto*	res_bookmarks = appTrace.GetAnalyzer< AllResourcesBookmarks >();
 	TEST( res_bookmarks );
 
-	auto&	device_info	= res_bookmarks->GetResourcesByType( EResourceType::VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT )->begin()->second.front();
-	auto&	mem_info	= res_bookmarks->GetResourcesByType( EResourceType::VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT )->begin()->second.front();
-	auto&	image_info	= res_bookmarks->GetResourcesByType( EResourceType::VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT )->begin()->second.front();
+	auto&	device_info	= res_bookmarks->GetResourcesByType( EResourceType::VK_OBJECT_TYPE_DEVICE )->begin()->second.front();
+	auto&	mem_info	= res_bookmarks->GetResourcesByType( EResourceType::VK_OBJECT_TYPE_DEVICE_MEMORY )->begin()->second.front();
+	auto&	image_info	= res_bookmarks->GetResourcesByType( EResourceType::VK_OBJECT_TYPE_IMAGE )->begin()->second.front();
 	auto	pos			= std::max( device_info.FirstBookmark().pos, std::max( mem_info.FirstBookmark().pos, image_info.FirstBookmark().pos ));
 
 
@@ -78,7 +78,7 @@ static void VPackerTest1 (const AppTrace &appTrace)
 
 	TracePacketHeader const*	header		= BitCast<TracePacketHeader const*>( packer.GetData().data() );
 	void *						data_ptr	= const_cast<uint8_t *>(packer.GetData().data()) + SizeOf<TracePacketHeader>;
-	PoolAllocator				allocator;
+	LinearAllocator<>			allocator;
 	VUnpacker					unpacker	{ data_ptr, BytesU(header->size), BytesU(header->offset), resources, allocator };
 
 	TEST( packer.GetData().size() == header->size + sizeof(*header) );
@@ -107,8 +107,8 @@ static void VPackerTest2 (const AppTrace &appTrace)
 	auto*	res_bookmarks = appTrace.GetAnalyzer< AllResourcesBookmarks >();
 	TEST( res_bookmarks );
 	
-	auto&	cmd_info	= res_bookmarks->GetResourcesByType( EResourceType::VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT )->begin()->second.front();
-	auto&	layout_info	= res_bookmarks->GetResourcesByType( EResourceType::VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT )->begin()->second.front();
+	auto&	cmd_info	= res_bookmarks->GetResourcesByType( EResourceType::VK_OBJECT_TYPE_COMMAND_BUFFER )->begin()->second.front();
+	auto&	layout_info	= res_bookmarks->GetResourcesByType( EResourceType::VK_OBJECT_TYPE_PIPELINE_LAYOUT )->begin()->second.front();
 	auto	pos			= std::max( cmd_info.FirstBookmark().pos, layout_info.FirstBookmark().pos );
 
 
@@ -145,7 +145,7 @@ static void VPackerTest2 (const AppTrace &appTrace)
 
 	TracePacketHeader const*	header		= BitCast<TracePacketHeader const*>( packer.GetData().data() );
 	void *						data_ptr	= const_cast<uint8_t *>(packer.GetData().data()) + SizeOf<TracePacketHeader>;
-	PoolAllocator				allocator;
+	LinearAllocator<>			allocator;
 	VUnpacker					unpacker	{ data_ptr, BytesU(header->size), BytesU(header->offset), resources, allocator };
 	
 	TEST( packer.GetData().size() == header->size + sizeof(*header) );
@@ -172,7 +172,7 @@ static void VPackerTest3 (const AppTrace &appTrace)
 	auto*	res_bookmarks = appTrace.GetAnalyzer< AllResourcesBookmarks >();
 	TEST( res_bookmarks );
 	
-	auto&	cmd_info	= res_bookmarks->GetResourcesByType( EResourceType::VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT )->begin()->second.front();
+	auto&	cmd_info	= res_bookmarks->GetResourcesByType( EResourceType::VK_OBJECT_TYPE_COMMAND_BUFFER )->begin()->second.front();
 	auto	pos			= cmd_info.FirstBookmark().pos;
 
 
@@ -202,7 +202,7 @@ static void VPackerTest3 (const AppTrace &appTrace)
 
 	TracePacketHeader const*	header		= BitCast<TracePacketHeader const*>( packer.GetData().data() );
 	void *						data_ptr	= const_cast<uint8_t *>(packer.GetData().data()) + SizeOf<TracePacketHeader>;
-	PoolAllocator				allocator;
+	LinearAllocator<>			allocator;
 	VUnpacker					unpacker	{ data_ptr, BytesU(header->size), BytesU(header->offset), resources, allocator };
 	
 	TEST( packer.GetData().size() == header->size + sizeof(*header) );
@@ -242,7 +242,7 @@ static void VPackerTest4 (const AppTrace &)
 	VUnpacker::ResourceMap_t	resources;
 	TracePacketHeader const*	header		= BitCast<TracePacketHeader const*>( packer.GetData().data() );
 	void *						data_ptr	= const_cast<uint8_t *>(packer.GetData().data()) + SizeOf<TracePacketHeader>;
-	PoolAllocator				allocator;
+	LinearAllocator<>			allocator;
 	VUnpacker					unpacker	{ data_ptr, BytesU(header->size), BytesU(header->offset), resources, allocator };
 
 	auto const&  dst_size = unpacker.Get<size_t>();
@@ -267,6 +267,8 @@ extern void Test_VPacker ()
 	VPackerTest2( app_trace );
 	VPackerTest3( app_trace );
 	VPackerTest4( app_trace );
+
+    FG_LOGI( "Test_VPacker finished" );
 }
 
 

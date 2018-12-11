@@ -24,9 +24,9 @@ namespace VTC
 	{
 		switch ( type )
 		{
-			case VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT :			CHECK( _ProcessInstanceUsage( pos, id ));		break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT :	CHECK( _ProcessPhysicalDeviceUsage( pos, id ));	break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT :			CHECK( _ProcessLogicalDeviceUsage( pos, id ));	break;
+			case VK_OBJECT_TYPE_INSTANCE :			CHECK( _ProcessInstanceUsage( pos, id ));		break;
+			case VK_OBJECT_TYPE_PHYSICAL_DEVICE :	CHECK( _ProcessPhysicalDeviceUsage( pos, id ));	break;
+			case VK_OBJECT_TYPE_DEVICE :			CHECK( _ProcessLogicalDeviceUsage( pos, id ));	break;
 		}
 	}
 	
@@ -73,9 +73,9 @@ namespace VTC
 		}
 
 		info.instanceCreateFlags	= packet.pCreateInfo->flags;
-		info.applicationName		= packet.pCreateInfo->pApplicationInfo->pApplicationName;
+		info.applicationName		= packet.pCreateInfo->pApplicationInfo->pApplicationName ? packet.pCreateInfo->pApplicationInfo->pApplicationName : "";
 		info.applicationVersion		= packet.pCreateInfo->pApplicationInfo->applicationVersion;
-		info.engineName				= packet.pCreateInfo->pApplicationInfo->pEngineName;
+		info.engineName				= packet.pCreateInfo->pApplicationInfo->pEngineName ? packet.pCreateInfo->pApplicationInfo->pEngineName : "";
 		info.engineVersion			= packet.pCreateInfo->pApplicationInfo->engineVersion;
 		info.apiVersion				= packet.pCreateInfo->pApplicationInfo->apiVersion;
 		return true;

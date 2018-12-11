@@ -12,6 +12,7 @@ if (NOT VTC_STABLE)
 		"../generator/GenEnumToString.cpp"
 		"../generator/Generator.cpp"
 		"../generator/Generator.h"
+		"../generator/GenFormatHelpers.cpp"
 		"../generator/GenFuncErrorChecks.cpp"
 		"../generator/GenRawVulkanCalls.cpp"
 		"../generator/GenResourceBookmarks.cpp"
@@ -25,7 +26,7 @@ if (NOT VTC_STABLE)
 		"../generator/StringParser.cpp"
 		"../generator/StringParser.h" )
 	add_executable( "Generator" ${SOURCES} )
-	source_group( "" FILES "../generator/GenEnumToString.cpp" "../generator/Generator.cpp" "../generator/Generator.h" "../generator/GenFuncErrorChecks.cpp" "../generator/GenRawVulkanCalls.cpp" "../generator/GenResourceBookmarks.cpp" "../generator/GenStructToString.cpp" "../generator/GenStructTypeHelpers.cpp" "../generator/GenUnpacker.cpp" "../generator/GenVulkanTracePacker.cpp" "../generator/GenVulkanTracePlayer.cpp" "../generator/HeaderParser.cpp" "../generator/MarkRequiredTypes.cpp" "../generator/StringParser.cpp" "../generator/StringParser.h" )
+	source_group( "" FILES "../generator/GenEnumToString.cpp" "../generator/Generator.cpp" "../generator/Generator.h" "../generator/GenFormatHelpers.cpp" "../generator/GenFuncErrorChecks.cpp" "../generator/GenRawVulkanCalls.cpp" "../generator/GenResourceBookmarks.cpp" "../generator/GenStructToString.cpp" "../generator/GenStructTypeHelpers.cpp" "../generator/GenUnpacker.cpp" "../generator/GenVulkanTracePacker.cpp" "../generator/GenVulkanTracePlayer.cpp" "../generator/HeaderParser.cpp" "../generator/MarkRequiredTypes.cpp" "../generator/StringParser.cpp" "../generator/StringParser.h" )
 	target_include_directories( "Generator" PRIVATE "${FRAMEGRAPH_INCLUDE_DIR}" )
 	target_include_directories( "Generator" PRIVATE "${VULKAN_HEADERS_INSTALL_DIR}/include" )
 	target_include_directories( "Generator" PRIVATE "../generator" )
@@ -58,9 +59,24 @@ endif()
 # project: Utils
 #==================================================================================================
 set( SOURCES 
+	"../cmake/app_defines.cmake"
+	"../cmake/attach_fg.cmake"
+	"../cmake/compilers.cmake"
+	"../cmake/download_brotli.cmake"
+	"../cmake/download_other.cmake"
+	"../cmake/download_spirvcross.cmake"
+	"../cmake/download_spirvreflect.cmake"
+	"../cmake/download_vez.cmake"
+	"../cmake/download_vulkan_tools.cmake"
+	"../cmake/graphviz.cmake"
+	"../cmake/vktrace_defines.cmake"
+	"../cmake/vulkan_tools_alt.cmake"
+	"../utils/AlignedBuffer.h"
 	"../utils/Stream/BrotliStream.cpp"
 	"../utils/Stream/BrotliStream.h" )
 add_library( "Utils" STATIC ${SOURCES} )
+source_group( "cmake" FILES "../cmake/app_defines.cmake" "../cmake/attach_fg.cmake" "../cmake/compilers.cmake" "../cmake/download_brotli.cmake" "../cmake/download_other.cmake" "../cmake/download_spirvcross.cmake" "../cmake/download_spirvreflect.cmake" "../cmake/download_vez.cmake" "../cmake/download_vulkan_tools.cmake" "../cmake/graphviz.cmake" "../cmake/vktrace_defines.cmake" "../cmake/vulkan_tools_alt.cmake" )
+source_group( "" FILES "../utils/AlignedBuffer.h" )
 source_group( "Stream" FILES "../utils/Stream/BrotliStream.cpp" "../utils/Stream/BrotliStream.h" )
 target_include_directories( "Utils" PUBLIC "${VTC_CONVERTER_INCLUDE_DIRS}" )
 target_link_libraries( "Utils" "${VTC_CONVERTER_LIBRARIES}" )
@@ -92,7 +108,21 @@ set( SOURCES
 	"Converters/Vulkan/VulkanTraceConverter.h"
 	"Converters/Vulkan/VulkanTraceConverter_MemRemap.cpp"
 	"Converters/Vulkan/VulkanTraceConverter_QueueRemap.cpp"
+	"../shared/FGPack/FgStructPacker.h"
+	"../shared/FGPack/FgStructUnpacker.h"
+	"Converters/FrameGraph/BufferConverter.cpp"
+	"Converters/FrameGraph/BufferConverter.h"
+	"Converters/FrameGraph/DrawCallConverter.cpp"
+	"Converters/FrameGraph/DrawCallConverter.h"
+	"Converters/FrameGraph/FGEnumCast.h"
+	"Converters/FrameGraph/FrameGraphConverter.cpp"
 	"Converters/FrameGraph/FrameGraphConverter.h"
+	"Converters/FrameGraph/ImageConverter.cpp"
+	"Converters/FrameGraph/ImageConverter.h"
+	"Converters/FrameGraph/PipelineConverter.cpp"
+	"Converters/FrameGraph/PipelineConverter.h"
+	"Converters/FrameGraph/SamplerConverter.cpp"
+	"Converters/FrameGraph/SamplerConverter.h"
 	"Analyzer/Ext/ExtensionAnalyzer.cpp"
 	"Analyzer/Ext/ExtensionAnalyzer.h"
 	"Analyzer/Ext/FPSAnalyzer.cpp"
@@ -104,6 +134,8 @@ set( SOURCES
 	"Converters/Utils/NameSerializer.h"
 	"Converters/Utils/ResRemapper.cpp"
 	"Converters/Utils/ResRemapper.h"
+	"Converters/Utils/TraceConverterBase.cpp"
+	"Converters/Utils/TraceConverterBase.h"
 	"Converters/Utils/TracePacker.cpp"
 	"Converters/Utils/TracePacker.h"
 	"Converters/Data/Block.h"
@@ -118,8 +150,10 @@ set( SOURCES
 	"Converters/GraphViz/GraphVizConverter.cpp"
 	"Converters/GraphViz/GraphVizConverter.h"
 	"Converters/GraphViz/GraphVizConverter_SyncGraph.cpp"
+	"../shared/IDs/EFrameGraphPacketIDs.h"
 	"../shared/IDs/EPacketIDs.h"
 	"../shared/IDs/EVulkanPacketIDs.h"
+	"../shared/IDs/FGPacketIDs.h"
 	"../shared/IDs/VPacketIDs.h"
 	"Analyzer/AnalyzerUtils.h"
 	"Analyzer/IAnalyzer.h"
@@ -135,6 +169,7 @@ set( SOURCES
 	"../shared/Generated/UnpackPacket.h"
 	"../shared/Generated/VkEnumToString.h"
 	"../shared/Generated/VkEnumToStringImpl.h"
+	"../shared/Generated/VkFormatHelpers.h"
 	"../shared/Generated/VkStructToString.h"
 	"../shared/Generated/VkStructToStringImpl.h"
 	"../shared/Generated/VkStructTypes.h"
@@ -169,25 +204,27 @@ set( SOURCES
 	"Converters/ConverterConfig.h"
 	"../shared/Types/TraceFileHeader.h"
 	"../shared/Types/TracePacketHeader.h"
+	"../shared/Types/VkHelpers.h"
 	"../shared/Types/VkResourceTypes.h"
 	"../shared/Types/VulkanCreateInfo.h" )
 add_executable( "VkTraceConverter" ${SOURCES} )
 source_group( "Parser" FILES "Parser/AppTrace.cpp" "Parser/AppTrace.h" "Parser/TraceRange.cpp" "Parser/TraceRange.h" "Parser/VkObjectsTracker.cpp" )
 source_group( "Analyzer\\old" FILES "Analyzer/old/DrawCallAnalyzer.h" )
 source_group( "Converters\\Vulkan" FILES "Converters/Vulkan/VulkanTraceConverter.cpp" "Converters/Vulkan/VulkanTraceConverter.h" "Converters/Vulkan/VulkanTraceConverter_MemRemap.cpp" "Converters/Vulkan/VulkanTraceConverter_QueueRemap.cpp" )
-source_group( "Converters\\FrameGraph" FILES "Converters/FrameGraph/FrameGraphConverter.h" )
+source_group( "shared\\FGPack" FILES "../shared/FGPack/FgStructPacker.h" "../shared/FGPack/FgStructUnpacker.h" )
+source_group( "Converters\\FrameGraph" FILES "Converters/FrameGraph/BufferConverter.cpp" "Converters/FrameGraph/BufferConverter.h" "Converters/FrameGraph/DrawCallConverter.cpp" "Converters/FrameGraph/DrawCallConverter.h" "Converters/FrameGraph/FGEnumCast.h" "Converters/FrameGraph/FrameGraphConverter.cpp" "Converters/FrameGraph/FrameGraphConverter.h" "Converters/FrameGraph/ImageConverter.cpp" "Converters/FrameGraph/ImageConverter.h" "Converters/FrameGraph/PipelineConverter.cpp" "Converters/FrameGraph/PipelineConverter.h" "Converters/FrameGraph/SamplerConverter.cpp" "Converters/FrameGraph/SamplerConverter.h" )
 source_group( "Analyzer\\Ext" FILES "Analyzer/Ext/ExtensionAnalyzer.cpp" "Analyzer/Ext/ExtensionAnalyzer.h" "Analyzer/Ext/FPSAnalyzer.cpp" "Analyzer/Ext/FPSAnalyzer.h" "Analyzer/Ext/SynchronizationsAnalyzer.cpp" "Analyzer/Ext/SynchronizationsAnalyzer.h" )
-source_group( "Converters\\Utils" FILES "Converters/Utils/BasicTypesConverter.h" "Converters/Utils/NameSerializer.cpp" "Converters/Utils/NameSerializer.h" "Converters/Utils/ResRemapper.cpp" "Converters/Utils/ResRemapper.h" "Converters/Utils/TracePacker.cpp" "Converters/Utils/TracePacker.h" )
+source_group( "Converters\\Utils" FILES "Converters/Utils/BasicTypesConverter.h" "Converters/Utils/NameSerializer.cpp" "Converters/Utils/NameSerializer.h" "Converters/Utils/ResRemapper.cpp" "Converters/Utils/ResRemapper.h" "Converters/Utils/TraceConverterBase.cpp" "Converters/Utils/TraceConverterBase.h" "Converters/Utils/TracePacker.cpp" "Converters/Utils/TracePacker.h" )
 source_group( "Converters\\Data" FILES "Converters/Data/Block.h" "Converters/Data/IResourceDataManager.h" "Converters/Data/ResourceDataManager.cpp" "Converters/Data/ResourceDataManager.h" )
 source_group( "Converters\\CppVulkan" FILES "Converters/CppVulkan/CppVulkanConverter.cpp" "Converters/CppVulkan/CppVulkanConverter.h" "Converters/CppVulkan/CppVulkanConverter2.cpp" "Converters/CppVulkan/CppVulkanConverter_MemRemap.cpp" "Converters/CppVulkan/CppVulkanConverter_QueueRemap.cpp" )
 source_group( "Converters\\GraphViz" FILES "Converters/GraphViz/GraphVizConverter.cpp" "Converters/GraphViz/GraphVizConverter.h" "Converters/GraphViz/GraphVizConverter_SyncGraph.cpp" )
-source_group( "shared\\IDs" FILES "../shared/IDs/EPacketIDs.h" "../shared/IDs/EVulkanPacketIDs.h" "../shared/IDs/VPacketIDs.h" )
+source_group( "shared\\IDs" FILES "../shared/IDs/EFrameGraphPacketIDs.h" "../shared/IDs/EPacketIDs.h" "../shared/IDs/EVulkanPacketIDs.h" "../shared/IDs/FGPacketIDs.h" "../shared/IDs/VPacketIDs.h" )
 source_group( "Analyzer" FILES "Analyzer/AnalyzerUtils.h" "Analyzer/IAnalyzer.h" "Analyzer/ResourceTracker.h" )
 source_group( "" FILES "CMakeLists.txt" "Common.h" "main.cpp" "VkTraceCommon.h" )
-source_group( "shared\\Generated" FILES "../shared/Generated/BuildFunctionResourceBookmarks.h" "../shared/Generated/BuildRawVulkanCalls.h" "../shared/Generated/BuildStructResourceBookmarks.h" "../shared/Generated/CheckPacketError.h" "../shared/Generated/UnpackPacket.h" "../shared/Generated/VkEnumToString.h" "../shared/Generated/VkEnumToStringImpl.h" "../shared/Generated/VkStructToString.h" "../shared/Generated/VkStructToStringImpl.h" "../shared/Generated/VkStructTypes.h" "../shared/Generated/VulkanTraceFuncPacker.h" "../shared/Generated/VulkanTraceFuncUnpacker.h" "../shared/Generated/VulkanTracePacketIDs.h" "../shared/Generated/VulkanTraceStructPacker.h" "../shared/Generated/VulkanTraceStructPackerImpl.h" "../shared/Generated/VulkanTraceStructUnpacker.h" "../shared/Generated/VulkanTraceStructUnpackerImpl.h" )
+source_group( "shared\\Generated" FILES "../shared/Generated/BuildFunctionResourceBookmarks.h" "../shared/Generated/BuildRawVulkanCalls.h" "../shared/Generated/BuildStructResourceBookmarks.h" "../shared/Generated/CheckPacketError.h" "../shared/Generated/UnpackPacket.h" "../shared/Generated/VkEnumToString.h" "../shared/Generated/VkEnumToStringImpl.h" "../shared/Generated/VkFormatHelpers.h" "../shared/Generated/VkStructToString.h" "../shared/Generated/VkStructToStringImpl.h" "../shared/Generated/VkStructTypes.h" "../shared/Generated/VulkanTraceFuncPacker.h" "../shared/Generated/VulkanTraceFuncUnpacker.h" "../shared/Generated/VulkanTracePacketIDs.h" "../shared/Generated/VulkanTraceStructPacker.h" "../shared/Generated/VulkanTraceStructPackerImpl.h" "../shared/Generated/VulkanTraceStructUnpacker.h" "../shared/Generated/VulkanTraceStructUnpackerImpl.h" )
 source_group( "Analyzer\\Default" FILES "Analyzer/Default/AllResourcesBookmarks.cpp" "Analyzer/Default/AllResourcesBookmarks.h" "Analyzer/Default/BufferAnalyzer.cpp" "Analyzer/Default/BufferAnalyzer.h" "Analyzer/Default/DescriptorSetAnalyzer.cpp" "Analyzer/Default/DescriptorSetAnalyzer.h" "Analyzer/Default/DeviceAnalyzer.cpp" "Analyzer/Default/DeviceAnalyzer.h" "Analyzer/Default/ImageAnalyzer.cpp" "Analyzer/Default/ImageAnalyzer.h" "Analyzer/Default/MemoryObjAnalyzer.cpp" "Analyzer/Default/MemoryObjAnalyzer.h" "Analyzer/Default/MemoryTransferAnalyzer.cpp" "Analyzer/Default/MemoryTransferAnalyzer.h" "Analyzer/Default/QueueAnalyzer.cpp" "Analyzer/Default/QueueAnalyzer.h" "Analyzer/Default/RenderPassAnalyzer.cpp" "Analyzer/Default/RenderPassAnalyzer.h" "Analyzer/Default/SwapchainAnalyzer.cpp" "Analyzer/Default/SwapchainAnalyzer.h" )
 source_group( "Converters" FILES "Converters/Converter.h" "Converters/ConverterConfig.h" )
-source_group( "shared\\Types" FILES "../shared/Types/TraceFileHeader.h" "../shared/Types/TracePacketHeader.h" "../shared/Types/VkResourceTypes.h" "../shared/Types/VulkanCreateInfo.h" )
+source_group( "shared\\Types" FILES "../shared/Types/TraceFileHeader.h" "../shared/Types/TracePacketHeader.h" "../shared/Types/VkHelpers.h" "../shared/Types/VkResourceTypes.h" "../shared/Types/VulkanCreateInfo.h" )
 target_include_directories( "VkTraceConverter" PRIVATE "${VTC_CONVERTER_INCLUDE_DIRS}" )
 target_include_directories( "VkTraceConverter" PRIVATE "${CMAKE_SOURCE_DIR}/shared" )
 target_link_libraries( "VkTraceConverter" "${VTC_CONVERTER_LIBRARIES}" )

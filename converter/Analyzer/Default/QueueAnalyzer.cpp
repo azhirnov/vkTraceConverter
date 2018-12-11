@@ -38,9 +38,9 @@ namespace VTC
 	{
 		switch ( type )
 		{
-			case VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT :			CHECK( _ProcessQueueUsage( pos, id, op ));			break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT :		CHECK( _ProcessCommandPoolUsage( pos, id, op ));	break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT :	CHECK( _ProcessCommandBufferUsage( pos, id, op ));	break;
+			case VK_OBJECT_TYPE_QUEUE :				CHECK( _ProcessQueueUsage( pos, id, op ));			break;
+			case VK_OBJECT_TYPE_COMMAND_POOL :		CHECK( _ProcessCommandPoolUsage( pos, id, op ));	break;
+			case VK_OBJECT_TYPE_COMMAND_BUFFER :	CHECK( _ProcessCommandBufferUsage( pos, id, op ));	break;
 		}
 	}
 	
@@ -161,8 +161,8 @@ namespace VTC
 */
 	bool QueueAnalyzer::_QueueSubmitCommand (TraceRange::Bookmark pos, QueueInfo &queue, ResourceID cmdBufferId)
 	{
-		auto	cmdbuf = _cmdBuffers.find( cmdBufferId );
-		CHECK_ERR( cmdbuf != _cmdBuffers.end() );
+		auto	cmdbuf = _cmdBufferStates.find( cmdBufferId );
+		CHECK_ERR( cmdbuf != _cmdBufferStates.end() );
 		CHECK_ERR( not cmdbuf->second.recording );
 
 		queue.usageFlags |= cmdbuf->second.queueUsageFlags;
@@ -247,24 +247,33 @@ namespace VTC
 			auto&	packet	= pos.Cast< packet_vkAllocateCommandBuffers >();
 			CHECK_ERR( packet.pAllocateInfo );
 
-			auto	cmdbuf = _cmdBuffers.insert({ id, CommandBufferState() }).first;
+			auto[cmdbuf, inserted] = _cmdBufferStates.insert({ id, CommandBufferState() });
 
 			cmdbuf->second.commandPool	= ResourceID(packet.pAllocateInfo->commandPool);
 			cmdbuf->second.isSecondary	= (packet.pAllocateInfo->level != VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+			
+			CmdBufferMap_t::iterator	cmd_iter;
+			CHECK_ERR( _cmdBuffers.AddResourceUsage( OUT cmd_iter, pos, id, EResOp::Construct ));
+
+			cmd_iter->second.back().id			= id;
+			cmd_iter->second.back().commandPool	= ResourceID(packet.pAllocateInfo->commandPool);
 			return true;
 		}
+
+		CmdBufferMap_t::iterator	cmd_iter;
+		CHECK( _cmdBuffers.AddResourceUsage( OUT cmd_iter, pos, id, op ));
 
 		if ( op == EResOp::Destruct )
 		{
 			CHECK_ERR(	pos->packet_id == VKTRACE_TPI_VK_vkFreeCommandBuffers or
 						pos->packet_id == VKTRACE_TPI_VK_vkDestroyCommandPool );
 
-			CHECK( _cmdBuffers.erase( id ) == 1 );
+			CHECK( _cmdBufferStates.erase( id ) == 1 );
 			return true;
 		} 
 		
-		auto	cmdbuf = _cmdBuffers.find( id );
-		CHECK_ERR( cmdbuf != _cmdBuffers.end() );
+		auto	cmdbuf = _cmdBufferStates.find( id );
+		CHECK_ERR( cmdbuf != _cmdBufferStates.end() );
 
 		switch ( pos->packet_id )
 		{
@@ -431,8 +440,8 @@ namespace VTC
 	bool QueueAnalyzer::_OnCmdPipelineBarrier (ArrayView<VkBufferMemoryBarrier> bufferBarriers, ArrayView<VkImageMemoryBarrier> imageBarriers,
 												ResourceID id, TraceRange::Bookmark pos)
 	{
-		auto	cmdbuf = _cmdBuffers.find( id );
-		CHECK_ERR( cmdbuf != _cmdBuffers.end() );
+		auto	cmdbuf = _cmdBufferStates.find( id );
+		CHECK_ERR( cmdbuf != _cmdBufferStates.end() );
 		CHECK_ERR( cmdbuf->second.recording );
 
 		for (auto& bufbar : bufferBarriers)

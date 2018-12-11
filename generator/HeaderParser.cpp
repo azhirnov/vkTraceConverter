@@ -524,7 +524,7 @@ namespace VTC
 			{ "vulkan_xlib.h",			{ "VK_NO_PROTOTYPES" },		{ "VULKAN_XLIB_H_",			"__cplusplus" },	true },
 			{ "vulkan_xlib_xrandr.h",	{ "VK_NO_PROTOTYPES" },		{ "VULKAN_XLIB_XRANDR_H_",	"__cplusplus" },	true },
 			{ "vulkan_xcb.h",			{ "VK_NO_PROTOTYPES" },		{ "VULKAN_XCB_H_",			"__cplusplus" },	true },
-			{ "vulkan_mir.h",			{ "VK_NO_PROTOTYPES" },		{ "VULKAN_MIR_H_",			"__cplusplus" },	true },
+			//{ "vulkan_mir.h",			{ "VK_NO_PROTOTYPES" },		{ "VULKAN_MIR_H_",			"__cplusplus" },	true },
 			{ "vulkan_wayland.h",		{ "VK_NO_PROTOTYPES" },		{ "VULKAN_WAYLAND_H_",		"__cplusplus" },	true }
 		};
 
@@ -578,8 +578,8 @@ namespace VTC
 				fn.data.scope = EFuncScope::Library;
 			}
 			else
-			if ( res_info->second.type == VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT or
-				 res_info->second.type == VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT or
+			if ( res_info->second.type == VK_OBJECT_TYPE_INSTANCE or
+				 res_info->second.type == VK_OBJECT_TYPE_PHYSICAL_DEVICE or
 				 fn.data.name == "vkGetDeviceProcAddr" )
 			{
 				fn.data.scope = EFuncScope::Instance;
@@ -679,6 +679,7 @@ namespace VTC
 		_basicTypes.insert({ "int32_t",			EBasicType::Int });
 		_basicTypes.insert({ "uint32_t",		EBasicType::UInt });
 		_basicTypes.insert({ "uint8_t",			EBasicType::UInt });
+		_basicTypes.insert({ "uint16_t",		EBasicType::UInt });
 		_basicTypes.insert({ "uint64_t",		EBasicType::ULong });
 		_basicTypes.insert({ "size_t",			EBasicType::USize });
 		_basicTypes.insert({ "VkDeviceSize",	EBasicType::ULong });
@@ -738,41 +739,41 @@ namespace VTC
 	bool Generator::BuildResourceTypeMap ()
 	{
 		_resourceTypes.clear();
-		_resourceTypes.insert({ "VkInstance",					{ VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT,						"VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT" }});
-		_resourceTypes.insert({ "VkPhysicalDevice",				{ VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT,				"VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT" }});
-		_resourceTypes.insert({ "VkDevice",						{ VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT,						"VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT" }});
-		_resourceTypes.insert({ "VkQueue",						{ VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT,						"VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT" }});
-		_resourceTypes.insert({ "VkSemaphore",					{ VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT,					"VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT" }});
-		_resourceTypes.insert({ "VkCommandBuffer",				{ VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT,				"VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT" }});
-		_resourceTypes.insert({ "VkFence",						{ VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT,						"VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT" }});
-		_resourceTypes.insert({ "VkDeviceMemory",				{ VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT,				"VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT" }});
-		_resourceTypes.insert({ "VkBuffer",						{ VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT,						"VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT" }});
-		_resourceTypes.insert({ "VkImage",						{ VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT,						"VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT" }});
-		_resourceTypes.insert({ "VkEvent",						{ VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT,						"VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT" }});
-		_resourceTypes.insert({ "VkQueryPool",					{ VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT,					"VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT" }});
-		_resourceTypes.insert({ "VkBufferView",					{ VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT,					"VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT" }});
-		_resourceTypes.insert({ "VkImageView",					{ VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT,					"VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT" }});
-		_resourceTypes.insert({ "VkShaderModule",				{ VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT,				"VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT" }});
-		_resourceTypes.insert({ "VkPipelineCache",				{ VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_CACHE_EXT,				"VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_CACHE_EXT" }});
-		_resourceTypes.insert({ "VkPipelineLayout",				{ VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT,				"VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT" }});
-		_resourceTypes.insert({ "VkRenderPass",					{ VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT,					"VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT" }});
-		_resourceTypes.insert({ "VkPipeline",					{ VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT,						"VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT" }});
-		_resourceTypes.insert({ "VkDescriptorSetLayout",		{ VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT,		"VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT" }});
-		_resourceTypes.insert({ "VkSampler",					{ VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT,						"VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT" }});
-		_resourceTypes.insert({ "VkDescriptorPool",				{ VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT,				"VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT" }});
-		_resourceTypes.insert({ "VkDescriptorSet",				{ VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT,				"VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT" }});
-		_resourceTypes.insert({ "VkFramebuffer",				{ VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT,					"VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT" }});
-		_resourceTypes.insert({ "VkCommandPool",				{ VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT,					"VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT" }});
-		_resourceTypes.insert({ "VkSurfaceKHR",					{ VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT,					"VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT" }});
-		_resourceTypes.insert({ "VkSwapchainKHR",				{ VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT,				"VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT" }});
-		_resourceTypes.insert({ "VkDisplayKHR",					{ VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT,					"VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT" }});
-		_resourceTypes.insert({ "VkDisplayModeKHR",				{ VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT,				"VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT" }});
-		_resourceTypes.insert({ "VkObjectTableNVX",				{ VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT,				"VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT" }});
-		_resourceTypes.insert({ "VkIndirectCommandsLayoutNVX",	{ VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT,	"VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT" }});
-		_resourceTypes.insert({ "VkValidationCacheEXT",			{ VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT,			"VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT" }});
-		_resourceTypes.insert({ "VkSamplerYcbcrConversion",		{ VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION_EXT,		"VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION_EXT" }});
-		_resourceTypes.insert({ "VkDescriptorUpdateTemplate",	{ VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_EXT,	"VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_EXT" }});
-		_resourceTypes.insert({ "VkAccelerationStructureNVX",	{ VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NVX_EXT,	"VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NVX_EXT" }});
+		_resourceTypes.insert({ "VkInstance",					{ VK_OBJECT_TYPE_INSTANCE,						"VK_OBJECT_TYPE_INSTANCE" }});
+		_resourceTypes.insert({ "VkPhysicalDevice",				{ VK_OBJECT_TYPE_PHYSICAL_DEVICE,				"VK_OBJECT_TYPE_PHYSICAL_DEVICE" }});
+		_resourceTypes.insert({ "VkDevice",						{ VK_OBJECT_TYPE_DEVICE,						"VK_OBJECT_TYPE_DEVICE" }});
+		_resourceTypes.insert({ "VkQueue",						{ VK_OBJECT_TYPE_QUEUE,							"VK_OBJECT_TYPE_QUEUE" }});
+		_resourceTypes.insert({ "VkSemaphore",					{ VK_OBJECT_TYPE_SEMAPHORE,						"VK_OBJECT_TYPE_SEMAPHORE" }});
+		_resourceTypes.insert({ "VkCommandBuffer",				{ VK_OBJECT_TYPE_COMMAND_BUFFER,				"VK_OBJECT_TYPE_COMMAND_BUFFER" }});
+		_resourceTypes.insert({ "VkFence",						{ VK_OBJECT_TYPE_FENCE,							"VK_OBJECT_TYPE_FENCE" }});
+		_resourceTypes.insert({ "VkDeviceMemory",				{ VK_OBJECT_TYPE_DEVICE_MEMORY,					"VK_OBJECT_TYPE_DEVICE_MEMORY" }});
+		_resourceTypes.insert({ "VkBuffer",						{ VK_OBJECT_TYPE_BUFFER,						"VK_OBJECT_TYPE_BUFFER" }});
+		_resourceTypes.insert({ "VkImage",						{ VK_OBJECT_TYPE_IMAGE,							"VK_OBJECT_TYPE_IMAGE" }});
+		_resourceTypes.insert({ "VkEvent",						{ VK_OBJECT_TYPE_EVENT,							"VK_OBJECT_TYPE_EVENT" }});
+		_resourceTypes.insert({ "VkQueryPool",					{ VK_OBJECT_TYPE_QUERY_POOL,					"VK_OBJECT_TYPE_QUERY_POOL" }});
+		_resourceTypes.insert({ "VkBufferView",					{ VK_OBJECT_TYPE_BUFFER_VIEW,					"VK_OBJECT_TYPE_BUFFER_VIEW" }});
+		_resourceTypes.insert({ "VkImageView",					{ VK_OBJECT_TYPE_IMAGE_VIEW,					"VK_OBJECT_TYPE_IMAGE_VIEW" }});
+		_resourceTypes.insert({ "VkShaderModule",				{ VK_OBJECT_TYPE_SHADER_MODULE,					"VK_OBJECT_TYPE_SHADER_MODULE" }});
+		_resourceTypes.insert({ "VkPipelineCache",				{ VK_OBJECT_TYPE_PIPELINE_CACHE,				"VK_OBJECT_TYPE_PIPELINE_CACHE" }});
+		_resourceTypes.insert({ "VkPipelineLayout",				{ VK_OBJECT_TYPE_PIPELINE_LAYOUT,				"VK_OBJECT_TYPE_PIPELINE_LAYOUT" }});
+		_resourceTypes.insert({ "VkRenderPass",					{ VK_OBJECT_TYPE_RENDER_PASS,					"VK_OBJECT_TYPE_RENDER_PASS" }});
+		_resourceTypes.insert({ "VkPipeline",					{ VK_OBJECT_TYPE_PIPELINE,						"VK_OBJECT_TYPE_PIPELINE" }});
+		_resourceTypes.insert({ "VkDescriptorSetLayout",		{ VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT,			"VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT" }});
+		_resourceTypes.insert({ "VkSampler",					{ VK_OBJECT_TYPE_SAMPLER,						"VK_OBJECT_TYPE_SAMPLER" }});
+		_resourceTypes.insert({ "VkDescriptorPool",				{ VK_OBJECT_TYPE_DESCRIPTOR_POOL,				"VK_OBJECT_TYPE_DESCRIPTOR_POOL" }});
+		_resourceTypes.insert({ "VkDescriptorSet",				{ VK_OBJECT_TYPE_DESCRIPTOR_SET,				"VK_OBJECT_TYPE_DESCRIPTOR_SET" }});
+		_resourceTypes.insert({ "VkFramebuffer",				{ VK_OBJECT_TYPE_FRAMEBUFFER,					"VK_OBJECT_TYPE_FRAMEBUFFER" }});
+		_resourceTypes.insert({ "VkCommandPool",				{ VK_OBJECT_TYPE_COMMAND_POOL,					"VK_OBJECT_TYPE_COMMAND_POOL" }});
+		_resourceTypes.insert({ "VkSurfaceKHR",					{ VK_OBJECT_TYPE_SURFACE_KHR,					"VK_OBJECT_TYPE_SURFACE_KHR" }});
+		_resourceTypes.insert({ "VkSwapchainKHR",				{ VK_OBJECT_TYPE_SWAPCHAIN_KHR,					"VK_OBJECT_TYPE_SWAPCHAIN_KHR" }});
+		_resourceTypes.insert({ "VkDisplayKHR",					{ VK_OBJECT_TYPE_DISPLAY_KHR,					"VK_OBJECT_TYPE_DISPLAY_KHR" }});
+		_resourceTypes.insert({ "VkDisplayModeKHR",				{ VK_OBJECT_TYPE_DISPLAY_MODE_KHR,				"VK_OBJECT_TYPE_DISPLAY_MODE_KHR" }});
+		_resourceTypes.insert({ "VkObjectTableNVX",				{ VK_OBJECT_TYPE_OBJECT_TABLE_NVX,				"VK_OBJECT_TYPE_OBJECT_TABLE_NVX" }});
+		_resourceTypes.insert({ "VkIndirectCommandsLayoutNVX",	{ VK_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX,	"VK_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX" }});
+		_resourceTypes.insert({ "VkValidationCacheEXT",			{ VK_OBJECT_TYPE_VALIDATION_CACHE_EXT,			"VK_OBJECT_TYPE_VALIDATION_CACHE_EXT" }});
+		_resourceTypes.insert({ "VkSamplerYcbcrConversion",		{ VK_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION,		"VK_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION" }});
+		_resourceTypes.insert({ "VkDescriptorUpdateTemplate",	{ VK_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE,	"VK_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE" }});
+		_resourceTypes.insert({ "VkAccelerationStructureNV",	{ VK_OBJECT_TYPE_ACCELERATION_STRUCTURE_NV,		"VK_OBJECT_TYPE_ACCELERATION_STRUCTURE_NV" }});
 
 
 		// TODO: validation
@@ -815,7 +816,10 @@ namespace VTC
 		AddCounter( "vkCreateGraphicsPipelines",	"pPipelines",				"createInfoCount" );
 		AddCounter( "vkCreateComputePipelines",		"pPipelines",				"createInfoCount" );
 		AddCounter( "vkCmdPushDescriptorSetKHR",	"pDescriptorWrites",		"descriptorWriteCount" );
-		AddCounter( "vkCmdBuildAccelerationStructureNVX",	"pGeometries",		"geometryCount" );
+		AddCounter( "vkCmdBuildAccelerationStructureNV",	"pGeometries",		"geometryCount" );
+		AddCounter( "vkCmdBindTransformFeedbackBuffersEXT",	"pBuffers",			"bindingCount" );
+		AddCounter( "vkCmdBindTransformFeedbackBuffersEXT",	"pOffsets",			"bindingCount" );
+		AddCounter( "vkCmdBindTransformFeedbackBuffersEXT",	"pSizes",			"bindingCount" );
 
 		HashSet<Pair<StringView, StringView>>	skip_args;
 		skip_args.insert({ "vkCmdSetViewportShadingRatePaletteNV", "pShadingRatePalettes" });
@@ -934,10 +938,12 @@ namespace VTC
 		AddCounter( "VkPipelineMultisampleStateCreateInfo",						"pSampleMask",					"((uint(obj->rasterizationSamples) + 31) / 32)" );
 		AddCounter( "VkDescriptorSetVariableDescriptorCountAllocateInfoEXT",	"pDescriptorCounts",			"descriptorSetCount" );
 		AddCounter( "VkWriteDescriptorSetInlineUniformBlockEXT",				"pData",						"dataSize" );
-		AddCounter( "VkAccelerationStructureCreateInfoNVX",						"pGeometries",					"geometryCount" );
+		AddCounter( "VkAccelerationStructureInfoNV",							"pGeometries",					"geometryCount" );
 		AddCounter( "VkShadingRatePaletteNV",									"pShadingRatePaletteEntries",	"shadingRatePaletteEntryCount" );
-		AddCounter( "VkBindAccelerationStructureMemoryInfoNVX",					"pDeviceIndices",				"deviceIndexCount" );
-		AddCounter( "VkRaytracingPipelineCreateInfoNVX",						"pGroupNumbers",				"stageCount" );
+		AddCounter( "VkBindAccelerationStructureMemoryInfoNV",					"pDeviceIndices",				"deviceIndexCount" );
+		AddCounter( "VkRaytracingPipelineCreateInfoNV",							"pGroupNumbers",				"stageCount" );
+		AddCounter( "VkImageDrmFormatModifierExplicitCreateInfoEXT",			"pPlaneLayouts",				"drmFormatModifierPlaneCount" );
+		AddCounter( "VkPhysicalDeviceImageDrmFormatModifierInfoEXT",			"pQueueFamilyIndices",			"queueFamilyIndexCount" );
 		
 		HashSet<Pair<StringView, StringView>>	skip_fields;
 		skip_fields.insert({ "VkPipelineViewportShadingRateImageStateCreateInfoNV", "pShadingRatePalettes" });

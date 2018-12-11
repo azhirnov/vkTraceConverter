@@ -27,6 +27,8 @@ ND_ String  Serialize_VkAllocationCallbacks (const VkAllocationCallbacks*, NameS
 #ifdef VULKAN_WIN32_H_
     void    Serialize2_VkMemoryWin32HandlePropertiesKHR (const VkMemoryWin32HandlePropertiesKHR*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 #endif
+    void    Serialize2_VkSubresourceLayout (const VkSubresourceLayout*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+ND_ String  Serialize_VkSubresourceLayout (const VkSubresourceLayout*, NameSerializer&, ResRemapper &, StringView);
     void    Serialize2_VkPhysicalDeviceFeatures (const VkPhysicalDeviceFeatures*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 ND_ String  Serialize_VkPhysicalDeviceFeatures (const VkPhysicalDeviceFeatures*, NameSerializer&, ResRemapper &, StringView);
 #ifdef VULKAN_ANDROID_H_
@@ -43,6 +45,7 @@ ND_ String  Serialize_VkSparseBufferMemoryBindInfo (const VkSparseBufferMemoryBi
 ND_ String  Serialize_VkQueueFamilyProperties (const VkQueueFamilyProperties*, NameSerializer&, ResRemapper &, StringView);
     void    Serialize2_VkMemoryType (const VkMemoryType*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 ND_ String  Serialize_VkMemoryType (const VkMemoryType*, NameSerializer&, ResRemapper &, StringView);
+    void    Serialize2_VkGeometryTrianglesNV (const VkGeometryTrianglesNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkMemoryHeap (const VkMemoryHeap*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 ND_ String  Serialize_VkMemoryHeap (const VkMemoryHeap*, NameSerializer&, ResRemapper &, StringView);
     void    Serialize2_VkImageFormatListCreateInfoKHR (const VkImageFormatListCreateInfoKHR*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
@@ -58,6 +61,7 @@ ND_ String  Serialize_VkOffset2D (const VkOffset2D*, NameSerializer&, ResRemappe
     void    Serialize2_VkSparseMemoryBind (const VkSparseMemoryBind*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 ND_ String  Serialize_VkSparseMemoryBind (const VkSparseMemoryBind*, NameSerializer&, ResRemapper &, StringView);
     void    Serialize2_VkImageViewCreateInfo (const VkImageViewCreateInfo*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkPhysicalDeviceTransformFeedbackFeaturesEXT (const VkPhysicalDeviceTransformFeedbackFeaturesEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPipelineTessellationStateCreateInfo (const VkPipelineTessellationStateCreateInfo*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkMemoryAllocateInfo (const VkMemoryAllocateInfo*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkSpecializationMapEntry (const VkSpecializationMapEntry*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
@@ -80,6 +84,7 @@ ND_ String  Serialize_VkSparseImageMemoryRequirements (const VkSparseImageMemory
     void    Serialize2_VkSparseImageOpaqueMemoryBindInfo (const VkSparseImageOpaqueMemoryBindInfo*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 ND_ String  Serialize_VkSparseImageOpaqueMemoryBindInfo (const VkSparseImageOpaqueMemoryBindInfo*, NameSerializer&, ResRemapper &, StringView);
     void    Serialize2_VkPipelineViewportStateCreateInfo (const VkPipelineViewportStateCreateInfo*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkAccelerationStructureInfoNV (const VkAccelerationStructureInfoNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPipelineVertexInputStateCreateInfo (const VkPipelineVertexInputStateCreateInfo*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkImageSubresource (const VkImageSubresource*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 ND_ String  Serialize_VkImageSubresource (const VkImageSubresource*, NameSerializer&, ResRemapper &, StringView);
@@ -88,6 +93,7 @@ ND_ String  Serialize_VkImageSubresource (const VkImageSubresource*, NameSeriali
 #endif
     void    Serialize2_VkOffset3D (const VkOffset3D*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 ND_ String  Serialize_VkOffset3D (const VkOffset3D*, NameSerializer&, ResRemapper &, StringView);
+    void    Serialize2_VkPipelineRasterizationStateStreamCreateInfoEXT (const VkPipelineRasterizationStateStreamCreateInfoEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkAcquireNextImageInfoKHR (const VkAcquireNextImageInfoKHR*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPhysicalDeviceProtectedMemoryProperties (const VkPhysicalDeviceProtectedMemoryProperties*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkSparseImageMemoryBind (const VkSparseImageMemoryBind*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
@@ -155,8 +161,8 @@ ND_ String  Serialize_VkDescriptorSetLayoutBinding (const VkDescriptorSetLayoutB
     void    Serialize2_VkDescriptorSetLayoutCreateInfo (const VkDescriptorSetLayoutCreateInfo*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkDescriptorPoolSize (const VkDescriptorPoolSize*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 ND_ String  Serialize_VkDescriptorPoolSize (const VkDescriptorPoolSize*, NameSerializer&, ResRemapper &, StringView);
-    void    Serialize2_VkAccelerationStructureCreateInfoNVX (const VkAccelerationStructureCreateInfoNVX*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkDescriptorPoolCreateInfo (const VkDescriptorPoolCreateInfo*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkPhysicalDeviceRayTracingPropertiesNV (const VkPhysicalDeviceRayTracingPropertiesNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkImageMemoryRequirementsInfo2 (const VkImageMemoryRequirementsInfo2*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkDescriptorSetAllocateInfo (const VkDescriptorSetAllocateInfo*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 #ifdef VULKAN_WIN32_H_
@@ -178,7 +184,6 @@ ND_ String  Serialize_VkDescriptorBufferInfo (const VkDescriptorBufferInfo*, Nam
 ND_ String  Serialize_VkAttachmentDescription (const VkAttachmentDescription*, NameSerializer&, ResRemapper &, StringView);
     void    Serialize2_VkAttachmentReference (const VkAttachmentReference*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 ND_ String  Serialize_VkAttachmentReference (const VkAttachmentReference*, NameSerializer&, ResRemapper &, StringView);
-    void    Serialize2_VkGeometryTrianglesNVX (const VkGeometryTrianglesNVX*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkSubpassDescription (const VkSubpassDescription*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 ND_ String  Serialize_VkSubpassDescription (const VkSubpassDescription*, NameSerializer&, ResRemapper &, StringView);
     void    Serialize2_VkSubpassDependency (const VkSubpassDependency*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
@@ -195,9 +200,6 @@ ND_ String  Serialize_VkDisplayModePropertiesKHR (const VkDisplayModePropertiesK
 ND_ String  Serialize_VkImageSubresourceLayers (const VkImageSubresourceLayers*, NameSerializer&, ResRemapper &, StringView);
     void    Serialize2_VkImageBlit (const VkImageBlit*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 ND_ String  Serialize_VkImageBlit (const VkImageBlit*, NameSerializer&, ResRemapper &, StringView);
-#ifdef VULKAN_MIR_H_
-    void    Serialize2_VkMirSurfaceCreateInfoKHR (const VkMirSurfaceCreateInfoKHR*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
-#endif
     void    Serialize2_VkBufferImageCopy (const VkBufferImageCopy*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 ND_ String  Serialize_VkBufferImageCopy (const VkBufferImageCopy*, NameSerializer&, ResRemapper &, StringView);
     void    Serialize2_VkDescriptorSetVariableDescriptorCountLayoutSupportEXT (const VkDescriptorSetVariableDescriptorCountLayoutSupportEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
@@ -228,6 +230,7 @@ ND_ String  Serialize_VkShadingRatePaletteNV (const VkShadingRatePaletteNV*, Nam
     void    Serialize2_VkPhysicalDevice16BitStorageFeatures (const VkPhysicalDevice16BitStorageFeatures*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkMemoryDedicatedRequirements (const VkMemoryDedicatedRequirements*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPhysicalDeviceShadingRateImagePropertiesNV (const VkPhysicalDeviceShadingRateImagePropertiesNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkImageDrmFormatModifierExplicitCreateInfoEXT (const VkImageDrmFormatModifierExplicitCreateInfoEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkMemoryDedicatedAllocateInfo (const VkMemoryDedicatedAllocateInfo*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkMemoryAllocateFlagsInfo (const VkMemoryAllocateFlagsInfo*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkDeviceGroupRenderPassBeginInfo (const VkDeviceGroupRenderPassBeginInfo*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
@@ -280,6 +283,7 @@ ND_ String  Serialize_VkExternalMemoryProperties (const VkExternalMemoryProperti
     void    Serialize2_VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT (const VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPhysicalDeviceIDProperties (const VkPhysicalDeviceIDProperties*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkExternalMemoryImageCreateInfo (const VkExternalMemoryImageCreateInfo*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkGeometryAABBNV (const VkGeometryAABBNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPhysicalDeviceCornerSampledImageFeaturesNV (const VkPhysicalDeviceCornerSampledImageFeaturesNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkExportMemoryAllocateInfo (const VkExportMemoryAllocateInfo*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV (const VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
@@ -337,6 +341,8 @@ ND_ String  Serialize_VkRectLayerKHR (const VkRectLayerKHR*, NameSerializer&, Re
 ND_ String  Serialize_VkPresentRegionKHR (const VkPresentRegionKHR*, NameSerializer&, ResRemapper &, StringView);
     void    Serialize2_VkPresentRegionsKHR (const VkPresentRegionsKHR*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkAttachmentDescription2KHR (const VkAttachmentDescription2KHR*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkConformanceVersionKHR (const VkConformanceVersionKHR*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+ND_ String  Serialize_VkConformanceVersionKHR (const VkConformanceVersionKHR*, NameSerializer&, ResRemapper &, StringView);
     void    Serialize2_VkSubpassDescription2KHR (const VkSubpassDescription2KHR*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkSubpassDependency2KHR (const VkSubpassDependency2KHR*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkQueueFamilyCheckpointPropertiesNV (const VkQueueFamilyCheckpointPropertiesNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
@@ -356,18 +362,19 @@ ND_ String  Serialize_VkPresentRegionKHR (const VkPresentRegionKHR*, NameSeriali
     void    Serialize2_VkDisplayPlaneCapabilities2KHR (const VkDisplayPlaneCapabilities2KHR*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkDescriptorSetVariableDescriptorCountAllocateInfoEXT (const VkDescriptorSetVariableDescriptorCountAllocateInfoEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPhysicalDevice8BitStorageFeaturesKHR (const VkPhysicalDevice8BitStorageFeaturesKHR*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
-    void    Serialize2_VkAccelerationStructureMemoryRequirementsInfoNVX (const VkAccelerationStructureMemoryRequirementsInfoNVX*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
-    void    Serialize2_VkPhysicalDeviceVulkanMemoryModelFeaturesKHR (const VkPhysicalDeviceVulkanMemoryModelFeaturesKHR*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
-    void    Serialize2_VkPipelineRasterizationStateRasterizationOrderAMD (const VkPipelineRasterizationStateRasterizationOrderAMD*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
-    void    Serialize2_VkGeometryNVX (const VkGeometryNVX*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
-    void    Serialize2_VkDebugMarkerObjectNameInfoEXT (const VkDebugMarkerObjectNameInfoEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
-    void    Serialize2_VkDebugMarkerMarkerInfoEXT (const VkDebugMarkerMarkerInfoEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
-    void    Serialize2_VkDedicatedAllocationImageCreateInfoNV (const VkDedicatedAllocationImageCreateInfoNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
-    void    Serialize2_VkDedicatedAllocationBufferCreateInfoNV (const VkDedicatedAllocationBufferCreateInfoNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkPhysicalDeviceShaderAtomicInt64FeaturesKHR (const VkPhysicalDeviceShaderAtomicInt64FeaturesKHR*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 #ifdef VULKAN_ANDROID_H_
     void    Serialize2_VkExternalFormatANDROID (const VkExternalFormatANDROID*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 #endif
     void    Serialize2_VkDedicatedAllocationMemoryAllocateInfoNV (const VkDedicatedAllocationMemoryAllocateInfoNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkPhysicalDeviceDriverPropertiesKHR (const VkPhysicalDeviceDriverPropertiesKHR*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkPhysicalDeviceVulkanMemoryModelFeaturesKHR (const VkPhysicalDeviceVulkanMemoryModelFeaturesKHR*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkPipelineRasterizationStateRasterizationOrderAMD (const VkPipelineRasterizationStateRasterizationOrderAMD*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkDebugMarkerObjectNameInfoEXT (const VkDebugMarkerObjectNameInfoEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkDebugMarkerMarkerInfoEXT (const VkDebugMarkerMarkerInfoEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkDedicatedAllocationImageCreateInfoNV (const VkDedicatedAllocationImageCreateInfoNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkDedicatedAllocationBufferCreateInfoNV (const VkDedicatedAllocationBufferCreateInfoNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkPhysicalDeviceTransformFeedbackPropertiesEXT (const VkPhysicalDeviceTransformFeedbackPropertiesEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkShaderModuleValidationCacheCreateInfoEXT (const VkShaderModuleValidationCacheCreateInfoEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPhysicalDeviceConservativeRasterizationPropertiesEXT (const VkPhysicalDeviceConservativeRasterizationPropertiesEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkTextureLODGatherFormatPropertiesAMD (const VkTextureLODGatherFormatPropertiesAMD*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
@@ -398,12 +405,13 @@ ND_ String  Serialize_VkViewportWScalingNV (const VkViewportWScalingNV*, NameSer
     void    Serialize2_VkPhysicalDeviceExclusiveScissorFeaturesNV (const VkPhysicalDeviceExclusiveScissorFeaturesNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkDisplayPowerInfoEXT (const VkDisplayPowerInfoEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkSwapchainCounterCreateInfoEXT (const VkSwapchainCounterCreateInfoEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkDrmFormatModifierPropertiesEXT (const VkDrmFormatModifierPropertiesEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+ND_ String  Serialize_VkDrmFormatModifierPropertiesEXT (const VkDrmFormatModifierPropertiesEXT*, NameSerializer&, ResRemapper &, StringView);
     void    Serialize2_VkPresentTimeGOOGLE (const VkPresentTimeGOOGLE*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 ND_ String  Serialize_VkPresentTimeGOOGLE (const VkPresentTimeGOOGLE*, NameSerializer&, ResRemapper &, StringView);
     void    Serialize2_VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX (const VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPipelineViewportSwizzleStateCreateInfoNV (const VkPipelineViewportSwizzleStateCreateInfoNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPipelineDiscardRectangleStateCreateInfoEXT (const VkPipelineDiscardRectangleStateCreateInfoEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
-    void    Serialize2_VkRaytracingPipelineCreateInfoNVX (const VkRaytracingPipelineCreateInfoNVX*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPipelineRasterizationConservativeStateCreateInfoEXT (const VkPipelineRasterizationConservativeStateCreateInfoEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkDebugUtilsLabelEXT (const VkDebugUtilsLabelEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPhysicalDeviceExternalMemoryHostPropertiesEXT (const VkPhysicalDeviceExternalMemoryHostPropertiesEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
@@ -423,20 +431,29 @@ ND_ String  Serialize_VkAttachmentSampleLocationsEXT (const VkAttachmentSampleLo
     void    Serialize2_VkMultisamplePropertiesEXT (const VkMultisamplePropertiesEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT (const VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPipelineCoverageModulationStateCreateInfoNV (const VkPipelineCoverageModulationStateCreateInfoNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkDrmFormatModifierPropertiesListEXT (const VkDrmFormatModifierPropertiesListEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkPhysicalDeviceImageDrmFormatModifierInfoEXT (const VkPhysicalDeviceImageDrmFormatModifierInfoEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkImageDrmFormatModifierListCreateInfoEXT (const VkImageDrmFormatModifierListCreateInfoEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkImageDrmFormatModifierPropertiesEXT (const VkImageDrmFormatModifierPropertiesEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPhysicalDeviceDescriptorIndexingFeaturesEXT (const VkPhysicalDeviceDescriptorIndexingFeaturesEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 #ifdef VULKAN_ANDROID_H_
     void    Serialize2_VkAndroidHardwareBufferFormatPropertiesANDROID (const VkAndroidHardwareBufferFormatPropertiesANDROID*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 #endif
     void    Serialize2_VkPhysicalDeviceDescriptorIndexingPropertiesEXT (const VkPhysicalDeviceDescriptorIndexingPropertiesEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
-    void    Serialize2_VkGeometryAABBNVX (const VkGeometryAABBNVX*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
-    void    Serialize2_VkGeometryDataNVX (const VkGeometryDataNVX*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
-ND_ String  Serialize_VkGeometryDataNVX (const VkGeometryDataNVX*, NameSerializer&, ResRemapper &, StringView);
-    void    Serialize2_VkBindAccelerationStructureMemoryInfoNVX (const VkBindAccelerationStructureMemoryInfoNVX*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
-    void    Serialize2_VkDescriptorAccelerationStructureInfoNVX (const VkDescriptorAccelerationStructureInfoNVX*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
-    void    Serialize2_VkPhysicalDeviceRaytracingPropertiesNVX (const VkPhysicalDeviceRaytracingPropertiesNVX*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkRayTracingShaderGroupCreateInfoNV (const VkRayTracingShaderGroupCreateInfoNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkRayTracingPipelineCreateInfoNV (const VkRayTracingPipelineCreateInfoNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkGeometryDataNV (const VkGeometryDataNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+ND_ String  Serialize_VkGeometryDataNV (const VkGeometryDataNV*, NameSerializer&, ResRemapper &, StringView);
+    void    Serialize2_VkGeometryNV (const VkGeometryNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkAccelerationStructureCreateInfoNV (const VkAccelerationStructureCreateInfoNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkBindAccelerationStructureMemoryInfoNV (const VkBindAccelerationStructureMemoryInfoNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkWriteDescriptorSetAccelerationStructureNV (const VkWriteDescriptorSetAccelerationStructureNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkAccelerationStructureMemoryRequirementsInfoNV (const VkAccelerationStructureMemoryRequirementsInfoNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPipelineRepresentativeFragmentTestStateCreateInfoNV (const VkPipelineRepresentativeFragmentTestStateCreateInfoNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkDeviceQueueGlobalPriorityCreateInfoEXT (const VkDeviceQueueGlobalPriorityCreateInfoEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkCalibratedTimestampInfoEXT (const VkCalibratedTimestampInfoEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPhysicalDeviceShaderCorePropertiesAMD (const VkPhysicalDeviceShaderCorePropertiesAMD*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkDeviceMemoryOverallocationCreateInfoAMD (const VkDeviceMemoryOverallocationCreateInfoAMD*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT (const VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPipelineVertexInputDivisorStateCreateInfoEXT (const VkPipelineVertexInputDivisorStateCreateInfoEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 #ifdef VULKAN_WIN32_H_
@@ -448,6 +465,7 @@ ND_ String  Serialize_VkGeometryDataNVX (const VkGeometryDataNVX*, NameSerialize
     void    Serialize2_VkPhysicalDeviceMeshShaderPropertiesNV (const VkPhysicalDeviceMeshShaderPropertiesNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV (const VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
     void    Serialize2_VkPhysicalDeviceShaderImageFootprintFeaturesNV (const VkPhysicalDeviceShaderImageFootprintFeaturesNV*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
+    void    Serialize2_VkPhysicalDevicePCIBusInfoPropertiesEXT (const VkPhysicalDevicePCIBusInfoPropertiesEXT*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 #ifdef VULKAN_WIN32_H_
     void    Serialize2_VkWin32SurfaceCreateInfoKHR (const VkWin32SurfaceCreateInfoKHR*, StringView, NameSerializer&, ResRemapper &, StringView, String&, String&);
 #endif

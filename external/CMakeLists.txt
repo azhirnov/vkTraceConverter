@@ -40,7 +40,7 @@ foreach ( CONFIG ${CMAKE_CONFIGURATION_TYPES} )
 endforeach ()
 
 
-if (VTC_STABLE)
+if (${VTC_STABLE})
 	include( "${CMAKE_SOURCE_DIR}/cmake/vulkan_tools_alt.cmake" )
 else ()
 	include( "${CMAKE_SOURCE_DIR}/cmake/download_vulkan_tools.cmake" )
@@ -48,11 +48,13 @@ endif ()
 
 #include( "${CMAKE_SOURCE_DIR}/cmake/download_other.cmake" )
 include( "${CMAKE_SOURCE_DIR}/cmake/download_brotli.cmake" )
-include( "${CMAKE_SOURCE_DIR}/cmake/download_fg.cmake" )
+#include( "${CMAKE_SOURCE_DIR}/cmake/download_fg.cmake" )
 include( "${CMAKE_SOURCE_DIR}/cmake/download_vez.cmake" )
 include( "${CMAKE_SOURCE_DIR}/cmake/graphviz.cmake" )
 include( "${CMAKE_SOURCE_DIR}/cmake/vktrace_defines.cmake" )
 include( "${CMAKE_SOURCE_DIR}/cmake/app_defines.cmake" )
+include( "${CMAKE_SOURCE_DIR}/cmake/download_spirvcross.cmake" )
+include( "${CMAKE_SOURCE_DIR}/cmake/download_spirvreflect.cmake" )
 
 
 set( VTC_CONVERTER_INCLUDE_DIRS "${VTC_CONVERTER_INCLUDE_DIRS}" CACHE INTERNAL "" FORCE )

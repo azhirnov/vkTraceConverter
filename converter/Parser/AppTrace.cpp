@@ -109,6 +109,7 @@ namespace VTC
 
 		FrameID		frame_id	= 0;
 		bool		new_frame	= false;
+		uint		progress	= 0;
 		
 		// pre processing
 		for (auto& analyzer : _analyzers) {
@@ -152,11 +153,22 @@ namespace VTC
 					new_frame = true;
 					break;
 			}
+
+			const BytesU	diff		= _fullTrace.LastBookmark().Value() - iter.GetBookmark().Value();
+			const uint		curr_progr	= 8 - uint((diff * 8) / _fullTrace.LastBookmark().Value());
+
+			if ( curr_progr > progress )
+			{
+				progress = curr_progr;
+				FG_LOGI( "progress: "s << ToString( (100 * progress + 7) / 8 ) << " %" );
+			}
 		}
 		
 		_presentBookmarks.push_back( _fullTrace.LastBookmark() );
 
 		// post processing
+		FG_LOGI( "run analyzers post process step" );
+
 		for (auto& analyzer : _analyzers) {
 			analyzer->PostProcess();
 		}
@@ -208,30 +220,42 @@ namespace VTC
 				if ( (value).pNext )
 					_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 				
-				_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT, ResourceID((value).dstSet), iter, frame_id, EResOp::Access );
+				_AddResourceBookmark( VK_OBJECT_TYPE_DESCRIPTOR_SET, ResourceID((value).dstSet), iter, frame_id, EResOp::Access );
 				
 				for (uint a = 0; (value).pImageInfo and a < (value).descriptorCount; ++a)
 				{
 					if ( value.descriptorType == VK_DESCRIPTOR_TYPE_SAMPLER or
 						 value.descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER )
 					{
-						_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT, ResourceID(((value).pImageInfo[a]).sampler), iter, frame_id, EResOp::Access );
+						_AddResourceBookmark( VK_OBJECT_TYPE_SAMPLER, ResourceID(((value).pImageInfo[a]).sampler), iter, frame_id, EResOp::Access );
 					}					
 					if ( value.descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER or
 						 value.descriptorType == VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE or
 						 value.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_IMAGE or
 						 value.descriptorType == VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT )
 					{
-						_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT, ResourceID(((value).pImageInfo[a]).imageView), iter, frame_id, EResOp::Access );
+						_AddResourceBookmark( VK_OBJECT_TYPE_IMAGE_VIEW, ResourceID(((value).pImageInfo[a]).imageView), iter, frame_id, EResOp::Access );
 					}
 				}
 
-				for (uint a = 0; (value).pBufferInfo and a < (value).descriptorCount; ++a) {
-					_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT, ResourceID(((value).pBufferInfo[a]).buffer), iter, frame_id, EResOp::Access );
+				for (uint a = 0; (value).pBufferInfo and a < (value).descriptorCount; ++a) 
+				{
+					if ( value.descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER or
+						 value.descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC or
+						 value.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER or
+						 value.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC )
+					{
+						_AddResourceBookmark( VK_OBJECT_TYPE_BUFFER, ResourceID(((value).pBufferInfo[a]).buffer), iter, frame_id, EResOp::Access );
+					}
 				}
 
-				for (uint a = 0; (value).pTexelBufferView and a < (value).descriptorCount; ++a) {
-					_AddResourceBookmark( VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT, ResourceID((value).pTexelBufferView[a]), iter, frame_id, EResOp::Access );
+				for (uint a = 0; (value).pTexelBufferView and a < (value).descriptorCount; ++a)
+				{
+					if ( value.descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER or
+						 value.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER )
+					{
+						_AddResourceBookmark( VK_OBJECT_TYPE_BUFFER_VIEW, ResourceID((value).pTexelBufferView[a]), iter, frame_id, EResOp::Access );
+					}
 				}
 				return true;
 			}

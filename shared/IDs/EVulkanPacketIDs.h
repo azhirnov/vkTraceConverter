@@ -10,8 +10,8 @@ enum class EVulkanPacketID : uint32_t
 	_CustomBit		= uint(EPacketID::_CustomBit),
 
 	End				= uint(EPacketID::End),
-	SetSourceFPS	= uint(EPacketID::SetSourceFPS),
 	SetData			= uint(EPacketID::SetData),
+	CreateVkDevice	= uint(EPacketID::CreateVkDevice),
 
 #	include "IDs/VPacketIDs.h"
 #	include "Generated/VulkanTracePacketIDs.h"

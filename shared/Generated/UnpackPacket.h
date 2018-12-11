@@ -78,16 +78,18 @@ static void Unpack_VkDisplayPlaneCapabilitiesKHR (VkDisplayPlaneCapabilitiesKHR 
 static void Unpack_VkSubpassSampleLocationsEXT (VkSubpassSampleLocationsEXT *, vktrace_trace_packet_header *);
 static void Unpack_VkRectLayerKHR (VkRectLayerKHR *, vktrace_trace_packet_header *);
 static void Unpack_VkPresentRegionKHR (VkPresentRegionKHR *, vktrace_trace_packet_header *);
+static void Unpack_VkConformanceVersionKHR (VkConformanceVersionKHR *, vktrace_trace_packet_header *);
 static void Unpack_VkCoarseSampleOrderCustomNV (VkCoarseSampleOrderCustomNV *, vktrace_trace_packet_header *);
 static void Unpack_VkIndirectCommandsTokenNVX (VkIndirectCommandsTokenNVX *, vktrace_trace_packet_header *);
 static void Unpack_VkObjectTableEntryNVX (VkObjectTableEntryNVX *, vktrace_trace_packet_header *);
 static void Unpack_VkViewportWScalingNV (VkViewportWScalingNV *, vktrace_trace_packet_header *);
 static void Unpack_VkRefreshCycleDurationGOOGLE (VkRefreshCycleDurationGOOGLE *, vktrace_trace_packet_header *);
 static void Unpack_VkPastPresentationTimingGOOGLE (VkPastPresentationTimingGOOGLE *, vktrace_trace_packet_header *);
+static void Unpack_VkDrmFormatModifierPropertiesEXT (VkDrmFormatModifierPropertiesEXT *, vktrace_trace_packet_header *);
 static void Unpack_VkPresentTimeGOOGLE (VkPresentTimeGOOGLE *, vktrace_trace_packet_header *);
 static void Unpack_VkSampleLocationEXT (VkSampleLocationEXT *, vktrace_trace_packet_header *);
 static void Unpack_VkAttachmentSampleLocationsEXT (VkAttachmentSampleLocationsEXT *, vktrace_trace_packet_header *);
-static void Unpack_VkGeometryDataNVX (VkGeometryDataNVX *, vktrace_trace_packet_header *);
+static void Unpack_VkGeometryDataNV (VkGeometryDataNV *, vktrace_trace_packet_header *);
 //-----------------------------------------------------------------------------
 
 static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *header)
@@ -235,6 +237,15 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			UnpackPointer( INOUT value->pScissors, header );
 			for (uint i = 0; (value->pScissors != null) and (i < value->scissorCount); ++i) {
 				Unpack_VkRect2D( const_cast<VkRect2D*>(value->pScissors + i), header );
+			}
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_INFO_NV : {
+			VkAccelerationStructureInfoNV*  value = BitCast<VkAccelerationStructureInfoNV*>( ptr );
+			UnpackPointer( INOUT value->pGeometries, header );
+			for (uint i = 0; (value->pGeometries != null) and (i < value->geometryCount); ++i) {
+				UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkGeometryNV*>(value->pGeometries + i)), header );
 			}
 			break;
 		}
@@ -413,15 +424,6 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			break;
 		}
 
-		case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NVX : {
-			VkAccelerationStructureCreateInfoNVX*  value = BitCast<VkAccelerationStructureCreateInfoNVX*>( ptr );
-			UnpackPointer( INOUT value->pGeometries, header );
-			for (uint i = 0; (value->pGeometries != null) and (i < value->geometryCount); ++i) {
-				UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkGeometryNVX*>(value->pGeometries + i)), header );
-			}
-			break;
-		}
-
 		case VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO : {
 			VkDescriptorPoolCreateInfo*  value = BitCast<VkDescriptorPoolCreateInfo*>( ptr );
 			UnpackPointer( INOUT value->pPoolSizes, header );
@@ -498,15 +500,6 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			break;
 		}
 
-		case VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR : {
-			#ifdef VULKAN_MIR_H_
-			VkMirSurfaceCreateInfoKHR*  value = BitCast<VkMirSurfaceCreateInfoKHR*>( ptr );
-			UnpackPointer( INOUT value->connection, header );
-			UnpackPointer( INOUT value->mirSurface, header );
-			#endif
-			break;
-		}
-
 		case VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER : {
 			VkImageMemoryBarrier*  value = BitCast<VkImageMemoryBarrier*>( ptr );
 			Unpack_VkImageSubresourceRange( &value->subresourceRange, header );
@@ -516,6 +509,15 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_PROPERTIES_NV : {
 			VkPhysicalDeviceShadingRateImagePropertiesNV*  value = BitCast<VkPhysicalDeviceShadingRateImagePropertiesNV*>( ptr );
 			Unpack_VkExtent2D( &value->shadingRateTexelSize, header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_EXPLICIT_CREATE_INFO_EXT : {
+			VkImageDrmFormatModifierExplicitCreateInfoEXT*  value = BitCast<VkImageDrmFormatModifierExplicitCreateInfoEXT*>( ptr );
+			UnpackPointer( INOUT value->pPlaneLayouts, header );
+			for (uint i = 0; (value->pPlaneLayouts != null) and (i < value->drmFormatModifierPlaneCount); ++i) {
+				Unpack_VkSubresourceLayout( const_cast<VkSubresourceLayout*>(value->pPlaneLayouts + i), header );
+			}
 			break;
 		}
 
@@ -816,15 +818,15 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			break;
 		}
 
-		case VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT : {
-			VkDebugReportCallbackCreateInfoEXT*  value = BitCast<VkDebugReportCallbackCreateInfoEXT*>( ptr );
-			UnpackPointer( INOUT value->pUserData, header );
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES_KHR : {
+			VkPhysicalDeviceDriverPropertiesKHR*  value = BitCast<VkPhysicalDeviceDriverPropertiesKHR*>( ptr );
+			Unpack_VkConformanceVersionKHR( &value->conformanceVersion, header );
 			break;
 		}
 
-		case VK_STRUCTURE_TYPE_GEOMETRY_NVX : {
-			VkGeometryNVX*  value = BitCast<VkGeometryNVX*>( ptr );
-			Unpack_VkGeometryDataNVX( &value->geometry, header );
+		case VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT : {
+			VkDebugReportCallbackCreateInfoEXT*  value = BitCast<VkDebugReportCallbackCreateInfoEXT*>( ptr );
+			UnpackPointer( INOUT value->pUserData, header );
 			break;
 		}
 
@@ -923,16 +925,6 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			break;
 		}
 
-		case VK_STRUCTURE_TYPE_RAYTRACING_PIPELINE_CREATE_INFO_NVX : {
-			VkRaytracingPipelineCreateInfoNVX*  value = BitCast<VkRaytracingPipelineCreateInfoNVX*>( ptr );
-			UnpackPointer( INOUT value->pStages, header );
-			for (uint i = 0; (value->pStages != null) and (i < value->stageCount); ++i) {
-				UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPipelineShaderStageCreateInfo*>(value->pStages + i)), header );
-			}
-			UnpackPointer( INOUT value->pGroupNumbers, header );
-			break;
-		}
-
 		case VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_TAG_INFO_EXT : {
 			VkDebugUtilsObjectTagInfoEXT*  value = BitCast<VkDebugUtilsObjectTagInfoEXT*>( ptr );
 			UnpackPointer( INOUT value->pTag, header );
@@ -1017,6 +1009,27 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_DRM_FORMAT_MODIFIER_PROPERTIES_LIST_EXT : {
+			VkDrmFormatModifierPropertiesListEXT*  value = BitCast<VkDrmFormatModifierPropertiesListEXT*>( ptr );
+			UnpackPointer( INOUT value->pDrmFormatModifierProperties, header );
+			for (uint i = 0; (value->pDrmFormatModifierProperties != null) and (i < value->drmFormatModifierCount); ++i) {
+				Unpack_VkDrmFormatModifierPropertiesEXT( const_cast<VkDrmFormatModifierPropertiesEXT*>(value->pDrmFormatModifierProperties + i), header );
+			}
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_DRM_FORMAT_MODIFIER_INFO_EXT : {
+			VkPhysicalDeviceImageDrmFormatModifierInfoEXT*  value = BitCast<VkPhysicalDeviceImageDrmFormatModifierInfoEXT*>( ptr );
+			UnpackPointer( INOUT value->pQueueFamilyIndices, header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_LIST_CREATE_INFO_EXT : {
+			VkImageDrmFormatModifierListCreateInfoEXT*  value = BitCast<VkImageDrmFormatModifierListCreateInfoEXT*>( ptr );
+			UnpackPointer( INOUT value->pDrmFormatModifiers, header );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_FORMAT_PROPERTIES_ANDROID : {
 			#ifdef VULKAN_ANDROID_H_
 			VkAndroidHardwareBufferFormatPropertiesANDROID*  value = BitCast<VkAndroidHardwareBufferFormatPropertiesANDROID*>( ptr );
@@ -1025,14 +1038,39 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			break;
 		}
 
-		case VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NVX : {
-			VkBindAccelerationStructureMemoryInfoNVX*  value = BitCast<VkBindAccelerationStructureMemoryInfoNVX*>( ptr );
+		case VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_NV : {
+			VkRayTracingPipelineCreateInfoNV*  value = BitCast<VkRayTracingPipelineCreateInfoNV*>( ptr );
+			UnpackPointer( INOUT value->pStages, header );
+			for (uint i = 0; (value->pStages != null) and (i < value->stageCount); ++i) {
+				UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkPipelineShaderStageCreateInfo*>(value->pStages + i)), header );
+			}
+			UnpackPointer( INOUT value->pGroups, header );
+			for (uint i = 0; (value->pGroups != null) and (i < value->groupCount); ++i) {
+				UnpackStruct( BitCast<VkBaseOutStructure*>(const_cast<VkRayTracingShaderGroupCreateInfoNV*>(value->pGroups + i)), header );
+			}
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_GEOMETRY_NV : {
+			VkGeometryNV*  value = BitCast<VkGeometryNV*>( ptr );
+			Unpack_VkGeometryDataNV( &value->geometry, header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NV : {
+			VkAccelerationStructureCreateInfoNV*  value = BitCast<VkAccelerationStructureCreateInfoNV*>( ptr );
+			UnpackStruct( BitCast<VkBaseOutStructure*>(&value->info), header );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NV : {
+			VkBindAccelerationStructureMemoryInfoNV*  value = BitCast<VkBindAccelerationStructureMemoryInfoNV*>( ptr );
 			UnpackPointer( INOUT value->pDeviceIndices, header );
 			break;
 		}
 
-		case VK_STRUCTURE_TYPE_DESCRIPTOR_ACCELERATION_STRUCTURE_INFO_NVX : {
-			VkDescriptorAccelerationStructureInfoNVX*  value = BitCast<VkDescriptorAccelerationStructureInfoNVX*>( ptr );
+		case VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_NV : {
+			VkWriteDescriptorSetAccelerationStructureNV*  value = BitCast<VkWriteDescriptorSetAccelerationStructureNV*>( ptr );
 			UnpackPointer( INOUT value->pAccelerationStructures, header );
 			break;
 		}
@@ -1102,8 +1140,8 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 	case VK_STRUCTURE_TYPE_VI_SURFACE_CREATE_INFO_NN : break;
 	case VK_STRUCTURE_TYPE_IOS_SURFACE_CREATE_INFO_MVK : break;
 	case VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK : break;
-	case VK_STRUCTURE_TYPE_GEOMETRY_INSTANCE_NVX : break;
-	case VK_STRUCTURE_TYPE_HIT_SHADER_MODULE_CREATE_INFO_NVX : break;
+	case VK_STRUCTURE_TYPE_DRM_FORMAT_MODIFIER_PROPERTIES_EXT : break;
+	case VK_STRUCTURE_TYPE_IMAGEPIPE_SURFACE_CREATE_INFO_FUCHSIA : break;
 	case VK_STRUCTURE_TYPE_RANGE_SIZE : break;
 	case VK_STRUCTURE_TYPE_MAX_ENUM : break;
 	case VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_BUFFER_CREATE_INFO : break;
@@ -1114,12 +1152,15 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 	case VK_STRUCTURE_TYPE_MEMORY_WIN32_HANDLE_PROPERTIES_KHR : break;
 	case VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_USAGE_ANDROID : break;
 	case VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO : break;
+	case VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NV : break;
 	case VK_STRUCTURE_TYPE_DEVICE_EVENT_INFO_EXT : break;
 	case VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_FEATURES_EXT : break;
 	case VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO : break;
 	case VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_FORMAT_INFO_2 : break;
 	case VK_STRUCTURE_TYPE_SEMAPHORE_GET_WIN32_HANDLE_INFO_KHR : break;
+	case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_STREAM_CREATE_INFO_EXT : break;
 	case VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROTECTED_MEMORY_PROPERTIES : break;
 	case VK_STRUCTURE_TYPE_FENCE_CREATE_INFO : break;
@@ -1135,11 +1176,11 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 	case VK_STRUCTURE_TYPE_IMPORT_FENCE_FD_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_INFO : break;
 	case VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PROPERTIES_NV : break;
 	case VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2 : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_SEMAPHORE_INFO : break;
 	case VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_FILTER_MINMAX_PROPERTIES_EXT : break;
-	case VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NVX : break;
 	case VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO : break;
 	case VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO : break;
 	case VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_LAYOUT_SUPPORT_EXT : break;
@@ -1181,6 +1222,7 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_PROPERTIES_EXT : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES : break;
 	case VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO : break;
+	case VK_STRUCTURE_TYPE_GEOMETRY_AABB_NV : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CORNER_SAMPLED_IMAGE_FEATURES_NV : break;
 	case VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_REPRESENTATIVE_FRAGMENT_TEST_FEATURES_NV : break;
@@ -1213,13 +1255,14 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SURFACE_INFO_2_KHR : break;
 	case VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_WIN32_HANDLE_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR : break;
-	case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NVX : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES_KHR : break;
+	case VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_ANDROID : break;
+	case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES_KHR : break;
 	case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD : break;
 	case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_IMAGE_CREATE_INFO_NV : break;
 	case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_BUFFER_CREATE_INFO_NV : break;
-	case VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_ANDROID : break;
-	case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_PROPERTIES_EXT : break;
 	case VK_STRUCTURE_TYPE_SHADER_MODULE_VALIDATION_CACHE_CREATE_INFO_EXT : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CONSERVATIVE_RASTERIZATION_PROPERTIES_EXT : break;
 	case VK_STRUCTURE_TYPE_TEXTURE_LOD_GATHER_FORMAT_PROPERTIES_AMD : break;
@@ -1241,13 +1284,16 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 	case VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_INLINE_UNIFORM_BLOCK_CREATE_INFO_EXT : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_FEATURES_NV : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_FEATURES_EXT : break;
+	case VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_PROPERTIES_EXT : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES_EXT : break;
-	case VK_STRUCTURE_TYPE_GEOMETRY_AABB_NVX : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAYTRACING_PROPERTIES_NVX : break;
+	case VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV : break;
+	case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NV : break;
 	case VK_STRUCTURE_TYPE_PIPELINE_REPRESENTATIVE_FRAGMENT_TEST_STATE_CREATE_INFO_NV : break;
 	case VK_STRUCTURE_TYPE_DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_EXT : break;
+	case VK_STRUCTURE_TYPE_CALIBRATED_TIMESTAMP_INFO_EXT : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_AMD : break;
+	case VK_STRUCTURE_TYPE_DEVICE_MEMORY_OVERALLOCATION_CREATE_INFO_AMD : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_PROPERTIES_EXT : break;
 	case VK_STRUCTURE_TYPE_FENCE_GET_WIN32_HANDLE_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT : break;
@@ -1256,6 +1302,7 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_NV : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_FEATURES_NV : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_IMAGE_FOOTPRINT_FEATURES_NV : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT : break;
 	case VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_MEMORY_GET_WIN32_HANDLE_INFO_KHR : break;
@@ -1740,6 +1787,11 @@ static void Unpack_VkPresentRegionKHR (VkPresentRegionKHR *ptr, vktrace_trace_pa
 	}
 }
 
+static void Unpack_VkConformanceVersionKHR (VkConformanceVersionKHR *ptr, vktrace_trace_packet_header *header)
+{
+	if ( ptr == null ) return;
+}
+
 static void Unpack_VkCoarseSampleOrderCustomNV (VkCoarseSampleOrderCustomNV *ptr, vktrace_trace_packet_header *header)
 {
 	if ( ptr == null ) return;
@@ -1774,6 +1826,11 @@ static void Unpack_VkPastPresentationTimingGOOGLE (VkPastPresentationTimingGOOGL
 	if ( ptr == null ) return;
 }
 
+static void Unpack_VkDrmFormatModifierPropertiesEXT (VkDrmFormatModifierPropertiesEXT *ptr, vktrace_trace_packet_header *header)
+{
+	if ( ptr == null ) return;
+}
+
 static void Unpack_VkPresentTimeGOOGLE (VkPresentTimeGOOGLE *ptr, vktrace_trace_packet_header *header)
 {
 	if ( ptr == null ) return;
@@ -1790,7 +1847,7 @@ static void Unpack_VkAttachmentSampleLocationsEXT (VkAttachmentSampleLocationsEX
 	UnpackStruct( BitCast<VkBaseOutStructure*>(&ptr->sampleLocationsInfo), header );
 }
 
-static void Unpack_VkGeometryDataNVX (VkGeometryDataNVX *ptr, vktrace_trace_packet_header *header)
+static void Unpack_VkGeometryDataNV (VkGeometryDataNV *ptr, vktrace_trace_packet_header *header)
 {
 	if ( ptr == null ) return;
 	UnpackStruct( BitCast<VkBaseOutStructure*>(&ptr->triangles), header );

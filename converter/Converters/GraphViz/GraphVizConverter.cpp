@@ -14,6 +14,7 @@ namespace VTC
 	bool RunConverter_GraphViz (const AppTrace &trace, const ConverterConfig &config)
 	{
 		FG_TIMEPROFILER();
+		FG_LOGI( "run GraphViz converter" );
 
 		GraphVizConverter	conv{ config };
 

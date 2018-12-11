@@ -11,7 +11,6 @@ namespace VTPlayer
 {
 #	include "Types/VulkanCreateInfo.h"
 
-
 /*
 =================================================
 	constructor
@@ -135,6 +134,9 @@ namespace VTPlayer
 		if ( key == "arrow right" )
 			_playOneFrame = true;
 
+		if ( key == "S" )
+			_playWithSourceFPS = not _playWithSourceFPS;
+
 		if ( key == "escape" )
 			_isFinished = true;
 	}
@@ -214,7 +216,7 @@ namespace VTPlayer
 */
 	bool VkPlayer_v100::_RunCommand ()
 	{
-		_perPacketAllocator.Clear();
+		_perPacketAllocator.Discard();
 
 		if ( not _trace.ReadNext() ) {
 			_isFinished = true;
@@ -240,11 +242,10 @@ namespace VTPlayer
 		switch ( packetId )
 		{
 			case EVulkanPacketID::End :									_isFinished = true;										break;
-			case EVulkanPacketID::SetSourceFPS :						CHECK( _SetSourceFPS( unpacker ));						break;
 			case EVulkanPacketID::SetData :								CHECK( _SetData( unpacker ));							break;
 
 			case EVulkanPacketID::VInitializeResource :					CHECK( _Initializeresource( unpacker ));				break;
-			case EVulkanPacketID::VCreateDevice :						CHECK( _CreateDevice( unpacker ));						break;
+			case EVulkanPacketID::CreateVkDevice :						CHECK( _CreateDevice( unpacker ));						break;
 
 			case EVulkanPacketID::VMapMemory :							CHECK( _MapMemory( unpacker ));							break;
 			case EVulkanPacketID::VUnmapMemory :						CHECK( _UnmapMemory( unpacker ));						break;
@@ -296,7 +297,7 @@ namespace VTPlayer
 	_LoadData
 =================================================
 */
-	VkPlayer_v100::DataBuffer_t  VkPlayer_v100::_LoadData (DataID id) const
+	ArrayView<uint8_t>  VkPlayer_v100::_LoadData (DataID id) const
 	{
 		auto	data = _loadableData.find( id );
 		CHECK_ERR( data != _loadableData.end() );
@@ -382,18 +383,7 @@ namespace VTPlayer
 	
 	inline bool  VkPlayer_v100::_IsProfilingEnabled () const
 	{
-		return true;
-	}
-
-/*
-=================================================
-	_SetSourceFPS
-=================================================
-*/
-	bool VkPlayer_v100::_SetSourceFPS (VUnpacker &unpacker)
-	{
-		_sourceFPS = unpacker.Get<uint>();
-		return true;
+		return EnumEq( _playerSettings.flags, EPlayerFlags::EnableGpuBenchmark );
 	}
 
 /*
@@ -633,7 +623,7 @@ namespace VTPlayer
 	_QueuePresentToIndirectSwapchain
 =================================================
 */
-	bool VkPlayer_v100::_QueuePresentToIndirectSwapchain (size_t queueId, VkQueue queue, VkImage image, uint waitSemaphoreCount, const VkSemaphore* waitSemaphores)
+	bool VkPlayer_v100::_QueuePresentToIndirectSwapchain (size_t queueId, VkQueue queue, VkImage image, ArrayView<VkSemaphore> waitSemaphores)
 	{
 		auto&	current = _indirectSwapchain.images[_indirectSwapchain.imageIndex];
 		CHECK_ERR( current.image == image );
@@ -735,7 +725,7 @@ namespace VTPlayer
 		{
 			FixedArray< VkPipelineStageFlags, 16 >	wait_dst_stage_mask;
 
-			for (uint i = 0; i < waitSemaphoreCount; ++i) {
+			for (uint i = 0; i < waitSemaphores.size(); ++i) {
 				wait_dst_stage_mask.push_back( VK_PIPELINE_STAGE_ALL_COMMANDS_BIT );	// TODO
 			}
 
@@ -747,9 +737,9 @@ namespace VTPlayer
 			submits[0].pCommandBuffers		= &current.cmdbuf;
 			submits[0].signalSemaphoreCount	= 1;
 			submits[0].pSignalSemaphores	= &_indirectSwapchain.renderFinished;
-			submits[0].waitSemaphoreCount	= waitSemaphoreCount;
-			submits[0].pWaitDstStageMask	= waitSemaphoreCount ? wait_dst_stage_mask.data() : null;
-			submits[0].pWaitSemaphores		= waitSemaphores;
+			submits[0].waitSemaphoreCount	= uint(waitSemaphores.size());
+			submits[0].pWaitDstStageMask	= waitSemaphores.empty() ? null : wait_dst_stage_mask.data();
+			submits[0].pWaitSemaphores		= waitSemaphores.data();
 
 			if ( _IsProfilingEnabled() )
 			{
@@ -761,10 +751,31 @@ namespace VTPlayer
 		}
 
 		// present
-		CHECK( _swapchain->Present( queue, {_indirectSwapchain.renderFinished} ));
+		VK_CHECK( _swapchain->Present( queue, {_indirectSwapchain.renderFinished} ));
 		return true;
 	}
 	
+/*
+=================================================
+	_QueuePresentToDirectSwapchain
+=================================================
+*/
+	bool VkPlayer_v100::_QueuePresentToDirectSwapchain (size_t queueId, VkQueue queue, VkImage image, ArrayView<VkSemaphore> waitSemaphores)
+	{
+		ASSERT( image == _swapchain->GetCurrentImage() );
+
+		if ( _IsProfilingEnabled() )
+		{
+			VkSubmitInfo	submit;
+			CHECK_ERR( _InsertQueryOnPresent( OUT submit, queueId ));
+			
+			VK_CALL( vkQueueSubmit( queue, 1, &submit, VK_NULL_HANDLE ));
+		}
+
+		VK_CHECK( _swapchain->Present( queue, waitSemaphores ));
+		return true;
+	}
+
 /*
 =================================================
 	_QueuePresent
@@ -772,6 +783,7 @@ namespace VTPlayer
 */
 	bool VkPlayer_v100::_QueuePresent (VUnpacker &unpacker)
 	{
+		auto	frame_time			= Nonoseconds{unpacker.Get<uint64_t>()};
 		auto	queue_id			= unpacker.Get< NearUInt<VkQueue> >();
 		auto	queue				= VkQueue(_vkResources[VkResourceIndex<VkQueue>][queue_id]);
 		auto	image				= unpacker.Get<VkImage>();
@@ -782,20 +794,23 @@ namespace VTPlayer
 		_UpdateFrameStatistic( queue_id );
 		
 		if ( _IsIndirectSwapchainEnabled() )
-			return _QueuePresentToIndirectSwapchain( queue_id, queue, image, semaphores_count, wait_semaphores );
+			CHECK_ERR( _QueuePresentToIndirectSwapchain( queue_id, queue, image, {wait_semaphores, semaphores_count} ))
+		else
+			CHECK_ERR( _QueuePresentToDirectSwapchain( queue_id, queue, image, {wait_semaphores, semaphores_count} ));
 
 
-		ASSERT( image == _swapchain->GetCurrentImage() );
-
-		if ( _IsProfilingEnabled() )
+		// add delay to limit FPS
+		if ( _playWithSourceFPS )
 		{
-			VkSubmitInfo	submit;
-			CHECK_ERR( _InsertQueryOnPresent( OUT submit, queue_id ));
-			
-			VK_CALL( vkQueueSubmit( queue, 1, &submit, VK_NULL_HANDLE ));
-		}
+			TimePoint_t		time		= TimePoint_t::clock::now();
+			Nonoseconds		dt			= time - _lastPresentTime;
+			Nonoseconds		delay		= frame_time - dt;
+			Nonoseconds		max_delay	= Nonoseconds{100'000'000};
+			_lastPresentTime = time;
 
-		CHECK( _swapchain->Present( queue, {wait_semaphores, semaphores_count} ));
+			if ( delay > Nonoseconds(0) )
+				std::this_thread::sleep_for( Min(delay, max_delay) );
+		}
 		return true;
 	}
 	
@@ -1145,7 +1160,8 @@ namespace VTPlayer
 		// create debug callback
 		if ( EnumEq( _playerSettings.flags, EPlayerFlags::DebugMode ) )
 		{
-			_vulkan.CreateDebugCallback( VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT | VK_DEBUG_REPORT_ERROR_BIT_EXT );
+			//_vulkan.CreateDebugReportCallback( DebugReportFlags_All );
+			//_vulkan.CreateDebugUtilsCallback( DebugUtilsMessageSeverity_All );
 			_vulkan.SetBreakOnValidationError( false );
 		}
 
@@ -1160,6 +1176,8 @@ namespace VTPlayer
 		}
 
 		CHECK_ERR( _CreateAllocator( 64ull << 20 ));
+
+		_lastPresentTime = TimePoint_t::clock::now();
 		return true;
 	}
 	
@@ -1249,7 +1267,7 @@ namespace VTPlayer
 	{
 		CHECK_ERR( _profiling.queries.empty() );
 		
-		_profiling.lastUpdateTime = std::chrono::high_resolution_clock::now();
+		_profiling.lastUpdateTime = TimePoint_t::clock::now();
 
 		const uint	max_queries = 16;
 		const uint	max_frames	= Clamp( _swapchain->GetSwapchainLength(), 2u, uint(FrameQueries_t::capacity()) );
@@ -1389,7 +1407,7 @@ namespace VTPlayer
 		// update FPS
 		++_profiling.frameCounter;
 
-		TimePoint_t		now			= high_resolution_clock::now();
+		TimePoint_t		now			= TimePoint_t::clock::now();
 		int64_t			duration	= duration_cast<milliseconds>(now - _profiling.lastUpdateTime).count();
 
 		if ( duration > UpdateIntervalMillis )
@@ -1529,20 +1547,29 @@ namespace VTPlayer
 	_CreateSwapchain
 =================================================
 */
-	bool VkPlayer_v100::_CreateSwapchain (const VulkanCreateInfo &ci)
+	bool VkPlayer_v100::_CreateSwapchain (VulkanCreateInfo &ci)
 	{
+		if ( _vulkanSettings.swapchain.compositeAlpha < VK_COMPOSITE_ALPHA_FLAG_BITS_MAX_ENUM_KHR )
+			ci.swapchainCompositeAlpha = _vulkanSettings.swapchain.compositeAlpha;
+
+		if ( _vulkanSettings.swapchain.presentMode < VK_PRESENT_MODE_MAX_ENUM_KHR )
+			ci.swapchainPresentMode = _vulkanSettings.swapchain.presentMode;
+
+		if ( _vulkanSettings.swapchain.transform < VK_SURFACE_TRANSFORM_FLAG_BITS_MAX_ENUM_KHR )
+			ci.swapchainPreTransform = _vulkanSettings.swapchain.transform;
+
 		if ( _IsIndirectSwapchainEnabled() )
 			return _InitIndirectSwapchain( ci );
 		else
-			return _InitSwapchain( ci );
+			return _InitDirectSwapchain( ci );
 	}
 	
 /*
 =================================================
-	_InitSwapchain
+	_InitDirectSwapchain
 =================================================
 */
-	bool  VkPlayer_v100::_InitSwapchain (const VulkanCreateInfo &ci)
+	bool  VkPlayer_v100::_InitDirectSwapchain (const VulkanCreateInfo &ci)
 	{
 		VkFormat			color_format	= ci.swapchainColorFormat;
 		VkColorSpaceKHR		color_space		= ci.swapchainColorSpace;
@@ -1897,6 +1924,7 @@ namespace VTPlayer
 //-----------------------------------------------------------------------------
 
 
+#ifndef FG_ENABLE_VULKAN_MEMORY_ALLOCATOR
 # ifdef COMPILER_GCC
 #   pragma GCC diagnostic push
 #   pragma GCC diagnostic ignored "-Wmissing-field-initializers"
@@ -1920,3 +1948,4 @@ namespace VTPlayer
 # ifdef COMPILER_MSVC
 #	pragma warning (pop)
 # endif
+#endif	// FG_ENABLE_VULKAN_MEMORY_ALLOCATOR

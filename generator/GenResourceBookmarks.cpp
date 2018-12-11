@@ -402,7 +402,8 @@ namespace VTC
 			FindAndReplace( INOUT type_name, "16_BIT", "16BIT" );
 			FindAndReplace( INOUT type_name, "8_BIT", "8BIT" );
 			FindAndReplace( INOUT type_name, "D_3_D_12", "D3D12" );
-			FindAndReplace( INOUT type_name, "AABBNVX", "AABB_NVX" );
+			FindAndReplace( INOUT type_name, "AABBNV", "AABB_NV" );
+			FindAndReplace( INOUT type_name, "_INT_64_", "_INT64_" );
 		}
 
 		for (auto field = values.begin(); field != values.end(); ++field)

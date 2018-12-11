@@ -3,7 +3,7 @@
 if (${VTC_ENABLE_BROTLI})
     set( BROTLI_INSTALL_DIR "${VTC_EXTERNAL_INSTALL_DIR}/brotli" CACHE INTERNAL "" FORCE )
 
-	ExternalProject_Add( "External.brotli"
+	ExternalProject_Add( "Extern.brotli"
         LIST_SEPARATOR		"${VTC_LIST_SEPARATOR}"
 		# download
 		GIT_REPOSITORY		https://github.com/google/brotli.git
@@ -33,21 +33,24 @@ if (${VTC_ENABLE_BROTLI})
 		LOG_BUILD 			1
 		# install
 		INSTALL_DIR 		"${BROTLI_INSTALL_DIR}"
-		#INSTALL_COMMAND	""
 		LOG_INSTALL 		1
 		# test
 		TEST_COMMAND		""
 	)
 	
-	set_property( TARGET "External.brotli" PROPERTY FOLDER "External" )
+	set_property( TARGET "Extern.brotli" PROPERTY FOLDER "External" )
     set( VTC_BUILD_TARGET_FLAGS "${VTC_BUILD_TARGET_FLAGS}" "-DBROTLI_INSTALL_DIR=${BROTLI_INSTALL_DIR}" )
 	
+    set( VTC_CONVERTER_LIBRARIES "${VTC_CONVERTER_LIBRARIES}"
+									"${BROTLI_INSTALL_DIR}/lib/brotlidec-static${CMAKE_STATIC_LIBRARY_SUFFIX}"
+									"${BROTLI_INSTALL_DIR}/lib/brotlienc-static${CMAKE_STATIC_LIBRARY_SUFFIX}"
+									"${BROTLI_INSTALL_DIR}/lib/brotlicommon-static${CMAKE_STATIC_LIBRARY_SUFFIX}" )
+
     set( VTC_CONVERTER_INCLUDE_DIRS "${VTC_CONVERTER_INCLUDE_DIRS}" "${BROTLI_INSTALL_DIR}/include" )
-    set( VTC_CONVERTER_LIBRARIES "${VTC_CONVERTER_LIBRARIES}" "brotlidec-static" "brotlienc-static" "brotlicommon-static" )
-    set( VTC_CONVERTER_DEPENDENCIES "${VTC_CONVERTER_DEPENDENCIES}" "External.brotli" )
+    set( VTC_CONVERTER_DEPENDENCIES "${VTC_CONVERTER_DEPENDENCIES}" "Extern.brotli" )
 	set( VTC_CONVERTER_DEFINES "${VTC_CONVERTER_DEFINES}" "VTC_ENABLE_BROTLI" )
 
     set( VTC_PLAYER_INCLUDE_DIRS "${VTC_PLAYER_INCLUDE_DIRS}" "${BROTLI_INSTALL_DIR}/include" )
     set( VTC_PLAYER_LIBRARIES "${VTC_PLAYER_LIBRARIES}" "brotlidec-static" "brotlienc-static" "brotlicommon-static" )
-    set( VTC_PLAYER_DEPENDENCIES "${VTC_PLAYER_DEPENDENCIES}" "External.brotli" )
+    set( VTC_PLAYER_DEPENDENCIES "${VTC_PLAYER_DEPENDENCIES}" "Extern.brotli" )
 endif ()

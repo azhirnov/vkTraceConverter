@@ -15,8 +15,8 @@ namespace VTPlayer
 	public:
 		using ResourceID		= uint64_t;
 		using ResourceMap_t		= StaticArray< Array<ResourceID>, VkResourceTypes::Count >;
-		using TempBuffer_t		= Array< uint64_t >;
 		using AfterCallFn_t		= void (VUnpacker::*) ();
+		using Allocator_t		= LinearAllocator<>;
 
 		static constexpr size_t		ResMapSize = std::tuple_size<ResourceMap_t>::value;
 
@@ -29,7 +29,7 @@ namespace VTPlayer
 		ResourceMap_t&		_resources;
 
 		// used for resource remapping after constructor call
-		PoolAllocator&		_allocator;
+		Allocator_t&		_allocator;
 		AfterCallFn_t		_afterCall		= null;
 		void *				_resourceIDs	= null;		// origin array with resource indices, used to map new handles to origin
 		void *				_newVkHandles	= null;		// array where vulkan handles will be writen during constructor call
@@ -38,7 +38,7 @@ namespace VTPlayer
 
 	// methods
 	public:
-		VUnpacker (void *data, BytesU size, BytesU offset, ResourceMap_t& resources, PoolAllocator &alloc) :
+		VUnpacker (void *data, BytesU size, BytesU offset, ResourceMap_t& resources, Allocator_t &alloc) :
 			_data{data}, _size{size}, _offset{offset}, _resources{resources}, _allocator{alloc} {}
 
 		~VUnpacker ();

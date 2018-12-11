@@ -65,7 +65,7 @@ namespace VTC
 	public:
 		MemoryObjAnalyzer ();
 		
-		ND_ MemoryObjInfo_t const*	GetMemoryObj (ResourceID id, TraceRange::Bookmark pos) const	{ return _memObjects.FindIn( id, pos ); }
+		ND_ MemoryObjInfo_t const*	GetMemoryObj (ResourceID id, TraceRange::Bookmark pos, bool strict = true) const	{ return _memObjects.FindIn( id, pos, strict ); }
 
 
 	// IAnalyzer implementation

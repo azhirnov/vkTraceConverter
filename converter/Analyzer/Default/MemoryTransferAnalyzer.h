@@ -26,7 +26,7 @@ namespace VTC
 		struct ResDataInfo : BlockInfo
 		{
 			ResourceID				id			= 0;
-			EResourceType			type		= VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT;
+			EResourceType			type		= VK_OBJECT_TYPE_UNKNOWN;
 			TraceRange::Bookmark	pos;				// bookmark when resource created/updated
 			VkDeviceSize			resOffset	= 0;	// offset in image/buffer
 		};
