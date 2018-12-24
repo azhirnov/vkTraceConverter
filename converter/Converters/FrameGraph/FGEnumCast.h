@@ -532,16 +532,16 @@ namespace FG
 			case VK_FORMAT_R8G8_UNORM :				return EVertexType::UByte2_Norm;
 			case VK_FORMAT_R8G8B8_UNORM :			return EVertexType::UByte3_Norm;
 			case VK_FORMAT_R8G8B8A8_UNORM :			return EVertexType::UByte4_Norm;
-
-			case VK_FORMAT_R8_SSCALED :
-			case VK_FORMAT_R8G8_SSCALED :
-			case VK_FORMAT_R8G8B8_SSCALED :
-			case VK_FORMAT_R8G8B8A8_SSCALED :		break;	// not supported yet
-			
-			case VK_FORMAT_R8_USCALED :
-			case VK_FORMAT_R8G8_USCALED :
-			case VK_FORMAT_R8G8B8_USCALED :
-			case VK_FORMAT_R8G8B8A8_USCALED :		break;	// not supported yet
+				
+			case VK_FORMAT_R8_SSCALED :				return EVertexType::Byte_Scaled;
+			case VK_FORMAT_R8G8_SSCALED :			return EVertexType::Byte2_Scaled;
+			case VK_FORMAT_R8G8B8_SSCALED :			return EVertexType::Byte3_Scaled;
+			case VK_FORMAT_R8G8B8A8_SSCALED :		return EVertexType::Byte4_Scaled;
+				
+			case VK_FORMAT_R8_USCALED :				return EVertexType::UByte_Scaled;
+			case VK_FORMAT_R8G8_USCALED :			return EVertexType::UByte2_Scaled;
+			case VK_FORMAT_R8G8B8_USCALED :			return EVertexType::UByte3_Scaled;
+			case VK_FORMAT_R8G8B8A8_USCALED :		return EVertexType::UByte4_Scaled;
 
 			case VK_FORMAT_R16_SNORM :				return EVertexType::Short_Norm;
 			case VK_FORMAT_R16G16_SNORM :			return EVertexType::Short2_Norm;
@@ -553,15 +553,15 @@ namespace FG
 			case VK_FORMAT_R16G16B16_UNORM :		return EVertexType::UShort3_Norm;
 			case VK_FORMAT_R16G16B16A16_UNORM :		return EVertexType::UShort4_Norm;
 				
-			case VK_FORMAT_R16_SSCALED :
-			case VK_FORMAT_R16G16_SSCALED :
-			case VK_FORMAT_R16G16B16_SSCALED :
-			case VK_FORMAT_R16G16B16A16_SSCALED :	break;	// not supported yet
-				
-			case VK_FORMAT_R16_USCALED :
-			case VK_FORMAT_R16G16_USCALED :
-			case VK_FORMAT_R16G16B16_USCALED :
-			case VK_FORMAT_R16G16B16A16_USCALED :	break;	// not supported yet
+			case VK_FORMAT_R16_SSCALED :			return EVertexType::Short_Scaled;
+			case VK_FORMAT_R16G16_SSCALED :			return EVertexType::Short2_Scaled;
+			case VK_FORMAT_R16G16B16_SSCALED :		return EVertexType::Short3_Scaled;
+			case VK_FORMAT_R16G16B16A16_SSCALED :	return EVertexType::Short4_Scaled;
+
+			case VK_FORMAT_R16_USCALED :			return EVertexType::UShort_Scaled;
+			case VK_FORMAT_R16G16_USCALED :			return EVertexType::UShort2_Scaled;
+			case VK_FORMAT_R16G16B16_USCALED :		return EVertexType::UShort3_Scaled;
+			case VK_FORMAT_R16G16B16A16_USCALED :	return EVertexType::UShort4_Scaled;
 
 			case VK_FORMAT_R32_SFLOAT :				return EVertexType::Float;
 			case VK_FORMAT_R32G32_SFLOAT :			return EVertexType::Float2;
@@ -682,7 +682,7 @@ namespace FG
 =================================================
 	FGEnumCast (VkDynamicState)
 =================================================
-*/
+*
 	ND_ inline EPipelineDynamicState  FGEnumCast (const HashSet<VkDynamicState> &values)
 	{
 		EPipelineDynamicState	result = Default;
@@ -710,6 +710,45 @@ namespace FG
 				case VK_DYNAMIC_STATE_RANGE_SIZE :
 				case VK_DYNAMIC_STATE_MAX_ENUM :
 				default :										RETURN_ERR( "unsupported dynamic state!" );
+			}
+			DISABLE_ENUM_CHECKS();
+		}
+		return result;
+	}
+	
+/*
+=================================================
+	FGEnumCastStages
+=================================================
+*/
+	ND_ inline EShaderStages  FGEnumCastStages (VkShaderStageFlags flags)
+	{
+		EShaderStages	result = Default;
+
+		for (VkShaderStageFlags t = 1; t < VK_SHADER_STAGE_FLAG_BITS_MAX_ENUM; t <<= 1)
+		{
+			if ( not EnumEq( flags, t ) )
+				continue;
+
+			ENABLE_ENUM_CHECKS();
+			switch ( VkShaderStageFlagBits(t) )
+			{
+				case VK_SHADER_STAGE_VERTEX_BIT :					result |= EShaderStages::Vertex;			break;
+				case VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT :		result |= EShaderStages::TessControl;		break;
+				case VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT :	result |= EShaderStages::TessEvaluation;	break;
+				case VK_SHADER_STAGE_GEOMETRY_BIT :					result |= EShaderStages::Geometry;			break;
+				case VK_SHADER_STAGE_FRAGMENT_BIT :					result |= EShaderStages::Fragment;			break;
+				case VK_SHADER_STAGE_COMPUTE_BIT :					result |= EShaderStages::Compute;			break;
+				case VK_SHADER_STAGE_RAYGEN_BIT_NV :				result |= EShaderStages::RayGen;			break;
+				case VK_SHADER_STAGE_ANY_HIT_BIT_NV :				result |= EShaderStages::RayAnyHit;			break;
+				case VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV :			result |= EShaderStages::RayClosestHit;		break;
+				case VK_SHADER_STAGE_MISS_BIT_NV :					result |= EShaderStages::RayMiss;			break;
+				case VK_SHADER_STAGE_INTERSECTION_BIT_NV :			result |= EShaderStages::RayIntersection;	break;
+				case VK_SHADER_STAGE_CALLABLE_BIT_NV :				result |= EShaderStages::RayCallable;		break;
+				case VK_SHADER_STAGE_TASK_BIT_NV :					result |= EShaderStages::MeshTask;			break;
+				case VK_SHADER_STAGE_MESH_BIT_NV :					result |= EShaderStages::Mesh;				break;
+				case VK_SHADER_STAGE_ALL_GRAPHICS :
+				case VK_SHADER_STAGE_ALL :							RETURN_ERR( "not supported" );
 			}
 			DISABLE_ENUM_CHECKS();
 		}

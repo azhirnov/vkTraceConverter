@@ -1148,6 +1148,13 @@ switch ( header->sType )
 		break;
 	}
 
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_PROPERTIES_EXT : {
+		VkPhysicalDeviceFragmentDensityMapPropertiesEXT const&  value = *BitCast<VkPhysicalDeviceFragmentDensityMapPropertiesEXT const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES : {
 		VkPhysicalDeviceSamplerYcbcrConversionFeatures const&  value = *BitCast<VkPhysicalDeviceSamplerYcbcrConversionFeatures const *>( header );
 		if ( (value).pNext )
@@ -1443,6 +1450,20 @@ switch ( header->sType )
 		break;
 	}
 
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT : {
+		VkPhysicalDevicePCIBusInfoPropertiesEXT const&  value = *BitCast<VkPhysicalDevicePCIBusInfoPropertiesEXT const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT16_INT8_FEATURES_KHR : {
+		VkPhysicalDeviceFloat16Int8FeaturesKHR const&  value = *BitCast<VkPhysicalDeviceFloat16Int8FeaturesKHR const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
 	case VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_ADVANCED_STATE_CREATE_INFO_EXT : {
 		VkPipelineColorBlendAdvancedStateCreateInfoEXT const&  value = *BitCast<VkPipelineColorBlendAdvancedStateCreateInfoEXT const *>( header );
 		if ( (value).pNext )
@@ -1659,6 +1680,13 @@ switch ( header->sType )
 
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES_KHR : {
 		VkPhysicalDeviceDriverPropertiesKHR const&  value = *BitCast<VkPhysicalDeviceDriverPropertiesKHR const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT_CONTROLS_PROPERTIES_KHR : {
+		VkPhysicalDeviceFloatControlsPropertiesKHR const&  value = *BitCast<VkPhysicalDeviceFloatControlsPropertiesKHR const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		break;
@@ -1934,6 +1962,18 @@ switch ( header->sType )
 		VkDebugUtilsMessengerCallbackDataEXT const&  value = *BitCast<VkDebugUtilsMessengerCallbackDataEXT const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		for (uint a = 0; (value).pQueueLabels and a < (value).queueLabelCount; ++a) {
+			if ( ((value).pQueueLabels[a]).pNext )
+				_AddStructBookmsrks( BitCast<VkBaseInStructure const*>(((value).pQueueLabels[a]).pNext), iter, frame_id );
+		}
+		for (uint a = 0; (value).pCmdBufLabels and a < (value).cmdBufLabelCount; ++a) {
+			if ( ((value).pCmdBufLabels[a]).pNext )
+				_AddStructBookmsrks( BitCast<VkBaseInStructure const*>(((value).pCmdBufLabels[a]).pNext), iter, frame_id );
+		}
+		for (uint a = 0; (value).pObjects and a < (value).objectCount; ++a) {
+			if ( ((value).pObjects[a]).pNext )
+				_AddStructBookmsrks( BitCast<VkBaseInStructure const*>(((value).pObjects[a]).pNext), iter, frame_id );
+		}
 		break;
 	}
 
@@ -2137,6 +2177,13 @@ switch ( header->sType )
 		break;
 	}
 
+	case VK_STRUCTURE_TYPE_RENDER_PASS_FRAGMENT_DENSITY_MAP_CREATE_INFO_EXT : {
+		VkRenderPassFragmentDensityMapCreateInfoEXT const&  value = *BitCast<VkRenderPassFragmentDensityMapCreateInfoEXT const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
 	case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NV : {
 		VkAccelerationStructureMemoryRequirementsInfoNV const&  value = *BitCast<VkAccelerationStructureMemoryRequirementsInfoNV const *>( header );
 		if ( (value).pNext )
@@ -2253,8 +2300,22 @@ switch ( header->sType )
 		break;
 	}
 
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT : {
-		VkPhysicalDevicePCIBusInfoPropertiesEXT const&  value = *BitCast<VkPhysicalDevicePCIBusInfoPropertiesEXT const *>( header );
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_FEATURES_EXT : {
+		VkPhysicalDeviceFragmentDensityMapFeaturesEXT const&  value = *BitCast<VkPhysicalDeviceFragmentDensityMapFeaturesEXT const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT : {
+		VkPhysicalDeviceScalarBlockLayoutFeaturesEXT const&  value = *BitCast<VkPhysicalDeviceScalarBlockLayoutFeaturesEXT const *>( header );
+		if ( (value).pNext )
+			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
+		break;
+	}
+
+	case VK_STRUCTURE_TYPE_IMAGE_STENCIL_USAGE_CREATE_INFO_EXT : {
+		VkImageStencilUsageCreateInfoEXT const&  value = *BitCast<VkImageStencilUsageCreateInfoEXT const *>( header );
 		if ( (value).pNext )
 			_AddStructBookmsrks( BitCast<VkBaseInStructure const*>((value).pNext), iter, frame_id );
 		break;

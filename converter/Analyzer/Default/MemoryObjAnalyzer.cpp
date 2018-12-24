@@ -38,7 +38,7 @@ namespace VTC
 */
 	void MemoryObjAnalyzer::PostProcess ()
 	{
-		CHECK( _DetectMemoryAliasing() );
+		//CHECK( _DetectMemoryAliasing() );
 	}
 	
 /*
@@ -48,6 +48,7 @@ namespace VTC
 */
 	bool MemoryObjAnalyzer::_DetectMemoryAliasing ()
 	{
+#	ifdef VTC_DETECT_MEMORY_ALIASING
 		const auto	FindAliasing = [this] (INOUT MemoryObjInfo_t &item, INOUT MemBinding &binding, VkDeviceSize actualSize,
 										   TraceRange::Bookmark firstPos, TraceRange::Bookmark lastPos) -> bool
 		{
@@ -111,6 +112,7 @@ namespace VTC
 				CHECK_ERR( FindAliasing( item, img, img.size, info->FirstBookmark().pos, info->LastBookmark().pos ));
 			}
 		}
+#	endif
 		return true;
 	}
 

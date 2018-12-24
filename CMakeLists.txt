@@ -15,6 +15,8 @@ include( "cmake/compilers.cmake" )
 
 set( VTC_STABLE OFF CACHE BOOL "disable code generation and some external projects" )
 set( VTC_ENABLE_BROTLI ON CACHE BOOL "use brotli compression" )
+set( VTC_ENABLE_SPIRVCROSS OFF CACHE BOOL "use SPIRV-Cross for shader reflection" )
+set( VTC_ENABLE_SPIRVREFLECT ON CACHE BOOL "use SPIRV-Reflect for shader reflection" )
 
 set( MAIN_BINARY_DIR "${CMAKE_BINARY_DIR}/bin" CACHE INTERNAL "" FORCE )
 set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${MAIN_BINARY_DIR}" )

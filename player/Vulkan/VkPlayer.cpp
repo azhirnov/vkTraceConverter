@@ -629,7 +629,7 @@ namespace VTPlayer
 		CHECK_ERR( current.image == image );
 
 		// find queue family index
-		uint	family_index = ~0u;
+		uint	family_index = UMax;
 		{
 			for (auto& info : _vulkan.GetVkQuues()) {
 				if ( info.id == queue )

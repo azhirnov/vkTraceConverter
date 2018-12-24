@@ -410,7 +410,7 @@ namespace VTC
 		ASSERT( barrier.srcQueueFamilyIndex != VK_QUEUE_FAMILY_IGNORED and
 				barrier.dstQueueFamilyIndex != VK_QUEUE_FAMILY_IGNORED );
 
-		if ( barrier.srcAccessMask == 0 and barrier.dstAccessMask == 0 )
+		/*if ( barrier.srcAccessMask == 0 and barrier.dstAccessMask == 0 )
 		{
 			ASSERT(false);	// unknown operation
 		}
@@ -429,7 +429,7 @@ namespace VTC
 		else
 		{
 			ASSERT(false);	// unknown operation
-		}
+		}*/
 	}
 
 /*

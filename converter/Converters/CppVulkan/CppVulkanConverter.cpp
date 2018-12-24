@@ -611,7 +611,7 @@ namespace VTC
 
 			for (auto& data : file.second)
 			{
-				FrameID		first_frame	= ~FrameID(0);
+				FrameID		first_frame	= UMax;
 				FrameID		last_frame	= 0;
 
 				for (auto frame_id : data.second)

@@ -43,10 +43,10 @@
 	ND_ String  Serialize_VkBlendFactor (VkBlendFactor);
 	ND_ String  Serialize_VkDynamicState (VkDynamicState);
 	ND_ String  Serialize_VkFilter (VkFilter);
-	ND_ String  Serialize_VkSamplerAddressMode (VkSamplerAddressMode);
-	ND_ String  Serialize_VkDependencyFlagBits (VkDependencyFlagBits);
 	ND_ String  Serialize_VkSamplerMipmapMode (VkSamplerMipmapMode);
 	ND_ String  Serialize_VkDescriptorSetLayoutCreateFlagBits (VkDescriptorSetLayoutCreateFlagBits);
+	ND_ String  Serialize_VkDependencyFlagBits (VkDependencyFlagBits);
+	ND_ String  Serialize_VkSamplerAddressMode (VkSamplerAddressMode);
 	ND_ String  Serialize_VkSubpassContents (VkSubpassContents);
 	ND_ String  Serialize_VkBorderColor (VkBorderColor);
 	ND_ String  Serialize_VkAttachmentLoadOp (VkAttachmentLoadOp);
@@ -57,8 +57,10 @@
 	ND_ String  Serialize_VkImageUsageFlagBits (VkImageUsageFlagBits);
 	ND_ String  Serialize_VkImageCreateFlagBits (VkImageCreateFlagBits);
 	ND_ String  Serialize_VkSparseImageFormatFlagBits (VkSparseImageFormatFlagBits);
+	ND_ String  Serialize_VkSamplerCreateFlagBits (VkSamplerCreateFlagBits);
 	ND_ String  Serialize_VkSparseMemoryBindFlagBits (VkSparseMemoryBindFlagBits);
 	ND_ String  Serialize_VkBufferCreateFlagBits (VkBufferCreateFlagBits);
+	ND_ String  Serialize_VkImageViewCreateFlagBits (VkImageViewCreateFlagBits);
 	ND_ String  Serialize_VkShaderStageFlagBits (VkShaderStageFlagBits);
 	ND_ String  Serialize_VkCullModeFlagBits (VkCullModeFlagBits);
 	ND_ String  Serialize_VkColorComponentFlagBits (VkColorComponentFlagBits);

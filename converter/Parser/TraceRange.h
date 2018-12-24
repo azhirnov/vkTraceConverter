@@ -28,7 +28,7 @@ namespace VTC
 
 		// variables
 		private:
-			BytesU		_offset	{ ~0ull };
+			BytesU		_offset		= ~0_b;
 
 
 		// methods

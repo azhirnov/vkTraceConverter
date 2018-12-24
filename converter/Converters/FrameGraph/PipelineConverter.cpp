@@ -5,42 +5,21 @@
 #include "Converters/Utils/TracePacker.h"
 #include "framegraph/Shared/EnumUtils.h"
 
-#ifdef VTC_ENABLE_SPIRVREFLECT
-#	include "spirv_reflect.h"
-#endif
-
 namespace VTC
 {
 
 /*
 =================================================
-	FG_GraphicsPipelineHash::operator ()
+	CalcPipelineLayoutHash
 =================================================
 */
-	size_t  FrameGraphConverter::PipelineConverter::FG_GraphicsPipelineHash::operator () (const FG_GraphicsPipeline &x) const noexcept
+	ND_ static HashVal  CalcPipelineLayoutHash (const PipelineDescription::PipelineLayout &value)
 	{
 		HashVal	result;
-		result	<< HashOf( x.renderState );
 
-		for (auto& stage : x.shaders) {
-			result << HashOf( stage.code ) << HashOf( stage.entry ) << HashOf( stage.shaderType ) << HashOf( stage.specConstants );
-		}
+		result << HashOf( value.descriptorSets.size() );
 
-		for (auto& frag : x.fragOutput) {
-			result << HashOf( frag.id ) << HashOf( frag.index ) << HashOf( frag.type );
-		}
-
-		for (auto& attr : x.attribs) {
-			result << HashOf( attr.id ) << HashOf( attr.index ) << HashOf( attr.type );
-		}
-
-		result	<< HashOf( x.supportedTopology )
-				<< HashOf( x.patchControlPoints )
-				<< HashOf( x.earlyFragmentTests );
-
-		result << HashOf( x.layout.descriptorSets.size() );
-
-		for (auto& ds : x.layout.descriptorSets)
+		for (auto& ds : value.descriptorSets)
 		{
 			ASSERT( ds.uniforms );
 			result << HashOf( ds.id ) << HashOf( ds.bindingIndex ) << HashOf( ds.uniforms->size() );
@@ -78,50 +57,31 @@ namespace VTC
 			}
 		}
 
-		result << HashOf( x.layout.pushConstants.size() );
+		result << HashOf( value.pushConstants.size() );
 
-		for (auto& pc : x.layout.pushConstants)
+		for (auto& pc : value.pushConstants)
 		{
 			result	<< HashOf( pc.first ) << HashOf( pc.second.stageFlags )
 					<< HashOf( pc.second.offset ) << HashOf( pc.second.size );
 		}
-
-		return size_t(result);
+		return result;
 	}
-	
+
 /*
 =================================================
-	FG_GraphicsPipeline::operator ==
+	ComparePipelineLayouts
 =================================================
 */
-	bool  FrameGraphConverter::PipelineConverter::FG_GraphicsPipeline::operator == (const FG_GraphicsPipeline &rhs) const
+	ND_ static bool  ComparePipelineLayouts (const PipelineDescription::PipelineLayout &lhs, const PipelineDescription::PipelineLayout &rhs)
 	{
-		if ( this->renderState			!= rhs.renderState			or
-			 this->supportedTopology	!= rhs.supportedTopology	or
-			 this->patchControlPoints	!= rhs.patchControlPoints	or
-			 this->earlyFragmentTests	!= rhs.earlyFragmentTests	or
-			 this->shaders.size()		!= rhs.shaders.size()		or
-			 this->fragOutput			!= rhs.fragOutput			or
-			 this->attribs				!= rhs.attribs )
+		if ( lhs.descriptorSets.size() != rhs.descriptorSets.size() or
+			 lhs.pushConstants.size() != rhs.pushConstants.size() )
 			return false;
 
-		for (size_t i = 0; i < this->shaders.size(); ++i)
+		for (size_t i = 0; i < lhs.descriptorSets.size(); ++i)
 		{
-			if ( this->shaders[i].code			!= rhs.shaders[i].code			or
-				 this->shaders[i].entry			!= rhs.shaders[i].entry			or
-				 this->shaders[i].shaderType	!= rhs.shaders[i].shaderType	or
-				 this->shaders[i].specConstants	!= rhs.shaders[i].specConstants )
-				return false;
-		}
-
-		if ( this->layout.descriptorSets.size() != rhs.layout.descriptorSets.size() or
-			 this->layout.pushConstants.size() != rhs.layout.pushConstants.size() )
-			return false;
-
-		for (size_t i = 0; i < this->layout.descriptorSets.size(); ++i)
-		{
-			auto&	lhs_ds	= this->layout.descriptorSets[i];
-			auto&	rhs_ds	= rhs.layout.descriptorSets[i];
+			auto&	lhs_ds	= lhs.descriptorSets[i];
+			auto&	rhs_ds	= rhs.descriptorSets[i];
 
 			if ( lhs_ds.bindingIndex		!= rhs_ds.bindingIndex	or
 				 lhs_ds.uniforms			!= rhs_ds.uniforms		or
@@ -197,8 +157,125 @@ namespace VTC
 					return false;
 			}
 		}
-
 		return true;
+	}
+//-----------------------------------------------------------------------------
+
+
+	
+/*
+=================================================
+	ShaderStage::operator ==
+=================================================
+*/
+	bool  FrameGraphConverter::PipelineConverter::ShaderStage::operator == (const ShaderStage &rhs) const
+	{
+		return	code			== rhs.code			and
+				entry			== rhs.entry		and
+				shaderType		== rhs.shaderType	and
+				specConstants	== rhs.specConstants;
+	}
+
+/*
+=================================================
+	ShaderStageHash::operator ()
+=================================================
+*/
+	ND_ HashVal  FrameGraphConverter::PipelineConverter::ShaderStageHash::operator () (const ShaderStage &stage) const noexcept
+	{
+		return HashVal{} << HashOf( stage.code ) << HashOf( stage.entry ) << HashOf( stage.shaderType ) << HashOf( stage.specConstants );
+	}
+//-----------------------------------------------------------------------------
+
+
+
+/*
+=================================================
+	FG_GraphicsPipelineHash::operator ()
+=================================================
+*/
+	size_t  FrameGraphConverter::PipelineConverter::FG_GraphicsPipelineHash::operator () (const FG_GraphicsPipeline &x) const noexcept
+	{
+		HashVal	result;
+		result	<< HashOf( x.renderState );
+
+		for (auto& stage : x.shaders) {
+			result << ShaderStageHash{}( stage );
+		}
+
+		for (auto& frag : x.fragOutput) {
+			result << HashOf( frag.id ) << HashOf( frag.index ) << HashOf( frag.type );
+		}
+
+		for (auto& attr : x.attribs) {
+			result << HashOf( attr.id ) << HashOf( attr.index ) << HashOf( attr.type );
+		}
+
+		result	<< HashOf( x.supportedTopology )
+				<< HashOf( x.patchControlPoints )
+				<< HashOf( x.earlyFragmentTests );
+
+		result << CalcPipelineLayoutHash( x.layout );
+
+		return size_t(result);
+	}
+	
+/*
+=================================================
+	FG_GraphicsPipeline::operator ==
+=================================================
+*/
+	bool  FrameGraphConverter::PipelineConverter::FG_GraphicsPipeline::operator == (const FG_GraphicsPipeline &rhs) const
+	{
+		if ( this->renderState			!= rhs.renderState			or
+			 this->supportedTopology	!= rhs.supportedTopology	or
+			 this->patchControlPoints	!= rhs.patchControlPoints	or
+			 this->earlyFragmentTests	!= rhs.earlyFragmentTests	or
+			 this->shaders.size()		!= rhs.shaders.size()		or
+			 this->fragOutput			!= rhs.fragOutput			or
+			 this->attribs				!= rhs.attribs )
+			return false;
+
+		for (size_t i = 0; i < this->shaders.size(); ++i)
+		{
+			if ( not (this->shaders[i] == rhs.shaders[i]) )
+				return false;
+		}
+
+		return ComparePipelineLayouts( this->layout, rhs.layout );
+	}
+//-----------------------------------------------------------------------------
+	
+
+
+/*
+=================================================
+	FG_ComputePipelineHash::operator ()
+=================================================
+*/
+	size_t  FrameGraphConverter::PipelineConverter::FG_ComputePipelineHash::operator () (const FG_ComputePipeline &x) const noexcept
+	{
+		HashVal	result;
+		
+		result << ShaderStageHash{}( x.shader );
+		result << CalcPipelineLayoutHash( x.layout );
+
+		return size_t(result);
+	}
+
+/*
+=================================================
+	FG_ComputePipeline::operator ==
+=================================================
+*/
+	bool  FrameGraphConverter::PipelineConverter::FG_ComputePipeline::operator == (const FG_ComputePipeline &rhs) const
+	{
+		if ( Any( this->localGroupSize	!= rhs.localGroupSize )	or
+			 Any( this->localSizeSpec	!= rhs.localSizeSpec )	or
+			 not (this->shader == rhs.shader) )
+			return false;
+
+		return ComparePipelineLayouts( this->layout, rhs.layout );
 	}
 //-----------------------------------------------------------------------------
 
@@ -385,14 +462,23 @@ namespace VTC
 */
 	bool FrameGraphConverter::PipelineConverter::_PackComputePipeline (const FG_ComputePipeline &ppln, RawCPipelineID id, INOUT TracePacker &packer) const
 	{
-		packer.Begin( EPacketID::FgCreateGraphicsPipeline );
+		packer.Begin( EPacketID::FgCreateComputePipeline );
 		
 		packer << uint(0);	// TODO: thread id
-		// TODO
+		packer << id.Index();
+		packer << ppln.shader.code->second.uid;
+
+		packer << ppln.localGroupSize.x;
+		packer << ppln.localGroupSize.y;
+		packer << ppln.localGroupSize.z;
+
+		packer << ppln.localSizeSpec.x;
+		packer << ppln.localSizeSpec.y;
+		packer << ppln.localSizeSpec.z;
 		
 		CHECK_ERR( _PackPipelineLayout( ppln.layout, packer ));
 
-		packer.End( EPacketID::FgCreateGraphicsPipeline );
+		packer.End( EPacketID::FgCreateComputePipeline );
 		return true;
 	}
 
@@ -411,51 +497,18 @@ namespace VTC
 		if ( data_iter == _shaderDataCache.end() )
 		{
 			DataID		data_id = _fgConv._RequestData( pos, packet.header, packet.pCreateInfo->pCode, packet.pCreateInfo->codeSize, FrameID(0) );
-			CHECK_ERR( data_id != ~DataID(0) );
+			CHECK_ERR( data_id != UMax );
 
 			ShaderDataInfo		info;
-			info.dataId			= data_id;
-			info.uid			= _shaderCounter++;
-			info.dataSize		= uint(data.size());
-			info.glslSource		= _ConvertToGLSL( data );
+			info.dataId		= data_id;
+			info.uid		= _shaderCounter++;
+			info.dataSize	= uint(data.size());
 
 			data_iter = _shaderDataCache.insert_or_assign( std::move(data), std::move(info) ).first;
 		}
 
 		_shaderMap.insert_or_assign( ResourceID(*packet.pShaderModule), data_iter.operator->() );
 		return true;
-	}
-	
-/*
-=================================================
-	_ConvertToGLSL
-=================================================
-*/
-	String  FrameGraphConverter::PipelineConverter::_ConvertToGLSL (const Array<uint> &spv) const
-	{
-#	ifdef VTC_ENABLE_SPIRVCROSS
-		spirv_cross::CompilerGLSL			compiler{ spv.data(), spv.size() };
-		spirv_cross::CompilerGLSL::Options	opt;
-
-		opt.version						= 460;
-		opt.es							= false;
-		opt.vulkan_semantics			= true;
-		opt.separate_shader_objects		= true;
-		opt.enable_420pack_extension	= true;
-
-		opt.vertex.fixup_clipspace					= false;
-		opt.vertex.flip_vert_y						= false;
-		opt.vertex.support_nonzero_base_instance	= false;
-
-		opt.fragment.default_float_precision	= spirv_cross::CompilerGLSL::Options::Precision::Highp;
-		opt.fragment.default_int_precision		= spirv_cross::CompilerGLSL::Options::Precision::Highp;
-
-		compiler.set_common_options( opt );
-
-		return compiler.compile();
-#	else
-		return "";
-#	endif
 	}
 
 /*
@@ -539,7 +592,7 @@ namespace VTC
 
 		for (uint i = 0; i < packet.pCreateInfo->pushConstantRangeCount; ++i)
 		{
-			info.pushConstantRanges.insert({ PushConstantID(ToString(i)), packet.pCreateInfo->pPushConstantRanges[i] });
+			info.pushConstantRanges.insert({ PushConstantID{"pc"s << ToString(i)}, packet.pCreateInfo->pPushConstantRanges[i] });
 		}
 
 		_pipelineLayouts.insert_or_assign( ResourceID(*packet.pPipelineLayout), info );
@@ -553,9 +606,9 @@ namespace VTC
 */
 	bool FrameGraphConverter::PipelineConverter::DestroyPipelineLayout (const TraceRange::Iterator &pos)
 	{
-		/*auto const&		packet	= pos.Cast<packet_vkDestroyPipelineLayout>();
+		auto const&		packet	= pos.Cast<packet_vkDestroyPipelineLayout>();
 
-		CHECK( _pipelineLayouts.erase( ResourceID(packet.pipelineLayout) ) == 1 );*/
+		CHECK( _pipelineLayouts.erase( ResourceID(packet.pipelineLayout) ) == 1 );
 		return true;
 	}
 	
@@ -623,7 +676,7 @@ namespace VTC
 	CreateComputePipelines
 =================================================
 */
-	bool FrameGraphConverter::PipelineConverter::_ConvertGraphicsPipeline (OUT FG_GraphicsPipeline &result, const VkGraphicsPipelineCreateInfo &info) const
+	bool FrameGraphConverter::PipelineConverter::_ConvertGraphicsPipeline (OUT FG_GraphicsPipeline &result, const VkGraphicsPipelineCreateInfo &info)
 	{
 		if ( info.pVertexInputState )
 		{
@@ -693,8 +746,6 @@ namespace VTC
 
 		if ( info.pViewportState )
 		{
-			ASSERT( info.pViewportState->viewportCount == result.renderState.color.buffers.size() );
-			ASSERT( info.pViewportState->viewportCount == result.fragOutput.size() );
 		}
 
 		if ( info.pRasterizationState )
@@ -719,8 +770,9 @@ namespace VTC
 			result.renderState.multisample.alphaToCoverage		= info.pMultisampleState->alphaToCoverageEnable;
 			result.renderState.multisample.alphaToOne			= info.pMultisampleState->alphaToOneEnable;
 
-			ASSERT( info.pMultisampleState->pSampleMask == null );
+			//ASSERT( info.pMultisampleState->pSampleMask == null );
 
+			// TODO
 			//if ( info.pMultisampleState->pSampleMask )
 			//	result.renderState.SetSampleMask( ArrayView{ info.pMultisampleState->pSampleMask, (result.renderState.multisample.samples.Get()+3/4) });
 		}
@@ -760,13 +812,12 @@ namespace VTC
 			}
 		}
 		
-		if ( info.pStages )
+		if ( info.stageCount and info.pStages )
 		{
 			for (uint i = 0; i < info.stageCount; ++i)
 			{
 				auto&			src = info.pStages[i];
 				ShaderStage		dst;
-
 				ASSERT( src.pNext == null );
 
 				auto	sh_iter = _shaderMap.find( ResourceID(src.module) );
@@ -778,15 +829,10 @@ namespace VTC
 
 				ASSERT( src.pSpecializationInfo == null );
 
-				/*for (uint j = 0; src.pSpecializationInfo and j < src.pSpecializationInfo->mapEntryCount; ++j)
-				{
-					dst.specConstants.insert_or_assign( SpecializationID(""),  );
-				}*/
-
-				CHECK_ERR( _GetReflection( dst.code->first, INOUT result.fragOutput, INOUT result.attribs, INOUT result.layout ));
-
 				result.shaders.push_back( std::move(dst) );
 			}
+
+			CHECK_ERR( _GetShaderReflection( INOUT result, info ));
 		}
 
 		result.supportedTopology[ uint(result.renderState.inputAssembly.topology) ] = true;
@@ -807,558 +853,17 @@ namespace VTC
 		{
 			auto&	bind = info.pVertexInputState->pVertexBindingDescriptions[i];
 
-			vertexInput.Bind( VertexBufferID{ToString(bind.binding)}, BytesU{bind.stride}, bind.binding, FGEnumCast(bind.inputRate) );
+			vertexInput.Bind( VertexBufferID{"vb"s << ToString(bind.binding)}, BytesU{bind.stride}, bind.binding, FGEnumCast(bind.inputRate) );
 		}
 
 		for (uint i = 0; i < info.pVertexInputState->vertexAttributeDescriptionCount; ++i)
 		{
 			auto&	vert = info.pVertexInputState->pVertexAttributeDescriptions[i];
 
-			vertexInput.Add( VertexID{ToString(vert.location)}, FGEnumCastVertex(vert.format), BytesU{vert.offset}, VertexBufferID{ToString(vert.binding)} );
+			vertexInput.Add( VertexID{"attr"s << ToString(vert.location)}, FGEnumCastVertex(vert.format), BytesU{vert.offset},
+							 VertexBufferID{"vb"s << ToString(vert.binding)} );
 		}
 
-		return true;
-	}
-
-/*
-=================================================
-	FGEnumCast (SpvReflectShaderStageFlagBits)
-=================================================
-*/
-	ND_ static EShaderStages  FGEnumCast (SpvReflectShaderStageFlagBits value)
-	{
-		ENABLE_ENUM_CHECKS();
-		switch ( value )
-		{
-			case SPV_REFLECT_SHADER_STAGE_VERTEX_BIT :					return EShaderStages::Vertex;
-			case SPV_REFLECT_SHADER_STAGE_TESSELLATION_CONTROL_BIT :	return EShaderStages::TessControl;
-			case SPV_REFLECT_SHADER_STAGE_TESSELLATION_EVALUATION_BIT :	return EShaderStages::TessEvaluation;
-			case SPV_REFLECT_SHADER_STAGE_GEOMETRY_BIT :				return EShaderStages::Geometry;
-			case SPV_REFLECT_SHADER_STAGE_FRAGMENT_BIT :				return EShaderStages::Fragment;
-			case SPV_REFLECT_SHADER_STAGE_COMPUTE_BIT :					return EShaderStages::Compute;
-		}
-		DISABLE_ENUM_CHECKS();
-		RETURN_ERR( "unknown shader stage!" );
-	}
-
-/*
-=================================================
-	_GetReflection
-=================================================
-*/
-	bool FrameGraphConverter::PipelineConverter::_GetReflection (const Array<uint> &spvShader, INOUT FragmentOutputs_t &fragOutput,
-																 INOUT VertexAttribs_t &attribs, INOUT FG_PipelineLayout &layout) const
-	{
-		SpvReflectShaderModule	module = {};
-		CHECK_ERR( spvReflectCreateShaderModule( size_t(ArraySizeOf(spvShader)), spvShader.data(), OUT &module ) == SPV_REFLECT_RESULT_SUCCESS );
-
-		if ( module.shader_stage == SPV_REFLECT_SHADER_STAGE_VERTEX_BIT ) {
-			CHECK_ERR( _GetVertexInputReflection( module, INOUT attribs ));
-		}
-
-		if ( module.shader_stage == SPV_REFLECT_SHADER_STAGE_FRAGMENT_BIT ) {
-			CHECK_ERR( _GetFragmentOutputReflection( module, INOUT fragOutput ));
-		}
-
-		for (uint i = 0; i < module.descriptor_set_count; ++i) {
-			CHECK_ERR( _GetDescriptorSetLayoutReflection( module.descriptor_sets[i], FGEnumCast(module.shader_stage), INOUT layout ));
-		}
-
-		for (uint i = 0; i < module.push_constant_block_count; ++i) {
-			CHECK_ERR( _GetPushConstantReflection( module.push_constant_blocks[i], FGEnumCast(module.shader_stage), INOUT layout ));
-		}
-
-		return true;
-	}
-	
-/*
-=================================================
-	FGEnumCast (SpvReflectImageTraits)
-=================================================
-*/
-	ND_ static EImage  FGEnumCast (const SpvReflectImageTraits &value)
-	{
-		ENABLE_ENUM_CHECKS();
-		switch ( value.dim )
-		{
-			case SpvDim1D :		return value.arrayed ? EImage::Tex1DArray : EImage::Tex1D;
-			case SpvDim2D :		return value.ms ?
-										(value.arrayed ? EImage::Tex2DMSArray : EImage::Tex2DMS) :
-										(value.arrayed ? EImage::Tex2DArray : EImage::Tex2D);
-			case SpvDim3D :		return EImage::Tex3D;
-			case SpvDimCube :	return value.arrayed ? EImage::TexCubeArray : EImage::TexCube;
-			case SpvDimRect :
-			case SpvDimBuffer :
-			case SpvDimSubpassData :
-			case SpvDimMax :	break;
-		}
-		DISABLE_ENUM_CHECKS();
-		RETURN_ERR( "unsupported image dimension type" );
-	}
-	
-/*
-=================================================
-	FGEnumCast (SpvImageFormat)
-=================================================
-*/
-	ND_ static EPixelFormat  FGEnumCast (SpvImageFormat value)
-	{
-		ENABLE_ENUM_CHECKS();
-		switch ( value )
-		{
-			case SpvImageFormatUnknown :		break;
-			case SpvImageFormatRgba32f :		return EPixelFormat::RGBA32F;
-			case SpvImageFormatRgba16f :		return EPixelFormat::RGBA16F;
-			case SpvImageFormatR32f :			return EPixelFormat::R32F;
-			case SpvImageFormatRgba8 :			return EPixelFormat::RGBA8_UNorm;
-			case SpvImageFormatRgba8Snorm :		return EPixelFormat::RGBA8_SNorm;
-			case SpvImageFormatRg32f :			return EPixelFormat::RG32F;
-			case SpvImageFormatRg16f :			return EPixelFormat::RG16F;
-			case SpvImageFormatR11fG11fB10f :	return EPixelFormat::RGB_11_11_10F;
-			case SpvImageFormatR16f :			return EPixelFormat::R16F;
-			case SpvImageFormatRgba16 :			return EPixelFormat::RGBA16_UNorm;
-			case SpvImageFormatRgb10A2 :		return EPixelFormat::RGB10_A2_UNorm;
-			case SpvImageFormatRg16 :			return EPixelFormat::RG16_UNorm;
-			case SpvImageFormatRg8 :			return EPixelFormat::RG8_UNorm;
-			case SpvImageFormatR16 :			return EPixelFormat::R16_UNorm;
-			case SpvImageFormatR8 :				return EPixelFormat::R8_UNorm;
-			case SpvImageFormatRgba16Snorm :	return EPixelFormat::RGBA16_SNorm;
-			case SpvImageFormatRg16Snorm :		return EPixelFormat::RG16_SNorm;
-			case SpvImageFormatRg8Snorm :		return EPixelFormat::RG8_SNorm;
-			case SpvImageFormatR16Snorm :		return EPixelFormat::R16_SNorm;
-			case SpvImageFormatR8Snorm :		return EPixelFormat::R8_SNorm;
-			case SpvImageFormatRgba32i :		return EPixelFormat::RGBA32I;
-			case SpvImageFormatRgba16i :		return EPixelFormat::RGBA16I;
-			case SpvImageFormatRgba8i :			return EPixelFormat::RGBA8I;
-			case SpvImageFormatR32i :			return EPixelFormat::R32I;
-			case SpvImageFormatRg32i :			return EPixelFormat::RG32I;
-			case SpvImageFormatRg16i :			return EPixelFormat::RG16I;
-			case SpvImageFormatRg8i :			return EPixelFormat::RG8I;
-			case SpvImageFormatR16i :			return EPixelFormat::R16I;
-			case SpvImageFormatR8i :			return EPixelFormat::R8I;
-			case SpvImageFormatRgba32ui :		return EPixelFormat::RGBA32U;
-			case SpvImageFormatRgba16ui :		return EPixelFormat::RGBA16U;
-			case SpvImageFormatRgba8ui :		return EPixelFormat::RGBA8U;
-			case SpvImageFormatR32ui :			return EPixelFormat::R32U;
-			case SpvImageFormatRgb10a2ui :		return EPixelFormat::RGB10_A2U;
-			case SpvImageFormatRg32ui :			return EPixelFormat::RG32U;
-			case SpvImageFormatRg16ui :			return EPixelFormat::RG16U;
-			case SpvImageFormatRg8ui :			return EPixelFormat::RG8U;
-			case SpvImageFormatR16ui :			return EPixelFormat::R16U;
-			case SpvImageFormatR8ui :			return EPixelFormat::R8U;
-			case SpvImageFormatMax :			break;
-		}
-		DISABLE_ENUM_CHECKS();
-		RETURN_ERR( "unsupported pixel format!" );
-	}
-	
-/*
-=================================================
-	MergeShaderAccess
-=================================================
-*/
-	static void MergeShaderAccess (const EResourceState srcAccess, INOUT EResourceState &dstAccess)
-	{
-		if ( srcAccess == dstAccess )
-			return;
-
-		dstAccess |= srcAccess;
-
-		if ( EnumEq( dstAccess, EResourceState::InvalidateBefore ) and
-			 EnumEq( dstAccess, EResourceState::ShaderRead ) )
-		{
-			dstAccess &= ~EResourceState::InvalidateBefore;
-		}
-	}
-
-/*
-=================================================
-	MergeUniforms
-=================================================
-*/
-	static bool MergeUniforms (const PipelineDescription::UniformMap_t &srcUniforms, INOUT PipelineDescription::UniformMap_t &dstUniforms)
-	{
-		for (auto& un : srcUniforms)
-		{
-			auto	iter = dstUniforms.find( un.first );
-
-			// add new uniform
-			if ( iter == dstUniforms.end() )
-			{
-				dstUniforms.insert( un );
-				continue;
-			}
-
-			bool	type_missmatch = true;
-
-			Visit( un.second.data,
-				[&] (const PipelineDescription::Texture &lhs)
-				{
-					if ( auto* rhs = std::get_if<PipelineDescription::Texture>( &iter->second.data ) )
-					{
-						ASSERT( lhs.textureType	== rhs->textureType );
-						ASSERT( un.second.index	== iter->second.index );
-
-						if ( lhs.textureType	== rhs->textureType and
-							 un.second.index	== iter->second.index )
-						{
-							iter->second.stageFlags |= un.second.stageFlags;
-							rhs->state				|= EResourceState_FromShaders( iter->second.stageFlags );
-							type_missmatch			 = false;
-						}
-					}
-				},
-				   
-				[&] (const PipelineDescription::Sampler &)
-				{
-					if ( auto* rhs = std::get_if<PipelineDescription::Sampler>( &iter->second.data ) )
-					{
-						ASSERT( un.second.index == iter->second.index );
-
-						if ( un.second.index == iter->second.index )
-						{
-							iter->second.stageFlags |= un.second.stageFlags;
-							type_missmatch			 = false;
-						}
-					}
-				},
-				
-				[&] (const PipelineDescription::SubpassInput &lhs)
-				{
-					if ( auto* rhs = std::get_if<PipelineDescription::SubpassInput>( &iter->second.data ) )
-					{
-						ASSERT( lhs.attachmentIndex	== rhs->attachmentIndex );
-						ASSERT( lhs.isMultisample	== rhs->isMultisample );
-						ASSERT( un.second.index		== iter->second.index );
-						
-						if ( lhs.attachmentIndex	== rhs->attachmentIndex	and
-							 lhs.isMultisample		== rhs->isMultisample	and
-							 un.second.index		== iter->second.index )
-						{
-							iter->second.stageFlags |= un.second.stageFlags;
-							rhs->state				|= EResourceState_FromShaders( iter->second.stageFlags );
-							type_missmatch			 = false;
-						}
-					}
-				},
-				
-				[&] (const PipelineDescription::Image &lhs)
-				{
-					if ( auto* rhs = std::get_if<PipelineDescription::Image>( &iter->second.data ) )
-					{
-						ASSERT( lhs.imageType	== rhs->imageType );
-						ASSERT( lhs.format		== rhs->format );
-						ASSERT( un.second.index	== iter->second.index );
-						
-						if ( lhs.imageType		== rhs->imageType	and
-							 lhs.format			== rhs->format		and
-							 un.second.index	== iter->second.index )
-						{
-							MergeShaderAccess( lhs.state, INOUT rhs->state );
-
-							iter->second.stageFlags |= un.second.stageFlags;
-							rhs->state				|= EResourceState_FromShaders( iter->second.stageFlags );
-							type_missmatch			 = false;
-						}
-					}
-				},
-				
-				[&] (const PipelineDescription::UniformBuffer &lhs)
-				{
-					if ( auto* rhs = std::get_if<PipelineDescription::UniformBuffer>( &iter->second.data ) )
-					{
-						ASSERT( lhs.size		== rhs->size );
-						ASSERT( un.second.index	== iter->second.index );
-
-						if ( lhs.size			== rhs->size	and
-							 un.second.index	== iter->second.index )
-						{
-							iter->second.stageFlags |= un.second.stageFlags;
-							rhs->state				|= EResourceState_FromShaders( iter->second.stageFlags );
-							type_missmatch			 = false;
-						}
-					}
-				},
-				
-				[&] (const PipelineDescription::StorageBuffer &lhs)
-				{
-					if ( auto* rhs = std::get_if<PipelineDescription::StorageBuffer>( &iter->second.data ) )
-					{
-						ASSERT( lhs.staticSize	== rhs->staticSize );
-						ASSERT( lhs.arrayStride	== rhs->arrayStride );
-						ASSERT( un.second.index	== iter->second.index );
-						
-						if ( lhs.staticSize		== rhs->staticSize	and
-							 lhs.arrayStride	== rhs->arrayStride	and
-							 un.second.index	== iter->second.index )
-						{
-							MergeShaderAccess( lhs.state, INOUT rhs->state );
-
-							iter->second.stageFlags |= un.second.stageFlags;
-							rhs->state				|= EResourceState_FromShaders( iter->second.stageFlags );
-							type_missmatch			 = false;
-						}
-					}
-				},
-					
-				[&] (const PipelineDescription::RayTracingScene &lhs)
-				{
-					if ( auto* rhs = std::get_if<PipelineDescription::RayTracingScene>( &iter->second.data ) )
-					{
-						ASSERT( lhs.state == rhs->state );
-
-						if ( lhs.state == rhs->state )
-						{
-							iter->second.stageFlags |= un.second.stageFlags;
-							type_missmatch			 = false;
-						}
-					}
-				},
-
-				[] (const std::monostate &) { ASSERT(false); }
-			);
-
-			CHECK_ERR( not type_missmatch );
-		}
-		return true;
-	}
-
-/*
-=================================================
-	_GetDescriptorSetLayoutReflection
-=================================================
-*/
-	bool FrameGraphConverter::PipelineConverter::_GetDescriptorSetLayoutReflection (const SpvReflectDescriptorSet &srcDS,
-																					EShaderStages shaderStage, INOUT FG_PipelineLayout &layout) const
-	{
-		PipelineDescription::DescriptorSet	dst_ds;
-		PipelineDescription::UniformMap_t	uniforms;
-		EResourceState						rs_stages	= EResourceState_FromShaders( shaderStage );
-
-		dst_ds.id = DescriptorSetID( ToString(srcDS.set) );
-		dst_ds.bindingIndex = srcDS.set;
-
-		for (uint i = 0; i < srcDS.binding_count; ++i)
-		{
-			auto&							src = *(srcDS.bindings[i]);
-			PipelineDescription::Uniform	dst;
-			const UniformID					name { ToString(src.set) << "." << ToString(src.binding) };
-
-			//ASSERT( src.name and strlen(src.name) > 0 );
-			//UniformID	name{ src.name };
-
-			dst.index		= BindingIndex{ ~0u, src.binding };
-			dst.stageFlags	= shaderStage;
-
-			ENABLE_ENUM_CHECKS();
-			switch ( src.descriptor_type )
-			{
-				case SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLER :
-					dst.data = PipelineDescription::Sampler{};
-					break;
-
-				case SPV_REFLECT_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER :
-					dst.data = PipelineDescription::Texture{ rs_stages | EResourceState::ShaderSample, FGEnumCast(src.image) };
-					break;
-
-				case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_IMAGE :
-					dst.data = PipelineDescription::Image{ rs_stages | EResourceState::ShaderReadWrite, FGEnumCast(src.image), FGEnumCast(src.image.image_format) };
-					break;
-
-				case SPV_REFLECT_DESCRIPTOR_TYPE_INPUT_ATTACHMENT :
-					dst.data = PipelineDescription::SubpassInput{ rs_stages | EResourceState::InputAttachment, src.input_attachment_index, !!src.image.ms };
-					break;
-
-				case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER :
-					dst.data = PipelineDescription::UniformBuffer{ rs_stages | EResourceState::UniformRead, ~0u, BytesU(src.block.size) };
-					break;
-
-				case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC :
-					dst.data = PipelineDescription::UniformBuffer{ rs_stages | EResourceState::UniformRead, 0, BytesU(src.block.size) };
-					break;
-					
-				case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_BUFFER :
-					dst.data = PipelineDescription::StorageBuffer{ rs_stages | EResourceState::ShaderReadWrite, ~0u, BytesU(src.block.size), 0_b };
-					break;
-
-				case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC :
-					dst.data = PipelineDescription::StorageBuffer{ rs_stages | EResourceState::ShaderReadWrite, 0, BytesU(src.block.size), 0_b };
-					break;
-
-				case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER :
-				case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER :
-				case SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLED_IMAGE :
-				default :
-					RETURN_ERR( "unsupported descriptor type" );
-			}
-			DISABLE_ENUM_CHECKS();
-
-			uniforms.insert_or_assign( name, std::move(dst) );
-		}
-
-		dst_ds.uniforms = MakeShared< PipelineDescription::UniformMap_t >( std::move(uniforms) );
-		
-		// merge descriptor sets
-		for (auto& ds : layout.descriptorSets)
-		{
-			if ( ds.id == dst_ds.id )
-			{
-				CHECK_ERR( ds.bindingIndex == dst_ds.bindingIndex );
-				CHECK_ERR( MergeUniforms( *dst_ds.uniforms, INOUT const_cast<PipelineDescription::UniformMap_t &>(*ds.uniforms) ));
-				return true;
-			}
-		}
-
-		// add new descriptor set
-		layout.descriptorSets.push_back( dst_ds );
-		return true;
-	}
-	
-/*
-=================================================
-	_GetPushConstantReflection
-=================================================
-*/
-	bool FrameGraphConverter::PipelineConverter::_GetPushConstantReflection (const SpvReflectBlockVariable &srcPC, EShaderStages stageFlags,
-																			 INOUT FG_PipelineLayout &layout) const
-	{
-		PushConstantID	id		{ "0" };	//{ srcPC.name };
-		BytesU			offset	{ srcPC.offset };
-		BytesU			size	{ srcPC.padded_size };
-
-		ASSERT( srcPC.size <= size );
-		ASSERT( srcPC.absolute_offset == offset );	// TODO
-
-		auto	iter = layout.pushConstants.find( id );
-
-		// merge
-		if ( iter != layout.pushConstants.end() )
-		{
-			CHECK_ERR( offset == uint(iter->second.offset) );
-			CHECK_ERR( size == uint(iter->second.size) );
-
-			iter->second.stageFlags |= stageFlags;
-			return true;
-		}
-
-		// add new push constant
-		layout.pushConstants.insert({ id, {stageFlags, offset, size} });
-		return true;
-	}
-
-/*
-=================================================
-	FGEnumCastToVertexType
-=================================================
-*/
-	ND_ static EVertexType  FGEnumCastToVertexType (SpvReflectFormat value)
-	{
-		ENABLE_ENUM_CHECKS();
-		switch ( value )
-		{
-			case SPV_REFLECT_FORMAT_UNDEFINED :				break;
-			case SPV_REFLECT_FORMAT_R32_UINT :				return EVertexType::UInt;
-			case SPV_REFLECT_FORMAT_R32_SINT :				return EVertexType::Int;
-			case SPV_REFLECT_FORMAT_R32_SFLOAT :			return EVertexType::Float;
-			case SPV_REFLECT_FORMAT_R32G32_UINT :			return EVertexType::UInt2;
-			case SPV_REFLECT_FORMAT_R32G32_SINT :			return EVertexType::Int2;
-			case SPV_REFLECT_FORMAT_R32G32_SFLOAT :			return EVertexType::Float2;
-			case SPV_REFLECT_FORMAT_R32G32B32_UINT :		return EVertexType::UInt3;
-			case SPV_REFLECT_FORMAT_R32G32B32_SINT :		return EVertexType::Int3;
-			case SPV_REFLECT_FORMAT_R32G32B32_SFLOAT :		return EVertexType::Float3;
-			case SPV_REFLECT_FORMAT_R32G32B32A32_UINT :		return EVertexType::UInt4;
-			case SPV_REFLECT_FORMAT_R32G32B32A32_SINT :		return EVertexType::Int4;
-			case SPV_REFLECT_FORMAT_R32G32B32A32_SFLOAT :	return EVertexType::Float4;
-		}
-		DISABLE_ENUM_CHECKS();
-		RETURN_ERR( "unknown vertex fromat!" );
-	}
-
-/*
-=================================================
-	FGEnumCastToFragOutput
-=================================================
-*/
-	ND_ static EFragOutput  FGEnumCastToFragOutput (SpvReflectFormat value)
-	{
-		ENABLE_ENUM_CHECKS();
-		switch ( value )
-		{
-			case SPV_REFLECT_FORMAT_UNDEFINED :				break;
-			case SPV_REFLECT_FORMAT_R32_UINT :
-			case SPV_REFLECT_FORMAT_R32G32_UINT :
-			case SPV_REFLECT_FORMAT_R32G32B32_UINT :
-			case SPV_REFLECT_FORMAT_R32G32B32A32_UINT :		return EFragOutput::UInt4;
-			case SPV_REFLECT_FORMAT_R32_SINT :
-			case SPV_REFLECT_FORMAT_R32G32_SINT :
-			case SPV_REFLECT_FORMAT_R32G32B32_SINT :
-			case SPV_REFLECT_FORMAT_R32G32B32A32_SINT :		return EFragOutput::Int4;
-			case SPV_REFLECT_FORMAT_R32_SFLOAT :
-			case SPV_REFLECT_FORMAT_R32G32_SFLOAT :
-			case SPV_REFLECT_FORMAT_R32G32B32_SFLOAT :
-			case SPV_REFLECT_FORMAT_R32G32B32A32_SFLOAT :	return EFragOutput::Float4;
-		}
-		DISABLE_ENUM_CHECKS();
-		RETURN_ERR( "unknown vertex fromat!" );
-	}
-	
-/*
-=================================================
-	_GetVertexInputReflection
-=================================================
-*/
-	bool FrameGraphConverter::PipelineConverter::_GetVertexInputReflection (const SpvReflectShaderModule &module, INOUT VertexAttribs_t &attribs) const
-	{
-		const auto	GetAttrib = [&attribs] (uint location) -> VertexInputState::VertexAttrib*
-								{
-									for (auto& attr : attribs) {
-										if ( attr.index == location )
-											return &attr;
-									}
-									return null;
-								};
-
-		for (uint i = 0; i < module.input_variable_count; ++i)
-		{
-			auto&	src = module.input_variables[i];
-			auto*	dst = GetAttrib( src.location );
-
-			if ( not dst )
-				continue;
-
-			//ASSERT( dst->type == FGEnumCastToVertexType( src.format ));
-			dst->id = VertexID( ToString(src.location) );
-		}
-		return true;
-	}
-	
-/*
-=================================================
-	_GetFragmentOutputReflection
-=================================================
-*/
-	bool FrameGraphConverter::PipelineConverter::_GetFragmentOutputReflection (const SpvReflectShaderModule &module, INOUT FragmentOutputs_t &fragOutput) const
-	{
-		const auto	GetFragOutput = [&fragOutput] (uint location) -> GraphicsPipelineDesc::FragmentOutput*
-									{
-										for (auto& frag : fragOutput) {
-											if ( frag.index == location )
-												return &frag;
-										}
-										return null;
-									};
-
-		for (uint i = 0; i < module.output_variable_count; ++i)
-		{
-			auto&	src = module.output_variables[i];
-			auto*	dst = GetFragOutput( src.location );
-
-			if ( not dst )
-				continue;
-
-			ASSERT( dst->type == FGEnumCastToFragOutput( src.format ));
-			dst->id = RenderTargetID( ToString(src.location) );
-		}
 		return true;
 	}
 
@@ -1367,12 +872,55 @@ namespace VTC
 	CreateComputePipelines
 =================================================
 */
-	bool FrameGraphConverter::PipelineConverter::CreateComputePipelines (const TraceRange::Iterator &)
+	bool FrameGraphConverter::PipelineConverter::CreateComputePipelines (const TraceRange::Iterator &pos)
 	{
-		ASSERT(false);
+		auto&	packet	= pos.Cast<packet_vkCreateComputePipelines>();
+		
+		for (uint i = 0; i < packet.createInfoCount; ++i)
+		{
+			ASSERT( packet.pCreateInfos[i].pNext == null );
+
+			auto&	src	= packet.pCreateInfos[i];
+			auto&	dst	= _computePipelines.insert_or_assign( ResourceID(packet.pPipelines[i]), ComputePipelineInfo{} ).first->second;
+
+			FG_ComputePipeline	pipeline;
+			CHECK_ERR( _ConvertComputePipeline( OUT pipeline, src ));
+			
+			auto[iter, inserted] = _cpipelineCache.insert({ pipeline, RawCPipelineID{} });
+			if ( inserted )
+				iter->second = RawCPipelineID{ _computePplnCounter++, 0 };
+			
+			dst.fgPipeline	= iter.operator->();
+			dst.layout		= ResourceID(src.layout);
+		}
+
 		return true;
 	}
 	
+/*
+=================================================
+	_ConvertComputePipeline
+=================================================
+*/
+	bool FrameGraphConverter::PipelineConverter::_ConvertComputePipeline (OUT FG_ComputePipeline &result, const VkComputePipelineCreateInfo &info)
+	{
+		auto&			src = info.stage;
+		ShaderStage&	dst = result.shader;
+		ASSERT( src.pNext == null );
+
+		auto	sh_iter = _shaderMap.find( ResourceID(src.module) );
+		CHECK_ERR( sh_iter != _shaderMap.end() );
+
+		dst.code		= sh_iter->second;
+		dst.entry		= src.pName;
+		dst.shaderType	= FGEnumCast( src.stage );
+
+		ASSERT( src.pSpecializationInfo == null );
+		
+		CHECK_ERR( _GetShaderReflection( INOUT result, info ));
+		return true;
+	}
+
 /*
 =================================================
 	DestroyPipeline
@@ -1380,9 +928,47 @@ namespace VTC
 */
 	bool FrameGraphConverter::PipelineConverter::DestroyPipeline (const TraceRange::Iterator &pos)
 	{
-		//auto const&		packet	= pos.Cast<packet_vkDestroyPipeline>();
+		auto const&		packet	= pos.Cast<packet_vkDestroyPipeline>();
 
-		//CHECK( _graphicsPipelines.erase(ResourceID(packet.pipeline)) + _computePipelines.erase(ResourceID(packet.pipeline)) == 1 );
+		CHECK( _graphicsPipelines.erase(ResourceID(packet.pipeline)) + _computePipelines.erase(ResourceID(packet.pipeline)) == 1 );
+		return true;
+	}
+	
+/*
+=================================================
+	_UpdateDynamicOffsetIndices
+=================================================
+*/	
+	bool FrameGraphConverter::PipelineConverter::_UpdateDynamicOffsetIndices (INOUT FG_PipelineLayout &layout) const
+	{
+		Array< PipelineDescription::Uniform *>	sorted;
+
+		for (auto& ds_layout : layout.descriptorSets)
+		{
+			for (auto& un : *ds_layout.uniforms)
+			{
+				if ( auto* ubuf = std::get_if< PipelineDescription::UniformBuffer >( &un.second.data ); ubuf and ubuf->dynamicOffsetIndex != UMax )
+					sorted.push_back( const_cast< PipelineDescription::Uniform *>( &un.second ));
+				else
+				if ( auto* sbuf = std::get_if< PipelineDescription::StorageBuffer >( &un.second.data ); sbuf and sbuf->dynamicOffsetIndex != UMax )
+					sorted.push_back( const_cast< PipelineDescription::Uniform *>( &un.second ));
+			}
+		}
+
+		std::sort( sorted.begin(), sorted.end(), [] (auto& lhs, auto& rhs) { return lhs->index.VKBinding() < rhs->index.VKBinding(); });
+
+		uint	dbo_index = 0;
+
+		for (auto* un : sorted)
+		{
+			if ( auto* ubuf = std::get_if< PipelineDescription::UniformBuffer >( &un->data ))
+				ubuf->dynamicOffsetIndex = dbo_index++;
+			else
+			if ( auto* sbuf = std::get_if< PipelineDescription::StorageBuffer >( &un->data ))
+				sbuf->dynamicOffsetIndex = dbo_index++;
+		}
+
+		CHECK( dbo_index <= FG_MaxBufferDynamicOffsets );
 		return true;
 	}
 //-----------------------------------------------------------------------------

@@ -56,7 +56,7 @@ namespace VTC
 			StringView			name;
 			FuncArg				result;
 			Array<FuncArg>		args;
-			uint				fileIndex	= ~0u;
+			uint				fileIndex	= UMax;
 			mutable EFuncScope	scope		= EFuncScope::Unknown;
 			mutable bool		required	= false;
 
@@ -77,7 +77,7 @@ namespace VTC
 		// variables
 			StringView			name;
 			Array<EnumField>	fields;
-			uint				fileIndex	= ~0u;
+			uint				fileIndex	= UMax;
 			mutable bool		required	= false;
 
 		// methods
@@ -90,7 +90,7 @@ namespace VTC
 		// variables
 			StringView			name;
 			StringView			enumName;
-			uint				fileIndex	= ~0u;
+			uint				fileIndex	= UMax;
 			mutable bool		required	= false;
 
 		// methods
@@ -103,7 +103,7 @@ namespace VTC
 		// variables
 			StringView			name;
 			Array<FuncArg>		fields;
-			uint				fileIndex	= ~0u;
+			uint				fileIndex	= UMax;
 			mutable bool		required	= false;
 
 		// methods

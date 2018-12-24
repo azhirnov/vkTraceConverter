@@ -36,8 +36,8 @@ namespace VTC
 
 			VkDeviceQueueCreateFlags		createFlags		= 0;
 			float							priority		= 0.0f;
-			uint							familyIndex		= ~0u;
-			uint							queueIndex		= ~0u;
+			uint							familyIndex		= UMax;
+			uint							queueIndex		= UMax;
 
 			VkQueueFlags					usageFlags		= 0;
 			bool							usedForPresent	= false;

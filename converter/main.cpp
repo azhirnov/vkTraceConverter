@@ -59,6 +59,8 @@ static const char	s_Help[] = R"#(
 --cfg-vez-trace		configure 'vez-trace' converter:
 
 --cfg-fg-trace		configure 'fg-trace' converter:
+						end=[N] -- stop converting on N frame, default is -1.
+						force-dbo=[true/false] -- always use dynamic offset for UBO and SSBO.
 
 --cfg-graphviz		configure 'graphviz' converter:
 						begin=[N] -- start converting on N frame, default is 0.
@@ -137,6 +139,21 @@ static bool ParseVkTraceConfig (StringView param, StringView value, INOUT Conver
 
 /*
 =================================================
+	ParseFgTraceConfig
+=================================================
+*/
+static bool ParseFgTraceConfig (StringView param, StringView value, INOUT ConverterConfig &mainConfig)
+{
+	auto&	cfg = mainConfig.conveters.frameGraphTrace;
+
+	if ( param == "end" )				{ cfg.lastFrame = FrameID(std::stoll( String(value) ));				return true; }
+	if ( param == "force-dbo" )			{ cfg.forceDBO = (value.empty() or value == "true");				return true; }
+
+	RETURN_ERR( "unknown parameter for --cfg-fg-trace: \""s << param << '"' );
+}
+
+/*
+=================================================
 	ParseGraphVizConfig
 =================================================
 */
@@ -164,7 +181,7 @@ static bool ParseAdditionalConfig (const int argc, const char** argv, StringView
 		{ "--cfg-vk-cpp",			&ParseVkCppConfig },
 		{ "--cfg-vk-trace",			&ParseVkTraceConfig },
 		{ "--cfg-vez-trace",		[] (StringView, StringView, ConverterConfig &) { return false; } },
-		{ "--cfg-fg-trace",			[] (StringView, StringView, ConverterConfig &) { return false; } },
+		{ "--cfg-fg-trace",			&ParseFgTraceConfig },
 		{ "--cfg-graphviz",			&ParseGraphVizConfig },
 		{ "--cfg-rem-redundant",	[] (StringView, StringView, ConverterConfig &) { return false; } },
 		{ "--cfg-opt-renderpass",	[] (StringView, StringView, ConverterConfig &) { return false; } },

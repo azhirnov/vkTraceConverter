@@ -236,7 +236,7 @@ namespace VTC
 			for (auto& block : transfer->blocks)
 			{
 				DataID	data_id = _RequestData( _inputFile, block.fileOffset, block.dataSize, frameId );
-				CHECK_ERR( data_id != ~DataID(0) );
+				CHECK_ERR( data_id != UMax );
 
 				src << indent << "app.LoadDataToMappedMemory( DeviceMemoryID(" << (*_resRemapper)( VK_OBJECT_TYPE_DEVICE_MEMORY, mem_id ) << "), "
 					<< "DataID(" << IntToString( data_id ) << "), "
@@ -430,6 +430,7 @@ namespace VTC
 */
 	bool CppVulkanConverter::_RemapFlushMemoryRanges (const TraceRange::Iterator &iter, FrameID frameId, INOUT String &src)
 	{
+#	ifdef VTC_DETECT_RESOURCE_TRANSFER
 		auto&	packet = iter.Cast< packet_vkFlushMappedMemoryRanges >();
 
 		for (uint i = 0; i < packet.memoryRangeCount; ++i)
@@ -456,7 +457,7 @@ namespace VTC
 					}
 					
 					DataID	data_id = _RequestData( _inputFile, res.fileOffset, res.dataSize, frameId );
-					CHECK_ERR( data_id != ~DataID(0) );
+					CHECK_ERR( data_id != UMax );
 
 					src << "\tapp.LoadDataToBuffer( BufferID(" << (*_resRemapper)( VK_OBJECT_TYPE_BUFFER, res.id ) << "), "
 						<< "DataID(" << IntToString( data_id ) << "), "
@@ -478,7 +479,7 @@ namespace VTC
 					}
 
 					DataID	data_id = _RequestData( _inputFile, res.fileOffset, res.dataSize, frameId );
-					CHECK_ERR( data_id != ~DataID(0) );
+					CHECK_ERR( data_id != UMax );
 
 					src << "\tapp.LoadDataToImage( ImageID(" << (*_resRemapper)( VK_OBJECT_TYPE_IMAGE, res.id ) << "), "
 						<< "DataID(" << IntToString( data_id ) << "), "
@@ -488,6 +489,9 @@ namespace VTC
 			}
 		}
 		return true;
+#	else
+		return false;
+#	endif
 	}
 	
 /*

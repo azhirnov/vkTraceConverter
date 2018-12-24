@@ -195,7 +195,7 @@ namespace VTC
 		struct QueueBookmark
 		{
 			UID							uid			= 0;
-			FrameID						frameId		= ~FrameID(0);
+			FrameID						frameId		= UMax;
 			Dependencies_t				input;
 			Dependencies_t				output;
 			QueueUnion_t				data;
@@ -231,7 +231,7 @@ namespace VTC
 		struct SwapchainBookmark
 		{
 			UID							uid			= 0;
-			FrameID						frameId		= ~FrameID(0);
+			FrameID						frameId		= UMax;
 			Dependencies_t				input;
 			Dependencies_t				output;
 			SwapchainUnion_t			data;
@@ -281,7 +281,7 @@ namespace VTC
 		struct HostSyncBookmark
 		{
 			UID							uid			= 0;
-			FrameID						frameId		= ~FrameID(0);
+			FrameID						frameId		= UMax;
 			ThreadID					threadId	= 0;
 			Dependencies_t				input;
 			Dependencies_t				output;
@@ -318,7 +318,7 @@ namespace VTC
 		mutable UID						_uidCounter				= 0;
 
 		FrameID							_firstFrame				= 0;
-		FrameID							_lastFrame				= ~FrameID(0);
+		FrameID							_lastFrame				= UMax;
 
 		class RenderPassAnalyzer const*	_renderPassAnalyzer		= null;
 		class ImageAnalyzer const*		_imageAnalyzer			= null;

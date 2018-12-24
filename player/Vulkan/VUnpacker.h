@@ -71,7 +71,7 @@ namespace VTPlayer
 */	
 	VUnpacker::~VUnpacker ()
 	{
-		ASSERT( _offset == _size );
+		CHECK( _offset == _size );
 
 		if ( _afterCall )
 			(this->*_afterCall)();
@@ -214,7 +214,7 @@ namespace VTPlayer
 	{
 		const auto	res_id = BitCast<NearUInt<T>>( res );
 
-		if ( res_id == ~NearUInt<T>(0) )
+		if ( res_id == UMax )
 			return VK_NULL_HANDLE;
 
 		constexpr uint	index = VkResourceIndex<T>;

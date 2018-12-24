@@ -39,10 +39,10 @@ namespace VTC
 	private:
 		Ptr< AllResourcesBookmarks const>	_resBookmarks;
 		TraceRange::Bookmark				_currentPos;
-		bool								_useUniqueIndices;
+		bool								_useUniqueIndices	= true;
 
 		PointerStack_t						_pointerStack;
-		EPacketID							_currPacket;
+		EPacketID							_currPacket			= Default;
 
 		Buffer_t							_tempData;
 		MemWStream							_file;
@@ -50,6 +50,7 @@ namespace VTC
 
 	// methods
 	public:
+		TracePacker ();
 		TracePacker (Ptr<const AllResourcesBookmarks> rbm, bool uniqueIndices);
 		
 		void SetCurrentPos (const TraceRange::Bookmark &pos)
@@ -219,10 +220,10 @@ namespace VTC
 		}
 
 		if ( _useUniqueIndices ) {
-			CHECK_ERR( res_info->uniqueIndex != ~0ull, void());
+			CHECK_ERR( res_info->uniqueIndex != UMax, void());
 			result = T(res_info->uniqueIndex);
 		}else{
-			CHECK_ERR( res_info->localIndex != ~0ull, void());
+			CHECK_ERR( res_info->localIndex != UMax, void());
 			result = T(res_info->localIndex);
 		}
 	}
@@ -237,7 +238,7 @@ namespace VTC
 	{
 		ASSERT( value == null );	// use Push/Pop to store pointer + data
 
-		size_t	ptr = ~size_t(0);
+		size_t	ptr = UMax;
 		_Store( &ptr, sizeof(ptr), alignof(T) );
 	}
 	

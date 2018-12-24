@@ -30,7 +30,7 @@ namespace VTC
 		
 		struct DataAccessInfo
 		{
-			DataID			dataId		= ~0u;
+			DataID			dataId		= UMax;
 			uint64_t		offset		= 0;
 			uint64_t		size		= 0;
 
@@ -41,7 +41,7 @@ namespace VTC
 		};
 
 		struct DataAccessFrameMinMax {
-			FrameID			min		= ~FrameID(0);
+			FrameID			min		= UMax;
 			FrameID			max		= FrameID(0);
 		};
 

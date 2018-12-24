@@ -125,7 +125,7 @@ namespace VTC
 			// add bookmark to next frame
 			if ( new_frame )
 			{
-				ASSERT( frame_id != ~FrameID(0) );
+				ASSERT( frame_id != UMax );
 				++frame_id;
 
 				_presentBookmarks.push_back( iter.GetBookmark() );

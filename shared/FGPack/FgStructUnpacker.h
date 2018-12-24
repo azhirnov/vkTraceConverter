@@ -113,8 +113,8 @@ namespace VTPlayer
 		desc.maxLevel = MipmapLevel{ unpacker.Get<uint>() };
 		desc.samples = MultiSamples{ unpacker.Get<uint>() };
 
-		ASSERT( desc.format != EPixelFormat::Unknown );
-		ASSERT( desc.usage != EImageUsage::Unknown );
+		ASSERT( desc.format != Default );
+		ASSERT( desc.usage != Default );
 		ASSERT(All( desc.dimension > uint3(0) ));
 		ASSERT( desc.arrayLayers.Get() > 0 );
 		ASSERT( desc.maxLevel.Get() > 0 );
@@ -134,10 +134,12 @@ namespace VTPlayer
 		desc.baseLayer = ImageLayer{ unpacker.Get<uint>() };
 		desc.layerCount << unpacker;
 		desc.swizzle = BitCast<ImageSwizzle>( unpacker.Get<uint>() );
+		desc.aspectMask << unpacker;
 		
-		ASSERT( desc.format != EPixelFormat::Unknown );
+		ASSERT( desc.format != Default );
 		ASSERT( desc.levelCount > 0 );
 		ASSERT( desc.layerCount > 0 );
+		ASSERT( desc.aspectMask != Default );
 	}
 
 /*
@@ -229,7 +231,7 @@ namespace VTPlayer
 			const auto		index	= unpacker.Get<uint>();
 			const auto		offset	= BytesU{ unpacker.Get<uint>() };
 			const auto		bind_idx= unpacker.Get<uint>();
-			VertexBufferID	buf_id	{ FG::ToString(bind_idx) };
+			VertexBufferID	buf_id	{ "vb"s + FG::ToString(bind_idx) };
 
 			//CHECK( index == i );	// TODO
 			result.Add( id, type, offset, buf_id );
@@ -440,6 +442,30 @@ namespace VTPlayer
 				RETURN_ERR( "unsupported color type", void());
 		}
 	}
+	
+/*
+=================================================
+	FGUnpack_DrawTaskDynamicStates
+=================================================
+*/
+	inline void FGUnpack_DrawTaskDynamicStates (OUT _fg_hidden_::DynamicStates &result, FGUnpacker &unpacker)
+	{
+		result = *unpacker.GetArray< _fg_hidden_::DynamicStates >( 1 );
+	}
 
+/*
+=================================================
+	FGUnpack_Optional
+=================================================
+*/
+	template <typename T>
+	inline void FGUnpack_Optional (OUT Optional<T> &result, FGUnpacker &unpacker)
+	{
+		if ( unpacker.Get<bool>() )
+		{
+			result = unpacker.Get<T>();
+		}
+	}
 
+	
 }	// VTC

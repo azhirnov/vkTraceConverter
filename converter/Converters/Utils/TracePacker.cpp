@@ -10,10 +10,14 @@ namespace VTC
 	constructor
 =================================================
 */
+	TracePacker::TracePacker ()
+	{
+		_tempData.reserve( 4 << 20 );
+	}
+
 	TracePacker::TracePacker (Ptr<const AllResourcesBookmarks> rbm, bool uniqueIndices) :
 		_resBookmarks{ rbm },
-		_useUniqueIndices{ uniqueIndices },
-		_currPacket{ EPacketID::Unknown }
+		_useUniqueIndices{ uniqueIndices }
 	{
 		_tempData.reserve( 4 << 20 );
 	}
@@ -103,7 +107,7 @@ namespace VTC
 		const size_t	align		= _pointerStack.back().align;
 		const size_t	src_size	= _tempData.size();
 		const size_t	offset		= AlignToLarger( src_size, align );
-		const size_t	ptr			= result == 0 ? ~size_t(0) : offset;
+		const size_t	ptr			= result == 0 ? UMax : offset;
 		
 		ASSERT( result or buf.empty() );
 		

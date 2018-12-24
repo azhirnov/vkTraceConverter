@@ -58,7 +58,7 @@ namespace VTPlayer
 
 		struct FilePart
 		{
-			DataID				id				= DataID(~0u);
+			DataID				id				= UMax;
 			uint64_t			offset			= 0;
 			uint64_t			size			= 0;
 			FrameID				firstFrame		= FrameID(0);	// frame when data will be requested at first time

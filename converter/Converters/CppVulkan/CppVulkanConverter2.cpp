@@ -145,7 +145,7 @@ namespace VTC
 		VK_CHECK( packet.result );
 
 		DataID		data_id = _RequestData( _inputFile, pos, packet.header, packet.pCreateInfo->pCode, packet.pCreateInfo->codeSize, frameId );
-		CHECK_ERR( data_id != ~DataID(0) );
+		CHECK_ERR( data_id != UMax );
 
 		_nameSerializer.Clear();
 

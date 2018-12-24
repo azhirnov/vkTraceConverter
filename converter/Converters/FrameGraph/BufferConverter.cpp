@@ -17,21 +17,28 @@ namespace VTC
 */
 	bool FrameGraphConverter::BufferConverter::OnBeginFrame (TraceRange::Bookmark submitPos, FrameID frameId, INOUT TracePacker &packer)
 	{
-		for (auto& item : _pendingBuffers)
+		for (auto iter = _pendingBuffers.begin(); iter != _pendingBuffers.end();)
 		{
-			CHECK( item.memBinded );
+			if ( not iter->memBinded ) {
+				++iter;
+				continue;
+			}
 
 			packer.Begin( EPacketID::FgCreateBuffer );
 			packer << uint(0);	// TODO: thread id
-			packer << item.id;
-			FGPack_BufferDesc( item.desc, packer );
-			FGPack_MemoryDesc( item.mem, packer );
+			packer << iter->id;
+			FGPack_BufferDesc( iter->desc, packer );
+			FGPack_MemoryDesc( iter->mem, packer );
 			packer.End( EPacketID::FgCreateBuffer );
-			
-			CHECK_ERR( _UpdateBuffer( ResourceID(item.handle), item.startPos, submitPos, frameId, INOUT packer ));
+
+			iter = _pendingBuffers.erase( iter );
 		}
 
-		_pendingBuffers.clear();
+		for (auto& buf : _hostBuffers)
+		{
+			CHECK_ERR( _UpdateBuffer( buf, submitPos, frameId, packer ));
+			buf.lastPos = submitPos;
+		}
 		return true;
 	}
 	
@@ -81,12 +88,11 @@ namespace VTC
 			index = _bufferCounter++;
 
 		buf_desc.size	= BytesU{ buffer->createInfo.size };
-		buf_desc.usage	= FGEnumCast( VkBufferUsageFlagBits(buffer->createInfo.usage) ) | EBufferUsage::TransferDst;
+		buf_desc.usage	= FGEnumCast( VkBufferUsageFlagBits(buffer->createInfo.usage) );
 
-		_remapping.resize(Max( resource->localIndex+1, _remapping.size() ));
-		_remapping[resource->localIndex] = RawBufferID{ index, 0 };
+		ASSERT( buf_desc.usage != EBufferUsage::Unknown );
 
-		_pendingBuffers.push_back({ *packet.pBuffer, index, buf_desc, FG::MemoryDesc{}, pos.GetBookmark(), false });
+		_pendingBuffers.push_back({ resource->uniqueIndex, index, buf_desc, FG::MemoryDesc{}, false });
 		return true;
 	}
 	
@@ -98,8 +104,23 @@ namespace VTC
 	bool FrameGraphConverter::BufferConverter::DestroyBuffer (const TraceRange::Iterator &pos)
 	{
 		auto&	packet = pos.Cast<packet_vkDestroyBuffer>();
+		
+		auto*	resource = _fgConv._resourcesBookmarks->GetResource( VK_OBJECT_TYPE_BUFFER, ResourceID(packet.buffer), pos.GetBookmark() );
+		CHECK_ERR( resource );
 
-		_readyToDelete.push_back( Remap( packet.buffer, pos.GetBookmark() ).Index() );
+		auto	result = _remapping[resource->localIndex];
+		if ( not result )
+			return true;	// already deleted or was not created
+
+		_readyToDelete.push_back( result.Index() );
+
+		for (auto iter = _hostBuffers.begin(); iter != _hostBuffers.end();)
+		{
+			if ( iter->buffer->id == ResourceID(packet.buffer) )
+				iter = _hostBuffers.erase( iter );
+			else
+				++iter;
+		}
 		return true;
 	}
 	
@@ -108,23 +129,32 @@ namespace VTC
 	BindMemory
 =================================================
 */
-	bool FrameGraphConverter::BufferConverter::BindMemory (const TraceRange::Iterator &pos, INOUT TracePacker &packer)
+	bool FrameGraphConverter::BufferConverter::BindMemory (const TraceRange::Iterator &pos)
 	{
 		auto&	packet = pos.Cast<packet_vkBindBufferMemory>();
 
 		for (auto& item : _pendingBuffers)
 		{
-			if ( item.handle != packet.buffer )
+			auto*	resource = _fgConv._resourcesBookmarks->GetResource( VK_OBJECT_TYPE_BUFFER, ResourceID(packet.buffer), pos.GetBookmark() );
+
+			if ( not resource or item.uid != resource->uniqueIndex or item.memBinded )
 				continue;
 
 			auto*	mem		= _fgConv._memoryObjAnalyzer->GetMemoryObj( ResourceID(packet.memory), pos.GetBookmark() );
 			CHECK_ERR( mem );
-			CHECK_ERR( not item.memBinded );
-
-			item.mem.type	= EnumEq( mem->usage, MemoryObjAnalyzer::EMemoryUsage::Dedicated ) ? EMemoryType::Dedicated : EMemoryType::Default;
+			
+			if ( mem->usage == EMemoryUsage::HostRead )
+				continue;
+			
+			item.mem.type	= EnumEq( mem->usage, MemoryObjAnalyzer::EMemoryUsage::Dedicated ) ? EMemoryType::Dedicated :
+							  EnumEq( mem->usage, EMemoryUsage::HostWrite ) ? EMemoryType::HostWrite : EMemoryType::Default;
 			item.mem.poolId = MemPoolID{ ToString( mem->id )};
 			item.memBinded	= true;
-			item.startPos	= pos.GetBookmark();
+			
+			_remapping.resize(Max( resource->localIndex+1, _remapping.size() ));
+			_remapping[resource->localIndex] = RawBufferID{ item.id, 0 };
+
+			_AddHostBuffer( packet.buffer, mem, pos.GetBookmark() );
 			break;
 		}
 		return true;
@@ -135,7 +165,7 @@ namespace VTC
 	BindMemory2
 =================================================
 */
-	bool FrameGraphConverter::BufferConverter::BindMemory2 (const TraceRange::Iterator &pos, INOUT TracePacker &packer)
+	bool FrameGraphConverter::BufferConverter::BindMemory2 (const TraceRange::Iterator &pos)
 	{
 		auto&	packet = pos.Cast<packet_vkBindBufferMemory2>();
 
@@ -143,17 +173,26 @@ namespace VTC
 		{
 			for (auto& item : _pendingBuffers)
 			{
-				if ( item.handle != packet.pBindInfos[i].buffer )
+				auto*	resource = _fgConv._resourcesBookmarks->GetResource( VK_OBJECT_TYPE_BUFFER, ResourceID(packet.pBindInfos[i].buffer), pos.GetBookmark() );
+
+				if ( not resource or item.uid != resource->uniqueIndex or item.memBinded )
 					continue;
 
 				auto*	mem		= _fgConv._memoryObjAnalyzer->GetMemoryObj( ResourceID(packet.pBindInfos[i].memory), pos.GetBookmark() );
 				CHECK_ERR( mem );
-				CHECK_ERR( not item.memBinded );
+				
+				if ( mem->usage == EMemoryUsage::HostRead )
+					continue;
 
-				item.mem.type	= EnumEq( mem->usage, MemoryObjAnalyzer::EMemoryUsage::Dedicated ) ? EMemoryType::Dedicated : EMemoryType::Default;
+				item.mem.type	= EnumEq( mem->usage, MemoryObjAnalyzer::EMemoryUsage::Dedicated ) ? EMemoryType::Dedicated :
+								  EnumEq( mem->usage, EMemoryUsage::HostWrite ) ? EMemoryType::HostWrite : EMemoryType::Default;
 				item.mem.poolId = MemPoolID{ ToString( mem->id )};
 				item.memBinded	= true;
-				item.startPos	= pos.GetBookmark();
+				
+				_remapping.resize(Max( resource->localIndex+1, _remapping.size() ));
+				_remapping[resource->localIndex] = RawBufferID{ item.id, 0 };
+
+				_AddHostBuffer( packet.pBindInfos[i].buffer, mem, pos.GetBookmark() );
 				break;
 			}
 		}
@@ -178,45 +217,61 @@ namespace VTC
 	
 /*
 =================================================
-	_UpdateBuffer
+	_AddHostBuffer
 =================================================
 */
-	bool FrameGraphConverter::BufferConverter::_UpdateBuffer (ResourceID bufferId, TraceRange::Bookmark pos, TraceRange::Bookmark submitPos,
-															  FrameID frameId, INOUT TracePacker &packer)
+	bool FrameGraphConverter::BufferConverter::_AddHostBuffer (VkBuffer bufferId, MemoryObjAnalyzer::MemoryObjInfo_t const* mem, TraceRange::Bookmark pos)
 	{
-		using EMemoryUsage = MemoryObjAnalyzer::EMemoryUsage;
 
-		auto*	buf = _fgConv._bufferAnalyzer->GetBuffer( bufferId, pos );
-		CHECK_ERR( buf );
-
-		auto*	mem = _fgConv._memoryObjAnalyzer->GetMemoryObj( buf->memId, pos );
-		CHECK_ERR( mem );
+		auto*	buf = _fgConv._bufferAnalyzer->GetBuffer( ResourceID(bufferId), pos );
+		CHECK_ERR( buf and mem );
 		
 		if ( not EnumAny( mem->usage, EMemoryUsage::HostRead | EMemoryUsage::HostWrite ))
-			return true;
+			return false;
 
+		// skip staging buffers
 		if ( not EnumAny( buf->createInfo.usage, ~(VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT) ))
-			return true;
+			return false;
 
-		size_t	mem_last_bm = 0;
+		_hostBuffers.push_back({ buf, mem, mem->FirstBookmark().pos });
+		return true;
+	}
 
-		for (size_t i = 0; i < mem->bookmarks.size(); ++i)
+/*
+=================================================
+	_UpdateBuffer
+----
+	see unpacker in 'FGPlayer_v100::_UpdateHostBuffer'
+=================================================
+*/
+	bool FrameGraphConverter::BufferConverter::_UpdateBuffer (const HostAccessibleBuffer &bufferInfo, TraceRange::Bookmark submitPos,
+															  FrameID frameId, INOUT TracePacker &packer)
+	{
+		auto*	buf = bufferInfo.buffer;
+		auto*	mem = bufferInfo.memory;
+
+		auto	mem_last_bm = mem->bookmarks.end();
+
+		for (auto iter = mem->bookmarks.begin(); iter != mem->bookmarks.end(); ++iter)
 		{
-			auto&	bm = mem->bookmarks[i];
+			if ( iter->pos < bufferInfo.lastPos )
+				continue;
 
-			if ( bm.pos >= submitPos )
+			if ( iter->pos >= submitPos )
 				break;
 
-			mem_last_bm = i;
+			mem_last_bm = iter;
 		}
 		
 		Array<Pair<uint64_t, uint64_t>>		regions;
 		regions.push_back({ 0, buf->createInfo.size });
 
 		// find memory transfer to buffer
-		for (size_t i = mem_last_bm; i < mem->bookmarks.size() and regions.size(); --i)
+		for (auto bm_iter = std::make_reverse_iterator(mem_last_bm), bm_end = mem->bookmarks.rend();
+			 bm_iter != bm_end and regions.size();
+			 ++bm_iter)
 		{
-			auto&	bm = mem->bookmarks[i];
+			auto&	bm = *bm_iter;
 
 			if ( bm.packetId != VKTRACE_TPI_VK_vkFlushMappedMemoryRanges )
 				continue;
@@ -230,7 +285,7 @@ namespace VTC
 				{
 					auto&	reg = *iter;
 					
-					const uint64_t	data_size	= Min( reg.second - reg.first, buf->createInfo.size - reg.first );
+					uint64_t		data_size	= Min( reg.second - reg.first, buf->createInfo.size - reg.first );
 					const uint64_t	buf_begin	= buf->memOffset + reg.first;
 					const uint64_t	buf_end		= buf->memOffset + reg.second;
 					uint64_t		data_begin, data_end;
@@ -238,22 +293,24 @@ namespace VTC
 					if ( GetIntersection( block.memOffset, block.memOffset + block.dataSize, buf_begin, buf_end,
 										  OUT data_begin, OUT data_end ) )
 					{
-						ASSERT( data_begin == buf_begin and data_end == buf_end );
-						
-						uint64_t	block_offset = buf_begin - block.memOffset;
-						ASSERT( block_offset < block.dataSize	and
-								block_offset + data_size <= block.dataSize );
+									data_size	 = data_end - data_begin;
+						uint64_t	block_offset = data_begin - block.memOffset;
+						uint64_t	buf_offset	 = reg.first + (data_begin - buf_begin);
+
+						CHECK( block_offset < block.dataSize	and
+							   block_offset + data_size <= block.dataSize );
 
 						DataID	data_id = _fgConv._RequestData( block.fileOffset + block_offset, data_size, frameId );
-						CHECK_ERR( data_id != ~DataID(0) );
+						CHECK_ERR( data_id != UMax );
 
-						packer.Begin( EPacketID::FgUpdateBuffer );
+						packer.Begin( EPacketID::FgUpdateHostBuffer );
 						packer << uint(0);	// TODO: thread id
-						packer << _fgConv._bufferConv->Remap( bufferId, pos ).Index();
-						packer << reg.first;
+						packer << _fgConv._bufferConv->Remap( buf->id, mem_last_bm->pos ).Index();
+						packer << uint(1);	// count
+						packer << buf_offset;
 						packer << data_size;
 						packer << data_id;
-						packer.End( EPacketID::FgUpdateBuffer );
+						packer.End( EPacketID::FgUpdateHostBuffer );
 					
 						iter = regions.erase( iter );
 					}
@@ -263,9 +320,8 @@ namespace VTC
 			}
 		}
 
-		CHECK_ERR( regions.empty() );
 		return true;
 	}
-
+	
 
 }	// VTC

@@ -535,7 +535,7 @@ namespace VTC
 
 		for (auto& bm : queue.bookmarks)
 		{
-			if ( bm.frameId == ~FrameID(0) or bm.frameId < firstFrameId)
+			if ( bm.frameId == UMax or bm.frameId < firstFrameId)
 				continue;
 
 			if ( bm.frameId >= lastFrameId )
@@ -634,7 +634,7 @@ namespace VTC
 
 		for (auto& bm : swapchain.bookmarks)
 		{
-			if ( bm.frameId == ~FrameID(0) or bm.frameId < firstFrameId)
+			if ( bm.frameId == UMax or bm.frameId < firstFrameId)
 				continue;
 
 			if ( bm.frameId >= lastFrameId )
@@ -701,7 +701,7 @@ namespace VTC
 
 		for (auto& bm : dev.bookmarks)
 		{
-			if ( bm.frameId == ~FrameID(0) or bm.frameId < firstFrameId)
+			if ( bm.frameId == UMax or bm.frameId < firstFrameId)
 				continue;
 
 			if ( bm.frameId >= lastFrameId )

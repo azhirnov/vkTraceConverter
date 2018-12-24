@@ -34,7 +34,7 @@ namespace VTC
 
 		struct DataAccessInfo
 		{
-			DataID			dataId		= ~0u;
+			DataID			dataId		= UMax;
 			uint64_t		offset		= 0;
 			uint64_t		size		= 0;
 

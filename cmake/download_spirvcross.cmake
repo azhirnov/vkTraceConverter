@@ -1,12 +1,23 @@
 # download and install SPIRV-Cross
 
-if (FALSE)
+if (${VTC_ENABLE_SPIRVCROSS})
+	set( VTC_EXTERNAL_SPIRVCROSS_PATH "" CACHE PATH "path to SPIRV-Cross source" )
     set( SPIRVCROSS_INSTALL_DIR "${VTC_EXTERNAL_INSTALL_DIR}/SPIRV-Cross" CACHE INTERNAL "" FORCE )
+	
+	# reset to default
+	if (NOT EXISTS "${VTC_EXTERNAL_SPIRVCROSS_PATH}/include/spirv_cross")
+		message( STATUS "SPIRV-Cross is not found in \"${VTC_EXTERNAL_SPIRVCROSS_PATH}\"" )
+		set( VTC_EXTERNAL_SPIRVCROSS_PATH "${VTC_EXTERNALS_PATH}/SPIRV-Cross" CACHE PATH "" FORCE )
+		set( VTC_SPIRVCROSS_REPOSITORY "https://github.com/KhronosGroup/SPIRV-Cross.git" )
+	else ()
+		set( VTC_SPIRVCROSS_REPOSITORY "" )
+	endif ()
+
 
 	ExternalProject_Add( "Extern.SPIRV-Cross"
         LIST_SEPARATOR		"${VTC_LIST_SEPARATOR}"
 		# download
-		GIT_REPOSITORY		https://github.com/KhronosGroup/SPIRV-Cross.git
+		GIT_REPOSITORY		${VTC_SPIRVCROSS_REPOSITORY}
 		GIT_TAG				master
 		EXCLUDE_FROM_ALL	1
 		LOG_DOWNLOAD		1
@@ -14,7 +25,7 @@ if (FALSE)
 		PATCH_COMMAND		""
 		UPDATE_DISCONNECTED	1
 		# configure
-        SOURCE_DIR			"${VTC_EXTERNALS_PATH}/SPIRV-Cross"
+        SOURCE_DIR			"${VTC_EXTERNAL_SPIRVCROSS_PATH}"
 		CMAKE_GENERATOR		"${CMAKE_GENERATOR}"
 		CMAKE_GENERATOR_TOOLSET	"${CMAKE_GENERATOR_TOOLSET}"
         CMAKE_ARGS			"-DCMAKE_CONFIGURATION_TYPES=${VTC_EXTERNAL_CONFIGURATION_TYPES}"
@@ -26,7 +37,7 @@ if (FALSE)
                             ${VTC_BUILD_TARGET_FLAGS}
 		LOG_CONFIGURE 		1
 		# build
-		BINARY_DIR			"${CMAKE_BINARY_DIR}/build-SPIRV-Cross"
+		BINARY_DIR			"${CMAKE_BINARY_DIR}/build2-SPIRV-Cross"
 		BUILD_COMMAND		"${CMAKE_COMMAND}"
 							--build .
 							--target ALL_BUILD

@@ -21,12 +21,12 @@ namespace VTC
 
 		if ( _useUniqueIndices )
 		{
-			CHECK_ERR( res_info->uniqueIndex != ~0ull, "<error>" );
+			CHECK_ERR( res_info->uniqueIndex != UMax, "<error>" );
 			return IntToString( res_info->uniqueIndex );
 		}
 		else
 		{
-			CHECK_ERR( res_info->localIndex != ~0ull, "<error>" );
+			CHECK_ERR( res_info->localIndex != UMax, "<error>" );
 			return IntToString( res_info->localIndex );
 		}
 	}

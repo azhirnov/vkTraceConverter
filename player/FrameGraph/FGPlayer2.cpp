@@ -95,7 +95,7 @@ namespace VTPlayer
 				UniformID						name;
 
 				name << unpacker;
-				un.index = BindingIndex{ ~0u, unpacker.Get<uint>() };
+				un.index = BindingIndex{ UMax, unpacker.Get<uint>() };
 				un.stageFlags << unpacker;
 
 				const uint	un_index = unpacker.Get<uint>();
@@ -240,9 +240,27 @@ namespace VTPlayer
 	see packer in 'FrameGraphConverter::PipelineConverter::_PackComputePipeline'
 =================================================
 */
-	bool FGPlayer_v100::_CreateComputePipeline (FGUnpacker &)
+	bool FGPlayer_v100::_CreateComputePipeline (FGUnpacker &unpacker)
 	{
-		return false;
+		auto&		frame_graph	= _frameGraphThreads[ unpacker.Get<uint>() ].thread;
+		const auto	cppln_idx	= unpacker.Get<Index_t>();
+		const auto	shader_id	= unpacker.Get<uint>();
+		
+		CHECK_ERR( not _resources.cpipelines[cppln_idx] );
+
+		ComputePipelineDesc		desc;
+
+		desc.AddShader( EShaderLangFormat::VkShader_110, _resources.shaders[shader_id] );
+
+		FGUnpack_Vec( OUT desc._defaultLocalGroupSize, unpacker );
+		FGUnpack_Vec( OUT desc._localSizeSpec, unpacker );
+		
+		CHECK_ERR( _UnpackPipelineLayout( OUT desc._pipelineLayout, unpacker ));
+		
+		_resources.cpipelines[cppln_idx] = frame_graph->CreatePipeline( std::move(desc) );
+		CHECK_ERR( _resources.cpipelines[cppln_idx] );
+
+		return true;
 	}
 	
 /*
@@ -323,7 +341,7 @@ namespace VTPlayer
 		auto&		frame_graph	= _frameGraphThreads[ unpacker.Get<uint>() ].thread;
 		const auto	image_idx	= unpacker.Get<Index_t>();
 
-		CHECK_ERR( not _resources.images[image_idx] );
+		CHECK_ERR( _resources.images[image_idx] );
 
 		frame_graph->ReleaseResource( INOUT _resources.images[image_idx] );
 		return true;
@@ -514,7 +532,7 @@ namespace VTPlayer
 =================================================
 	_SubmitRenderPass
 ----
-	see packer in 'FrameGraphConverter::DrawCallConverter::_PackSubmitRenderPass'
+	see packer in 'FrameGraphConverter::DrawCallConverter::_PackRenderPass'
 =================================================
 */
 	bool FGPlayer_v100::_SubmitRenderPass (FGUnpacker &unpacker)
@@ -525,6 +543,8 @@ namespace VTPlayer
 		CHECK_ERR( _resources.logicalPasses[index] );
 
 		fg.task = fg.thread->AddTask( SubmitRenderPass{ _resources.logicalPasses[index] }.DependsOn( fg.task ));
+
+		_resources.logicalPasses[index] = Default;
 		return true;
 	}
 	
@@ -535,9 +555,36 @@ namespace VTPlayer
 	see packer in 'FrameGraphConverter::DrawCallConverter::CmdDispatch'
 =================================================
 */
-	bool FGPlayer_v100::_DispatchCompute (FGUnpacker &)
+	bool FGPlayer_v100::_DispatchCompute (FGUnpacker &unpacker)
 	{
-		return false;
+		auto&		fg		= _frameGraphThreads[ unpacker.Get<uint>() ];
+		const auto&	ppln	= _resources.cpipelines[ unpacker.Get<Index_t>() ];
+
+		DispatchCompute	task;
+		
+		task.pipeline = ppln.Get();
+
+		// unpack descriptor sets (pipeline resources)
+		CHECK_ERR( _UnpackDescriptors( OUT task.resources, fg, ppln, unpacker ));
+		
+		// unpack push constants
+		const auto	pc_count = unpacker.Get<uint>();
+		for (uint i = 0; i < pc_count; ++i)
+		{
+			PushConstantID	id;		id << unpacker;
+			const auto		size	= unpacker.Get<uint>();
+			const auto		ptr		= unpacker.GetArray<uint8_t>( size );
+
+			task.AddPushConstant( id, ptr, BytesU{size} );
+		}
+
+		FGUnpack_Vec( OUT task.groupCount, unpacker );
+
+		const auto	has_local_size = unpacker.Get<bool>();
+		CHECK_ERR( not has_local_size );
+		
+		fg.task = fg.thread->AddTask( task.DependsOn( fg.task ));
+		return true;
 	}
 	
 /*
@@ -837,14 +884,24 @@ namespace VTPlayer
 	{
 		auto&		fg		= _frameGraphThreads[ unpacker.Get<uint>() ];
 		const auto	index	= unpacker.Get<Index_t>();
-		const auto	offset	= BytesU{ unpacker.Get<uint64_t>() };
-		const auto	size	= BytesU{ unpacker.Get<uint64_t>() };
-		const auto	data	= _LoadData( unpacker.Get<uint>() );
+		const auto	count	= unpacker.Get<uint>();
 
 		CHECK( _resources.buffers[index] );
-		ASSERT( size <= data.size() );
 
-		fg.task = fg.thread->AddTask( UpdateBuffer{}.SetBuffer( _resources.buffers[index], offset ).SetData( data ).DependsOn( fg.task ));
+		UpdateBuffer	task;
+		task.dstBuffer	= _resources.buffers[index].Get();
+
+		for (uint i = 0; i < count; ++i)
+		{
+			const auto	offset	= BytesU{ unpacker.Get<uint64_t>() };
+			const auto	size	= BytesU{ unpacker.Get<uint64_t>() };
+			const auto	data	= _LoadData( unpacker.Get<uint>() );
+			ASSERT( size <= data.size() );
+
+			task.AddData( data, offset );
+		}
+
+		fg.task = fg.thread->AddTask( task.DependsOn( fg.task ));
 		return true;
 	}
 	
@@ -933,6 +990,45 @@ namespace VTPlayer
 	
 /*
 =================================================
+	_UpdateUniformBuffer
+=================================================
+*/
+	bool FGPlayer_v100::_UpdateUniformBuffer (FGUnpacker &)
+	{
+		return false;
+	}
+	
+/*
+=================================================
+	_UpdateUniformBuffer
+----
+	see packer in 'FrameGraphConverter::BufferConverter::_UpdateBuffer'
+=================================================
+*/
+	bool FGPlayer_v100::_UpdateHostBuffer (FGUnpacker &unpacker)
+	{
+		auto&		fg		= _frameGraphThreads[ unpacker.Get<uint>() ];
+		const auto	index	= unpacker.Get<Index_t>();
+		const auto	count	= unpacker.Get<uint>();
+
+		CHECK( _resources.buffers[index] );
+
+		const auto&	buffer_id = _resources.buffers[index];
+
+		for (uint i = 0; i < count; ++i)
+		{
+			const auto	offset	= BytesU{ unpacker.Get<uint64_t>() };
+			const auto	size	= BytesU{ unpacker.Get<uint64_t>() };
+			const auto	data	= _LoadData( unpacker.Get<uint>() );
+			ASSERT( size <= data.size() );
+
+			fg.thread->UpdateHostBuffer( buffer_id, BytesU{offset}, BytesU{size}, data.data() );
+		}
+		return true;
+	}
+
+/*
+=================================================
 	_UnpackBaseDrawVertices
 ----
 	see packer in 'FrameGraphConverter::DrawCallConverter::_PackBaseDrawVertices'
@@ -992,28 +1088,46 @@ namespace VTPlayer
 			task.AddPushConstant( id, ptr, BytesU{size} );
 		}
 
-		// unpack dynamic states
-		const auto	dyn_st = unpacker.Get<EPipelineDynamicState>();
-
-		// unpack scissors
-		const auto	sc_count = unpacker.Get<uint>();
-		ASSERT( sc_count == 0 );
+		CHECK_ERR( _UnpackScissors( task, unpacker ));
 
 		// unpack color buffers
 		const auto	cb_count = unpacker.Get<uint>();
-		ASSERT( cb_count == 0 );
+		for (uint i = 0; i < cb_count; ++i)
+		{
+			RenderTargetID				id;
+			RenderState::ColorBuffer	cb;
 
-		// unpack stencil state
-		task.stencilState.reference.x << unpacker;
-		task.stencilState.reference.y << unpacker;
-		task.stencilState.writeMask.x << unpacker;
-		task.stencilState.writeMask.y << unpacker;
-		task.stencilState.compareMask.x << unpacker;
-		task.stencilState.compareMask.y << unpacker;
+			id << unpacker;
+			FGUnpack_ColorBuffer( OUT cb, unpacker );
+
+			task.colorBuffers.insert_or_assign( id, cb );
+		}
+
+		FGUnpack_DrawTaskDynamicStates( OUT task.dynamicStates, unpacker );
 
 		return true;
 	}
 	
+/*
+=================================================
+	_UnpackScissors
+=================================================
+*/
+	template <typename TaskType>
+	bool FGPlayer_v100::_UnpackScissors (OUT _fg_hidden_::BaseDrawCall<TaskType> &task, FGUnpacker &unpacker) const
+	{
+		const auto	sc_count = unpacker.Get<uint>();
+
+		for (uint i = 0; i < sc_count; ++i)
+		{
+			RectI	rect;
+			FGUnpack_Rectangle( OUT rect, unpacker );
+			task.AddScissor( rect );
+		}
+
+		return true;
+	}
+
 /*
 =================================================
 	_UnpackDescriptors
@@ -1035,7 +1149,7 @@ namespace VTPlayer
 
 			RawDescriptorSetLayoutID	ds_layout;
 			uint						ds_binding = ds_index;
-			CHECK( data.thread->GetDescriptorSet( pipeline, DescriptorSetID{ToString(ds_index)}, OUT ds_layout, OUT ds_binding ));
+			CHECK( data.thread->GetDescriptorSet( pipeline, DescriptorSetID{"ds"s + ToString(ds_index)}, OUT ds_layout, OUT ds_binding ));
 			CHECK( data.thread->InitPipelineResources( ds_layout, OUT res ));
 
 			outResources[ds_binding] = &res;
@@ -1047,6 +1161,9 @@ namespace VTPlayer
 
 				switch ( type_idx )
 				{
+					case 0 :	// unused
+						break;
+
 					case 1 :	// BindSampler
 					{
 						const auto&		sampler_id = _resources.samplers[ unpacker.Get<Index_t>() ];
@@ -1082,8 +1199,8 @@ namespace VTPlayer
 						const auto		size	= BytesU{ unpacker.Get<uint64_t>() };
 						const auto		dyn_off	= BytesU{ unpacker.Get<uint>() };
 
-						//res.SetBufferBase( un_id, dyn_off );
-						res.BindBuffer( un_id, buf_id, offset, size );
+						//res.SetBufferBase( un_id, 0_b );
+						res.BindBuffer( un_id, buf_id, offset + dyn_off, size );
 						break;
 					}
 
@@ -1109,7 +1226,7 @@ namespace VTPlayer
 		const auto&		pass_id	= _resources.logicalPasses[ unpacker.Get<Index_t>() ];
 
 		DrawVertices	task;
-		CHECK_ERR( _UnpackBaseDrawVertices( task, fg, unpacker ));
+		CHECK_ERR( _UnpackBaseDrawVertices( OUT task, fg, unpacker ));
 		
 		// commands
 		const auto		cmd_count	= unpacker.Get<uint>();
@@ -1142,7 +1259,7 @@ namespace VTPlayer
 		const auto&		pass_id	= _resources.logicalPasses[ unpacker.Get<Index_t>() ];
 
 		DrawIndexed		task;
-		CHECK_ERR( _UnpackBaseDrawVertices( task, fg, unpacker ));
+		CHECK_ERR( _UnpackBaseDrawVertices( OUT task, fg, unpacker ));
 		
 		// index buffer
 		task.indexBuffer		= _resources.buffers[ unpacker.Get<Index_t>() ].Get();
@@ -1185,9 +1302,32 @@ namespace VTPlayer
 	see packer in 'FrameGraphConverter::DrawCallConverter::CmdDrawIndirect'
 =================================================
 */
-	bool FGPlayer_v100::_DrawVerticesIndirect (FGUnpacker &)
+	bool FGPlayer_v100::_DrawVerticesIndirect (FGUnpacker &unpacker)
 	{
-		return false;
+		auto&			fg		= _frameGraphThreads[ unpacker.Get<uint>() ];
+		const auto&		pass_id	= _resources.logicalPasses[ unpacker.Get<Index_t>() ];
+
+		DrawVerticesIndirect	task;
+		CHECK_ERR( _UnpackBaseDrawVertices( OUT task, fg, unpacker ));
+
+		// commands
+		const auto	cmd_count = unpacker.Get<uint>();
+		ASSERT( cmd_count > 0 );
+		
+		for (uint i = 0; i < cmd_count; ++i)
+		{
+			DrawVerticesIndirect::DrawCmd	cmd;
+			cmd.indirectBufferOffset	= BytesU{ unpacker.Get<uint64_t>() };
+			cmd.drawCount				= unpacker.Get<uint>();
+			cmd.stride					= Max( Bytes<uint>{ unpacker.Get<uint>() }, Bytes<uint>::SizeOf<DrawVerticesIndirect::DrawIndirectCommand>() );
+			task.commands.push_back( cmd );
+		}
+		
+		// indirect buffer
+		task.indirectBuffer = _resources.buffers[ unpacker.Get<Index_t>() ].Get();
+		
+		fg.thread->AddTask( pass_id, task );
+		return true;
 	}
 	
 /*
@@ -1197,9 +1337,37 @@ namespace VTPlayer
 	see packer in 'FrameGraphConverter::DrawCallConverter::CmdDrawIndexedIndirect'
 =================================================
 */
-	bool FGPlayer_v100::_DrawIndexedIndirect (FGUnpacker &)
+	bool FGPlayer_v100::_DrawIndexedIndirect (FGUnpacker &unpacker)
 	{
-		return false;
+		auto&			fg		= _frameGraphThreads[ unpacker.Get<uint>() ];
+		const auto&		pass_id	= _resources.logicalPasses[ unpacker.Get<Index_t>() ];
+
+		DrawIndexedIndirect		task;
+		CHECK_ERR( _UnpackBaseDrawVertices( OUT task, fg, unpacker ));
+		
+		// index buffer
+		task.indexBuffer		= _resources.buffers[ unpacker.Get<Index_t>() ].Get();
+		task.indexBufferOffset	= BytesU{ unpacker.Get<uint64_t>() };
+		task.indexType			<< unpacker;
+
+		// commands
+		const auto	cmd_count = unpacker.Get<uint>();
+		ASSERT( cmd_count > 0 );
+		
+		for (uint i = 0; i < cmd_count; ++i)
+		{
+			DrawIndexedIndirect::DrawCmd	cmd;
+			cmd.indirectBufferOffset	= BytesU{ unpacker.Get<uint64_t>() };
+			cmd.drawCount				= unpacker.Get<uint>();
+			cmd.stride					= Max( Bytes<uint>{ unpacker.Get<uint>() }, Bytes<uint>::SizeOf<DrawIndexedIndirect::DrawIndexedIndirectCommand>() );
+			task.commands.push_back( cmd );
+		}
+
+		// indirect buffer
+		task.indirectBuffer = _resources.buffers[ unpacker.Get<Index_t>() ].Get();
+
+		fg.thread->AddTask( pass_id, task );
+		return true;
 	}
 	
 /*

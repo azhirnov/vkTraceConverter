@@ -7,7 +7,6 @@
 #include "Converters/FrameGraph/FGEnumCast.h"
 #include "Converters/Utils/TracePacker.h"
 #include "FGPack/FgStructPacker.h"
-#include "Types/VkHelpers.h"
 #include "Generated/VkFormatHelpers.h"
 #include "framegraph/Vulkan/Utils/VEnumCast.h"
 
@@ -127,7 +126,7 @@ namespace VTC
 
 		state.usageFlags	= packet.pBeginInfo->flags;
 		state.isRecording	= true;
-		state.tracePacker.reset( new TracePacker{ null, true });
+		state.threadPacker.reset( new TracePacker{} );
 		
 		// enable all dynamic states until first pipeline binding
 		state.dynamicStates.current.insert( VK_DYNAMIC_STATE_VIEWPORT );
@@ -311,9 +310,9 @@ namespace VTC
 			CHECK_ERR( src.dstBinding + src.descriptorCount <= ds_iter->second.descriptors.size() );
 
 			// TODO check
-			ASSERT( src.descriptorCount == 1 );
-			ASSERT( src.dstArrayElement == 0 );
-			ASSERT( src.pNext == null );
+			CHECK( src.descriptorCount == 1 );
+			CHECK( src.dstArrayElement == 0 );
+			CHECK( src.pNext == null );
 
 			for (uint j = 0; j < src.descriptorCount; ++j)
 			{
@@ -363,7 +362,7 @@ namespace VTC
 					case VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV :
 					case VK_DESCRIPTOR_TYPE_RANGE_SIZE :
 					case VK_DESCRIPTOR_TYPE_MAX_ENUM :
-						ASSERT(false);
+						CHECK(false);
 						break;
 				}
 				DISABLE_ENUM_CHECKS();
@@ -371,7 +370,7 @@ namespace VTC
 		}
 
 		// TODO
-		ASSERT( packet.descriptorCopyCount == 0 );
+		CHECK( packet.descriptorCopyCount == 0 );
 
 		return true;
 	}
@@ -386,7 +385,7 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdBindPipeline>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 
 		ENABLE_ENUM_CHECKS();
 		switch ( packet.pipelineBindPoint )
@@ -395,9 +394,6 @@ namespace VTC
 			{
 				auto	new_ppln = _fgConv._pipelineConv->FindGraphicsPipeline( ResourceID(packet.pipeline) );
 				CHECK_ERR( new_ppln );
-				CHECK_ERR( cmd->second.renderPass );
-
-				CHECK_ERR( _MergeRenderPassStates( *cmd->second.renderPass, *new_ppln ));
 
 				_UpdateGraphicsPipelineDynamicStates( INOUT cmd->second.dynamicStates, new_ppln->dynamicStates,
 													  uint(new_ppln->viewports.size()), uint(new_ppln->scissors.size()) );
@@ -511,7 +507,7 @@ namespace VTC
 		for (size_t i = 0; i < state.descriptors.size(); ++i)
 		{
 			if ( i < ppln_layout->dslayouts.size() )
-				CHECK_ERR( state.descriptors[i].layout == ppln_layout->dslayouts[i] )
+				CHECK_ERR( _CompareDescriptorLayouts( state.descriptors[i].layout, ppln_layout->dslayouts[i] ))
 			else
 				CHECK_ERR( state.descriptors[i].layout == 0 );
 		}
@@ -526,6 +522,35 @@ namespace VTC
 			CHECK_ERR( iter != state.pushConstants.end() );
 		}
 
+		return true;
+	}
+	
+/*
+=================================================
+	_CompareDescriptorLayouts
+=================================================
+*/
+	bool FrameGraphConverter::DrawCallConverter::_CompareDescriptorLayouts (ResourceID lhs, ResourceID rhs) const
+	{
+		if ( lhs == rhs )
+			return true;
+
+		auto*	ds1 = _fgConv._pipelineConv->FindDescriptorSetLayout( lhs );
+		auto*	ds2 = _fgConv._pipelineConv->FindDescriptorSetLayout( rhs );
+		CHECK_ERR( ds1 and ds2 );
+
+		if ( ds1->descriptors.size() != ds2->descriptors.size() )
+			return false;
+
+		for (size_t i = 0; i < ds1->descriptors.size(); ++i)
+		{
+			auto&	desc1 = ds1->descriptors[i];
+			auto&	desc2 = ds2->descriptors[i];
+
+			if ( desc1.descriptorType != desc2.descriptorType or
+				 desc1.stageFlags != desc2.stageFlags )
+				return false;
+		}
 		return true;
 	}
 
@@ -659,7 +684,7 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdSetViewport>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 
 		auto&	dynamic_states = cmd->second.dynamicStates;
 		CHECK_ERR( dynamic_states.current.count( VK_DYNAMIC_STATE_VIEWPORT ));
@@ -683,7 +708,7 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdSetScissor>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 
 		auto&	dynamic_states = cmd->second.dynamicStates;
 		CHECK_ERR( dynamic_states.current.count( VK_DYNAMIC_STATE_SCISSOR ));
@@ -707,7 +732,7 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdSetLineWidth>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 		
 		auto&	dynamic_states = cmd->second.dynamicStates;
 		CHECK_ERR( dynamic_states.current.count( VK_DYNAMIC_STATE_LINE_WIDTH ));
@@ -726,7 +751,7 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdSetDepthBias>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 		
 		auto&	dynamic_states = cmd->second.dynamicStates;
 		CHECK_ERR( dynamic_states.current.count( VK_DYNAMIC_STATE_DEPTH_BIAS ));
@@ -745,7 +770,7 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdSetBlendConstants>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 		
 		auto&	dynamic_states = cmd->second.dynamicStates;
 		CHECK_ERR( dynamic_states.current.count( VK_DYNAMIC_STATE_BLEND_CONSTANTS ));
@@ -765,7 +790,7 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdSetDepthBounds>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 		
 		auto&	dynamic_states = cmd->second.dynamicStates;
 		CHECK_ERR( dynamic_states.current.count( VK_DYNAMIC_STATE_DEPTH_BOUNDS ));
@@ -784,7 +809,7 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdSetStencilCompareMask>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 		
 		auto&	dynamic_states = cmd->second.dynamicStates;
 		CHECK_ERR( dynamic_states.current.count( VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK ));
@@ -808,7 +833,7 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdSetStencilWriteMask>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 		
 		auto&	dynamic_states = cmd->second.dynamicStates;
 		CHECK_ERR( dynamic_states.current.count( VK_DYNAMIC_STATE_STENCIL_WRITE_MASK ));
@@ -832,7 +857,7 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdSetStencilReference>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 		
 		auto&	dynamic_states = cmd->second.dynamicStates;
 		CHECK_ERR( dynamic_states.current.count( VK_DYNAMIC_STATE_STENCIL_REFERENCE ));
@@ -856,7 +881,7 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdBindDescriptorSets>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 		
 		ENABLE_ENUM_CHECKS();
 		switch ( packet.pipelineBindPoint )
@@ -946,7 +971,7 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdBindIndexBuffer>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 
 		cmd->second.indexBuffer = IndexBufferState{ ResourceID(packet.buffer), packet.offset, FGEnumCast(packet.indexType) };
 		return true;
@@ -962,7 +987,7 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdBindVertexBuffers>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 
 		CHECK_ERR( packet.firstBinding + packet.bindingCount <= cmd->second.vertexBuffers.size() );
 
@@ -978,75 +1003,140 @@ namespace VTC
 	_PackDescriptors
 =================================================
 */
-	bool FrameGraphConverter::DrawCallConverter::_PackDescriptors (ArrayView<DescriptorSetInfo> descriptors, TraceRange::Bookmark pos, TracePacker &packer) const
+	bool FrameGraphConverter::DrawCallConverter::_PackDescriptors (const PipelineDescription::DescriptorSets_t &fgDescriptors,
+																   const FrameGraphConverter::PipelineConverter::PipelineLayoutInfo &pplnLayout,
+																   const DestriptorStates_t &allDescriptors, Ptr<RenderPass> renderPass,
+																   TraceRange::Bookmark pos, TracePacker &packer) const
 	{
+		const auto	ValidateImage = [this, renderPass] (INOUT RawImageID &imageId, INOUT ImageViewDesc &desc)
+									{
+										if ( not renderPass ) return;
+										for (auto& rt : renderPass->desc.renderTargets) {
+											if ( rt.second.image == imageId ) {
+												imageId			= _fgConv._imageConv->GetDummyColorImage2D();	// TODO: 2D array and other
+												desc.format		= _fgConv._imageConv->GetDummyColorImage2DDesc().format;
+												desc.aspectMask	= EPixelFormat_ToImageAspect( desc.format ) & (EImageAspect::Color | EImageAspect::Depth);
+												break;
+											}
+										}
+									};
+		const auto	ConvertImageView = [this] (const ImageAnalyzer::ImageViewInfo_t &view, INOUT ImageViewDesc &desc) -> bool
+									{
+										CHECK_ERR( _ConvertImageView( view, OUT desc ));
+										if ( desc.aspectMask == EImageAspect::DepthStencil )
+											desc.aspectMask = EImageAspect::Depth;
+										return true;
+									};
+
+		const auto	ds_count		= uint(Min( pplnLayout.dslayouts.size(), fgDescriptors.size() ));
+		const auto	descriptors		= ArrayView<DescriptorSetInfo>{ allDescriptors.data(), ds_count };
+
 		packer << uint(descriptors.size());
 
 		for (size_t i = 0; i < descriptors.size(); ++i)
 		{
 			auto&	set = descriptors[i];
+			auto&	fg_ds = fgDescriptors[i];
+			CHECK( set.descriptors.size() >= fg_ds.uniforms->size() );
 
-			//packer << DescriptorSetID( ToString(i) );
 			packer << uint(i);
-			packer << uint(set.descriptors.size());
+			packer << uint(fg_ds.uniforms->size());
 
 			for (size_t j = 0; j < set.descriptors.size(); ++j)
 			{
-				auto&	desc = set.descriptors[j];
-				
-				packer << UniformID{ ToString(i) << "." << ToString(j) };
+				UniformID	name	{ "un"s << ToString(j) };
+				auto&		desc	= set.descriptors[j];
+				auto		fg_desc	= (*fg_ds.uniforms).find( name );
+
+				if ( fg_desc == fg_ds.uniforms->end() )
+					continue;
+
+				CHECK( fg_desc->second.index.VKBinding() == j );
+
+				packer << name;
 
 				switch ( desc.descriptorType )
 				{
-					case VK_DESCRIPTOR_TYPE_SAMPLER : {
+					case VK_DESCRIPTOR_TYPE_SAMPLER :
+					{
+						CHECK( std::holds_alternative<PipelineDescription::Sampler>(fg_desc->second.data) );
+
+						if ( desc.image.sampler == VK_NULL_HANDLE ) {
+							packer << uint(0);	// unused
+							break;
+						}
+
 						packer << uint(1);	// BindSampler
 						packer << _fgConv._samplerConv->Remap( desc.image.sampler, pos ).Index();
 						break;
 					}
 
-					case VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER : {
+					case VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER :
+					{
+						CHECK( std::holds_alternative<PipelineDescription::Texture>(fg_desc->second.data) );
+
+						if ( desc.image.view == VK_NULL_HANDLE ) {
+							packer << uint(0);	// unused
+							break;
+						}
+
 						packer << uint(2);	// BindTexture
 
 						auto*	view = _fgConv._imageAnalyzer->GetImageView( ResourceID(desc.image.view), pos );
 						CHECK_ERR( view );
 
 						ImageViewDesc	view_desc;
-						CHECK_ERR( _ConvertImageView( *view, OUT view_desc ));
+						CHECK_ERR( ConvertImageView( *view, INOUT view_desc ));
 
-						packer << _fgConv._imageConv->Remap( view->image->id, pos ).Index();
+						auto	image_id = _fgConv._imageConv->Remap( view->image->id, pos );
+						ValidateImage( INOUT image_id, INOUT view_desc );
+
+						packer << image_id.Index();
 						packer << _fgConv._samplerConv->Remap( desc.image.sampler, pos ).Index();
 						FGPack_ImageViewDesc( view_desc, packer );
 						break;
 					}
 
 					case VK_DESCRIPTOR_TYPE_STORAGE_IMAGE :
-					case VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT : {
+					case VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT :
+					{
+						CHECK( std::holds_alternative<PipelineDescription::Image>(fg_desc->second.data) or
+							   std::holds_alternative<PipelineDescription::SubpassInput>(fg_desc->second.data) );
+						
+						if ( desc.image.view == VK_NULL_HANDLE ) {
+							packer << uint(0);	// unused
+							break;
+						}
+
 						packer << uint(3);	// BindImage
 
 						auto*	view = _fgConv._imageAnalyzer->GetImageView( ResourceID(desc.image.view), pos );
 						CHECK_ERR( view );
 
 						ImageViewDesc	view_desc;
-						CHECK_ERR( _ConvertImageView( *view, OUT view_desc ));
+						CHECK_ERR( ConvertImageView( *view, OUT view_desc ));
+						
+						auto	image_id = _fgConv._imageConv->Remap( view->image->id, pos );
+						ValidateImage( INOUT image_id, INOUT view_desc );
 
-						packer << _fgConv._imageConv->Remap( view->image->id, pos ).Index();
+						packer << image_id.Index();
 						FGPack_ImageViewDesc( view_desc, packer );
 						break;
 					}
 
 					case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER :
-					case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER : {
-						packer << uint(4);	// BindBuffer
-						packer << _fgConv._bufferConv->Remap( desc.buffer.handle, pos ).Index();
-						packer << desc.buffer.offset;
-						packer << desc.buffer.range;
-						packer << desc.buffer.dynamicOffset;
-						ASSERT( desc.buffer.dynamicOffset == 0 );
-						break;
-					}
-
+					case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER :
 					case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC :
-					case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC : {
+					case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC :
+					{
+						CHECK( std::holds_alternative<PipelineDescription::UniformBuffer>(fg_desc->second.data) or
+							   std::holds_alternative<PipelineDescription::StorageBuffer>(fg_desc->second.data) );
+
+						if ( desc.buffer.handle == VK_NULL_HANDLE ) {
+							packer << uint(0);	// unused
+							break;
+						}
+
 						packer << uint(4);	// BindBuffer
 						packer << _fgConv._bufferConv->Remap( desc.buffer.handle, pos ).Index();
 						packer << desc.buffer.offset;
@@ -1069,22 +1159,20 @@ namespace VTC
 /*
 =================================================
 	_PackBaseDrawCall
+----
+	see unpacker in 'FGPlayer_v100::_UnpackBaseDrawCall'
 =================================================
 */
-	bool FrameGraphConverter::DrawCallConverter::_PackBaseDrawCall (const CommandBufferState &cmd, TraceRange::Bookmark pos) const
+	bool FrameGraphConverter::DrawCallConverter::_PackBaseDrawCall (const CommandBufferState &cmd, TraceRange::Bookmark pos, TracePacker &packer) const
 	{
-		using StencilValue_t = _fg_hidden_::StencilState::Value_t;
-
 		CHECK_ERR( _CheckPipeline( cmd.graphicsPpln ));
 		
 		auto*	curr_ppln	= _fgConv._pipelineConv->FindGraphicsPipeline( cmd.graphicsPpln.pipelineId );
-		auto*	ppln_layout	= _fgConv._pipelineConv->FindPipelineLayout( curr_ppln->layout );
-
-		auto&	packer = *cmd.tracePacker;
 
 		// pack descriptor sets (pipeline resources)
-		const uint	ds_count = uint(ppln_layout->dslayouts.size());
-		_PackDescriptors(ArrayView<DescriptorSetInfo>{ cmd.graphicsPpln.descriptors.data(), ds_count }, pos, packer );
+		CHECK_ERR( _PackDescriptors( curr_ppln->fgPipeline->first.layout.descriptorSets,
+									 *_fgConv._pipelineConv->FindPipelineLayout( curr_ppln->layout ),
+									 cmd.graphicsPpln.descriptors, cmd.renderPass, pos, packer ));
 
 		// pack push constants
 		packer << uint(cmd.graphicsPpln.pushConstants.size());
@@ -1093,54 +1181,232 @@ namespace VTC
 			FGPack_PushConstantData( pc.second, packer );
 		}
 
-		// pack dynamic states
-		packer << FGEnumCast( cmd.dynamicStates.current );
-
-		// pack scissors
-		packer << uint(0);	// TODO
-
-		// pack color buffers
-		packer << uint(0);	// TODO
-
-		// pack stencil state
-		packer << StencilValue_t(cmd.dynamicStates.stencilReference[0].value_or( 0 ));	// TODO
-		packer << StencilValue_t(cmd.dynamicStates.stencilReference[1].value_or( 0 ));
-		packer << StencilValue_t(cmd.dynamicStates.stencilWriteMask[0].value_or( ~0u ));
-		packer << StencilValue_t(cmd.dynamicStates.stencilWriteMask[1].value_or( ~0u ));
-		packer << StencilValue_t(cmd.dynamicStates.stencilCompareMask[0].value_or( ~0u ));
-		packer << StencilValue_t(cmd.dynamicStates.stencilCompareMask[1].value_or( ~0u ));
+		CHECK_ERR( _PackScissors( cmd, packer ));
+		CHECK_ERR( _PackColorBuffers( cmd, packer ));
+		CHECK_ERR( _PackDynamicStates( cmd, packer ));
 
 		return true;
 	}
 	
 /*
 =================================================
+	_PackDynamicStates
+=================================================
+*/
+	bool FrameGraphConverter::DrawCallConverter::_PackDynamicStates (const CommandBufferState &cmd, TracePacker &packer) const
+	{
+		auto*	curr_ppln	= _fgConv._pipelineConv->FindGraphicsPipeline( cmd.graphicsPpln.pipelineId );
+		auto&	ppln_rs		= curr_ppln->fgPipeline->first.renderState;
+		auto&	pass_desc	= cmd.renderPass->desc;
+		auto&	cmd_ds		= cmd.dynamicStates;
+
+		uint2	stencil_reference		= { ppln_rs.stencil.front.reference, ppln_rs.stencil.back.reference };
+		uint2	stencil_write_mask		= { ppln_rs.stencil.front.writeMask, ppln_rs.stencil.back.writeMask };
+		uint2	stencil_compare_mask	= { ppln_rs.stencil.front.compareMask, ppln_rs.stencil.back.compareMask };
+
+		if ( ppln_rs.stencil.enabled and curr_ppln->dynamicStates.count( VK_DYNAMIC_STATE_STENCIL_REFERENCE ) )
+		{
+			CHECK_ERR( cmd_ds.stencilReference[0].has_value() and cmd_ds.stencilReference[1].has_value() );
+			stencil_reference[0] = cmd_ds.stencilReference[0].value();
+			stencil_reference[1] = cmd_ds.stencilReference[1].value();
+		}
+
+		if ( ppln_rs.stencil.enabled and curr_ppln->dynamicStates.count( VK_DYNAMIC_STATE_STENCIL_WRITE_MASK ) )
+		{
+			CHECK_ERR( cmd_ds.stencilWriteMask[0].has_value() and cmd_ds.stencilWriteMask[1].has_value() );
+			stencil_write_mask[0] = cmd_ds.stencilWriteMask[0].value();
+			stencil_write_mask[1] = cmd_ds.stencilWriteMask[1].value();
+		}
+
+		if ( ppln_rs.stencil.enabled and curr_ppln->dynamicStates.count( VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK ) )
+		{
+			CHECK_ERR( cmd_ds.stencilCompareMask[0].has_value() and cmd_ds.stencilCompareMask[1].has_value() );
+			stencil_compare_mask[0] = cmd_ds.stencilCompareMask[0].value();
+			stencil_compare_mask[1] = cmd_ds.stencilCompareMask[1].value();
+		}
+
+		// separate dynamic stencil states is not supported
+		if ( ppln_rs.stencil.enabled )
+		{
+			CHECK_ERR( stencil_reference[0] == stencil_reference[1] );
+			CHECK_ERR( stencil_write_mask[0] == stencil_write_mask[1] );
+			CHECK_ERR( stencil_compare_mask[0] == stencil_compare_mask[1] );
+		}
+
+		_fg_hidden_::DynamicStates	dyn_states;
+
+		using StencilValue_t = decltype(dyn_states.stencilReference);
+
+		dyn_states.hasStencilTest			= (ppln_rs.stencil.enabled != pass_desc.stencilState.enabled);
+		dyn_states.hasStencilFailOp			= ppln_rs.stencil.enabled ? (ppln_rs.stencil.front.failOp != pass_desc.stencilState.front.failOp) : Default;
+		dyn_states.hasStencilDepthFailOp	= ppln_rs.stencil.enabled ? (ppln_rs.stencil.front.depthFailOp != pass_desc.stencilState.front.depthFailOp) : Default;
+		dyn_states.hasStencilPassOp			= ppln_rs.stencil.enabled ? (ppln_rs.stencil.front.passOp != pass_desc.stencilState.front.passOp) : Default;
+		dyn_states.hasStencilReference		= ppln_rs.stencil.enabled ? (stencil_reference[0] != pass_desc.stencilState.front.reference) : 0;
+		dyn_states.hasStencilWriteMask		= ppln_rs.stencil.enabled ? (stencil_write_mask[0] != pass_desc.stencilState.front.writeMask) : 0;
+		dyn_states.hasStencilCompareMask	= ppln_rs.stencil.enabled ? (stencil_compare_mask[0] != pass_desc.stencilState.front.compareMask) : 0;
+		
+		dyn_states.hasDepthTest				= (ppln_rs.depth.test != pass_desc.depthState.test);
+		dyn_states.hasDepthWrite			= (ppln_rs.depth.write != pass_desc.depthState.write);
+		dyn_states.hasDepthCompareOp		= (ppln_rs.depth.compareOp != pass_desc.depthState.compareOp);
+		dyn_states.hasCullMode				= (ppln_rs.rasterization.cullMode != pass_desc.rasterizationState.cullMode);
+
+		dyn_states.hasRasterizedDiscard		= (ppln_rs.rasterization.rasterizerDiscard != pass_desc.rasterizationState.rasterizerDiscard);
+		dyn_states.hasFrontFaceCCW			= (ppln_rs.rasterization.frontFaceCCW != pass_desc.rasterizationState.frontFaceCCW);
+
+		dyn_states.stencilFailOp			= ppln_rs.stencil.front.failOp;
+		dyn_states.stencilDepthFailOp		= ppln_rs.stencil.front.depthFailOp;
+		dyn_states.stencilPassOp			= ppln_rs.stencil.front.passOp;
+		dyn_states.stencilReference			= StencilValue_t( stencil_reference[0] );
+		dyn_states.stencilWriteMask			= StencilValue_t( stencil_write_mask[0] );
+		dyn_states.stencilCompareMask		= StencilValue_t( stencil_compare_mask[0] );
+		dyn_states.stencilTest				= ppln_rs.stencil.enabled;
+
+		dyn_states.depthCompareOp			= ppln_rs.depth.compareOp;
+		dyn_states.depthTest				= ppln_rs.depth.test;
+		dyn_states.depthWrite				= ppln_rs.depth.write;
+		
+		dyn_states.cullMode					= ppln_rs.rasterization.cullMode;
+		dyn_states.rasterizerDiscard		= ppln_rs.rasterization.rasterizerDiscard;
+		dyn_states.frontFaceCCW				= ppln_rs.rasterization.frontFaceCCW;
+
+		CHECK_ERR( not dyn_states.hasStencilFailOp      or (ppln_rs.stencil.front.failOp == ppln_rs.stencil.back.failOp) );
+		CHECK_ERR( not dyn_states.hasStencilDepthFailOp or (ppln_rs.stencil.front.depthFailOp == ppln_rs.stencil.back.depthFailOp) );
+		CHECK_ERR( not dyn_states.hasStencilPassOp      or (ppln_rs.stencil.front.passOp == ppln_rs.stencil.back.passOp) );
+
+		FGPack_DrawTaskDynamicStates( dyn_states, packer );
+		return true;
+	}
+	
+/*
+=================================================
+	_PackColorBuffers
+=================================================
+*/
+	bool FrameGraphConverter::DrawCallConverter::_PackColorBuffers (const CommandBufferState &cmd, TracePacker &packer) const
+	{
+		auto	pipeline	= _fgConv._pipelineConv->FindGraphicsPipeline( cmd.graphicsPpln.pipelineId );
+		CHECK_ERR( pipeline );
+		CHECK_ERR( cmd.renderPass->isInitialized );
+
+		auto&	pass_cb		= cmd.renderPass->desc.colorState.buffers;
+		auto&	ppln_cb		= pipeline->fgPipeline->first.renderState.color.buffers;
+		bool	is_equal	= true;
+
+		for (auto& lhs : ppln_cb)
+		{
+			auto	rhs = pass_cb.find( lhs.first );
+			CHECK_ERR( rhs != pass_cb.end() );
+
+			is_equal &= (lhs.second == rhs->second);
+		}
+
+		if ( is_equal )
+		{
+			packer << uint(0);	// color buffer count
+			return true;
+		}
+		
+		packer << uint(ppln_cb.size());
+		for (auto& lhs : ppln_cb)
+		{
+			packer << lhs.first;
+			FGPack_ColorBuffer( lhs.second, packer );
+		}
+
+		return true;
+	}
+
+/*
+=================================================
+	_PackScissors
+=================================================
+*/
+	bool FrameGraphConverter::DrawCallConverter::_PackScissors (const CommandBufferState &cmd, TracePacker &packer) const
+	{
+		const uint		cnt		= Min( cmd.dynamicStates.viewportCount.value_or(0), cmd.dynamicStates.scissorCount.value_or(0) );
+		BitSet<32>		diff	{0};
+
+		for (uint i = 0; i < cnt; ++i)
+		{
+			if ( not (cmd.dynamicStates.viewports[i].has_value() and cmd.dynamicStates.scissors[i].has_value()) )
+				continue;
+			
+			auto&	vp	= cmd.dynamicStates.viewports[i].value();
+			auto&	sc	= cmd.dynamicStates.scissors[i].value();
+
+			RectI	r1, r2;
+			r1.right = int(vp.width + 0.5f);				r1.bottom = int(vp.height + 0.5f);
+
+			r2.left  = sc.offset.x;							r2.top    = sc.offset.y;
+			r2.right = sc.offset.x + int(sc.extent.width);	r2.bottom = sc.offset.y + int(sc.extent.height);
+
+			diff[i] = not All( r1 == r2 );
+		}
+
+		if ( diff.none() )
+		{
+			packer << uint(0);	// scissor count
+			return true;
+		}
+
+
+		packer << cnt;
+
+		for (uint i = 0; i < cnt; ++i)
+		{
+			ASSERT( cmd.dynamicStates.viewports[i].has_value() );
+			
+			auto&	vp	= cmd.dynamicStates.viewports[i].value();
+
+			if ( cmd.dynamicStates.scissors[i].has_value() )
+			{
+				auto&	sc	= cmd.dynamicStates.scissors[i].value();
+				RectI	r2;
+				r2.left  = sc.offset.x;							r2.top    = sc.offset.y;
+				r2.right = sc.offset.x + int(sc.extent.width);	r2.bottom = sc.offset.y + int(sc.extent.height);
+
+				FGPack_Rectangle( r2, packer );
+			}
+			else
+			{
+				RectI	r1;
+				r1.right  = int(vp.width + 0.5f);
+				r1.bottom = int(vp.height + 0.5f);
+
+				FGPack_Rectangle( r1, packer );
+			}
+		}
+
+		return true;
+	}
+
+/*
+=================================================
 	_PackBaseDrawVertices
 =================================================
 */
-	bool FrameGraphConverter::DrawCallConverter::_PackBaseDrawVertices (const CommandBufferState &cmd, TraceRange::Bookmark pos) const
+	bool FrameGraphConverter::DrawCallConverter::_PackBaseDrawVertices (const CommandBufferState &cmd, TraceRange::Bookmark pos, TracePacker &packer) const
 	{
-		auto&	packer	= *cmd.tracePacker;
 		auto*	ppln	= _fgConv._pipelineConv->FindGraphicsPipeline( cmd.graphicsPpln.pipelineId );
 		CHECK_ERR( ppln );
 
 		// pipeline
 		packer << ppln->fgPipeline->second.Index();
 
-		CHECK_ERR( _PackBaseDrawCall( cmd, pos ));
+		CHECK_ERR( _PackBaseDrawCall( cmd, pos, packer ));
 
 		// vertex input
 		FGPack_VertexInputState( ppln->vertexInput, packer );
 
 		// pack vertex buffers
 		const uint	vb_count = uint(ppln->vertexInput.BufferBindings().size());
-		CHECK_ERR( vb_count > 0 and vb_count <= cmd.vertexBuffers.size() );
+		CHECK_ERR( vb_count >= 0 and vb_count <= cmd.vertexBuffers.size() );
 		packer << vb_count;
 
 		for (uint i = 0; i < vb_count; ++i)
 		{
 			auto&			vb = cmd.vertexBuffers[i];
-			VertexBufferID	id{ ToString(i) };
+			VertexBufferID	id{ "vb"s << ToString(i) };
 
 			packer << id;
 			packer << _fgConv._bufferConv->Remap( vb.buffer, pos ).Index();
@@ -1167,14 +1433,17 @@ namespace VTC
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
 		CHECK_ERR( cmd->second.renderPass );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
+		
+		CHECK_ERR( _MergeRenderPassStates( cmd->second ));
+		cmd->second.renderPass->drawCallCount++;
 
-		auto&	packer = *cmd->second.tracePacker;
+		auto&	packer = *cmd->second.renderpassPacker;
 		packer.Begin( EPacketID::FgDrawVertices );
 		packer << uint(0);	// TODO: thread id
 		packer << cmd->second.renderPass->index;
 
-		CHECK_ERR( _PackBaseDrawVertices( cmd->second, pos.GetBookmark() ));
+		CHECK_ERR( _PackBaseDrawVertices( cmd->second, pos.GetBookmark(), packer ));
 
 		// commands
 		packer << uint(1);
@@ -1199,14 +1468,17 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdDrawIndexed>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 		
-		auto&	packer = *cmd->second.tracePacker;
+		CHECK_ERR( _MergeRenderPassStates( cmd->second ));
+		cmd->second.renderPass->drawCallCount++;
+
+		auto&	packer = *cmd->second.renderpassPacker;
 		packer.Begin( EPacketID::FgDrawIndexed );
 		packer << uint(0);	// TODO: thread id
 		packer << cmd->second.renderPass->index;
 		
-		CHECK_ERR( _PackBaseDrawVertices( cmd->second, pos.GetBookmark() ));
+		CHECK_ERR( _PackBaseDrawVertices( cmd->second, pos.GetBookmark(), packer ));
 
 		// index buffer
 		packer << _fgConv._bufferConv->Remap( cmd->second.indexBuffer.buffer, pos.GetBookmark() ).Index();
@@ -1237,14 +1509,17 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdDrawIndirect>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 		
-		auto&	packer = *cmd->second.tracePacker;
+		CHECK_ERR( _MergeRenderPassStates( cmd->second ));
+		cmd->second.renderPass->drawCallCount++;
+
+		auto&	packer = *cmd->second.renderpassPacker;
 		packer.Begin( EPacketID::FgDrawVerticesIndirect );
 		packer << uint(0);	// TODO: thread id
 		packer << cmd->second.renderPass->index;
 		
-		CHECK_ERR( _PackBaseDrawVertices( cmd->second, pos.GetBookmark() ));
+		CHECK_ERR( _PackBaseDrawVertices( cmd->second, pos.GetBookmark(), packer ));
 
 		// commands
 		packer << uint(1);
@@ -1271,14 +1546,17 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdDrawIndirect>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 		
-		auto&	packer = *cmd->second.tracePacker;
-		packer.Begin( EPacketID::FgDrawVerticesIndirect );
+		CHECK_ERR( _MergeRenderPassStates( cmd->second ));
+		cmd->second.renderPass->drawCallCount++;
+
+		auto&	packer = *cmd->second.renderpassPacker;
+		packer.Begin( EPacketID::FgDrawIndexedIndirect );
 		packer << uint(0);	// TODO: thread id
 		packer << cmd->second.renderPass->index;
 		
-		CHECK_ERR( _PackBaseDrawVertices( cmd->second, pos.GetBookmark() ));
+		CHECK_ERR( _PackBaseDrawVertices( cmd->second, pos.GetBookmark(), packer ));
 		
 		// index buffer
 		packer << _fgConv._bufferConv->Remap( cmd->second.indexBuffer.buffer, pos.GetBookmark() ).Index();
@@ -1294,7 +1572,7 @@ namespace VTC
 		// indirect buffer
 		packer << _fgConv._bufferConv->Remap( packet.buffer, pos.GetBookmark() ).Index();
 		
-		packer.End( EPacketID::FgDrawVerticesIndirect );
+		packer.End( EPacketID::FgDrawIndexedIndirect );
 		return true;
 	}
 	
@@ -1311,16 +1589,46 @@ namespace VTC
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
 		CHECK_ERR( cmd->second.computePpln.pipelineId );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 
-		auto&	packer = *cmd->second.tracePacker;
+		cmd->second.dispatchCount++;
+
+		auto&	packer = *cmd->second.threadPacker;
 		packer.Begin( EPacketID::FgDispatchCompute );
 		packer << uint(0);	// TODO: thread id
 		
+		auto*	curr_ppln	= _fgConv._pipelineConv->FindComputePipeline( cmd->second.computePpln.pipelineId );
+		CHECK_ERR( curr_ppln );
+
+		auto*	ppln_layout	= _fgConv._pipelineConv->FindPipelineLayout( curr_ppln->layout );
+		CHECK_ERR( ppln_layout );
+
+		// pipeline
+		packer << curr_ppln->fgPipeline->second.Index();
+
+		// pack descriptor sets (pipeline resources)
+		CHECK_ERR( _PackDescriptors( curr_ppln->fgPipeline->first.layout.descriptorSets,
+									 *_fgConv._pipelineConv->FindPipelineLayout( curr_ppln->layout ),
+									 cmd->second.computePpln.descriptors, null, pos.GetBookmark(), packer ));
+		
+		// pack push constants
+		packer << uint(cmd->second.computePpln.pushConstants.size());
+
+		for (auto& pc : cmd->second.computePpln.pushConstants) {
+			FGPack_PushConstantData( pc.second, packer );
+		}
+
+		// groupCount
+		packer << packet.groupCountX;
+		packer << packet.groupCountY;
+		packer << packet.groupCountZ;
+
+		// localGroupSize
+		packer << bool(false);	// localGroupSize is undefined
+
 		packer.End( EPacketID::FgDispatchCompute );
 
-		ASSERT(false);	// not supported
-		return false;
+		return true;
 	}
 	
 /*
@@ -1335,9 +1643,11 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdCopyBuffer>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 		
-		auto&	packer = *cmd->second.tracePacker;
+		cmd->second.dispatchCount++;
+
+		auto&	packer = *cmd->second.threadPacker;
 		packer.Begin( EPacketID::FgDispatchComputeIndirect );
 		packer << uint(0);	// TODO: thread id
 		
@@ -1357,7 +1667,9 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdCopyBuffer>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
+		
+		cmd->second.dispatchCount++;
 
 		ASSERT(false);	// not supported
 		return false;
@@ -1375,7 +1687,7 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdCopyBuffer>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 
 		bool	is_from_host	= _BufferHasHostAccess( ResourceID(packet.srcBuffer), pos.GetBookmark() );
 		bool	is_to_host		= _BufferHasHostAccess( ResourceID(packet.dstBuffer), pos.GetBookmark() );
@@ -1396,7 +1708,7 @@ namespace VTC
 		auto*	dst_info = _fgConv._bufferAnalyzer->GetBuffer( ResourceID(packet.dstBuffer), pos.GetBookmark() );
 		CHECK_ERR( src_info and dst_info );
 
-		auto&	packer = *cmd->second.tracePacker;
+		auto&	packer = *cmd->second.threadPacker;
 		packer.Begin( EPacketID::FgCopyBuffer );
 		packer << uint(0);	// TODO: thread id
 		
@@ -1413,10 +1725,10 @@ namespace VTC
 			packer << reg.dstOffset;
 			packer << reg.size;
 
-			ASSERT( reg.srcOffset < src_info->createInfo.size	and
-				    reg.srcOffset + reg.size <= src_info->createInfo.size );
-			ASSERT( reg.dstOffset < dst_info->createInfo.size	and
-				    reg.dstOffset + reg.size <= dst_info->createInfo.size );
+			CHECK( reg.srcOffset < src_info->createInfo.size	and
+				   reg.srcOffset + reg.size <= src_info->createInfo.size );
+			CHECK( reg.dstOffset < dst_info->createInfo.size	and
+				   reg.dstOffset + reg.size <= dst_info->createInfo.size );
 		}
 		
 		packer.End( EPacketID::FgCopyBuffer );
@@ -1435,7 +1747,7 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdCopyImage>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 
 		bool	is_from_host	= _ImageHasHostAccess( ResourceID(packet.srcImage), pos.GetBookmark() );
 		bool	is_to_host		= _ImageHasHostAccess( ResourceID(packet.dstImage), pos.GetBookmark() );
@@ -1452,7 +1764,7 @@ namespace VTC
 			RETURN_ERR( "copy between host visible memory is not supported yet" );
 
 
-		auto&	packer = *cmd->second.tracePacker;
+		auto&	packer = *cmd->second.threadPacker;
 		packer.Begin( EPacketID::FgCopyImage );
 		packer << uint(0);	// TODO: thread id
 
@@ -1481,9 +1793,9 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdBlitImage>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 		
-		auto&	packer = *cmd->second.tracePacker;
+		auto&	packer = *cmd->second.threadPacker;
 		packer.Begin( EPacketID::FgBlitImage );
 		packer << uint(0);	// TODO: thread id
 		
@@ -1494,7 +1806,7 @@ namespace VTC
 
 		for (uint i = 0; i < packet.regionCount; ++i)
 		{
-			FGPacket_BlitImage_Region( packet.pRegions[i], packer );
+			FGPack_BlitImage_Region( packet.pRegions[i], packer );
 		}
 			
 		packer.End( EPacketID::FgBlitImage );
@@ -1513,7 +1825,7 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdCopyBufferToImage>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 		
 		bool	is_from_host	= _BufferHasHostAccess( ResourceID(packet.srcBuffer), pos.GetBookmark() );
 		bool	is_to_host		= _ImageHasHostAccess( ResourceID(packet.dstImage), pos.GetBookmark() );
@@ -1530,7 +1842,7 @@ namespace VTC
 			RETURN_ERR( "copy between host visible memory is not supported yet" );
 
 
-		auto&	packer = *cmd->second.tracePacker;
+		auto&	packer = *cmd->second.threadPacker;
 		packer.Begin( EPacketID::FgCopyBufferToImage );
 		packer << uint(0);	// TODO: thread id
 
@@ -1559,7 +1871,7 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdCopyImageToBuffer>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 		
 		bool	is_from_host	= _ImageHasHostAccess( ResourceID(packet.srcImage), pos.GetBookmark() );
 		bool	is_to_host		= _BufferHasHostAccess( ResourceID(packet.dstBuffer), pos.GetBookmark() );
@@ -1576,7 +1888,7 @@ namespace VTC
 			RETURN_ERR( "copy between host visible memory is not supported yet" );
 
 
-		auto&	packer = *cmd->second.tracePacker;
+		auto&	packer = *cmd->second.threadPacker;
 		packer.Begin( EPacketID::FgCopyImageToBuffer );
 		packer << uint(0);	// TODO: thread id
 
@@ -1605,18 +1917,19 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdUpdateBuffer>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 		
 		CHECK( not _BufferHasHostAccess( ResourceID(packet.dstBuffer), pos.GetBookmark() ));
 
 		DataID		data_id = _fgConv._RequestData( pos, packet.header, packet.pData, packet.dataSize, frameId );
-		CHECK_ERR( data_id != ~DataID(0) );
+		CHECK_ERR( data_id != UMax );
 
-		auto&	packer = *cmd->second.tracePacker;
+		auto&	packer = *cmd->second.threadPacker;
 		packer.Begin( EPacketID::FgUpdateBuffer );
 		packer << uint(0);	// TODO: thread id
 
 		packer << _fgConv._bufferConv->Remap( packet.dstBuffer, pos.GetBookmark() ).Index();
+		packer << uint(1);	// count
 		packer << packet.dstOffset;
 		packer << packet.dataSize;
 		packer << data_id;
@@ -1637,11 +1950,11 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdFillBuffer>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 		
 		CHECK( not _BufferHasHostAccess( ResourceID(packet.dstBuffer), pos.GetBookmark() ));
 
-		auto&	packer = *cmd->second.tracePacker;
+		auto&	packer = *cmd->second.threadPacker;
 		packer.Begin( EPacketID::FgFillBuffer );
 		packer << uint(0);	// TODO: thread id
 
@@ -1666,14 +1979,14 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdClearColorImage>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 		
 		CHECK( not _ImageHasHostAccess( ResourceID(packet.image), pos.GetBookmark() ));
 
 		auto*	image = _fgConv._imageAnalyzer->GetImage( ResourceID(packet.image), pos.GetBookmark() );
 		CHECK_ERR( image );
 		
-		auto&	packer = *cmd->second.tracePacker;
+		auto&	packer = *cmd->second.threadPacker;
 		packer.Begin( EPacketID::FgClearColorImage );
 		packer << uint(0);	// TODO: thread id
 
@@ -1703,14 +2016,14 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdClearDepthStencilImage>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 
 		CHECK( not _ImageHasHostAccess( ResourceID(packet.image), pos.GetBookmark() ));
 
 		auto*	image = _fgConv._imageAnalyzer->GetImage( ResourceID(packet.image), pos.GetBookmark() );
 		CHECK_ERR( image );
 		
-		auto&	packer = *cmd->second.tracePacker;
+		auto&	packer = *cmd->second.threadPacker;
 		packer.Begin( EPacketID::FgClearDepthStencilImage );
 		packer << uint(0);	// TODO: thread id
 		
@@ -1752,12 +2065,12 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdResolveImage>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 		
 		CHECK( not _ImageHasHostAccess( ResourceID(packet.srcImage), pos.GetBookmark() ));
 		CHECK( not _ImageHasHostAccess( ResourceID(packet.dstImage), pos.GetBookmark() ));
 		
-		auto&	packer = *cmd->second.tracePacker;
+		auto&	packer = *cmd->second.threadPacker;
 		packer.Begin( EPacketID::FgResolveImage );
 		packer << uint(0);	// TODO: thread id
 		
@@ -1793,45 +2106,39 @@ namespace VTC
 		auto&	packet	= pos.Cast<packet_vkCmdPushConstants>();
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 
 		auto	pc_layout = _fgConv._pipelineConv->FindPipelineLayout( ResourceID(packet.layout) );
 		CHECK_ERR( pc_layout );
 
-		PushConstantID	id;
+		PushConstantID		id;
+		VkPushConstantRange	range = {};
 		
 		for (auto& pc : pc_layout->pushConstantRanges)
 		{
-			if ( pc.second.offset		== packet.offset	and
-				 pc.second.size			== packet.size		and
-				 pc.second.stageFlags	== packet.stageFlags )
+			if ( pc.second.stageFlags == packet.stageFlags and
+				 IsIntersects( pc.second.offset, pc.second.offset + pc.second.size, packet.offset, packet.offset + packet.size ))
 			{
-				id = pc.first;
+				id    = pc.first;
+				range = pc.second;
 				break;
 			}
 		}
+
 		CHECK_ERR( id.IsDefined() );
+		CHECK_ERR( packet.offset >= range.offset );
+		CHECK_ERR( packet.offset + packet.size <= range.offset + range.size );
+		CHECK_ERR( not EnumAny( packet.stageFlags, raytracing_stages ) );	// not supported
 
-		_fg_hidden_::PushConstantData	pc_data;
-		pc_data.id		= id;
-		pc_data.size	= Bytes<uint16_t>{ uint16_t(packet.size) };
-		MemCopy( pc_data.data, BytesU::SizeOf(pc_data.data), packet.pValues, BytesU{packet.size} );
+		auto&	curr_pc =	EnumAny( packet.stageFlags, graphics_stages ) ? cmd->second.graphicsPpln.pushConstants :
+							/*EnumAny( packet.stageFlags, compute_stages )  ?*/ cmd->second.computePpln.pushConstants;
+		
+		auto&	pc_data	= curr_pc.insert({ id, {} }).first->second;
 
-		if ( EnumAny( packet.stageFlags, graphics_stages ) )
-		{
-			cmd->second.graphicsPpln.pushConstants.insert({ id, pc_data });
-		}
-		else
-		if ( EnumAny( packet.stageFlags, compute_stages ) )
-		{
-			cmd->second.graphicsPpln.pushConstants.insert({ id, pc_data });
-		}
-		else
-		if ( EnumAny( packet.stageFlags, raytracing_stages ) )
-		{
-			ASSERT(false);
-			return false;
-		}
+		pc_data.id   = id;
+		pc_data.size = Bytes<uint16_t>{uint16_t( range.size )};
+		
+		MemCopy( pc_data.data + BytesU{packet.offset - range.offset}, BytesU::SizeOf(pc_data.data), packet.pValues, BytesU{packet.size} );
 		return true;
 	}
 	
@@ -1846,7 +2153,7 @@ namespace VTC
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
 		CHECK_ERR( cmd->second.renderPass == null );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 
 		cmd->second.currRenderPass	= ResourceID(packet.pRenderPassBegin->renderPass);
 		cmd->second.currFramebuffer	= ResourceID(packet.pRenderPassBegin->framebuffer);
@@ -1865,8 +2172,8 @@ namespace VTC
 
 		_renderPasses.push_back( std::move(rp) );
 		cmd->second.renderPass = &_renderPasses.back();
+		cmd->second.renderpassPacker.reset( new TracePacker{} );
 		
-		CHECK_ERR( _PackRenderPass( cmd->second ));
 		return true;
 	}
 	
@@ -1881,9 +2188,9 @@ namespace VTC
 		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
 		CHECK_ERR( cmd != _cmdBuffers.end() );
 		CHECK_ERR( cmd->second.renderPass );
-		ASSERT( cmd->second.isRecording );
+		CHECK( cmd->second.isRecording );
 
-		CHECK_ERR( _PackSubmitRenderPass( cmd->second ));
+		CHECK_ERR( _PackRenderPass( cmd->second ));
 		
 		cmd->second.subpassIndex++;
 		
@@ -1899,8 +2206,31 @@ namespace VTC
 
 		_renderPasses.push_back( std::move(rp) );
 		cmd->second.renderPass = &_renderPasses.back();
+		cmd->second.renderpassPacker.reset( new TracePacker{} );
 
+		return true;
+	}
+
+/*
+=================================================
+	CmdEndRenderPass
+=================================================
+*/
+	bool FrameGraphConverter::DrawCallConverter::CmdEndRenderPass (const TraceRange::Iterator &pos)
+	{
+		auto&	packet	= pos.Cast<packet_vkCmdEndRenderPass>();
+		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
+		CHECK_ERR( cmd != _cmdBuffers.end() );
+		CHECK_ERR( cmd->second.renderPass );
+		CHECK( cmd->second.isRecording );
+		
 		CHECK_ERR( _PackRenderPass( cmd->second ));
+
+		cmd->second.renderPass		= null;
+		cmd->second.currRenderPass	= 0;
+		cmd->second.currFramebuffer	= 0;
+		cmd->second.subpassIndex	= UMax;
+
 		return true;
 	}
 	
@@ -1915,7 +2245,7 @@ namespace VTC
 																 TraceRange::Bookmark pos, OUT RenderPass &outRP) const
 	{
 		CHECK_ERR( subpassIndex < renderpass.subpasses.size() );
-		ASSERT( (beginInfo != null) == (subpassIndex == 0) );
+		CHECK( (beginInfo != null) == (subpassIndex == 0) );
 
 		auto&	subpass = renderpass.subpasses[subpassIndex];
 
@@ -1930,6 +2260,7 @@ namespace VTC
 			ImageID			image{ _fgConv._imageConv->Remap( view->image->id, pos )};
 			ImageViewDesc	desc;
 			CHECK_ERR( _ConvertImageView( *view, OUT desc ));
+			desc.swizzle = Default;
 
 			EAttachmentLoadOp	load_op		= EAttachmentLoadOp::Load;
 			EAttachmentStoreOp	store_op	= EAttachmentStoreOp::Store;
@@ -1953,19 +2284,19 @@ namespace VTC
 				switch ( val_type )
 				{
 					case EClearValueType::Int :
-						outRP.desc.AddTarget( RenderTargetID(ToString(rt.attachment)), image, desc,
+						outRP.desc.AddTarget( RenderTargetID("rt"s << ToString(rt.attachment)), image, desc,
 											  RGBA32i{clear_val.int32[0], clear_val.int32[1], clear_val.int32[2], clear_val.int32[3]},
 											  store_op );
 						break;
 
 					case EClearValueType::UInt :
-						outRP.desc.AddTarget( RenderTargetID(ToString(rt.attachment)), image, desc,
+						outRP.desc.AddTarget( RenderTargetID("rt"s << ToString(rt.attachment)), image, desc,
 											  RGBA32u{clear_val.uint32[0], clear_val.uint32[1], clear_val.uint32[2], clear_val.uint32[3]},
 											  store_op );
 						break;
 
 					case EClearValueType::Float :
-						outRP.desc.AddTarget( RenderTargetID(ToString(rt.attachment)), image, desc,
+						outRP.desc.AddTarget( RenderTargetID("rt"s << ToString(rt.attachment)), image, desc,
 											  RGBA32f{clear_val.float32[0], clear_val.float32[1], clear_val.float32[2], clear_val.float32[3]},
 											  store_op );
 						break;
@@ -1975,7 +2306,7 @@ namespace VTC
 				}
 			}
 			else
-				outRP.desc.AddTarget( RenderTargetID(ToString(rt.attachment)), image, desc, load_op, store_op );
+				outRP.desc.AddTarget( RenderTargetID("rt"s << ToString(rt.attachment)), image, desc, load_op, store_op );
 
 			FG_UNUSED( image.Release() );
 		}
@@ -1993,6 +2324,7 @@ namespace VTC
 			ImageID			image{ _fgConv._imageConv->Remap( view->image->id, pos )};
 			ImageViewDesc	desc;
 			CHECK_ERR( _ConvertImageView( *view, OUT desc ));
+			desc.swizzle = Default;
 			
 			EAttachmentLoadOp	load_op		= EAttachmentLoadOp::Load;
 			EAttachmentStoreOp	store_op	= EAttachmentStoreOp::Store;
@@ -2057,6 +2389,7 @@ namespace VTC
 		desc.layerCount	= view.createInfo.subresourceRange.layerCount;
 		desc.swizzle	= ImageSwizzle{uint4{ SwizzleMapping( view.createInfo.components.r, 0 ), SwizzleMapping( view.createInfo.components.g, 1 ),
 											  SwizzleMapping( view.createInfo.components.b, 2 ), SwizzleMapping( view.createInfo.components.a, 3 ) }};
+		desc.aspectMask	= FGEnumCast( VkImageAspectFlagBits(view.createInfo.subresourceRange.aspectMask) );
 		return true;
 	}
 	
@@ -2065,53 +2398,68 @@ namespace VTC
 	_MergeRenderPassStates
 =================================================
 */
-	bool FrameGraphConverter::DrawCallConverter::_MergeRenderPassStates (INOUT RenderPass &renderPass, const PipelineConverter::GraphicsPipelineInfo &pipeline) const
+	bool FrameGraphConverter::DrawCallConverter::_MergeRenderPassStates (CommandBufferState &cmd) const
 	{
-		auto&	rs = pipeline.fgPipeline->first.renderState;
+		auto	pipeline = _fgConv._pipelineConv->FindGraphicsPipeline( cmd.graphicsPpln.pipelineId );
+		CHECK_ERR( pipeline );
 
-		if ( not renderPass.isInitialized )
+		auto&	render_pass	= *cmd.renderPass;
+		auto&	rs			= pipeline->fgPipeline->first.renderState;
+
+		if ( not render_pass.isInitialized )
 		{
-			renderPass.desc.colorState			= rs.color;
-			renderPass.desc.depthState			= rs.depth;
-			renderPass.desc.stencilState		= rs.stencil;
-			renderPass.desc.rasterizationState	= rs.rasterization;
-			renderPass.desc.multisampleState	= rs.multisample;
-			renderPass.isInitialized			= true;
+			render_pass.desc.colorState			= rs.color;
+			render_pass.desc.depthState			= rs.depth;
+			render_pass.desc.stencilState		= rs.stencil;
+			render_pass.desc.rasterizationState	= rs.rasterization;
+			render_pass.desc.multisampleState	= rs.multisample;
+			render_pass.isInitialized			= true;
 			return true;
 		}
-
+		
 		// check color buffer states
 		{
 			for (auto& cb : rs.color.buffers) {
-				CHECK_ERR( renderPass.desc.colorState.buffers.count( cb.first ));
+				CHECK_ERR( render_pass.desc.colorState.buffers.count( cb.first ));
 			}
-			CHECK_ERR( rs.color.logicOp == renderPass.desc.colorState.logicOp );
-			CHECK_ERR( rs.color.blendColor == renderPass.desc.colorState.blendColor );
+			CHECK_ERR( rs.color.logicOp == render_pass.desc.colorState.logicOp );
+			CHECK_ERR( rs.color.blendColor == render_pass.desc.colorState.blendColor );
 		}
-
+		
 		// check depth stencil states
 		{
-			CHECK_ERR( rs.depth == renderPass.desc.depthState );
-			CHECK_ERR( rs.stencil.front.failOp == renderPass.desc.stencilState.front.failOp );
-			CHECK_ERR( rs.stencil.back.failOp == renderPass.desc.stencilState.back.failOp );
-			CHECK_ERR( rs.stencil.front.depthFailOp == renderPass.desc.stencilState.front.depthFailOp );
-			CHECK_ERR( rs.stencil.back.depthFailOp == renderPass.desc.stencilState.back.depthFailOp );
-			CHECK_ERR( rs.stencil.front.passOp == renderPass.desc.stencilState.front.passOp );
-			CHECK_ERR( rs.stencil.back.passOp == renderPass.desc.stencilState.back.passOp );
-			CHECK_ERR( rs.stencil.front.compareOp == renderPass.desc.stencilState.front.compareOp );
-			CHECK_ERR( rs.stencil.back.compareOp == renderPass.desc.stencilState.back.compareOp );
+			//CHECK_ERR( rs.depth.compareOp == render_pass.desc.depthState.compareOp );
+			CHECK_ERR( rs.depth.boundsEnabled == render_pass.desc.depthState.boundsEnabled );
+
+			if ( rs.depth.boundsEnabled )
+				CHECK_ERR(All(Equals( rs.depth.bounds, render_pass.desc.depthState.bounds )));
+
+			/*CHECK_ERR( rs.stencil.front.failOp == render_pass.desc.stencilState.front.failOp );
+			CHECK_ERR( rs.stencil.back.failOp == render_pass.desc.stencilState.back.failOp );
+			CHECK_ERR( rs.stencil.front.depthFailOp == render_pass.desc.stencilState.front.depthFailOp );
+			CHECK_ERR( rs.stencil.back.depthFailOp == render_pass.desc.stencilState.back.depthFailOp );
+			CHECK_ERR( rs.stencil.front.passOp == render_pass.desc.stencilState.front.passOp );
+			CHECK_ERR( rs.stencil.back.passOp == render_pass.desc.stencilState.back.passOp );
+			CHECK_ERR( rs.stencil.front.compareOp == render_pass.desc.stencilState.front.compareOp );
+			CHECK_ERR( rs.stencil.back.compareOp == render_pass.desc.stencilState.back.compareOp );*/
 		}
 
 		// check rasterization states
-		{
-			CHECK_ERR( rs.rasterization == renderPass.desc.rasterizationState );
-		}
+		/*{
+			CHECK_ERR( rs.rasterization.polygonMode == render_pass.desc.rasterizationState.polygonMode );
+			CHECK_ERR( rs.rasterization.lineWidth == render_pass.desc.rasterizationState.lineWidth );
+			CHECK_ERR( rs.rasterization.depthBiasConstFactor == render_pass.desc.rasterizationState.depthBiasConstFactor );
+			CHECK_ERR( rs.rasterization.depthBiasClamp == render_pass.desc.rasterizationState.depthBiasClamp );
+			CHECK_ERR( rs.rasterization.depthBiasSlopeFactor == render_pass.desc.rasterizationState.depthBiasSlopeFactor );
+			CHECK_ERR( rs.rasterization.depthBias == render_pass.desc.rasterizationState.depthBias );
+			CHECK_ERR( rs.rasterization.depthClamp == render_pass.desc.rasterizationState.depthClamp );
+		}*/
 
 		// check multisample states
 		{
-			CHECK_ERR( rs.multisample == renderPass.desc.multisampleState );
+			CHECK_ERR( rs.multisample == render_pass.desc.multisampleState );
 		}
-
+		
 		return true;
 	}
 	
@@ -2120,80 +2468,97 @@ namespace VTC
 	_PackRenderPass
 ----
 	see unpacker in 'FGPlayer_v100::_CreateRenderPass'
+	see unpacker in 'FGPlayer_v100::_SubmitRenderPass'
 =================================================
 */
-	bool FrameGraphConverter::DrawCallConverter::_PackRenderPass (const CommandBufferState &cmd) const
+	bool FrameGraphConverter::DrawCallConverter::_PackRenderPass (CommandBufferState &cmd) const
 	{
-		auto&	rp		= *cmd.renderPass;
-		auto&	packer	= *cmd.tracePacker;
+		CHECK( cmd.renderpassPacker );
 
+		auto&	rp		= *cmd.renderPass;
+		auto&	packer	= *cmd.threadPacker;
+
+		if ( not rp.isInitialized )
+		{
+			for (auto& rt : rp.desc.renderTargets)
+			{
+				if ( rt.second.loadOp == EAttachmentLoadOp::Clear	and
+					 rt.second.storeOp == EAttachmentStoreOp::Store )
+				{
+					cmd.renderTargetClear.insert_or_assign( rt.second.image, rt.second.clearValue );
+				}
+				else
+				if ( rt.second.loadOp == EAttachmentLoadOp::Load	and
+					 rt.second.storeOp == EAttachmentStoreOp::Store )
+				{}
+				else
+					cmd.renderTargetClear.erase( rt.second.image );
+			}
+
+			ASSERT( rp.drawCallCount == 0 );
+			return true;
+		}
+
+		cmd.drawCallCount += rp.drawCallCount;
+		cmd.renderPassCount++;
+
+		// setup render pass
 		packer.Begin( EPacketID::FgCreateRenderPass );
 		packer << uint(0);	// TODO: thread id
 
 		packer << rp.index;
+
+		// render states
 		FGPack_ColorBuffersState( rp.desc.colorState, packer );
 		FGPack_DepthBufferState( rp.desc.depthState, packer );
 		FGPack_StencilBufferState( rp.desc.stencilState, packer );
 		FGPack_MultisampleState( rp.desc.multisampleState, packer );
 
+		// render targets
 		packer << uint(rp.desc.renderTargets.size());
-		for (auto& rt : rp.desc.renderTargets) {
+		for (auto& rt : rp.desc.renderTargets)
+		{
 			packer << rt.first;
+
+			if ( rt.second.loadOp == EAttachmentLoadOp::Load )
+			{
+				auto	cv_iter = cmd.renderTargetClear.find( rt.second.image );
+				if ( cv_iter != cmd.renderTargetClear.end() )
+				{
+					rt.second.clearValue = cv_iter->second;
+					rt.second.loadOp	 = EAttachmentLoadOp::Clear;
+				}
+			}
+
 			FGPack_RenderPassTraget( rt.second, packer );
+
+			cmd.renderTargetClear.erase( rt.second.image );
 		}
 
+		// viewport
 		packer << uint(rp.desc.viewports.size());
 		for (auto& vp : rp.desc.viewports) {
 			FGPack_RenderPassViewport( vp, packer );
 		}
 
+		// area, ...
 		FGPack_Rectangle( rp.desc.area, packer );
 		packer << rp.desc.parallelExecution;
 		packer << rp.desc.canBeMerged;
 
 		packer.End( EPacketID::FgCreateRenderPass );
-		return true;
-	}
-	
-/*
-=================================================
-	_PackSubmitRenderPass
-----
-	see unpacker in 'FGPlayer_v100::_SubmitRenderPass'
-=================================================
-*/
-	bool FrameGraphConverter::DrawCallConverter::_PackSubmitRenderPass (const CommandBufferState &cmd) const
-	{
-		auto&	rp		= *cmd.renderPass;
-		auto&	packer	= *cmd.tracePacker;
 
+
+		// add draw calls
+		packer.Append( *cmd.renderpassPacker );
+		cmd.renderpassPacker.reset();
+
+
+		// submit render pass
 		packer.Begin( EPacketID::FgSubmitRenderPass );
 		packer << uint(0);	// TODO: thread id
 		packer << rp.index;
 		packer.End( EPacketID::FgSubmitRenderPass );
-
-		return true;
-	}
-
-/*
-=================================================
-	CmdEndRenderPass
-=================================================
-*/
-	bool FrameGraphConverter::DrawCallConverter::CmdEndRenderPass (const TraceRange::Iterator &pos)
-	{
-		auto&	packet	= pos.Cast<packet_vkCmdEndRenderPass>();
-		auto	cmd		= _cmdBuffers.find( ResourceID(packet.commandBuffer) );
-		CHECK_ERR( cmd != _cmdBuffers.end() );
-		CHECK_ERR( cmd->second.renderPass );
-		ASSERT( cmd->second.isRecording );
-		
-		CHECK_ERR( _PackSubmitRenderPass( cmd->second ));
-
-		cmd->second.renderPass		= null;
-		cmd->second.currRenderPass	= 0;
-		cmd->second.currFramebuffer	= 0;
-		cmd->second.subpassIndex	= ~0u;
 
 		return true;
 	}
@@ -2221,7 +2586,7 @@ namespace VTC
 	QueueSubmit
 =================================================
 */
-	bool FrameGraphConverter::DrawCallConverter::QueueSubmit (const TraceRange::Iterator &pos, INOUT TracePacker &packer)
+	bool FrameGraphConverter::DrawCallConverter::QueueSubmit (const TraceRange::Iterator &pos, FrameID frameId, INOUT TracePacker &packer)
 	{
 		auto&	packet	= pos.Cast<packet_vkQueueSubmit>();
 
@@ -2231,12 +2596,15 @@ namespace VTC
 
 			for (uint j = 0; j < submit.commandBufferCount; ++j)
 			{
-				auto	cmd		= _cmdBuffers.find( ResourceID(submit.pCommandBuffers[i]) );
+				auto	cmd		= _cmdBuffers.find( ResourceID(submit.pCommandBuffers[j]) );
 				CHECK_ERR( cmd != _cmdBuffers.end() );
-				CHECK_ERR( cmd->second.tracePacker );
-				ASSERT( not cmd->second.isRecording );
+				CHECK_ERR( cmd->second.threadPacker );
+				CHECK( not cmd->second.isRecording );
 
-				packer.Append( *cmd->second.tracePacker );
+				cmd->second.lastSubmission = frameId;
+				cmd->second.submissionCount++;
+
+				packer.Append( *cmd->second.threadPacker );
 
 				if ( EnumEq( cmd->second.usageFlags, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT ) )
 					_cmdBuffers.erase( cmd );
@@ -2253,7 +2621,7 @@ namespace VTC
 	see unpacker in 'FGPlayer_v100::_Present'
 =================================================
 */
-	bool FrameGraphConverter::DrawCallConverter::QueuePresent (const TraceRange::Iterator &pos, INOUT TracePacker &packer)
+	bool FrameGraphConverter::DrawCallConverter::QueuePresent (const TraceRange::Iterator &pos, FrameID frameId, INOUT TracePacker &packer)
 	{
 		auto&	packet = pos.Cast<packet_vkQueuePresentKHR>();
 
@@ -2326,7 +2694,7 @@ namespace VTC
 		CHECK_ERR( cmdbuf );
 
 		// find the next submit
-		TraceRange::Bookmark	submit_pos;
+		TraceRange::Bookmark	submit_pos = _fgConv._appTrace->FullTrace().LastBookmark();
 
 		for (auto& bm : cmdbuf->bookmarks)
 		{
@@ -2336,7 +2704,6 @@ namespace VTC
 				break;
 			}
 		}
-		CHECK_ERR( submit_pos != TraceRange::Bookmark() );
 
 
 		// find last memory usage before submitting commands
@@ -2349,7 +2716,10 @@ namespace VTC
 		auto*	dst_img = _fgConv._imageAnalyzer->GetImage( ResourceID(packet.dstImage), pos );
 		CHECK_ERR( dst_img );
 
-		const uint	bpp = GetImageFormatBitPerPixel( dst_img->createInfo.format );
+		const auto	fg_format		= FGEnumCast( dst_img->createInfo.format );
+		const auto&	fmt_info		= EPixelFormat_GetInfo( fg_format );
+		const auto&	texel_block_dim	= fmt_info.blockSize;
+		const auto	texel_size		= fmt_info.bitsPerBlock;
 
 		size_t	mem_last_bm = 0;
 
@@ -2379,45 +2749,95 @@ namespace VTC
 			{
 				for (auto iter = regions.begin(); iter != regions.end();)
 				{
-					auto&	reg = *iter;
+					const auto	reg = *iter;
+
+					if ( reg.imageExtent.width  < texel_block_dim.x or
+						 reg.imageExtent.height < texel_block_dim.y )
+					{
+						iter = regions.erase( iter );
+						continue;
+					}
+
+					CHECK( reg.imageOffset.x % texel_block_dim.x == 0 );
+					CHECK( reg.imageOffset.y % texel_block_dim.y == 0 );
+					CHECK( reg.imageExtent.width % texel_block_dim.x == 0 );
+					CHECK( reg.imageExtent.height % texel_block_dim.y == 0 );
+					CHECK( reg.imageSubresource.layerCount == 1 );	// TODO
+					CHECK( reg.imageExtent.depth == 1 );	// TODO
 
 					// check intersection
-					const uint64_t	row_pitch	= (Max(reg.bufferRowLength, reg.imageExtent.width) * bpp) / 8;
-					const uint64_t	slice_pitch	= Max(reg.bufferImageHeight, reg.imageExtent.height) * row_pitch;
+					const uint64_t	row_pitch	= (((reg.imageExtent.width + texel_block_dim.x-1) / texel_block_dim.x) * texel_size) / 8;
+					const uint64_t	slice_pitch	= ((reg.imageExtent.height + texel_block_dim.y-1) / texel_block_dim.y) * row_pitch;
+					//const uint64_trow_pitch	= Max( reg.bufferRowLength * texel_size) / 8, row_pitch1 );
+					//const uint64_tslice_pitch	= Max( reg.bufferImageHeight * row_pitch, slice_pitch1 );
 					const uint		dim_z		= Max( reg.imageSubresource.layerCount, reg.imageExtent.depth );
-					const uint64_t	data_size	= slice_pitch * dim_z;
+					const uint64_t	max_size	= slice_pitch * dim_z;
 					const uint64_t	buf_begin	= reg.bufferOffset + src_buf->memOffset;
-					const uint64_t	buf_end		= buf_begin + data_size;
+					const uint64_t	buf_end		= buf_begin + max_size;
 					uint64_t		data_begin, data_end;
 
 					if ( GetIntersection( block.memOffset, block.memOffset + block.dataSize, buf_begin, buf_end,
 										  OUT data_begin, OUT data_end ) )
 					{
-						ASSERT( data_begin == buf_begin and data_end == buf_end );
-						ASSERT( reg.imageSubresource.layerCount == 1 );	// TODO
-						
-						uint64_t	block_offset = buf_begin - block.memOffset;
-						ASSERT( block_offset < block.dataSize	and
-								block_offset + data_size <= block.dataSize );
-						
-						DataID	data_id = _fgConv._RequestData( block.fileOffset + block_offset, data_size, frameId );
-						CHECK_ERR( data_id != ~DataID(0) );
+									data_begin	 = AlignToLarger( data_begin - buf_begin, row_pitch ) + buf_begin;
+						uint64_t	data_size	 = AlignToSmaller( data_end - data_begin, row_pitch * texel_block_dim.y );
+						uint64_t	block_offset = data_begin - block.memOffset;
+						int3		img_offset	 = { reg.imageOffset.x, reg.imageOffset.y, reg.imageOffset.z };
+						uint3		img_size	 = { reg.imageExtent.width, reg.imageExtent.height, reg.imageExtent.depth };
 
-						auto&	packer = *cmd.tracePacker;
+						if ( data_size == 0 )
+							break;
+
+						img_offset.y += int(((data_begin - buf_begin) / row_pitch) * texel_block_dim.y);
+						img_size.y   = uint((data_size / row_pitch) * texel_block_dim.y);
+
+						CHECK( block_offset < block.dataSize and block_offset + data_size <= block.dataSize );
+						CHECK( img_offset.y % texel_block_dim.y == 0 );
+						CHECK( img_size.y % texel_block_dim.y == 0 );
+						CHECK( img_size.y <= reg.imageExtent.height );
+						
+						DataID		data_id = _fgConv._RequestData( block.fileOffset + block_offset, data_size, frameId );
+						CHECK_ERR( data_id != UMax );
+
+						auto&	packer = *cmd.threadPacker;
 						packer.Begin( EPacketID::FgUpdateImage );
 						packer << uint(0);	// TODO: thread id
 						packer << _fgConv._imageConv->Remap( packet.dstImage, pos ).Index();
-						FGPack_Offset3D( reg.imageOffset, packer );
-						FGPack_Extent3D( reg.imageExtent, packer );
+						FGPack_Vec( img_offset, packer );
+						FGPack_Vec( img_size, packer );
 						packer << reg.imageSubresource.baseArrayLayer;
 						packer << reg.imageSubresource.mipLevel;
 						packer << row_pitch;
-						packer << slice_pitch;
+						packer << uint64_t(0);	//slice_pitch;
 						packer << FGEnumCast( reg.imageSubresource.aspectMask );
 						packer << data_id;
 						packer.End( EPacketID::FgUpdateImage );
 
 						iter = regions.erase( iter );
+
+						if ( max_size == data_size )
+						{
+							ASSERT( img_offset.y == reg.imageOffset.y and img_size.y == reg.imageExtent.height );
+							continue;
+						}
+
+						if ( buf_begin != data_begin )
+						{
+							VkBufferImageCopy	range = reg;
+							range.imageExtent.height  = img_offset.y - reg.imageOffset.y;
+							regions.push_back( range );
+						}
+
+						if ( data_size != max_size )
+						{
+							VkBufferImageCopy	range = reg;
+							range.bufferOffset			= data_begin + data_size - src_buf->memOffset;
+							range.imageOffset.y			= img_offset.y + int(img_size.y);
+							range.imageExtent.height	= reg.imageOffset.y + reg.imageExtent.height - range.imageOffset.y;
+							regions.push_back( range );
+						}
+
+						iter = regions.begin();
 					}
 					else
 						++iter;
@@ -2425,7 +2845,7 @@ namespace VTC
 			}
 		}
 
-		CHECK_ERR( regions.empty() );
+		//CHECK_ERR( regions.empty() );
 		return true;
 	}
 	
@@ -2437,9 +2857,149 @@ namespace VTC
 	bool FrameGraphConverter::DrawCallConverter::_UpdateImage (CommandBufferState &cmd, const packet_vkCmdCopyImage &packet,
 															   const TraceRange::Bookmark pos, FrameID frameId)
 	{
-		FG_UNUSED( cmd, packet, pos, frameId );
-		ASSERT(false);
-		return false;
+		Array<VkImageCopy>	regions{ packet.pRegions, packet.pRegions + packet.regionCount };
+
+		auto*	cmdbuf = _fgConv._queueAnalyzer->GetCommandBufferInfo( ResourceID(packet.commandBuffer), pos );
+		CHECK_ERR( cmdbuf );
+
+		// find the next submit
+		TraceRange::Bookmark	submit_pos = _fgConv._appTrace->FullTrace().LastBookmark();
+
+		for (auto& bm : cmdbuf->bookmarks)
+		{
+			if ( pos < bm.pos and bm.packetId == VKTRACE_TPI_VK_vkQueueSubmit )
+			{
+				submit_pos = bm.pos;
+				break;
+			}
+		}
+
+		
+		// find last memory usage before submitting commands
+		auto*	src_img = _fgConv._imageAnalyzer->GetImage( ResourceID(packet.srcImage), pos );
+		CHECK_ERR( src_img );
+
+		auto*	mem = _fgConv._memoryObjAnalyzer->GetMemoryObj( src_img->memId, pos );
+		CHECK_ERR( mem );
+
+		auto*	dst_img = _fgConv._imageAnalyzer->GetImage( ResourceID(packet.dstImage), pos );
+		CHECK_ERR( dst_img );
+		
+		const auto	src_fmt_info = EPixelFormat_GetInfo( FGEnumCast( src_img->createInfo.format ));
+		const auto	dst_fmt_info = EPixelFormat_GetInfo( FGEnumCast( dst_img->createInfo.format ));
+
+		size_t		mem_last_bm	= 0;
+
+		for (size_t i = 0; i < mem->bookmarks.size(); ++i)
+		{
+			auto&	bm = mem->bookmarks[i];
+
+			if ( bm.pos >= submit_pos )
+				break;
+
+			mem_last_bm = i;
+		}
+
+		
+		// find memory transfer to buffer
+		for (size_t i = mem_last_bm; i < mem->bookmarks.size() and regions.size(); --i)
+		{
+			auto&	bm = mem->bookmarks[i];
+
+			if ( bm.packetId != VKTRACE_TPI_VK_vkFlushMappedMemoryRanges )
+				continue;
+			
+			auto*	info = _fgConv._memTransferAnalyzer->GetTransfer( mem->id, bm.pos );
+			CHECK_ERR( info );
+
+			for (auto& block : info->blocks)
+			{
+				for (auto iter = regions.begin(); iter != regions.end();)
+				{
+					auto&	reg = *iter;
+					
+					// check intersection
+					const uint3	src_img_dim	= Max( uint3(src_img->createInfo.extent.width, src_img->createInfo.extent.height, src_img->createInfo.extent.depth) >> reg.srcSubresource.mipLevel, 1u );
+					const uint3	dst_img_dim	= Max( uint3(dst_img->createInfo.extent.width, dst_img->createInfo.extent.height, dst_img->createInfo.extent.depth) >> reg.dstSubresource.mipLevel, 1u );
+					
+					CHECK( src_img_dim.x % src_fmt_info.blockSize.x == 0 );
+					CHECK( src_img_dim.y % src_fmt_info.blockSize.y == 0 );
+					CHECK( dst_img_dim.x % dst_fmt_info.blockSize.x == 0 );
+					CHECK( dst_img_dim.y % dst_fmt_info.blockSize.y == 0 );
+					CHECK( reg.srcSubresource.layerCount == 1 );
+					CHECK( reg.dstSubresource.layerCount == 1 );
+
+					uint64_t	src_row_pitch		= ((src_img_dim.x / src_fmt_info.blockSize.x) * src_fmt_info.bitsPerBlock) / 8;
+					uint64_t	src_slice_pitch		= (src_img_dim.y / src_fmt_info.blockSize.y) * src_row_pitch;
+					uint64_t	dst_row_pitch		= ((dst_img_dim.x / dst_fmt_info.blockSize.x) * dst_fmt_info.bitsPerBlock) / 8;
+					uint64_t	dst_slice_pitch		= (dst_img_dim.y / dst_fmt_info.blockSize.y) * dst_row_pitch;
+					uint64_t	src_mem_offset		= src_img->memOffset;
+					auto		src_layout			= src_img->subresLayouts.find(ImageAnalyzer::ImageSubresource{ reg.srcSubresource });
+					auto		dst_layout			= dst_img->subresLayouts.find(ImageAnalyzer::ImageSubresource{ reg.dstSubresource });
+
+					if ( src_layout != src_img->subresLayouts.end() ) {
+						src_row_pitch	= src_layout->second.rowPitch;
+						src_slice_pitch	= src_layout->second.arrayPitch;	// TODO
+						src_mem_offset	= src_layout->second.offset + src_img->memOffset;
+					}
+					if ( dst_layout != dst_img->subresLayouts.end() ) {
+						dst_row_pitch	= dst_layout->second.rowPitch;
+						dst_slice_pitch	= dst_layout->second.arrayPitch;	// TODO
+					}
+
+					// solid memory
+					if ( reg.srcOffset.x == 0 and reg.srcOffset.y == 0 and reg.srcOffset.z == 0 and
+						 reg.dstOffset.x == 0 and reg.dstOffset.y == 0 and reg.dstOffset.z == 0 and
+						 reg.extent.width == src_img_dim.x and reg.extent.height == src_img_dim.y and
+						 reg.extent.width == dst_img_dim.x and reg.extent.height == dst_img_dim.y )
+					{
+						uint64_t	data_size = src_slice_pitch * src_img_dim.z;
+						uint64_t	data_begin, data_end;
+						
+						if ( GetIntersection( block.memOffset, block.memOffset + block.dataSize, src_mem_offset, src_mem_offset + data_size,
+											  OUT data_begin, OUT data_end ) )
+						{
+							CHECK( data_begin == src_mem_offset );
+							CHECK( data_end == src_mem_offset + data_size );
+							
+										data_size	 = data_end - data_begin;
+							uint64_t	block_offset = data_begin - block.memOffset;
+							int3		img_offset	 = { reg.dstOffset.x, reg.dstOffset.y, reg.dstOffset.z };
+							uint3		img_size	 = { reg.extent.width, reg.extent.height, reg.extent.depth };
+
+							DataID		data_id = _fgConv._RequestData( block.fileOffset + block_offset, data_size, frameId );
+							CHECK_ERR( data_id != UMax );
+
+							auto&	packer = *cmd.threadPacker;
+							packer.Begin( EPacketID::FgUpdateImage );
+							packer << uint(0);	// TODO: thread id
+							packer << _fgConv._imageConv->Remap( packet.dstImage, pos ).Index();
+							FGPack_Vec( img_offset, packer );
+							FGPack_Vec( img_size, packer );
+							packer << reg.dstSubresource.baseArrayLayer;
+							packer << reg.dstSubresource.mipLevel;
+							packer << uint64_t(0);	// TODO
+							packer << uint64_t(0);
+							packer << FGEnumCast( reg.dstSubresource.aspectMask );
+							packer << data_id;
+							packer.End( EPacketID::FgUpdateImage );
+
+							iter = regions.erase( iter );
+						}
+						else
+							++iter;
+					}
+					else
+					// separate memory blocks
+					{
+						CHECK(false);
+					}
+				}
+			}
+		}
+
+		CHECK_ERR( regions.empty() );
+		return true;
 	}
 	
 /*
@@ -2450,8 +3010,7 @@ namespace VTC
 	bool FrameGraphConverter::DrawCallConverter::_ReadImage (CommandBufferState &cmd, const packet_vkCmdCopyBufferToImage &packet, const TraceRange::Bookmark pos)
 	{
 		FG_UNUSED( cmd, packet, pos );
-		ASSERT(false);
-		return false;
+		return true;
 	}
 	
 /*
@@ -2462,8 +3021,7 @@ namespace VTC
 	bool FrameGraphConverter::DrawCallConverter::_ReadImage (CommandBufferState &cmd, const packet_vkCmdCopyImage &packet, const TraceRange::Bookmark pos)
 	{
 		FG_UNUSED( cmd, packet, pos );
-		ASSERT(false);
-		return false;
+		return true;
 	}
 	
 /*
@@ -2483,7 +3041,7 @@ namespace VTC
 		CHECK_ERR( dst_buf );
 
 		// find the next submit
-		TraceRange::Bookmark	submit_pos;
+		TraceRange::Bookmark	submit_pos = _fgConv._appTrace->FullTrace().LastBookmark();
 
 		for (auto& bm : cmdbuf->bookmarks)
 		{
@@ -2493,7 +3051,6 @@ namespace VTC
 				break;
 			}
 		}
-		CHECK_ERR( submit_pos != TraceRange::Bookmark() );
 
 
 		// find last memory usage before submitting commands
@@ -2530,7 +3087,7 @@ namespace VTC
 			//   |========================= memory ===============================|
 			//   |          |========== block ==========|
 			//   |          |    |============= src_buffer ===============|
-			//   |          |    |      |=== reg= ===|
+			//   |          |    |      |=== reg ====|
 			//   |<-------->|    |<---->|
 			//   |<---|--------->|     \
 			//        |         \      reg.srcOffset
@@ -2540,40 +3097,51 @@ namespace VTC
 			{
 				for (auto iter = regions.begin(); iter != regions.end();)
 				{
-					auto&	reg = *iter;
+					const auto	reg = *iter;
 
-					const uint64_t	data_size	= Min( reg.size, dst_buf->createInfo.size - reg.dstOffset );
+					const uint64_t	max_size	= Min( reg.size, dst_buf->createInfo.size - reg.dstOffset, src_buf->createInfo.size - reg.srcOffset );
 					const uint64_t	buf_begin	= reg.srcOffset + src_buf->memOffset;
-					const uint64_t	buf_end		= buf_begin + data_size;
+					const uint64_t	buf_end		= buf_begin + max_size;
 					uint64_t		data_begin, data_end;
 					
-					ASSERT( block.dataSize >= data_size );
-
 					if ( GetIntersection( block.memOffset, block.memOffset + block.dataSize, buf_begin, buf_end,
 										  OUT data_begin, OUT data_end ) )
 					{
-						ASSERT( data_begin == buf_begin and data_end == buf_end );
-
+						uint64_t	data_size	 = data_end - data_begin;
 						uint64_t	block_offset = buf_begin - block.memOffset;
-						ASSERT( block_offset < block.dataSize	and
-								block_offset + data_size <= block.dataSize );
+						uint64_t	buf_offset	 = reg.dstOffset + (data_begin - buf_begin);
+
+						CHECK( block_offset < block.dataSize	and
+							   block_offset + data_size <= block.dataSize );
 
 						DataID	data_id = _fgConv._RequestData( block.fileOffset + block_offset, data_size, frameId );
-						CHECK_ERR( data_id != ~DataID(0) );
+						CHECK_ERR( data_id != UMax );
 						
-						ASSERT( reg.dstOffset < dst_buf->createInfo.size	and
-								reg.dstOffset + data_size <= dst_buf->createInfo.size );
+						CHECK( buf_offset < dst_buf->createInfo.size	and
+							   buf_offset + data_size <= dst_buf->createInfo.size );
 
-						auto&	packer = *cmd.tracePacker;
+						auto&	packer = *cmd.threadPacker;
 						packer.Begin( EPacketID::FgUpdateBuffer );
 						packer << uint(0);	// TODO: thread id
 						packer << _fgConv._bufferConv->Remap( packet.dstBuffer, pos ).Index();
-						packer << reg.dstOffset;
+						packer << uint(1);	// count
+						packer << buf_offset;
 						packer << data_size;
 						packer << data_id;
 						packer.End( EPacketID::FgUpdateBuffer );
 
 						iter = regions.erase( iter );
+
+						if ( data_size == max_size )
+							continue;
+						
+						if ( data_begin != buf_begin )
+							regions.push_back({ reg.srcOffset, reg.dstOffset, data_begin - buf_begin });
+
+						if ( data_end != buf_end )
+							regions.push_back({ reg.srcOffset + data_size, reg.dstOffset + data_size, buf_end - data_end });
+
+						iter = regions.begin();
 					}
 					else
 						++iter;
@@ -2581,7 +3149,7 @@ namespace VTC
 			}
 		}
 
-		CHECK_ERR( regions.empty() );
+		//CHECK_ERR( regions.empty() );
 		return true;
 	}
 	
@@ -2606,8 +3174,7 @@ namespace VTC
 	bool FrameGraphConverter::DrawCallConverter::_ReadBuffer (CommandBufferState &cmd, const packet_vkCmdCopyBuffer &packet, const TraceRange::Bookmark pos)
 	{
 		FG_UNUSED( cmd, packet, pos );
-		ASSERT(false);
-		return false;
+		return true;
 	}
 	
 /*
@@ -2618,8 +3185,7 @@ namespace VTC
 	bool FrameGraphConverter::DrawCallConverter::_ReadBuffer (CommandBufferState &cmd, const packet_vkCmdCopyImageToBuffer &packet, const TraceRange::Bookmark pos)
 	{
 		FG_UNUSED( cmd, packet, pos );
-		ASSERT(false);
-		return false;
+		return true;
 	}
 
 

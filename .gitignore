@@ -6,10 +6,6 @@
 /external/LunarG-VulkanTools
 /external/Vulkan-Tools
 /external/brotli
-/external/cryptopp
-/external/BLAKE2
-/player_exe
 /tests/player/*.vktrace
-/external/_old
 /external/SPIRV-Cross
 /external/SPIRV-Reflect

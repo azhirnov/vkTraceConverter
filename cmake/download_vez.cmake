@@ -22,7 +22,7 @@ if (FALSE)
                             ${VTC_BUILD_TARGET_FLAGS}
 		LOG_CONFIGURE 		1
 		# build
-		BINARY_DIR			"${CMAKE_BINARY_DIR}/build-Vulkan-EZ"
+		BINARY_DIR			"${CMAKE_BINARY_DIR}/build2-Vulkan-EZ"
 		BUILD_COMMAND		"${CMAKE_COMMAND}"
 							--build .
 							--target ALL_BUILD

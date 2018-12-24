@@ -19,16 +19,24 @@ namespace VTC
 	private:
 		struct PendingBuffer
 		{
-			VkBuffer				handle		= VK_NULL_HANDLE;
-			uint					id			= ~0u;
+			uint64_t				uid			= UMax;
+			uint					id			= UMax;
 			FG::BufferDesc			desc;
 			FG::MemoryDesc			mem;
-			TraceRange::Bookmark	startPos;
 			bool					memBinded	= false;
+		};
+
+		struct HostAccessibleBuffer
+		{
+			BufferAnalyzer::BufferInfo_t const*			buffer		= null;
+			MemoryObjAnalyzer::MemoryObjInfo_t const*	memory		= null;
+			TraceRange::Bookmark						lastPos;
 		};
 
 		using PendingBuffers_t	= Array< PendingBuffer >;
 		using IndexArray_t		= Array< uint >;
+		using HosteBuffers_t	= Array< HostAccessibleBuffer >;
+		using EMemoryUsage		= MemoryObjAnalyzer::EMemoryUsage;
 
 
 	// variables
@@ -40,6 +48,8 @@ namespace VTC
 		IndexArray_t			_freeIndices;
 
 		Array<RawBufferID>		_remapping;
+
+		HosteBuffers_t			_hostBuffers;
 
 		uint					_bufferCounter	= 0;
 
@@ -53,16 +63,18 @@ namespace VTC
 
 		bool CreateBuffer (const TraceRange::Iterator &);
 		bool DestroyBuffer (const TraceRange::Iterator &);
-		bool BindMemory (const TraceRange::Iterator &, INOUT TracePacker &);
-		bool BindMemory2 (const TraceRange::Iterator &, INOUT TracePacker &);
+		bool BindMemory (const TraceRange::Iterator &);
+		bool BindMemory2 (const TraceRange::Iterator &);
 
 		ND_ uint			GetBufferCount ()		const	{ return _bufferCounter; }
 
 		ND_ RawBufferID		Remap (ResourceID id, TraceRange::Bookmark)		const;
 		ND_ RawBufferID		Remap (VkBuffer id, TraceRange::Bookmark pos)	const	{ return Remap( ResourceID(id), pos ); }
 
+
 	private:
-		bool _UpdateBuffer (ResourceID, TraceRange::Bookmark, TraceRange::Bookmark, FrameID, INOUT TracePacker &);
+		bool _AddHostBuffer (VkBuffer buf, MemoryObjAnalyzer::MemoryObjInfo_t const* mem, TraceRange::Bookmark pos);
+		bool _UpdateBuffer (const HostAccessibleBuffer &, TraceRange::Bookmark, FrameID, INOUT TracePacker &);
 	};
 
 

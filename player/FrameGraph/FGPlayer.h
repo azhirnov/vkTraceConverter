@@ -69,7 +69,7 @@ namespace VTPlayer
 		
 		struct FilePart
 		{
-			DataID				id				= DataID(~0u);
+			DataID				id				= UMax;
 			uint64_t			offset			= 0;
 			uint64_t			size			= 0;
 			FrameID				firstFrame		= FrameID(0);	// frame when data will be requested at first time
@@ -80,7 +80,8 @@ namespace VTPlayer
 		using DataMap_t			= HashMap< DataID, DataBuffer_t >;
 		using LoadEvents_t		= HashMap< FrameID, Array<FilePart> >;
 		using UnloadEvents_t	= HashMap< FrameID, Array<DataID> >;
-
+		
+		using Nonoseconds		= std::chrono::nanoseconds;
 		using TimePoint_t		= std::chrono::time_point< std::chrono::high_resolution_clock >;
 
 
@@ -102,6 +103,8 @@ namespace VTPlayer
 		bool					_playOneFrame		= false;
 		bool					_isFinished			= false;
 		bool					_playWithSourceFPS	= true;
+		uint8_t					_visualizeGraph		= 0;
+		uint					_graphCounter		= 0;
 		TimePoint_t				_lastPresentTime;
 
 		LinearAllocator<>		_perPacketAllocator;	// allocate memory when process packet and recycle before processing next packet
@@ -115,7 +118,17 @@ namespace VTPlayer
 		PlayerSettings const&	_playerSettings;
 		
 		uint					_implementationFlags	= 0;
-
+		
+		// profiling
+		struct {
+			FrameID					frameId				= 0;
+			uint					frameCounter		= 0;
+			uint					averageFPS			= 0;	// measure in cpu-side
+			Nonoseconds				averageFTime;				// measure in gpu-side
+			Nonoseconds				accumFTime;
+			TimePoint_t				lastUpdateTime;
+		}						_profiling;
+		
 
 	// methods
 	public:
@@ -193,6 +206,8 @@ namespace VTPlayer
 		bool _EndFrame (FGUnpacker &);
 		bool _BeginThread (FGUnpacker &);
 		bool _EndThread (FGUnpacker &);
+		bool _UpdateUniformBuffer (FGUnpacker &);
+		bool _UpdateHostBuffer (FGUnpacker &);
 		
 		bool _DrawVertices (FGUnpacker &);
 		bool _DrawIndexed (FGUnpacker &);
@@ -210,11 +225,16 @@ namespace VTPlayer
 
 		template <typename PipelineID>
 		bool _UnpackDescriptors (OUT PipelineResourceSet &, FrameData &, const PipelineID &, FGUnpacker &) const;
+		
+		template <typename TaskType>
+		bool _UnpackScissors (OUT _fg_hidden_::BaseDrawCall<TaskType> &, FGUnpacker &) const;
 
 		bool _InitializeResource (EFrameGraphPacketID, FGUnpacker &);
 		bool _CreateDevice (FGUnpacker &);
 		bool _CreateDevice (const struct VulkanCreateInfo &ci);
 		bool _CreateFrameGraph ();
+
+		bool _UpdateFrameStatistic ();
 	};
 
 

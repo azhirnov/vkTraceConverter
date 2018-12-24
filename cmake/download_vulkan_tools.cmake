@@ -3,11 +3,21 @@
 # Vulkan-Headers
 if (TRUE)
     set( VULKAN_HEADERS_INSTALL_DIR "${VTC_EXTERNAL_INSTALL_DIR}/Vulkan-Headers" CACHE INTERNAL "" FORCE )
+	set( VTC_EXTERNAL_VULKAN_HEADERS_PATH "" CACHE PATH "path to Vulkan-Headers source" )
+	
+	# reset to default
+	if (NOT EXISTS "${VTC_EXTERNAL_VULKAN_HEADERS_PATH}/include/vulkan")
+		message( STATUS "Vulkan-Headers is not found in \"${VTC_EXTERNAL_VULKAN_HEADERS_PATH}\"" )
+		set( VTC_EXTERNAL_VULKAN_HEADERS_PATH "${VTC_EXTERNALS_PATH}/Vulkan-Headers" CACHE PATH "" FORCE )
+		set( VTC_VULKAN_HEADERS_REPOSITORY "https://github.com/KhronosGroup/Vulkan-Headers.git" )
+	else ()
+		set( VTC_VULKAN_HEADERS_REPOSITORY "" )
+	endif ()
 
 	ExternalProject_Add( "Extern.Vulkan-Headers"
         LIST_SEPARATOR		"${VTC_LIST_SEPARATOR}"
 		# download
-		GIT_REPOSITORY		https://github.com/KhronosGroup/Vulkan-Headers.git
+		GIT_REPOSITORY		${VTC_VULKAN_HEADERS_REPOSITORY}
 		GIT_TAG				master
 		EXCLUDE_FROM_ALL	1
 		LOG_DOWNLOAD		1
@@ -15,7 +25,7 @@ if (TRUE)
 		PATCH_COMMAND		""
 		UPDATE_DISCONNECTED	1
 		# configure
-        SOURCE_DIR			"${VTC_EXTERNALS_PATH}/Vulkan-Headers"
+        SOURCE_DIR			"${VTC_EXTERNAL_VULKAN_HEADERS_PATH}"
 		CMAKE_GENERATOR		"${CMAKE_GENERATOR}"
 		CMAKE_GENERATOR_TOOLSET	"${CMAKE_GENERATOR_TOOLSET}"
         CMAKE_ARGS			"-DCMAKE_CONFIGURATION_TYPES=${VTC_EXTERNAL_CONFIGURATION_TYPES}"
@@ -26,7 +36,7 @@ if (TRUE)
                             ${VTC_BUILD_TARGET_FLAGS}
 		LOG_CONFIGURE 		1
 		# build
-		BINARY_DIR			"${CMAKE_BINARY_DIR}/build-Vulkan-Headers"
+		BINARY_DIR			"${CMAKE_BINARY_DIR}/build2-Vulkan-Headers"
 		BUILD_COMMAND		"${CMAKE_COMMAND}"
 							--build .
 							--target ALL_BUILD
@@ -51,12 +61,22 @@ endif ()
 # Vulkan-Loader
 if (TRUE)
     set( VULKAN_LOADER_INSTALL_DIR "${VTC_EXTERNAL_INSTALL_DIR}/Vulkan-Loader" CACHE INTERNAL "" FORCE )
+	set( VTC_EXTERNAL_VULKAN_LOADER_PATH "" CACHE PATH "path to Vulkan-Loader source" )
+	
+	# reset to default
+	if (NOT EXISTS "${VTC_EXTERNAL_VULKAN_LOADER_PATH}/loader/loader.h")
+		message( STATUS "Vulkan-Loader is not found in \"${VTC_EXTERNAL_VULKAN_LOADER_PATH}\"" )
+		set( VTC_EXTERNAL_VULKAN_LOADER_PATH "${VTC_EXTERNALS_PATH}/Vulkan-Loader" CACHE PATH "" FORCE )
+		set( VTC_VULKAN_LOADER_REPOSITORY "https://github.com/KhronosGroup/Vulkan-Loader.git" )
+	else ()
+		set( VTC_VULKAN_LOADER_REPOSITORY "" )
+	endif ()
 
 	ExternalProject_Add( "Extern.Vulkan-Loader"
         LIST_SEPARATOR		"${VTC_LIST_SEPARATOR}"
 		DEPENDS				"Extern.Vulkan-Headers"
 		# download
-		GIT_REPOSITORY		https://github.com/KhronosGroup/Vulkan-Loader.git
+		GIT_REPOSITORY		${VTC_VULKAN_LOADER_REPOSITORY}
 		GIT_TAG				master
 		EXCLUDE_FROM_ALL	1
 		LOG_DOWNLOAD		1
@@ -64,7 +84,7 @@ if (TRUE)
 		PATCH_COMMAND		""
 		UPDATE_DISCONNECTED	1
 		# configure
-        SOURCE_DIR			"${VTC_EXTERNALS_PATH}/Vulkan-Loader"
+        SOURCE_DIR			"${VTC_EXTERNAL_VULKAN_LOADER_PATH}"
 		CMAKE_GENERATOR		"${CMAKE_GENERATOR}"
 		CMAKE_GENERATOR_TOOLSET	"${CMAKE_GENERATOR_TOOLSET}"
         CMAKE_ARGS			"-DCMAKE_CONFIGURATION_TYPES=${VTC_EXTERNAL_CONFIGURATION_TYPES}"
@@ -75,7 +95,7 @@ if (TRUE)
                             ${VTC_BUILD_TARGET_FLAGS}
 		LOG_CONFIGURE 		1
 		# build
-		BINARY_DIR			"${CMAKE_BINARY_DIR}/build-Vulkan-Loader"
+		BINARY_DIR			"${CMAKE_BINARY_DIR}/build2-Vulkan-Loader"
 		BUILD_COMMAND		"${CMAKE_COMMAND}"
 							--build .
 							--target ALL_BUILD
@@ -99,10 +119,25 @@ if (TRUE)
 	# SPIRV-Tools require Python 2.7 for building
 	find_package( PythonInterp 2.7 REQUIRED )
 	find_package( PythonLibs 2.7 REQUIRED )
+	
+	set( VTC_EXTERNAL_GLSLANG_PATH "" CACHE PATH "path to glslang source" )
+	
+	# reset to default
+	if (NOT EXISTS ${VTC_EXTERNAL_GLSLANG_PATH})
+		message( STATUS "glslang is not found in ${VTC_EXTERNAL_GLSLANG_PATH}" )
+		set( VTC_EXTERNAL_GLSLANG_PATH "${VTC_EXTERNALS_PATH}/glslang" CACHE PATH "" FORCE )
+		set( VTC_GLSLANG_REPOSITORY "https://github.com/KhronosGroup/glslang.git" )
+		set( VTC_SPIRVTOOLS_REPOSITORY "https://github.com/KhronosGroup/SPIRV-Tools.git" )
+		set( VTC_SPIRVHEADERS_REPOSITORY "https://github.com/KhronosGroup/SPIRV-Headers.git" )
+	else ()
+		set( VTC_GLSLANG_REPOSITORY "" )
+		set( VTC_SPIRVTOOLS_REPOSITORY "" )
+		set( VTC_SPIRVHEADERS_REPOSITORY "" )
+	endif ()
 
 	ExternalProject_Add( "Extern.glslang"
 		# download
-		GIT_REPOSITORY		https://github.com/KhronosGroup/glslang.git
+		GIT_REPOSITORY		${VTC_GLSLANG_REPOSITORY}
 		GIT_TAG				master
 		GIT_PROGRESS		1
 		EXCLUDE_FROM_ALL	1
@@ -112,7 +147,7 @@ if (TRUE)
 		UPDATE_DISCONNECTED	1
 		LOG_UPDATE			1
 		# configure
-        SOURCE_DIR            "${VTC_EXTERNALS_PATH}/glslang"
+        SOURCE_DIR			"${VTC_EXTERNAL_GLSLANG_PATH}"
 		CONFIGURE_COMMAND	""
 		# build
 		BINARY_DIR			""
@@ -124,7 +159,7 @@ if (TRUE)
 	ExternalProject_Add( "Extern.SPIRV-Tools"
 		DEPENDS				"Extern.glslang"
 		# download
-		GIT_REPOSITORY		https://github.com/KhronosGroup/SPIRV-Tools.git
+		GIT_REPOSITORY		${VTC_SPIRVTOOLS_REPOSITORY}
 		GIT_TAG				master
 		GIT_PROGRESS		1
 		EXCLUDE_FROM_ALL	1
@@ -134,7 +169,7 @@ if (TRUE)
 		UPDATE_DISCONNECTED	1
 		LOG_UPDATE			1
 		# configure
-        SOURCE_DIR            "${VTC_EXTERNALS_PATH}/glslang/External/SPIRV-Tools"
+        SOURCE_DIR			"${VTC_EXTERNAL_GLSLANG_PATH}/External/SPIRV-Tools"
 		CONFIGURE_COMMAND	""
 		# build
 		BINARY_DIR			""
@@ -147,7 +182,7 @@ if (TRUE)
 		DEPENDS				"Extern.glslang"
 							"Extern.SPIRV-Tools"
 		# download
-		GIT_REPOSITORY		https://github.com/KhronosGroup/SPIRV-Headers.git
+		GIT_REPOSITORY		${VTC_SPIRVHEADERS_REPOSITORY}
 		GIT_TAG				master
 		GIT_PROGRESS		1
 		EXCLUDE_FROM_ALL	1
@@ -157,7 +192,7 @@ if (TRUE)
 		UPDATE_DISCONNECTED	1
 		LOG_UPDATE			1
 		# configure
-        SOURCE_DIR            "${VTC_EXTERNALS_PATH}/glslang/External/SPIRV-Tools/external/SPIRV-Headers"
+        SOURCE_DIR            "${VTC_EXTERNAL_GLSLANG_PATH}/External/SPIRV-Tools/external/SPIRV-Headers"
 		CONFIGURE_COMMAND	""
 		# build
 		BINARY_DIR			""
@@ -174,7 +209,7 @@ if (TRUE)
 							"Extern.SPIRV-Tools"
 							"Extern.SPIRV-Headers"
 		# configure
-        SOURCE_DIR          "${VTC_EXTERNALS_PATH}/glslang"
+        SOURCE_DIR          "${VTC_EXTERNAL_GLSLANG_PATH}"
 		CMAKE_GENERATOR		"${CMAKE_GENERATOR}"
 		CMAKE_GENERATOR_TOOLSET	"${CMAKE_GENERATOR_TOOLSET}"
         CMAKE_ARGS            "-DCMAKE_CONFIGURATION_TYPES=${VTC_EXTERNAL_CONFIGURATION_TYPES}"
@@ -196,7 +231,7 @@ if (TRUE)
                             ${VTC_BUILD_TARGET_FLAGS}
 		LOG_CONFIGURE 		1
 		# build
-		BINARY_DIR			"${CMAKE_BINARY_DIR}/build-glslang2"
+		BINARY_DIR			"${CMAKE_BINARY_DIR}/build2-glslang"
 		BUILD_COMMAND		"${CMAKE_COMMAND}"
 							--build .
 							--target ALL_BUILD
@@ -238,13 +273,23 @@ endif ()
 # Vulkan-ValidationLayers
 if (TRUE)
     set( VULKAN_VALIDATIONLAYERS_INSTALL_DIR "${VTC_EXTERNAL_INSTALL_DIR}/Vulkan-ValidationLayers" CACHE INTERNAL "" FORCE )
+	set( VTC_EXTERNAL_VULKAN_VALIDATIONLAYERS_PATH "" CACHE PATH "path to Vulkan-ValidationLayers source" )
+	
+	# reset to default
+	if (NOT EXISTS "${VTC_EXTERNAL_VULKAN_VALIDATIONLAYERS_PATH}/layers/core_validation.h")
+		message( STATUS "Vulkan-ValidationLayers is not found in \"${VTC_EXTERNAL_VULKAN_VALIDATIONLAYERS_PATH}\"" )
+		set( VTC_EXTERNAL_VULKAN_VALIDATIONLAYERS_PATH "${VTC_EXTERNALS_PATH}/Vulkan-ValidationLayers" CACHE PATH "" FORCE )
+		set( VTC_VULKAN_VALIDATIONLAYERS_REPOSITORY "https://github.com/KhronosGroup/Vulkan-ValidationLayers.git" )
+	else ()
+		set( VTC_VULKAN_VALIDATIONLAYERS_REPOSITORY "" )
+	endif ()
 
 	ExternalProject_Add( "Extern.Vulkan-ValidationLayers"
         LIST_SEPARATOR      "${VTC_LIST_SEPARATOR}"
 		DEPENDS				"Extern.Vulkan-Loader"
 							"Extern.glslang-main"
 		# download
-		GIT_REPOSITORY		https://github.com/KhronosGroup/Vulkan-ValidationLayers.git
+		GIT_REPOSITORY		${VTC_VULKAN_VALIDATIONLAYERS_REPOSITORY}
 		GIT_TAG				master
 		GIT_PROGRESS		1
 		EXCLUDE_FROM_ALL	1
@@ -253,7 +298,7 @@ if (TRUE)
 		PATCH_COMMAND		""
 		UPDATE_DISCONNECTED	1
 		# configure
-        SOURCE_DIR          "${VTC_EXTERNALS_PATH}/Vulkan-ValidationLayers"
+        SOURCE_DIR          "${VTC_EXTERNAL_VULKAN_VALIDATIONLAYERS_PATH}"
 		CMAKE_GENERATOR		"${CMAKE_GENERATOR}"
 		CMAKE_GENERATOR_TOOLSET	"${CMAKE_GENERATOR_TOOLSET}"
         CMAKE_ARGS            "-DCMAKE_CONFIGURATION_TYPES=${VTC_EXTERNAL_CONFIGURATION_TYPES}"
@@ -264,7 +309,7 @@ if (TRUE)
                             ${VTC_BUILD_TARGET_FLAGS}
 		LOG_CONFIGURE 		1
 		# build
-		BINARY_DIR			"${CMAKE_BINARY_DIR}/build-Vulkan-ValidationLayers"
+		BINARY_DIR			"${CMAKE_BINARY_DIR}/build2-Vulkan-ValidationLayers"
 		BUILD_COMMAND		"${CMAKE_COMMAND}"
 							--build .
 							--target ALL_BUILD
@@ -288,12 +333,22 @@ endif ()
 # Vulkan-Tools
 if (TRUE)
     set( VULKAN_TOOLS_INSTALL_DIR "${VTC_EXTERNAL_INSTALL_DIR}/Vulkan-Tools" CACHE INTERNAL "" FORCE )
+	set( VTC_EXTERNAL_VULKAN_TOOLS_PATH "" CACHE PATH "path to Vulkan-Tools source" )
+	
+	# reset to default
+	if (NOT EXISTS "${VTC_EXTERNAL_VULKAN_TOOLS_PATH}/CMakeLists.txt")
+		message( STATUS "Vulkan-Tools is not found in \"${VTC_EXTERNAL_VULKAN_TOOLS_PATH}\"" )
+		set( VTC_EXTERNAL_VULKAN_TOOLS_PATH "${VTC_EXTERNALS_PATH}/Vulkan-Tools" CACHE PATH "" FORCE )
+		set( VTC_VULKAN_TOOLS_REPOSITORY "https://github.com/KhronosGroup/Vulkan-Tools.git" )
+	else ()
+		set( VTC_VULKAN_TOOLS_REPOSITORY "" )
+	endif ()
 
 	ExternalProject_Add( "Extern.Vulkan-Tools"
         LIST_SEPARATOR      "${VTC_LIST_SEPARATOR}"
 		DEPENDS				"Extern.Vulkan-ValidationLayers"
 		# download
-		GIT_REPOSITORY		https://github.com/KhronosGroup/Vulkan-Tools.git
+		GIT_REPOSITORY		${VTC_VULKAN_TOOLS_REPOSITORY}
 		GIT_TAG				master
 		GIT_PROGRESS		1
 		EXCLUDE_FROM_ALL	1
@@ -302,7 +357,7 @@ if (TRUE)
 		PATCH_COMMAND		""
 		UPDATE_DISCONNECTED	1
 		# configure
-        SOURCE_DIR          "${VTC_EXTERNALS_PATH}/Vulkan-Tools"
+        SOURCE_DIR          "${VTC_EXTERNAL_VULKAN_TOOLS_PATH}"
 		CMAKE_GENERATOR		"${CMAKE_GENERATOR}"
 		CMAKE_GENERATOR_TOOLSET	"${CMAKE_GENERATOR_TOOLSET}"
         CMAKE_ARGS            "-DCMAKE_CONFIGURATION_TYPES=${VTC_EXTERNAL_CONFIGURATION_TYPES}"
@@ -313,7 +368,7 @@ if (TRUE)
                             ${VTC_BUILD_TARGET_FLAGS}
 		LOG_CONFIGURE 		1
 		# build
-		BINARY_DIR			"${CMAKE_BINARY_DIR}/build-Vulkan-Tools"
+		BINARY_DIR			"${CMAKE_BINARY_DIR}/build2-Vulkan-Tools"
 		BUILD_COMMAND		"${CMAKE_COMMAND}"
 							--build .
 							--target ALL_BUILD
@@ -332,15 +387,25 @@ if (TRUE)
 endif ()
 
 
-# LunarG VulkanTools
+# LunarG-VulkanTools
 if (TRUE)
     set( LUNARG_VULKANTOOLS_INSTALL_DIR "${VTC_EXTERNAL_INSTALL_DIR}/LunarG-VulkanTools" CACHE INTERNAL "" FORCE )
+	set( VTC_EXTERNAL_LUNARG_VULKANTOOLS_PATH "" CACHE PATH "path to LunarG-VulkanTools source" )
+	
+	# reset to default
+	if (NOT EXISTS "${VTC_EXTERNAL_LUNARG_VULKANTOOLS_PATH}/CMakeLists.txt")
+		message( STATUS "LunarG-VulkanTools is not found in \"${VTC_EXTERNAL_LUNARG_VULKANTOOLS_PATH}\"" )
+		set( VTC_EXTERNAL_LUNARG_VULKANTOOLS_PATH "${VTC_EXTERNALS_PATH}/LunarG-VulkanTools" CACHE PATH "" FORCE )
+		set( VTC_LUNARG_VULKANTOOLS_REPOSITORY "https://github.com/LunarG/VulkanTools.git" )
+	else ()
+		set( VTC_LUNARG_VULKANTOOLS_REPOSITORY "" )
+	endif ()
 
     set( JSONCPP_INSTALL_DIR "${VTC_EXTERNAL_INSTALL_DIR}/jsoncpp" CACHE INTERNAL "" FORCE )
     set( VTC_BUILD_TARGET_FLAGS "${VTC_BUILD_TARGET_FLAGS}" "-DJSONCPP_INSTALL_DIR=${JSONCPP_INSTALL_DIR}" )
 
 	if (WIN32)
-        set( LUNARG_VULKANTOOLS_UPDATE_EXTERNAL_SOURCES "cmd //C \"${VTC_EXTERNALS_PATH}/LunarG-VulkanTools/update_external_sources.bat\"" )
+        set( LUNARG_VULKANTOOLS_UPDATE_EXTERNAL_SOURCES "cmd //C \"${VTC_EXTERNAL_LUNARG_VULKANTOOLS_PATH}/update_external_sources.bat\"" )
 	else ()
 		set( LUNARG_VULKANTOOLS_UPDATE_EXTERNAL_SOURCES "" )	# TODO
 	endif ()
@@ -349,7 +414,7 @@ if (TRUE)
         LIST_SEPARATOR		"${VTC_LIST_SEPARATOR}"
 		DEPENDS				"Extern.Vulkan-ValidationLayers"
 		# download
-		GIT_REPOSITORY		https://github.com/LunarG/VulkanTools.git
+		GIT_REPOSITORY		${VTC_LUNARG_VULKANTOOLS_REPOSITORY}
 		GIT_TAG				master
 		GIT_PROGRESS		1
 		EXCLUDE_FROM_ALL	1
@@ -358,7 +423,7 @@ if (TRUE)
 		PATCH_COMMAND		${LUNARG_VULKANTOOLS_UPDATE_EXTERNAL_SOURCES}
 		UPDATE_DISCONNECTED	1
 		# configure
-        SOURCE_DIR			"${VTC_EXTERNALS_PATH}/LunarG-VulkanTools"
+        SOURCE_DIR			"${VTC_EXTERNAL_LUNARG_VULKANTOOLS_PATH}"
 		CMAKE_GENERATOR		"${CMAKE_GENERATOR}"
 		CMAKE_GENERATOR_TOOLSET	"${CMAKE_GENERATOR_TOOLSET}"
         CMAKE_ARGS            "-DCMAKE_CONFIGURATION_TYPES=${VTC_EXTERNAL_CONFIGURATION_TYPES}"
@@ -376,7 +441,7 @@ if (TRUE)
                             ${VTC_BUILD_TARGET_FLAGS}
 		LOG_CONFIGURE 		1
 		# build
-		BINARY_DIR			"${CMAKE_BINARY_DIR}/build-LunarG-VulkanTools"
+		BINARY_DIR			"${CMAKE_BINARY_DIR}/build2-LunarG-VulkanTools"
 		BUILD_COMMAND		"${CMAKE_COMMAND}"
 							--build .
 							--target ALL_BUILD
@@ -394,9 +459,9 @@ if (TRUE)
     set( VTC_BUILD_TARGET_FLAGS "${VTC_BUILD_TARGET_FLAGS}" "-DLUNARG_VULKANTOOLS_INSTALL_DIR=${LUNARG_VULKANTOOLS_INSTALL_DIR}" )
 	
     set( VTC_CONVERTER_INCLUDE_DIRS "${VTC_CONVERTER_INCLUDE_DIRS}"
-                                    "${VTC_EXTERNALS_PATH}/LunarG-VulkanTools/vktrace/vktrace_common"
-                                    "${VTC_EXTERNALS_PATH}/LunarG-VulkanTools/vktrace/vktrace_replay"
-									"${CMAKE_BINARY_DIR}/build-LunarG-VulkanTools/vktrace" )
+                                    "${VTC_EXTERNAL_LUNARG_VULKANTOOLS_PATH}/vktrace/vktrace_common"
+                                    "${VTC_EXTERNAL_LUNARG_VULKANTOOLS_PATH}/vktrace/vktrace_replay"
+									"${CMAKE_BINARY_DIR}/build2-LunarG-VulkanTools/vktrace" )
 
     set( VTC_CONVERTER_DEPENDENCIES "${VTC_CONVERTER_DEPENDENCIES}" "Extern.LunarG-VulkanTools" )
 endif ()

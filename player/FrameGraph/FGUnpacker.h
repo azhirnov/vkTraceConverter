@@ -55,7 +55,7 @@ namespace VTPlayer
 */	
 	inline FGUnpacker::~FGUnpacker ()
 	{
-		ASSERT( _offset == _size );
+		CHECK( _offset == _size );
 	}
 
 /*

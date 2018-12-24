@@ -1,6 +1,6 @@
 # find and attach FrameGraph
 
-set( VTC_FRAMEGRAPH_PATH "${CMAKE_SOURCE_DIR}/external/FrameGraph" CACHE PATH "Path to FrameGraph library" )
+set( VTC_FRAMEGRAPH_PATH "external/FrameGraph" CACHE PATH "Path to FrameGraph library" )
 message( STATUS "VTC_FRAMEGRAPH_PATH: ${VTC_FRAMEGRAPH_PATH}" )
 
 if (NOT EXISTS "${VTC_FRAMEGRAPH_PATH}/framegraph/VFG.h")
@@ -26,8 +26,13 @@ add_subdirectory( "${VTC_FRAMEGRAPH_PATH}" "build-FrameGraph" )
 
 set_property( TARGET "FrameGraph" PROPERTY FOLDER "External" )
 set_property( TARGET "STL" PROPERTY FOLDER "External" )
+set_property( TARGET "PipelineCompiler" PROPERTY FOLDER "External" )
+set_property( TARGET "VulkanLoader" PROPERTY FOLDER "External" )
+set_property( TARGET "Framework" PROPERTY FOLDER "External" )
+set_property( TARGET "OfflineCompiler" PROPERTY FOLDER "External" )
+set_property( TARGET "GraphViz" PROPERTY FOLDER "External" )
 
-set( VTC_CONVERTER_LIBRARIES "${VTC_CONVERTER_LIBRARIES}" "STL" "VulkanLoader" "FrameGraph" )
+set( VTC_CONVERTER_LIBRARIES "${VTC_CONVERTER_LIBRARIES}" "STL" "VulkanLoader" "FrameGraph" "PipelineCompiler" )
 
 set( VTC_PLAYER_INCLUDE_DIRS "${VTC_PLAYER_INCLUDE_DIRS}" "${VTC_FRAMEGRAPH_PATH}" "${VTC_FRAMEGRAPH_PATH}/extensions" )
-set( VTC_PLAYER_LIBRARIES "${VTC_PLAYER_LIBRARIES}" "STL" "VulkanLoader" "Framework" "FrameGraph" "PipelineCompiler" )
+set( VTC_PLAYER_LIBRARIES "${VTC_PLAYER_LIBRARIES}" "STL" "VulkanLoader" "Framework" "FrameGraph" "PipelineCompiler" "GraphViz" )

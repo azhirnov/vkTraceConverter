@@ -21,6 +21,14 @@ namespace VTC
 			ImageSubresource (const VkImageSubresource &subres) : VkImageSubresource{subres}
 			{}
 
+			explicit ImageSubresource (const VkImageSubresourceLayers &subres, uint layerOffset = 0)
+			{
+				ASSERT( layerOffset < subres.layerCount );
+				aspectMask	= subres.aspectMask;
+				mipLevel	= subres.mipLevel;
+				arrayLayer	= subres.baseArrayLayer + layerOffset;
+			}
+
 			ND_ bool operator == (const ImageSubresource &rhs) const {
 				return	aspectMask	== rhs.aspectMask	and
 						mipLevel	== rhs.mipLevel		and

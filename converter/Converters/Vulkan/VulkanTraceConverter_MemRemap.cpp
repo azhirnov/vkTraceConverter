@@ -216,7 +216,7 @@ namespace VTC
 			for (auto& block : transfer->blocks)
 			{
 				DataID	data_id = _RequestData( block.fileOffset, block.dataSize, frameId );
-				CHECK_ERR( data_id != ~DataID(0) );
+				CHECK_ERR( data_id != UMax );
 
 				packer.Begin( EPacketID::VLoadDataToMappedMemory );
 				packer << mem_id;
@@ -433,6 +433,7 @@ namespace VTC
 */
 	bool VulkanTraceConverter::_RemapFlushMemoryRanges (const TraceRange::Iterator &pos, FrameID frameId, INOUT TracePacker &packer)
 	{
+#	ifdef VTC_DETECT_RESOURCE_TRANSFER
 		auto&	packet = pos.Cast< packet_vkFlushMappedMemoryRanges >();
 
 		for (uint i = 0; i < packet.memoryRangeCount; ++i)
@@ -466,7 +467,7 @@ namespace VTC
 					}
 
 					DataID	data_id = _RequestData( res.fileOffset, res.dataSize, frameId );
-					CHECK_ERR( data_id != ~DataID(0) );
+					CHECK_ERR( data_id != UMax );
 
 					packer.Begin( EPacketID::VLoadDataToBuffer );
 					packer << packet.device;
@@ -494,7 +495,7 @@ namespace VTC
 					}
 
 					DataID	data_id = _RequestData( res.fileOffset, res.dataSize, frameId );
-					CHECK_ERR( data_id != ~DataID(0) );
+					CHECK_ERR( data_id != UMax );
 
 					packer.Begin( EPacketID::VLoadDataToImage );
 					packer << packet.device;
@@ -507,6 +508,9 @@ namespace VTC
 			}
 		}
 		return true;
+#	else
+		return false;
+#	endif
 	}
 
 /*

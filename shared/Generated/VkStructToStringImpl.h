@@ -1081,6 +1081,14 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_PROPERTIES_EXT : {
+			VkPhysicalDeviceFragmentDensityMapPropertiesEXT const *  obj = BitCast<VkPhysicalDeviceFragmentDensityMapPropertiesEXT const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceFragmentDensityMapProperties"s, "properties"s );
+			result << indent << "VkPhysicalDeviceFragmentDensityMapPropertiesEXT  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceFragmentDensityMapPropertiesEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES : {
 			VkPhysicalDeviceSamplerYcbcrConversionFeatures const *  obj = BitCast<VkPhysicalDeviceSamplerYcbcrConversionFeatures const *>( ptr );
 			const String  name = nameSer.MakeUnique( obj, "physicalDeviceSamplerYcbcrConversionFeatures"s, "features"s );
@@ -1381,6 +1389,22 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT : {
+			VkPhysicalDevicePCIBusInfoPropertiesEXT const *  obj = BitCast<VkPhysicalDevicePCIBusInfoPropertiesEXT const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDevicePCIBusInfoProperties"s, "info"s );
+			result << indent << "VkPhysicalDevicePCIBusInfoPropertiesEXT  " << name << " = {};\n";
+			Serialize2_VkPhysicalDevicePCIBusInfoPropertiesEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT16_INT8_FEATURES_KHR : {
+			VkPhysicalDeviceFloat16Int8FeaturesKHR const *  obj = BitCast<VkPhysicalDeviceFloat16Int8FeaturesKHR const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceFloat16Int8Features"s, "features"s );
+			result << indent << "VkPhysicalDeviceFloat16Int8FeaturesKHR  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceFloat16Int8FeaturesKHR( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_ADVANCED_STATE_CREATE_INFO_EXT : {
 			VkPipelineColorBlendAdvancedStateCreateInfoEXT const *  obj = BitCast<VkPipelineColorBlendAdvancedStateCreateInfoEXT const *>( ptr );
 			const String  name = nameSer.MakeUnique( obj, "pipelineColorBlendAdvancedStateCreateInfo"s, "createInfo"s );
@@ -1574,6 +1598,14 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			const String  name = nameSer.MakeUnique( obj, "physicalDeviceDriverProperties"s, "properties"s );
 			result << indent << "VkPhysicalDeviceDriverPropertiesKHR  " << name << " = {};\n";
 			Serialize2_VkPhysicalDeviceDriverPropertiesKHR( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT_CONTROLS_PROPERTIES_KHR : {
+			VkPhysicalDeviceFloatControlsPropertiesKHR const *  obj = BitCast<VkPhysicalDeviceFloatControlsPropertiesKHR const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceFloatControlsProperties"s, "properties"s );
+			result << indent << "VkPhysicalDeviceFloatControlsPropertiesKHR  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceFloatControlsPropertiesKHR( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
@@ -2045,6 +2077,14 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_RENDER_PASS_FRAGMENT_DENSITY_MAP_CREATE_INFO_EXT : {
+			VkRenderPassFragmentDensityMapCreateInfoEXT const *  obj = BitCast<VkRenderPassFragmentDensityMapCreateInfoEXT const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "renderPassFragmentDensityMapCreateInfo"s, "createInfo"s );
+			result << indent << "VkRenderPassFragmentDensityMapCreateInfoEXT  " << name << " = {};\n";
+			Serialize2_VkRenderPassFragmentDensityMapCreateInfoEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NV : {
 			VkAccelerationStructureMemoryRequirementsInfoNV const *  obj = BitCast<VkAccelerationStructureMemoryRequirementsInfoNV const *>( ptr );
 			const String  name = nameSer.MakeUnique( obj, "accelerationStructureMemoryRequirementsInfoNV"s, "info"s );
@@ -2167,11 +2207,27 @@ ND_ String  SerializeStruct (const VkBaseInStructure *ptr, NameSerializer &nameS
 			break;
 		}
 
-		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT : {
-			VkPhysicalDevicePCIBusInfoPropertiesEXT const *  obj = BitCast<VkPhysicalDevicePCIBusInfoPropertiesEXT const *>( ptr );
-			const String  name = nameSer.MakeUnique( obj, "physicalDevicePCIBusInfoProperties"s, "info"s );
-			result << indent << "VkPhysicalDevicePCIBusInfoPropertiesEXT  " << name << " = {};\n";
-			Serialize2_VkPhysicalDevicePCIBusInfoPropertiesEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_FEATURES_EXT : {
+			VkPhysicalDeviceFragmentDensityMapFeaturesEXT const *  obj = BitCast<VkPhysicalDeviceFragmentDensityMapFeaturesEXT const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceFragmentDensityMapFeatures"s, "features"s );
+			result << indent << "VkPhysicalDeviceFragmentDensityMapFeaturesEXT  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceFragmentDensityMapFeaturesEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT : {
+			VkPhysicalDeviceScalarBlockLayoutFeaturesEXT const *  obj = BitCast<VkPhysicalDeviceScalarBlockLayoutFeaturesEXT const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "physicalDeviceScalarBlockLayoutFeatures"s, "features"s );
+			result << indent << "VkPhysicalDeviceScalarBlockLayoutFeaturesEXT  " << name << " = {};\n";
+			Serialize2_VkPhysicalDeviceScalarBlockLayoutFeaturesEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
+			break;
+		}
+
+		case VK_STRUCTURE_TYPE_IMAGE_STENCIL_USAGE_CREATE_INFO_EXT : {
+			VkImageStencilUsageCreateInfoEXT const *  obj = BitCast<VkImageStencilUsageCreateInfoEXT const *>( ptr );
+			const String  name = nameSer.MakeUnique( obj, "imageStencilUsageCreateInfo"s, "createInfo"s );
+			result << indent << "VkImageStencilUsageCreateInfoEXT  " << name << " = {};\n";
+			Serialize2_VkImageStencilUsageCreateInfoEXT( obj, name, nameSer, remapper, indent, INOUT result, INOUT before );
 			break;
 		}
 
@@ -5748,6 +5804,17 @@ void  Serialize2_VkImagePlaneMemoryRequirementsInfo (const VkImagePlaneMemoryReq
 	result << indent << name << ".planeAspect = " << Serialize_VkImageAspectFlagBits( obj->planeAspect ) << ";\n";
 }
 
+void  Serialize2_VkPhysicalDeviceFragmentDensityMapPropertiesEXT (const VkPhysicalDeviceFragmentDensityMapPropertiesEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_PROPERTIES_EXT;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_PROPERTIES_EXT );
+	Serialize2_VkExtent2D( &obj->minFragmentDensityTexelSize, String(name) << ".minFragmentDensityTexelSize", nameSer, remapper, indent, INOUT result, INOUT before );
+	Serialize2_VkExtent2D( &obj->maxFragmentDensityTexelSize, String(name) << ".maxFragmentDensityTexelSize", nameSer, remapper, indent, INOUT result, INOUT before );
+	result << indent << name << ".fragmentDensityInvocations = " << BoolToString(obj->fragmentDensityInvocations) << ";\n";
+}
+
 void  Serialize2_VkPhysicalDeviceSamplerYcbcrConversionFeatures (const VkPhysicalDeviceSamplerYcbcrConversionFeatures *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
@@ -6414,6 +6481,28 @@ void  Serialize2_VkPhysicalDevicePushDescriptorPropertiesKHR (const VkPhysicalDe
 	result << indent << name << ".maxPushDescriptors = " << IntToString(obj->maxPushDescriptors) << ";\n";
 }
 
+void  Serialize2_VkPhysicalDevicePCIBusInfoPropertiesEXT (const VkPhysicalDevicePCIBusInfoPropertiesEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT );
+	result << indent << name << ".pciDomain = " << IntToString(obj->pciDomain) << ";\n";
+	result << indent << name << ".pciBus = " << IntToString(obj->pciBus) << ";\n";
+	result << indent << name << ".pciDevice = " << IntToString(obj->pciDevice) << ";\n";
+	result << indent << name << ".pciFunction = " << IntToString(obj->pciFunction) << ";\n";
+}
+
+void  Serialize2_VkPhysicalDeviceFloat16Int8FeaturesKHR (const VkPhysicalDeviceFloat16Int8FeaturesKHR *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT16_INT8_FEATURES_KHR;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT16_INT8_FEATURES_KHR );
+	result << indent << name << ".shaderFloat16 = " << BoolToString(obj->shaderFloat16) << ";\n";
+	result << indent << name << ".shaderInt8 = " << BoolToString(obj->shaderInt8) << ";\n";
+}
+
 ND_ String  Serialize_VkRectLayerKHR (const VkRectLayerKHR *obj, NameSerializer &nameSer, ResRemapper &remapper, StringView indent)
 {
 	String	result, before;
@@ -6836,6 +6925,31 @@ void  Serialize2_VkPhysicalDeviceDriverPropertiesKHR (const VkPhysicalDeviceDriv
 	result << indent << name << ".driverName = " << '"' << obj->driverName << '"' << ";\n";
 	result << indent << name << ".driverInfo = " << '"' << obj->driverInfo << '"' << ";\n";
 	Serialize2_VkConformanceVersionKHR( &obj->conformanceVersion, String(name) << ".conformanceVersion", nameSer, remapper, indent, INOUT result, INOUT before );
+}
+
+void  Serialize2_VkPhysicalDeviceFloatControlsPropertiesKHR (const VkPhysicalDeviceFloatControlsPropertiesKHR *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT_CONTROLS_PROPERTIES_KHR;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT_CONTROLS_PROPERTIES_KHR );
+	result << indent << name << ".separateDenormSettings = " << BoolToString(obj->separateDenormSettings) << ";\n";
+	result << indent << name << ".separateRoundingModeSettings = " << BoolToString(obj->separateRoundingModeSettings) << ";\n";
+	result << indent << name << ".shaderSignedZeroInfNanPreserveFloat16 = " << BoolToString(obj->shaderSignedZeroInfNanPreserveFloat16) << ";\n";
+	result << indent << name << ".shaderSignedZeroInfNanPreserveFloat32 = " << BoolToString(obj->shaderSignedZeroInfNanPreserveFloat32) << ";\n";
+	result << indent << name << ".shaderSignedZeroInfNanPreserveFloat64 = " << BoolToString(obj->shaderSignedZeroInfNanPreserveFloat64) << ";\n";
+	result << indent << name << ".shaderDenormPreserveFloat16 = " << BoolToString(obj->shaderDenormPreserveFloat16) << ";\n";
+	result << indent << name << ".shaderDenormPreserveFloat32 = " << BoolToString(obj->shaderDenormPreserveFloat32) << ";\n";
+	result << indent << name << ".shaderDenormPreserveFloat64 = " << BoolToString(obj->shaderDenormPreserveFloat64) << ";\n";
+	result << indent << name << ".shaderDenormFlushToZeroFloat16 = " << BoolToString(obj->shaderDenormFlushToZeroFloat16) << ";\n";
+	result << indent << name << ".shaderDenormFlushToZeroFloat32 = " << BoolToString(obj->shaderDenormFlushToZeroFloat32) << ";\n";
+	result << indent << name << ".shaderDenormFlushToZeroFloat64 = " << BoolToString(obj->shaderDenormFlushToZeroFloat64) << ";\n";
+	result << indent << name << ".shaderRoundingModeRTEFloat16 = " << BoolToString(obj->shaderRoundingModeRTEFloat16) << ";\n";
+	result << indent << name << ".shaderRoundingModeRTEFloat32 = " << BoolToString(obj->shaderRoundingModeRTEFloat32) << ";\n";
+	result << indent << name << ".shaderRoundingModeRTEFloat64 = " << BoolToString(obj->shaderRoundingModeRTEFloat64) << ";\n";
+	result << indent << name << ".shaderRoundingModeRTZFloat16 = " << BoolToString(obj->shaderRoundingModeRTZFloat16) << ";\n";
+	result << indent << name << ".shaderRoundingModeRTZFloat32 = " << BoolToString(obj->shaderRoundingModeRTZFloat32) << ";\n";
+	result << indent << name << ".shaderRoundingModeRTZFloat64 = " << BoolToString(obj->shaderRoundingModeRTZFloat64) << ";\n";
 }
 
 void  Serialize2_VkPhysicalDeviceVulkanMemoryModelFeaturesKHR (const VkPhysicalDeviceVulkanMemoryModelFeaturesKHR *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
@@ -7905,6 +8019,15 @@ void  Serialize2_VkWriteDescriptorSetAccelerationStructureNV (const VkWriteDescr
 	result << indent << name << ".pAccelerationStructures = " << nameSer.Get( &obj->pAccelerationStructures ) << ";\n";
 }
 
+void  Serialize2_VkRenderPassFragmentDensityMapCreateInfoEXT (const VkRenderPassFragmentDensityMapCreateInfoEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_RENDER_PASS_FRAGMENT_DENSITY_MAP_CREATE_INFO_EXT;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_RENDER_PASS_FRAGMENT_DENSITY_MAP_CREATE_INFO_EXT );
+	Serialize2_VkAttachmentReference( &obj->fragmentDensityMapAttachment, String(name) << ".fragmentDensityMapAttachment", nameSer, remapper, indent, INOUT result, INOUT before );
+}
+
 void  Serialize2_VkAccelerationStructureMemoryRequirementsInfoNV (const VkAccelerationStructureMemoryRequirementsInfoNV *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
@@ -8089,16 +8212,33 @@ void  Serialize2_VkPhysicalDeviceShaderImageFootprintFeaturesNV (const VkPhysica
 	result << indent << name << ".imageFootprint = " << BoolToString(obj->imageFootprint) << ";\n";
 }
 
-void  Serialize2_VkPhysicalDevicePCIBusInfoPropertiesEXT (const VkPhysicalDevicePCIBusInfoPropertiesEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+void  Serialize2_VkPhysicalDeviceFragmentDensityMapFeaturesEXT (const VkPhysicalDeviceFragmentDensityMapFeaturesEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
 {
 	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
 	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
-	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT;\n";
-	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT );
-	result << indent << name << ".pciDomain = " << IntToString(obj->pciDomain) << ";\n";
-	result << indent << name << ".pciBus = " << IntToString(obj->pciBus) << ";\n";
-	result << indent << name << ".pciDevice = " << IntToString(obj->pciDevice) << ";\n";
-	result << indent << name << ".pciFunction = " << IntToString(obj->pciFunction) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_FEATURES_EXT;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_FEATURES_EXT );
+	result << indent << name << ".fragmentDensityMap = " << BoolToString(obj->fragmentDensityMap) << ";\n";
+	result << indent << name << ".fragmentDensityMapDynamic = " << BoolToString(obj->fragmentDensityMapDynamic) << ";\n";
+	result << indent << name << ".fragmentDensityMapNonSubsampledImages = " << BoolToString(obj->fragmentDensityMapNonSubsampledImages) << ";\n";
+}
+
+void  Serialize2_VkPhysicalDeviceScalarBlockLayoutFeaturesEXT (const VkPhysicalDeviceScalarBlockLayoutFeaturesEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT );
+	result << indent << name << ".scalarBlockLayout = " << BoolToString(obj->scalarBlockLayout) << ";\n";
+}
+
+void  Serialize2_VkImageStencilUsageCreateInfoEXT (const VkImageStencilUsageCreateInfoEXT *obj, StringView name, NameSerializer &nameSer, ResRemapper &remapper, StringView indent, INOUT String &result, INOUT String &before)
+{
+	before << SerializeStruct( BitCast<VkBaseInStructure const *>(obj->pNext), nameSer, remapper, indent );
+	result << indent << name << ".pNext = " << nameSer.GetPtr( obj->pNext ) << ";\n";
+	result << indent << name << ".sType = VK_STRUCTURE_TYPE_IMAGE_STENCIL_USAGE_CREATE_INFO_EXT;\n";
+	ASSERT( obj->sType == VK_STRUCTURE_TYPE_IMAGE_STENCIL_USAGE_CREATE_INFO_EXT );
+	result << indent << name << ".stencilUsage = " << Serialize_VkImageUsageFlags( obj->stencilUsage ) << ";\n";
 }
 
 #ifdef VULKAN_WIN32_H_

@@ -22,7 +22,10 @@ namespace VTC
 			VkDeviceSize			offset	= 0;
 			VkDeviceSize			size	= 0;
 			TraceRange::Bookmark	pos;
+
+		#ifdef VTC_DETECT_MEMORY_ALIASING
 			bool					aliased	= false;	// 'true' if same memory range used for other resources
+		#endif
 		};
 
 		enum class EMemoryUsage
@@ -40,7 +43,7 @@ namespace VTC
 		{
 			ResourceID				id					= 0;
 			ResourceID				deviceId			= 0;
-			uint					memoryTypeIndex		= ~0u;
+			uint					memoryTypeIndex		= UMax;
 			VkMemoryPropertyFlags	propertyFlags		= 0;
 			VkDeviceSize			size				= 0;
 			ResourceID				dedicatedResource	= 0;	// image or buffer

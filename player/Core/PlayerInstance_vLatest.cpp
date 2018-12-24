@@ -153,7 +153,7 @@ namespace VTPlayer
 		CHECK_ERR( header.magic == TraceFileHeader::MagicNumber );
 		CHECK_ERR( header.pointerSize == sizeof(void*) );
 		CHECK_ERR( header.instructionBlockOffset == sizeof(header) );	// not supported
-		CHECK_ERR( header.dataBlockOffset == ~0ull );					// not supported
+		CHECK_ERR( header.dataBlockOffset == UMax );					// not supported
 
 		switch ( header.archiveType )
 		{

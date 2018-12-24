@@ -3,10 +3,7 @@
 #pragma once
 
 #include "Converters/FrameGraph/FrameGraphConverter.h"
-
-struct SpvReflectShaderModule;
-struct SpvReflectDescriptorSet;
-struct SpvReflectBlockVariable;
+#include "framegraph/Public/IPipelineCompiler.h"
 
 namespace VTC
 {
@@ -23,10 +20,9 @@ namespace VTC
 
 		struct ShaderDataInfo
 		{
-			DataID			dataId		= ~0u;
+			DataID			dataId		= UMax;
 			uint			dataSize	= 0;
 			uint			uid			= 0;
-			String			glslSource;
 		};
 
 		using ShaderDataCache_t		= HashMap< Array<uint>, ShaderDataInfo >;
@@ -46,6 +42,12 @@ namespace VTC
 			SpecConstants_t		specConstants;
 
 			ShaderStage () {}
+
+			ND_ bool  operator == (const ShaderStage &) const;
+		};
+		
+		struct ShaderStageHash {
+			ND_ HashVal  operator () (const ShaderStage &) const noexcept;
 		};
 		using ShaderStages_t	= FixedArray< ShaderStage, 8 >;
 
@@ -79,6 +81,9 @@ namespace VTC
 		struct FG_ComputePipeline
 		{
 			FG_PipelineLayout	layout;
+			ShaderStage			shader;
+			uint3				localGroupSize;
+			uint3				localSizeSpec	{ ~0u };
 
 			FG_ComputePipeline () {}
 
@@ -165,6 +170,8 @@ namespace VTC
 		PipelineLayouts_t		_pipelineLayouts;
 		DescriptorSetLayouts_t	_dsLayouts;
 
+		IPipelineCompilerPtr	_pplnCompiler;
+
 
 	// methods
 	public:
@@ -198,20 +205,19 @@ namespace VTC
 
 
 	private:
-		bool _ConvertGraphicsPipeline (OUT FG_GraphicsPipeline &, const VkGraphicsPipelineCreateInfo &) const;
-		bool _GetReflection (const Array<uint> &shader, INOUT FragmentOutputs_t &fragOutput, INOUT VertexAttribs_t &attribs, INOUT FG_PipelineLayout &layout) const;
-		bool _GetVertexInputReflection (const SpvReflectShaderModule &, INOUT VertexAttribs_t &) const;
-		bool _GetFragmentOutputReflection (const SpvReflectShaderModule &, INOUT FragmentOutputs_t &) const;
-		bool _GetDescriptorSetLayoutReflection (const SpvReflectDescriptorSet &, EShaderStages, INOUT FG_PipelineLayout &) const;
-		bool _GetPushConstantReflection (const SpvReflectBlockVariable &, EShaderStages, INOUT FG_PipelineLayout &) const;
+		bool _ConvertGraphicsPipeline (OUT FG_GraphicsPipeline &, const VkGraphicsPipelineCreateInfo &);
+		bool _GetShaderReflection (INOUT FG_GraphicsPipeline &, const VkGraphicsPipelineCreateInfo &);
 		bool _ConvertVertexInput (const VkGraphicsPipelineCreateInfo &, OUT VertexInputState &) const;
+		
+		bool _ConvertComputePipeline (OUT FG_ComputePipeline &, const VkComputePipelineCreateInfo &);
+
+		bool _GetShaderReflection (INOUT FG_ComputePipeline &, const VkComputePipelineCreateInfo &);
+		bool _UpdateDynamicOffsetIndices (INOUT FG_PipelineLayout &) const;
 
 		bool _PackShaderModule (const ShaderDataInfo &, INOUT TracePacker &) const;
 		bool _PackGraphicsPipeline (const FG_GraphicsPipeline &, RawGPipelineID, INOUT TracePacker &) const;
 		bool _PackComputePipeline (const FG_ComputePipeline &, RawCPipelineID, INOUT TracePacker &) const;
 		bool _PackPipelineLayout (const FG_PipelineLayout &layout, INOUT TracePacker &) const;
-
-		ND_ String  _ConvertToGLSL (const Array<uint> &) const;
 	};
 
 	

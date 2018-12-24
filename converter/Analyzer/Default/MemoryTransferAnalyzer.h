@@ -34,8 +34,11 @@ namespace VTC
 		struct MemTransferInfo
 		{
 			Array<BlockInfo>		blocks;
+			size_t					hostSyncIndex	= UMax;	// bookmark index in '_hostSyncBookmarks'
+
+		#ifdef VTC_DETECT_RESOURCE_TRANSFER
 			Array<ResDataInfo>		resources;
-			size_t					hostSyncIndex	= ~0u;	// bookmark index in '_hostSyncBookmarks'
+		#endif
 		};
 
 		using MemTransferMap_t		= HashMap< Pair<ResourceID, TraceRange::Bookmark>, MemTransferInfo >;

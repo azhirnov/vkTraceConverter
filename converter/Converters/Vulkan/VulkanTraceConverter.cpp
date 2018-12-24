@@ -83,6 +83,7 @@ namespace VTC
 		const FrameID	last_frame	= Min( _config.lastFrame, appTrace.GetFrameCount() );
 		FrameID			curr_frame	= 0;
 		const auto&		present_bm	= appTrace.PresentBookmark();
+		uint			progress	= 0;
 		
 		for (auto iter = appTrace.FullTrace().begin(); iter < appTrace.FullTrace().LastBookmark(); ++iter)
 		{
@@ -95,6 +96,15 @@ namespace VTC
 				continue;
 			
 			CHECK_ERR( _ConvertFunction( iter, curr_frame ));
+
+			const BytesU	diff		= appTrace.FullTrace().LastBookmark().Value() - iter.GetBookmark().Value();
+			const uint		curr_progr	= 8 - uint((diff * 8) / appTrace.FullTrace().LastBookmark().Value());
+
+			if ( curr_progr > progress )
+			{
+				progress = curr_progr;
+				FG_LOGI( "progress: "s << ToString( (100 * progress + 7) / 8 ) << " %" );
+			}
 		}
 
 		CHECK_ERR( _AfterConverting() );
@@ -144,7 +154,7 @@ namespace VTC
 			header.pointerSize				= sizeof(void*);
 			header.archiveType				= TraceFileHeader::EArchiveType::None;	// TODO
 			header.instructionBlockOffset	= sizeof(header);
-			header.dataBlockOffset			= ~0ull;
+			header.dataBlockOffset			= UMax;
 
 			CHECK_ERR( file.Write( header ));
 		}
@@ -462,7 +472,7 @@ namespace VTC
 		VK_CHECK( packet.result );
 		
 		DataID		data_id = _RequestData( pos, packet.header, packet.pCreateInfo->pCode, packet.pCreateInfo->codeSize, frameId );
-		CHECK_ERR( data_id != ~DataID(0) );
+		CHECK_ERR( data_id != UMax );
 		
 		const_cast<VkShaderModuleCreateInfo *>(packet.pCreateInfo)->pCode = null;
 		const_cast<VkShaderModuleCreateInfo *>(packet.pCreateInfo)->codeSize = 0;
@@ -524,7 +534,7 @@ namespace VTC
 		auto&	packet = pos.Cast< packet_vkCmdUpdateBuffer >();
 
 		DataID		data_id = _RequestData( pos, packet.header, packet.pData, packet.dataSize, frameId );
-		CHECK_ERR( data_id != ~DataID(0) );
+		CHECK_ERR( data_id != UMax );
 
 		packer.Begin( EPacketID::VCmdUpdateBuffer );
 		{

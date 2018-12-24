@@ -122,10 +122,13 @@ namespace VTC
 		struct RenderPass
 		{
 			FG::RenderPassDesc		desc;
-			uint					index			= ~0u;
+			uint					index			= UMax;
+			uint					drawCallCount	= 0;
 			bool					isInitialized	= false;
 		};
 		using RenderPasses_t		= Deque< RenderPass >;
+
+		using RenderTargets_t		= HashMap< RawImageID, FG::RenderPassDesc::ClearValue_t >;
 
 
 		struct CommandBufferState
@@ -137,13 +140,22 @@ namespace VTC
 			IndexBufferState			indexBuffer;
 			VertexBuffers_t				vertexBuffers;
 			Ptr< RenderPass >			renderPass;
+			RenderTargets_t				renderTargetClear;
 			ResourceID					currRenderPass		= 0;
 			ResourceID					currFramebuffer		= 0;
-			uint						subpassIndex		= ~0u;
+			uint						subpassIndex		= UMax;
 			bool						isRecording			= false;
 
+			// statistic
+			uint						drawCallCount		= 0;
+			uint						dispatchCount		= 0;
+			uint						renderPassCount		= 0;
+			FrameID						lastSubmission		= UMax;
+			uint						submissionCount		= 0;
+
 			// after recording
-			UniquePtr<TracePacker>		tracePacker;
+			UniquePtr<TracePacker>		threadPacker;
+			UniquePtr<TracePacker>		renderpassPacker;
 			VkCommandBufferUsageFlags	usageFlags			= 0;
 		};
 		using CmdBufferStates_t		= HashMap< ResourceID, CommandBufferState >;
@@ -237,8 +249,8 @@ namespace VTC
 		bool CmdPushDescriptorSet (const TraceRange::Iterator &);
 		bool CmdPushDescriptorSetWithTemplate (const TraceRange::Iterator &);
 
-		bool QueueSubmit (const TraceRange::Iterator &, INOUT TracePacker &);
-		bool QueuePresent (const TraceRange::Iterator &, INOUT TracePacker &);
+		bool QueueSubmit (const TraceRange::Iterator &, FrameID, INOUT TracePacker &);
+		bool QueuePresent (const TraceRange::Iterator &, FrameID, INOUT TracePacker &);
 
 		ND_ uint  GetMaxLogicalPasses () const		{ return _maxRenderPasses; }
 
@@ -268,16 +280,21 @@ namespace VTC
 		bool _AddRenderPass (const RenderPassAnalyzer::RenderPassInfo_t &, const RenderPassAnalyzer::FramebufferInfo_t &, uint,
 							 const VkRenderPassBeginInfo *, TraceRange::Bookmark, OUT RenderPass &) const;
 
-		bool _MergeRenderPassStates (INOUT RenderPass &, const PipelineConverter::GraphicsPipelineInfo &) const;
+		bool _MergeRenderPassStates (CommandBufferState &) const;
 
 		bool _ConvertImageView (const ImageAnalyzer::ImageViewInfo_t &, OUT FG::ImageViewDesc &) const;
-		
-		bool _PackBaseDrawVertices (const CommandBufferState &, TraceRange::Bookmark) const;
-		bool _PackBaseDrawCall (const CommandBufferState &, TraceRange::Bookmark) const;
-		bool _PackDescriptors (ArrayView<DescriptorSetInfo>, TraceRange::Bookmark, TracePacker &) const;
 
-		bool _PackRenderPass (const CommandBufferState &) const;
-		bool _PackSubmitRenderPass (const CommandBufferState &) const;
+		bool _CompareDescriptorLayouts (ResourceID, ResourceID) const;
+		
+		bool _PackBaseDrawVertices (const CommandBufferState &, TraceRange::Bookmark, TracePacker &) const;
+		bool _PackBaseDrawCall (const CommandBufferState &, TraceRange::Bookmark, TracePacker &) const;
+		bool _PackDynamicStates (const CommandBufferState &, TracePacker &) const;
+		bool _PackDescriptors (const PipelineDescription::DescriptorSets_t &, const FrameGraphConverter::PipelineConverter::PipelineLayoutInfo &,
+								const DestriptorStates_t &, Ptr<RenderPass>, TraceRange::Bookmark, TracePacker &) const;
+		bool _PackScissors (const CommandBufferState &, TracePacker &) const;
+		bool _PackColorBuffers (const CommandBufferState &, TracePacker &) const;
+
+		bool _PackRenderPass (CommandBufferState &) const;
 	};
 
 

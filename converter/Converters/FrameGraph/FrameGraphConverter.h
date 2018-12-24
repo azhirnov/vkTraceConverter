@@ -26,7 +26,7 @@ namespace VTC
 	class FrameGraphConverter final : public TraceConverterBase
 	{
 	// types
-	private:
+	public:
 		class DrawCallConverter;
 		class PipelineConverter;
 		class SamplerConverter;
@@ -69,9 +69,6 @@ namespace VTC
 
 		bool Run (const AppTrace &trace);
 
-		
-	private:
-
 
 	private:
 		bool _ConvertFunction (const TraceRange::Iterator &iter, FrameID frameId);
@@ -82,7 +79,7 @@ namespace VTC
 		void _PackCreateThreads (INOUT TracePacker &packer) const;
 
 		bool _OnBeginFrame (TraceRange::Bookmark, FrameID, INOUT TracePacker &packer) const;
-		bool _OnEndFrame (INOUT TracePacker &packer) const;
+		bool _OnEndFrame (uint64_t dt, INOUT TracePacker &packer) const;
 	};
 
 

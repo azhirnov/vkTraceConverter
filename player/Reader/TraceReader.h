@@ -8,7 +8,6 @@
 
 namespace VTPlayer
 {
-	using namespace FG;
 
 #	include "Types/VkResourceTypes.h"
 #	include "Types/TracePacketHeader.h"

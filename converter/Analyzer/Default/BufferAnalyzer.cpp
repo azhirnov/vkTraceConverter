@@ -241,7 +241,7 @@ namespace VTC
 		auto&	packet = pos.Cast< packet_vkGetBufferMemoryRequirements2 >();
 		CHECK_ERR( buffer.id == ResourceID(packet.pInfo->buffer) );
 		ASSERT( packet.pInfo->pNext == null );					// add support if triggered
-		ASSERT( packet.pMemoryRequirements->pNext == null );	// add support if triggered
+		//ASSERT( packet.pMemoryRequirements->pNext == null );	// add support if triggered
 
 		buffer.memRequirements = packet.pMemoryRequirements->memoryRequirements;
 		return true;
@@ -460,6 +460,8 @@ namespace VTC
 				case VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER :
 					is_buffer_view = true;
 					break;
+
+				// TODO: VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT ?
 			}
 
 			if ( is_buffer )
@@ -510,6 +512,10 @@ namespace VTC
 
 		if ( EnumEq( access, VK_ACCESS_CONDITIONAL_RENDERING_READ_BIT_EXT ) )
 			usage |= VK_BUFFER_USAGE_CONDITIONAL_RENDERING_BIT_EXT;
+
+		if ( EnumEq( access, VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_NV ) or
+			 EnumEq( access, VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_NV ) )
+			usage |= VK_BUFFER_USAGE_RAY_TRACING_BIT_NV;
 
 		return usage;
 	}

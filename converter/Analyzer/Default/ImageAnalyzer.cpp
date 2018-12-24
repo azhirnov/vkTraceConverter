@@ -343,7 +343,7 @@ namespace VTC
 		auto&	packet = pos.Cast< packet_vkGetImageMemoryRequirements2 >();
 		CHECK_ERR( image.id == ResourceID(packet.pInfo->image) );
 		ASSERT( packet.pInfo->pNext == null );					// add support if triggered
-		ASSERT( packet.pMemoryRequirements->pNext == null );	// add support if triggered
+		//ASSERT( packet.pMemoryRequirements->pNext == null );	// add support if triggered
 
 		image.memRequirements = packet.pMemoryRequirements->memoryRequirements;
 		return true;
@@ -580,6 +580,7 @@ namespace VTC
 			case VK_IMAGE_LAYOUT_SHADING_RATE_OPTIMAL_NV :				return VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV;
 			case VK_IMAGE_LAYOUT_RANGE_SIZE :							break;
 			case VK_IMAGE_LAYOUT_MAX_ENUM :								break;
+			case VK_IMAGE_LAYOUT_FRAGMENT_DENSITY_MAP_OPTIMAL_EXT :		return VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT;
 
 			case VK_IMAGE_LAYOUT_GENERAL :
 			{
@@ -588,7 +589,7 @@ namespace VTC
 					if ( not EnumEq( access, j ) )
 						continue;
 
-					switch ( j )
+					switch ( VkAccessFlagBits(j) )
 					{
 						case VK_ACCESS_INDIRECT_COMMAND_READ_BIT :				break;
 						case VK_ACCESS_INDEX_READ_BIT :							break;
@@ -611,6 +612,13 @@ namespace VTC
 						case VK_ACCESS_CONDITIONAL_RENDERING_READ_BIT_EXT :		break;
 						case VK_ACCESS_COMMAND_PROCESS_READ_BIT_NVX :			break;
 						case VK_ACCESS_COMMAND_PROCESS_WRITE_BIT_NVX :			break;
+						case VK_ACCESS_TRANSFORM_FEEDBACK_WRITE_BIT_EXT :		break;
+						case VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT:	break;
+						case VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT:break;
+						case VK_ACCESS_SHADING_RATE_IMAGE_READ_BIT_NV :			return VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV;
+						case VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_NV :		break;
+						case VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_NV :	break;
+						case VK_ACCESS_FRAGMENT_DENSITY_MAP_READ_BIT_EXT :		return VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT;
 						case VK_ACCESS_FLAG_BITS_MAX_ENUM :						break;
 					}
 				}

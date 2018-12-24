@@ -60,6 +60,10 @@ namespace VTC
 	{
 		auto&	packet = pos.Cast<packet_vkCreateSwapchainKHR>();
 		CHECK_ERR( packet.pCreateInfo );
+
+		if ( id == ResourceID(packet.pCreateInfo->oldSwapchain) )
+			return true;
+
 		CHECK_ERR( id == ResourceID(*packet.pSwapchain) );
 		ASSERT( packet.pCreateInfo->pNext == null );	// add support if assert triggered
 

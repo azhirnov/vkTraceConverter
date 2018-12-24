@@ -76,8 +76,8 @@ namespace VTC
 			CHECK_ERR( _memTransferAnalyzer and _extensionAnalyzer and _fpsAnalyzer );
 			CHECK_ERR( _memoryObjAnalyzer and _imageAnalyzer and _bufferAnalyzer );
 			
-			_tracePacker.reset( new TracePacker{ null, true });
-			_tempPacker.reset( new TracePacker{ null, true });
+			_tracePacker.reset( new TracePacker{} );
+			_tempPacker.reset( new TracePacker{} );
 
 			_imageConv.reset( new ImageConverter{ *this });
 			_bufferConv.reset( new BufferConverter{ *this });
@@ -147,7 +147,7 @@ namespace VTC
 			header.pointerSize				= sizeof(void*);
 			header.archiveType				= TraceFileHeader::EArchiveType::None;	// TODO
 			header.instructionBlockOffset	= sizeof(header);
-			header.dataBlockOffset			= ~0ull;
+			header.dataBlockOffset			= UMax;
 
 			CHECK_ERR( file.Write( header ));
 		}
@@ -262,7 +262,7 @@ namespace VTC
 		packer.End( EPacketID::FgBeginThread );
 
 		CHECK_ERR( _bufferConv->OnBeginFrame( pos, frameId, packer ));
-		CHECK_ERR( _imageConv->OnBeginFrame( packer ));
+		CHECK_ERR( _imageConv->OnBeginFrame( pos, frameId, packer ));
 		return true;
 	}
 	
@@ -273,7 +273,7 @@ namespace VTC
 	see unpacker in 'FGPlayer_v100::_EndFrame'
 =================================================
 */
-	bool FrameGraphConverter::_OnEndFrame (INOUT TracePacker &packer) const
+	bool FrameGraphConverter::_OnEndFrame (uint64_t dt, INOUT TracePacker &packer) const
 	{
 		CHECK_ERR( _bufferConv->OnEndFrame( packer ));
 		CHECK_ERR( _imageConv->OnEndFrame( packer ));
@@ -283,6 +283,7 @@ namespace VTC
 		packer.End( EPacketID::FgEndThread );
 
 		packer.Begin( EPacketID::FgEndFrame );
+		packer << dt;
 		packer.End( EPacketID::FgEndFrame );
 		return true;
 	}
@@ -335,9 +336,9 @@ namespace VTC
 			case VKTRACE_TPI_VK_vkDestroyBuffer :				CHECK( _bufferConv->DestroyBuffer( iter ));					break;
 			case VKTRACE_TPI_VK_vkCreateBufferView :			ASSERT(false);  break;
 			case VKTRACE_TPI_VK_vkDestroyBufferView :			ASSERT(false);  break;
-			case VKTRACE_TPI_VK_vkBindBufferMemory :			CHECK( _bufferConv->BindMemory( iter, *_tempPacker ));		break;
+			case VKTRACE_TPI_VK_vkBindBufferMemory :			CHECK( _bufferConv->BindMemory( iter ));					break;
 			case VKTRACE_TPI_VK_vkBindBufferMemory2 :
-			case VKTRACE_TPI_VK_vkBindBufferMemory2KHR :		CHECK( _bufferConv->BindMemory2( iter, *_tempPacker ));		break;
+			case VKTRACE_TPI_VK_vkBindBufferMemory2KHR :		CHECK( _bufferConv->BindMemory2( iter ));					break;
 				
 			case VKTRACE_TPI_VK_vkCreateImage :					CHECK( _imageConv->CreateImage( iter ));					break;
 			case VKTRACE_TPI_VK_vkDestroyImage :				CHECK( _imageConv->DestroyImage( iter ));					break;
@@ -357,13 +358,17 @@ namespace VTC
 			case VKTRACE_TPI_VK_vkCreateGraphicsPipelines :		CHECK( _pipelineConv->CreateGraphicsPipelines( iter ));		break;
 			case VKTRACE_TPI_VK_vkCreateComputePipelines :		CHECK( _pipelineConv->CreateComputePipelines( iter ));		break;
 			case VKTRACE_TPI_VK_vkDestroyPipeline :				CHECK( _pipelineConv->DestroyPipeline( iter ));				break;
+				
+			case VKTRACE_TPI_VK_vkUpdateDescriptorSets :
+				//CHECK( _pipelineConv->UpdateDescriptorSets( iter ));
+				CHECK( _drawCallConv->UpdateDescriptorSets( iter ));
+				break;
 
 			case VKTRACE_TPI_VK_vkCreateDescriptorPool :		CHECK( _drawCallConv->CreateDescriptorPool( iter ));		break;
 			case VKTRACE_TPI_VK_vkDestroyDescriptorPool :		CHECK( _drawCallConv->DestroyDescriptorPool( iter ));		break;
 			case VKTRACE_TPI_VK_vkResetDescriptorPool :			CHECK( _drawCallConv->ResetDescriptorPool( iter ));			break;
 			case VKTRACE_TPI_VK_vkAllocateDescriptorSets :		CHECK( _drawCallConv->AllocateDescriptorSets( iter ));		break;
 			case VKTRACE_TPI_VK_vkFreeDescriptorSets :			CHECK( _drawCallConv->FreeDescriptorSets( iter ));			break;
-			case VKTRACE_TPI_VK_vkUpdateDescriptorSets :		CHECK( _drawCallConv->UpdateDescriptorSets( iter ));		break;
 			case VKTRACE_TPI_VK_vkCreateCommandPool :			CHECK( _drawCallConv->CreateCommandPool( iter ));			break;
 			case VKTRACE_TPI_VK_vkDestroyCommandPool :			CHECK( _drawCallConv->DestroyCommandPool( iter ));			break;
 			case VKTRACE_TPI_VK_vkResetCommandPool :			CHECK( _drawCallConv->ResetCommandPool( iter ));			break;
@@ -427,15 +432,18 @@ namespace VTC
 			case VKTRACE_TPI_VK_vkCmdPushDescriptorSetKHR :		CHECK( _drawCallConv->CmdPushDescriptorSet( iter ));		break;
 			case VKTRACE_TPI_VK_vkCmdPushDescriptorSetWithTemplateKHR :	CHECK( _drawCallConv->CmdPushDescriptorSetWithTemplate( iter ));break;
 			case VKTRACE_TPI_VK_vkQueueBindSparse :				ASSERT(false);		break;
-			case VKTRACE_TPI_VK_vkQueueSubmit :					CHECK( _drawCallConv->QueueSubmit( iter, *_tempPacker ));	break;
+			case VKTRACE_TPI_VK_vkQueueSubmit :					CHECK( _drawCallConv->QueueSubmit( iter, frameId, *_tempPacker ));	break;
 
 			case VKTRACE_TPI_VK_vkQueuePresentKHR :
 			{
+				const uint64_t	dt = iter->vktrace_begin_time - _lastUpdateTime;
+				_lastUpdateTime = iter->vktrace_begin_time;
+
 				CHECK( _OnBeginFrame( iter.GetBookmark(), frameId, *_tracePacker ));
-				CHECK( _drawCallConv->QueuePresent( iter, *_tempPacker ));
+				CHECK( _drawCallConv->QueuePresent( iter, frameId, *_tempPacker ));
 				_tracePacker->Append( *_tempPacker );
 				_tempPacker->Clear();
-				CHECK( _OnEndFrame( *_tracePacker ));
+				CHECK( _OnEndFrame( dt, *_tracePacker ));
 				break;
 			}
 

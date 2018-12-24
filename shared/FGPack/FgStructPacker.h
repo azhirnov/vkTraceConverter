@@ -107,8 +107,8 @@ namespace VTC
 */
 	inline void FGPack_ImageDesc (const FG::ImageDesc &desc, TracePacker &packer)
 	{
-		ASSERT( desc.format != EPixelFormat::Unknown );
-		ASSERT( desc.usage != EImageUsage::Unknown );
+		ASSERT( desc.format != Default );
+		ASSERT( desc.usage != Default );
 		ASSERT(All( desc.dimension > uint3(0) ));
 		ASSERT( desc.maxLevel.Get() > 0 );
 		ASSERT( desc.arrayLayers.Get() > 0 );
@@ -129,7 +129,8 @@ namespace VTC
 */
 	inline void FGPack_ImageViewDesc (const FG::ImageViewDesc &desc, TracePacker &packer)
 	{
-		ASSERT( desc.format != EPixelFormat::Unknown );
+		ASSERT( desc.format != Default );
+		ASSERT( desc.aspectMask != Default );
 		ASSERT( desc.levelCount > 0 );
 		ASSERT( desc.layerCount > 0 );
 
@@ -140,6 +141,7 @@ namespace VTC
 		packer << desc.baseLayer.Get();
 		packer << desc.layerCount;
 		packer << BitCast<uint>( desc.swizzle );
+		packer << desc.aspectMask;
 	}
 
 /*
@@ -150,7 +152,7 @@ namespace VTC
 	inline void FGPack_BufferDesc (const FG::BufferDesc &desc, TracePacker &packer)
 	{
 		ASSERT( desc.size > 0 );
-		ASSERT( desc.usage != EBufferUsage::Unknown );
+		ASSERT( desc.usage != Default );
 
 		packer << uint64_t(desc.size);
 		packer << desc.usage;
@@ -484,10 +486,10 @@ namespace VTC
 	
 /*
 =================================================
-	FGPacket_BlitImage_Region
+	FGPack_BlitImage_Region
 =================================================
 */
-	inline void FGPacket_BlitImage_Region (const VkImageBlit &src, TracePacker &packer)
+	inline void FGPack_BlitImage_Region (const VkImageBlit &src, TracePacker &packer)
 	{
 		FGPack_ImageSubresourceRange( src.srcSubresource, INOUT packer );
 		FGPack_Offset3D( src.srcOffsets[0], INOUT packer );
@@ -495,6 +497,35 @@ namespace VTC
 		FGPack_ImageSubresourceRange( src.dstSubresource, INOUT packer );
 		FGPack_Offset3D( src.dstOffsets[0], INOUT packer );
 		FGPack_Offset3D( src.dstOffsets[1], INOUT packer );
+	}
+
+/*
+=================================================
+	FGPack_DrawTaskDynamicStates
+=================================================
+*/
+	inline void FGPack_DrawTaskDynamicStates (const _fg_hidden_::DynamicStates &src, TracePacker &packer)
+	{
+		packer.AddArray( &src, sizeof(src) );
+	}
+
+/*
+=================================================
+	FGPack_Optional
+=================================================
+*/
+	template <typename T>
+	inline void FGPack_Optional (const Optional<T> &src, TracePacker &packer)
+	{
+		if ( src.has_value() )
+		{
+			packer << bool(true);
+			packer << src.value();
+		}
+		else
+		{
+			packer << bool(false);
+		}
 	}
 
 

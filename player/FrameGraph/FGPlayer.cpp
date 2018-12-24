@@ -3,6 +3,8 @@
 #include "FGPlayer.h"
 #include "FGUnpacker.h"
 #include "extensions/pipeline_compiler/VPipelineCompiler.h"
+#include "stl/Algorithms/StringUtils.h"
+#include "extensions/graphviz/GraphViz.h"
 #include <thread>
 
 namespace VTPlayer
@@ -125,6 +127,9 @@ namespace VTPlayer
 
 		if ( key == "S" )
 			_playWithSourceFPS = not _playWithSourceFPS;
+
+		if ( key == "V" )
+			_visualizeGraph = 1;
 
 		if ( key == "escape" )
 			_isFinished = true;
@@ -294,6 +299,8 @@ namespace VTPlayer
 			case EFrameGraphPacketID::FgEndFrame :							CHECK( _EndFrame( unpacker ));					break;
 			case EFrameGraphPacketID::FgBeginThread :						CHECK( _BeginThread( unpacker ));				break;
 			case EFrameGraphPacketID::FgEndThread :							CHECK( _EndThread( unpacker ));					break;
+			case EFrameGraphPacketID::FgUpdateUniformBuffer :				CHECK( _UpdateUniformBuffer( unpacker ));		break;
+			case EFrameGraphPacketID::FgUpdateHostBuffer :					CHECK( _UpdateHostBuffer( unpacker ));			break;
 
 			case EFrameGraphPacketID::FgDrawVertices :						CHECK( _DrawVertices( unpacker ));				break;
 			case EFrameGraphPacketID::FgDrawIndexed :						CHECK( _DrawIndexed( unpacker ));				break;
@@ -493,7 +500,7 @@ namespace VTPlayer
 		{
 			//_vulkan.CreateDebugReportCallback( DebugReportFlags_All );
 			_vulkan.CreateDebugUtilsCallback( DebugUtilsMessageSeverity_All );
-			//_vulkan.SetBreakOnValidationError( false );
+			_vulkan.SetBreakOnValidationError( false );
 		}
 
 		_lastPresentTime = TimePoint_t::clock::now();
@@ -539,7 +546,7 @@ namespace VTPlayer
 		{
 			auto	ppln_compiler = MakeShared<VPipelineCompiler>( vulkan_info.physicalDevice, vulkan_info.device );
 
-			ppln_compiler->SetCompilationFlags( EShaderCompilationFlags::AlwaysWriteDiscard );
+			ppln_compiler->SetCompilationFlags( EShaderCompilationFlags::AlwaysWriteDiscard | EShaderCompilationFlags::AlwaysBufferDynamicOffset );
 
 			_frameGraphInst->AddPipelineCompiler( ppln_compiler );
 		}
@@ -673,7 +680,17 @@ namespace VTPlayer
 			submission_graph.AddBatch( batch_id, thread_count );
 		}
 
-		CHECK( _frameGraphInst->Begin( submission_graph ));
+		if ( _visualizeGraph == 1 )
+		{
+			_visualizeGraph = 2;
+			_frameGraphInst->SetCompilationFlags( ECompilationFlags::EnableDebugger, ECompilationDebugFlags::Default );
+
+			for (auto& fg : _frameGraphThreads) {
+				fg.thread->SetCompilationFlags( ECompilationFlags::EnableDebugger, ECompilationDebugFlags::Default );
+			}
+		}
+
+		CHECK( _frameGraphInst->BeginFrame( submission_graph ));
 		return true;
 	}
 	
@@ -684,9 +701,11 @@ namespace VTPlayer
 	see packer in 'FrameGraphConverter::_OnEndFrame'
 =================================================
 */
-	bool FGPlayer_v100::_EndFrame (FGUnpacker &)
+	bool FGPlayer_v100::_EndFrame (FGUnpacker &unpacker)
 	{
-		CHECK( _frameGraphInst->Execute() );
+		auto	frame_time	= Nonoseconds{unpacker.Get<uint64_t>()};
+
+		CHECK( _frameGraphInst->EndFrame() );
 
 		for (auto& pass : _resources.logicalPasses) {
 			pass = LogicalPassID{};
@@ -697,6 +716,34 @@ namespace VTPlayer
 		}
 
 		++_currFrameId;
+
+		_UpdateFrameStatistic();
+		
+		// add delay to limit FPS
+		if ( _playWithSourceFPS )
+		{
+			TimePoint_t		time		= TimePoint_t::clock::now();
+			Nonoseconds		dt			= time - _lastPresentTime;
+			Nonoseconds		delay		= frame_time - dt;
+			Nonoseconds		max_delay	= Nonoseconds{100'000'000};
+			_lastPresentTime = time;
+
+			if ( delay > Nonoseconds(0) )
+				std::this_thread::sleep_for( Min(delay, max_delay) );
+		}
+
+		if ( _visualizeGraph == 2 )
+		{
+#		if defined(FG_GRAPHVIZ_DOT_EXECUTABLE) and defined(FG_STD_FILESYSTEM)
+			GraphViz::Visualize( _frameGraphInst, "FrameGraph_" + ToString(++_graphCounter) + ".dot" );
+#		endif
+			
+			for (auto& fg : _frameGraphThreads) {
+				fg.thread->SetCompilationFlags( ECompilationFlags::Unknown );
+			}
+			_frameGraphInst->SetCompilationFlags( ECompilationFlags::Unknown );
+			_visualizeGraph = 0;
+		}
 		return true;
 	}
 	
@@ -732,7 +779,48 @@ namespace VTPlayer
 
 		fg.task = null;
 
-		CHECK( fg.thread->Compile() );
+		CHECK( fg.thread->Execute() );
+		return true;
+	}
+	
+/*
+=================================================
+	_UpdateFrameStatistic
+=================================================
+*/
+	bool FGPlayer_v100::_UpdateFrameStatistic ()
+	{
+		using namespace std::chrono;
+		
+		static constexpr uint	UpdateIntervalMillis	= 500;
+
+		String		str = _windowSettings.title;
+
+		// update FPS
+		++_profiling.frameCounter;
+
+		TimePoint_t		now			= TimePoint_t::clock::now();
+		int64_t			duration	= duration_cast<milliseconds>(now - _profiling.lastUpdateTime).count();
+
+		if ( duration > UpdateIntervalMillis )
+		{
+			_profiling.averageFPS		= uint((_profiling.frameCounter * 1000ull + 500) / duration);
+			_profiling.averageFTime		= (_profiling.accumFTime + Nonoseconds(_profiling.frameCounter >> 1)) / _profiling.frameCounter;
+			_profiling.accumFTime		= {};
+			_profiling.frameCounter		= 0;
+			_profiling.lastUpdateTime	= now;
+		}
+
+		str += " [FPS: ";
+		str += ToString( _profiling.averageFPS );
+
+		str += ", ID: ";
+		str += ToString( _profiling.frameId );	// you can use frame ID to convert trace into c++ code or visualize graph
+
+		str += "]";
+		_window->SetTitle( str );
+
+		++_profiling.frameId;
 		return true;
 	}
 

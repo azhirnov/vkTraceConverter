@@ -1,12 +1,22 @@
 # download and install brotli library
 
 if (${VTC_ENABLE_BROTLI})
+	set( VTC_EXTERNAL_BROTLI_PATH "" CACHE PATH "path to brotli source" )
     set( BROTLI_INSTALL_DIR "${VTC_EXTERNAL_INSTALL_DIR}/brotli" CACHE INTERNAL "" FORCE )
+	
+	# reset to default
+	if (NOT EXISTS "${VTC_EXTERNAL_BROTLI_PATH}/c/include/brotli")
+		message( STATUS "brotli is not found in \"${VTC_EXTERNAL_BROTLI_PATH}\"" )
+		set( VTC_EXTERNAL_BROTLI_PATH "${VTC_EXTERNALS_PATH}/brotli" CACHE PATH "" FORCE )
+		set( VTC_BROTLI_REPOSITORY "https://github.com/google/brotli.git" )
+	else ()
+		set( VTC_BROTLI_REPOSITORY "" )
+	endif ()
 
 	ExternalProject_Add( "Extern.brotli"
         LIST_SEPARATOR		"${VTC_LIST_SEPARATOR}"
 		# download
-		GIT_REPOSITORY		https://github.com/google/brotli.git
+		GIT_REPOSITORY		${VTC_BROTLI_REPOSITORY}
 		GIT_TAG				master
 		EXCLUDE_FROM_ALL	1
 		LOG_DOWNLOAD		1
@@ -14,7 +24,7 @@ if (${VTC_ENABLE_BROTLI})
 		PATCH_COMMAND		""
 		UPDATE_DISCONNECTED	1
 		# configure
-        SOURCE_DIR			"${VTC_EXTERNALS_PATH}/brotli"
+        SOURCE_DIR			"${VTC_EXTERNAL_BROTLI_PATH}"
 		CMAKE_GENERATOR		"${CMAKE_GENERATOR}"
 		CMAKE_GENERATOR_TOOLSET	"${CMAKE_GENERATOR_TOOLSET}"
         CMAKE_ARGS            "-DCMAKE_CONFIGURATION_TYPES=${VTC_EXTERNAL_CONFIGURATION_TYPES}"
@@ -25,7 +35,7 @@ if (${VTC_ENABLE_BROTLI})
                             ${VTC_BUILD_TARGET_FLAGS}
 		LOG_CONFIGURE 		1
 		# build
-		BINARY_DIR			"${CMAKE_BINARY_DIR}/build-brotli"
+		BINARY_DIR			"${CMAKE_BINARY_DIR}/build2-brotli"
 		BUILD_COMMAND		"${CMAKE_COMMAND}"
 							--build .
 							--target ALL_BUILD

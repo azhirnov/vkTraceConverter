@@ -27,7 +27,7 @@ namespace VTC
 			bool		divideByPasses			= false;
 
 			FrameID		firstFrame				= 0;
-			FrameID		lastFrame				= ~FrameID(0);
+			FrameID		lastFrame				= UMax;
 		};
 		
 
@@ -38,7 +38,7 @@ namespace VTC
 			bool		remapQueueFamily		= false;
 			bool		indirectSwapchain		= false;
 			bool		useUniqueResourceIndices= false;
-			FrameID		lastFrame				= ~FrameID(0);
+			FrameID		lastFrame				= UMax;
 		};
 
 
@@ -51,7 +51,8 @@ namespace VTC
 		struct FrameGraphTrace
 		{
 			bool		isEnabled				= false;
-			FrameID		lastFrame				= ~FrameID(0);
+			FrameID		lastFrame				= UMax;
+			bool		forceDBO				= false;
 		};
 
 
@@ -60,7 +61,7 @@ namespace VTC
 			bool		isEnabled		= false;
 			bool		showSync		= false;	// build sync usage graph
 			FrameID		firstFrame		= 0;
-			FrameID		lastFrame		= ~FrameID(0);
+			FrameID		lastFrame		= UMax;
 		};
 
 

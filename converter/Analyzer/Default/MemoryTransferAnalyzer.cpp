@@ -92,6 +92,7 @@ namespace VTC
 */
 	bool MemoryTransferAnalyzer::_SearchResourceBlocks ()
 	{
+#		ifdef VTC_DETECT_RESOURCE_TRANSFER
 		for (auto& item : _memTransfer)
 		{
 			auto	pos	= item.first.second;
@@ -157,6 +158,7 @@ namespace VTC
 				}
 			}
 		}
+#		endif
 		return true;
 	}
 

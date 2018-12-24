@@ -656,6 +656,13 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_PROPERTIES_EXT : {
+			VkPhysicalDeviceFragmentDensityMapPropertiesEXT*  value = BitCast<VkPhysicalDeviceFragmentDensityMapPropertiesEXT*>( ptr );
+			Unpack_VkExtent2D( &value->minFragmentDensityTexelSize, header );
+			Unpack_VkExtent2D( &value->maxFragmentDensityTexelSize, header );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_CREATE_INFO : {
 			VkDescriptorUpdateTemplateCreateInfo*  value = BitCast<VkDescriptorUpdateTemplateCreateInfo*>( ptr );
 			UnpackPointer( INOUT value->pDescriptorUpdateEntries, header );
@@ -1075,6 +1082,12 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 			break;
 		}
 
+		case VK_STRUCTURE_TYPE_RENDER_PASS_FRAGMENT_DENSITY_MAP_CREATE_INFO_EXT : {
+			VkRenderPassFragmentDensityMapCreateInfoEXT*  value = BitCast<VkRenderPassFragmentDensityMapCreateInfoEXT*>( ptr );
+			Unpack_VkAttachmentReference( &value->fragmentDensityMapAttachment, header );
+			break;
+		}
+
 		case VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_DIVISOR_STATE_CREATE_INFO_EXT : {
 			VkPipelineVertexInputDivisorStateCreateInfoEXT*  value = BitCast<VkPipelineVertexInputDivisorStateCreateInfoEXT*>( ptr );
 			UnpackPointer( INOUT value->pVertexBindingDivisors, header );
@@ -1245,6 +1258,8 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 	case VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_FD_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_SEMAPHORE_GET_FD_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT16_INT8_FEATURES_KHR : break;
 	case VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_ADVANCED_STATE_CREATE_INFO_EXT : break;
 	case VK_STRUCTURE_TYPE_ATTACHMENT_DESCRIPTION_2_KHR : break;
 	case VK_STRUCTURE_TYPE_SUBPASS_DEPENDENCY_2_KHR : break;
@@ -1258,6 +1273,7 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES_KHR : break;
 	case VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_ANDROID : break;
 	case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT_CONTROLS_PROPERTIES_KHR : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES_KHR : break;
 	case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD : break;
 	case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_IMAGE_CREATE_INFO_NV : break;
@@ -1302,7 +1318,9 @@ static void UnpackStruct (VkBaseOutStructure *ptr, vktrace_trace_packet_header *
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_NV : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_FEATURES_NV : break;
 	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_IMAGE_FOOTPRINT_FEATURES_NV : break;
-	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_FEATURES_EXT : break;
+	case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT : break;
+	case VK_STRUCTURE_TYPE_IMAGE_STENCIL_USAGE_CREATE_INFO_EXT : break;
 	case VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_KHR : break;
 	case VK_STRUCTURE_TYPE_MEMORY_GET_WIN32_HANDLE_INFO_KHR : break;

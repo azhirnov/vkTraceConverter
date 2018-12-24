@@ -21,8 +21,8 @@ namespace VTC
 			String				name;
 			EResourceType		type		= VK_OBJECT_TYPE_UNKNOWN;
 			ResourceID			id			= 0;
-			uint64_t			localIndex	= ~0ull;
-			uint64_t			uniqueIndex	= ~0ull;
+			uint64_t			localIndex	= UMax;
+			uint64_t			uniqueIndex	= UMax;
 		};
 
 	public:

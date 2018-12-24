@@ -20,6 +20,9 @@
 #	error C++17 filesystem support required!
 #endif
 
+//#define VTC_DETECT_RESOURCE_TRANSFER
+#define VTC_DETECT_MEMORY_ALIASING
+
 namespace VTC
 {
 	using namespace FG;
