@@ -23,6 +23,20 @@ Also you can run player on any GPU, becouse memory allocation overrided.<br/>
 (queue remapping for full portability is in progress, but for both application it is not needed)
 
 ![image](parallaxmapping-1.jpg)
+![image](doom-vk.jpg)
+
+
+## Convert to FrameGraph trace
+```
+--convert       fg-trace
+--cfg-fg-trace  force-dbo=true
+--open          doom.vktrace
+--output-dir    converted
+```
+Converts vulkan api calls into [FrameGraph](https://github.com/azhirnov/FrameGraph) api calls.
+`force-dbo=true` can be used to convert all UBOs and SSBOs with dynamic offset.
+
+![image](doom-fg.jpg)
 
 
 ## Convert to C++ source code
@@ -32,7 +46,7 @@ Also you can run player on any GPU, becouse memory allocation overrided.<br/>
 --open          doom.vktrace
 --output-dir    converted
 ```
-You can inpect some frames or convert full trace (by removing `begin` and `end` commands) and get fully editable application source code, but usualy there is a megabytes of code and compilation may take a lot of time.<br/>
+You can inspect some frames or convert full trace (by removing `begin` and `end` commands) and get fully editable application source code, but usualy there is a megabytes of code and compilation may take a lot of time.<br/>
 Result: [doom-Frame3098](doom-Frame3098.cpp.txt)
 
 
