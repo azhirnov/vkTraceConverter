@@ -238,6 +238,7 @@ int main (int argc, const char** argv)
 	ConverterConfig		config;
 
 
+
 	// parse arguments
 	for (int i = 1; i < argc; ++i)
 	{

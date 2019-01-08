@@ -17,26 +17,6 @@ namespace VTC
 	
 /*
 =================================================
-	_OnCreateBuffer
-=================================================
-*/
-	bool VulkanTraceConverter::_OnCreateBuffer (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
-	{
-		return false;
-	}
-	
-/*
-=================================================
-	_OnCreateImage
-=================================================
-*/
-	bool VulkanTraceConverter::_OnCreateImage (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
-	{
-		return false;
-	}
-	
-/*
-=================================================
 	_OnWaitEvents3
 =================================================
 */

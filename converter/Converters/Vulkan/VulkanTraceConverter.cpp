@@ -206,10 +206,11 @@ namespace VTC
 			case VKTRACE_TPI_VK_vkCreateSharedSwapchainsKHR :		_lastUpdateTime = iter->vktrace_begin_time;	break;
 
 			// remap queue family index
-			/*case VKTRACE_TPI_VK_vkCreateCommandPool :				CHECK_ERR( _OnCreateCommandPool( iter, INOUT *_tracePacker ));			break;
+			//case VKTRACE_TPI_VK_vkCreateCommandPool :				CHECK_ERR( _OnCreateCommandPool( iter, INOUT *_tracePacker ));			break;
 			case VKTRACE_TPI_VK_vkCreateBuffer :					CHECK_ERR( _OnCreateBuffer( iter, INOUT *_tracePacker ));				break;
 			case VKTRACE_TPI_VK_vkCreateImage :						CHECK_ERR( _OnCreateImage( iter, INOUT *_tracePacker ));				break;
-			*/
+			case VKTRACE_TPI_VK_vkDebugMarkerSetObjectNameEXT :		break;	// skip origin names
+			
 			// load data from file and call function
 			case VKTRACE_TPI_VK_vkCreateShaderModule :				CHECK_ERR( _OnCreateShaderModule( iter, frameId, INOUT *_tracePacker ));					break;
 			case VKTRACE_TPI_VK_vkCreatePipelineCache :				CHECK_ERR( _OnCreatePipelineCache( iter, frameId, INOUT *_tracePacker ));					break;
@@ -647,6 +648,72 @@ namespace VTC
 		// TODO
 		return false;
 	}
+	
+/*
+=================================================
+	_OnCreateBuffer
+=================================================
+*/
+	bool VulkanTraceConverter::_OnCreateBuffer (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
+	{
+		CHECK_ERR( _ConvertVkFunction( pos, INOUT *_tracePacker ));
+		
+		auto&	packet	= pos.Cast< packet_vkCreateBuffer >();
+		auto*	res		= _resourcesBookmarks->GetResource( VK_OBJECT_TYPE_BUFFER, ResourceID(*packet.pBuffer), pos.GetBookmark() );
+		CHECK_ERR( res );
 
+		String	name	= "buffer-"s + ToString<16>( res->uniqueIndex );
+
+		VkDebugMarkerObjectNameInfoEXT	info = {};
+		info.sType		= VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT;
+		info.objectType	= VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT;
+		info.object		= uint64_t(*packet.pBuffer);
+		info.pObjectName= name.data();
+		
+		packer.RemapVkResource( BitCast<VkBuffer *>(&info.object) );
+
+		packer.Begin( EPacketID::VDebugMarkerSetObjectNameEXT );
+		packer << packet.device;
+		packer.Push( &info );
+		 VPackStruct( BitCast<VkBaseInStructure const*>(&info), packer );
+		packer.PopAndStore( &info );
+		packer.End( EPacketID::VDebugMarkerSetObjectNameEXT );
+
+		return true;
+	}
+	
+	
+/*
+=================================================
+	_OnCreateImage
+=================================================
+*/
+	bool VulkanTraceConverter::_OnCreateImage (const TraceRange::Iterator &pos, INOUT TracePacker &packer) const
+	{
+		CHECK_ERR( _ConvertVkFunction( pos, INOUT *_tracePacker ));
+
+		auto&	packet	= pos.Cast< packet_vkCreateImage >();
+		auto*	res		= _resourcesBookmarks->GetResource( VK_OBJECT_TYPE_IMAGE, ResourceID(*packet.pImage), pos.GetBookmark() );
+		CHECK_ERR( res );
+
+		String	name	= "image-"s + ToString<16>( res->uniqueIndex );
+
+		VkDebugMarkerObjectNameInfoEXT	info = {};
+		info.sType		= VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT;
+		info.objectType	= VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT;
+		info.object		= uint64_t(*packet.pImage);
+		info.pObjectName= name.data();
+
+		packer.RemapVkResource( BitCast<VkImage *>(&info.object) );
+
+		packer.Begin( EPacketID::VDebugMarkerSetObjectNameEXT );
+		packer << packet.device;
+		packer.Push( &info );
+		 VPackStruct( BitCast<VkBaseInStructure const*>(&info), packer );
+		packer.PopAndStore( &info );
+		packer.End( EPacketID::VDebugMarkerSetObjectNameEXT );
+
+		return true;
+	}
 
 }	// VTC

@@ -758,7 +758,7 @@ namespace VTC
 			result.renderState.rasterization.depthBias				= info.pRasterizationState->depthBiasEnable;
 			result.renderState.rasterization.depthClamp				= info.pRasterizationState->depthClampEnable;
 			result.renderState.rasterization.rasterizerDiscard		= info.pRasterizationState->rasterizerDiscardEnable;
-			result.renderState.rasterization.frontFaceCCW			= info.pRasterizationState->frontFace == VK_FRONT_FACE_COUNTER_CLOCKWISE;
+			result.renderState.rasterization.frontFaceCCW			= (info.pRasterizationState->frontFace == VK_FRONT_FACE_COUNTER_CLOCKWISE);
 			result.renderState.rasterization.cullMode				= FGEnumCast( info.pRasterizationState->cullMode );
 		}
 
@@ -769,12 +769,12 @@ namespace VTC
 			result.renderState.multisample.sampleShading		= info.pMultisampleState->sampleShadingEnable;
 			result.renderState.multisample.alphaToCoverage		= info.pMultisampleState->alphaToCoverageEnable;
 			result.renderState.multisample.alphaToOne			= info.pMultisampleState->alphaToOneEnable;
-
-			//ASSERT( info.pMultisampleState->pSampleMask == null );
-
-			// TODO
-			//if ( info.pMultisampleState->pSampleMask )
-			//	result.renderState.SetSampleMask( ArrayView{ info.pMultisampleState->pSampleMask, (result.renderState.multisample.samples.Get()+3/4) });
+		
+			for (uint i = 0, count = (info.pMultisampleState->rasterizationSamples + 31) / 32;
+				 info.pMultisampleState->pSampleMask and i < count; ++i)
+			{
+				result.renderState.multisample.sampleMask[i] = info.pMultisampleState->pSampleMask[i];
+			}
 		}
 
 		if ( info.pDepthStencilState )

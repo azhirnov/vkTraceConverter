@@ -30,6 +30,7 @@ namespace VTC
 			packer.Begin( EPacketID::FgCreateImage );
 			packer << uint(0);	// TODO: thread id
 			packer << iter->id;
+			packer << iter->uid;
 			FGPack_ImageDesc( iter->desc, packer );
 			FGPack_MemoryDesc( iter->mem, packer );
 			packer.End( EPacketID::FgCreateImage );
@@ -159,7 +160,7 @@ namespace VTC
 			
 			item.mem.type	= EnumEq( mem->usage, MemoryObjAnalyzer::EMemoryUsage::Dedicated ) ? EMemoryType::Dedicated :
 							  EnumEq( mem->usage, EMemoryUsage::HostWrite ) ? EMemoryType::HostWrite : EMemoryType::Default;
-			item.mem.poolId = MemPoolID{ ToString( mem->id )};
+			item.mem.poolId = MemPoolID{ ToString<16>( mem->id )};
 			item.memBinded	= true;
 			
 			_remapping.resize(Max( resource->localIndex+1, _remapping.size() ));
@@ -197,7 +198,7 @@ namespace VTC
 				
 				item.mem.type	= EnumEq( mem->usage, MemoryObjAnalyzer::EMemoryUsage::Dedicated ) ? EMemoryType::Dedicated :
 								  EnumEq( mem->usage, EMemoryUsage::HostWrite ) ? EMemoryType::HostWrite : EMemoryType::Default;
-				item.mem.poolId = MemPoolID{ ToString( mem->id )};
+				item.mem.poolId = MemPoolID{ ToString<16>( mem->id )};
 				item.memBinded	= true;
 				
 				_remapping.resize(Max( resource->localIndex+1, _remapping.size() ));
@@ -286,7 +287,7 @@ namespace VTC
 		if ( not EnumAny( mem->usage, EMemoryUsage::HostRead | EMemoryUsage::HostWrite ))
 			return false;
 
-		if ( not EnumAny( img->createInfo.usage, ~(VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT) ))
+		if ( not EnumAny( img->createInfo.usage, ~(VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT) ))
 			return false;
 
 		_hostImages.push_back({ img, mem, mem->FirstBookmark().pos });
@@ -301,35 +302,6 @@ namespace VTC
 	bool FrameGraphConverter::ImageConverter::_UpdateImage (const HostAccessibleImage &imageInfo, TraceRange::Bookmark submitPos, FrameID frameId, INOUT TracePacker &packer)
 	{
 		return false;
-	}
-	
-/*
-=================================================
-	_CreateDummyImages
-=================================================
-*/
-	bool  FrameGraphConverter::ImageConverter::_CreateDummyImages (TracePacker &packer)
-	{
-		// color image 2D
-		{
-			_dummyColorImage2D = RawImageID{ _imageCounter++, 0 };
-
-			_dummyColorImage2DDesc.imageType	= EImage::Tex2D;
-			_dummyColorImage2DDesc.dimension	= { 16, 16, 1 };
-			_dummyColorImage2DDesc.format		= EPixelFormat::RGBA8_UNorm;
-			_dummyColorImage2DDesc.usage		= EImageUsage::Transfer | EImageUsage::Sampled;
-			_dummyColorImage2DDesc.arrayLayers	= ImageLayer{ 1 };
-			_dummyColorImage2DDesc.maxLevel		= MipmapLevel{ 1 };
-
-			packer.Begin( EPacketID::FgCreateImage );
-			packer << uint(0);	// TODO: thread id
-			packer << uint(_dummyColorImage2D.Index());
-			FGPack_ImageDesc( _dummyColorImage2DDesc, packer );
-			FGPack_MemoryDesc( MemoryDesc{}, packer );
-			packer.End( EPacketID::FgCreateImage );
-		}
-
-		return true;
 	}
 
 

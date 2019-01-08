@@ -43,7 +43,6 @@
 	FgEndFrame						= 42 | _FrameGraphApi | _V100,
 	FgBeginThread					= 43 | _FrameGraphApi | _V100,
 	FgEndThread						= 44 | _FrameGraphApi | _V100,
-	FgUpdateUniformBuffer			= 45 | _FrameGraphApi | _V100,
 	FgUpdateHostBuffer				= 46 | _FrameGraphApi | _V100,
 
 	FgDrawVertices					= 70 | _FrameGraphApi | _V100,

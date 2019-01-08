@@ -279,6 +279,8 @@ namespace VTPlayer
 			case EVulkanPacketID::VCpuTimerStart :						break;
 			case EVulkanPacketID::VCpuTimerStop :						break;
 
+			case EVulkanPacketID::VDebugMarkerSetObjectNameEXT :		CHECK( _SetObjectName( unpacker ));						break;
+
 			#include "Generated/VulkanTraceFuncUnpacker.h"
 			
 			case EVulkanPacketID::_VulkanApi :
@@ -1918,6 +1920,29 @@ namespace VTPlayer
 		}
 
 		return false;
+	}
+	
+/*
+=================================================
+	_SetObjectName
+=================================================
+*/
+	bool VkPlayer_v100::_SetObjectName (VUnpacker &unpacker)
+	{
+		auto const&  device = unpacker.Get<VkDevice>();
+		auto const&  pNameInfo = unpacker.Get<const VkDebugMarkerObjectNameInfoEXT *>();
+
+		switch ( pNameInfo->objectType )
+		{
+			case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT :
+				_vulkan.SetObjectName( _vkResources[VkResourceIndex<VkBuffer>][pNameInfo->object], pNameInfo->pObjectName, VK_OBJECT_TYPE_BUFFER );
+				break;
+
+			case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT :
+				_vulkan.SetObjectName( _vkResources[VkResourceIndex<VkImage>][pNameInfo->object], pNameInfo->pObjectName, VK_OBJECT_TYPE_IMAGE );
+				break;
+		}
+		return true;
 	}
 
 }	// VTPlayer

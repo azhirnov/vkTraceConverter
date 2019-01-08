@@ -183,10 +183,10 @@ namespace VTPlayer
 			fg = Default;
 		}
 
-		if ( _frameGraphInst )
+		if ( _fgInstance )
 		{
-			_frameGraphInst->Deinitialize();
-			_frameGraphInst = null;
+			_fgInstance->Deinitialize();
+			_fgInstance = null;
 		}
 
 		_vulkan.Destroy();
@@ -299,7 +299,6 @@ namespace VTPlayer
 			case EFrameGraphPacketID::FgEndFrame :							CHECK( _EndFrame( unpacker ));					break;
 			case EFrameGraphPacketID::FgBeginThread :						CHECK( _BeginThread( unpacker ));				break;
 			case EFrameGraphPacketID::FgEndThread :							CHECK( _EndThread( unpacker ));					break;
-			case EFrameGraphPacketID::FgUpdateUniformBuffer :				CHECK( _UpdateUniformBuffer( unpacker ));		break;
 			case EFrameGraphPacketID::FgUpdateHostBuffer :					CHECK( _UpdateHostBuffer( unpacker ));			break;
 
 			case EFrameGraphPacketID::FgDrawVertices :						CHECK( _DrawVertices( unpacker ));				break;
@@ -536,10 +535,10 @@ namespace VTPlayer
 
 		// initialize framegraph
 		{
-			_frameGraphInst = FrameGraph::CreateFrameGraph( vulkan_info );
-			CHECK_ERR( _frameGraphInst );
-			CHECK_ERR( _frameGraphInst->Initialize( 2 ));
-			//_frameGraphInst->SetCompilationFlags( ECompilationFlags::EnableDebugger, ECompilationDebugFlags::Default );
+			_fgInstance = FrameGraphInstance::CreateFrameGraph( vulkan_info );
+			CHECK_ERR( _fgInstance );
+			CHECK_ERR( _fgInstance->Initialize( 2 ));
+			//_fgInstance->SetCompilationFlags( ECompilationFlags::EnableDebugger, ECompilationDebugFlags::Default );
 		}
 
 		// add glsl pipeline compiler
@@ -548,7 +547,7 @@ namespace VTPlayer
 
 			ppln_compiler->SetCompilationFlags( EShaderCompilationFlags::AlwaysWriteDiscard | EShaderCompilationFlags::AlwaysBufferDynamicOffset );
 
-			_frameGraphInst->AddPipelineCompiler( ppln_compiler );
+			_fgInstance->AddPipelineCompiler( ppln_compiler );
 		}
 		return true;
 	}
@@ -683,14 +682,14 @@ namespace VTPlayer
 		if ( _visualizeGraph == 1 )
 		{
 			_visualizeGraph = 2;
-			_frameGraphInst->SetCompilationFlags( ECompilationFlags::EnableDebugger, ECompilationDebugFlags::Default );
+			_fgInstance->SetCompilationFlags( ECompilationFlags::EnableDebugger, ECompilationDebugFlags::Default );
 
 			for (auto& fg : _frameGraphThreads) {
 				fg.thread->SetCompilationFlags( ECompilationFlags::EnableDebugger, ECompilationDebugFlags::Default );
 			}
 		}
 
-		CHECK( _frameGraphInst->BeginFrame( submission_graph ));
+		CHECK( _fgInstance->BeginFrame( submission_graph ));
 		return true;
 	}
 	
@@ -705,7 +704,7 @@ namespace VTPlayer
 	{
 		auto	frame_time	= Nonoseconds{unpacker.Get<uint64_t>()};
 
-		CHECK( _frameGraphInst->EndFrame() );
+		CHECK( _fgInstance->EndFrame() );
 
 		for (auto& pass : _resources.logicalPasses) {
 			pass = LogicalPassID{};
@@ -735,13 +734,13 @@ namespace VTPlayer
 		if ( _visualizeGraph == 2 )
 		{
 #		if defined(FG_GRAPHVIZ_DOT_EXECUTABLE) and defined(FG_STD_FILESYSTEM)
-			GraphViz::Visualize( _frameGraphInst, "FrameGraph_" + ToString(++_graphCounter) + ".dot" );
+			GraphViz::Visualize( _fgInstance, "FrameGraph_" + ToString(++_graphCounter) + ".dot" );
 #		endif
 			
 			for (auto& fg : _frameGraphThreads) {
 				fg.thread->SetCompilationFlags( ECompilationFlags::Unknown );
 			}
-			_frameGraphInst->SetCompilationFlags( ECompilationFlags::Unknown );
+			_fgInstance->SetCompilationFlags( ECompilationFlags::Unknown );
 			_visualizeGraph = 0;
 		}
 		return true;
@@ -798,6 +797,10 @@ namespace VTPlayer
 
 		// update FPS
 		++_profiling.frameCounter;
+		
+		FrameGraphInstance::Statistics	stat;
+		_fgInstance->GetStatistics( OUT stat );
+		_profiling.accumFTime += stat.renderer.frameTime;
 
 		TimePoint_t		now			= TimePoint_t::clock::now();
 		int64_t			duration	= duration_cast<milliseconds>(now - _profiling.lastUpdateTime).count();
@@ -813,6 +816,9 @@ namespace VTPlayer
 
 		str += " [FPS: ";
 		str += ToString( _profiling.averageFPS );
+		
+		str += ", FT: ";
+		str += ToString( _profiling.averageFTime );
 
 		str += ", ID: ";
 		str += ToString( _profiling.frameId );	// you can use frame ID to convert trace into c++ code or visualize graph

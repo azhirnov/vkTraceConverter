@@ -24,7 +24,7 @@ namespace VTPlayer
 
 		desc.usage << unpacker;
 
-		frame_graph = _frameGraphInst->CreateThread( desc );
+		frame_graph = _fgInstance->CreateThread( desc );
 		CHECK_ERR( frame_graph );
 
 		if ( EnumEq( desc.usage, EThreadUsage::Present ) )
@@ -315,6 +315,7 @@ namespace VTPlayer
 	{
 		auto&		frame_graph	= _frameGraphThreads[ unpacker.Get<uint>() ].thread;
 		const auto	image_idx	= unpacker.Get<Index_t>();
+		const auto	name		= "image-"s + ToString<16>( unpacker.Get<uint64_t>() );
 
 		CHECK_ERR( not _resources.images[image_idx] );
 
@@ -323,7 +324,7 @@ namespace VTPlayer
 		FGUnpack_ImageDesc( OUT desc, unpacker );
 		FGUnpack_MemoryDesc( OUT mem, unpacker );
 
-		_resources.images[image_idx] = frame_graph->CreateImage( desc, mem );
+		_resources.images[image_idx] = frame_graph->CreateImage( desc, mem, name );
 		CHECK_ERR( _resources.images[image_idx] );
 
 		return true;
@@ -358,6 +359,7 @@ namespace VTPlayer
 	{
 		auto&		frame_graph	= _frameGraphThreads[ unpacker.Get<uint>() ].thread;
 		const auto	buffer_idx	= unpacker.Get<Index_t>();
+		const auto	name		= "buffer-"s + ToString<16>( unpacker.Get<uint64_t>() );
 
 		CHECK_ERR( not _resources.buffers[buffer_idx] );
 		
@@ -366,7 +368,7 @@ namespace VTPlayer
 		FGUnpack_BufferDesc( OUT desc, unpacker );
 		FGUnpack_MemoryDesc( OUT mem, unpacker );
 		
-		_resources.buffers[buffer_idx] = frame_graph->CreateBuffer( desc, mem );
+		_resources.buffers[buffer_idx] = frame_graph->CreateBuffer( desc, mem, name );
 		CHECK_ERR( _resources.buffers[buffer_idx] );
 
 		return true;
@@ -460,6 +462,7 @@ namespace VTPlayer
 		FGUnpack_ColorBuffersState( OUT desc.colorState, unpacker );
 		FGUnpack_DepthBufferState( OUT desc.depthState, unpacker );
 		FGUnpack_StencilBufferState( OUT desc.stencilState, unpacker );
+		FGUnpack_RasterizationState( OUT desc.rasterizationState, unpacker );
 		FGUnpack_MultisampleState( OUT desc.multisampleState, unpacker );
 
 
@@ -991,16 +994,6 @@ namespace VTPlayer
 /*
 =================================================
 	_UpdateUniformBuffer
-=================================================
-*/
-	bool FGPlayer_v100::_UpdateUniformBuffer (FGUnpacker &)
-	{
-		return false;
-	}
-	
-/*
-=================================================
-	_UpdateUniformBuffer
 ----
 	see packer in 'FrameGraphConverter::BufferConverter::_UpdateBuffer'
 =================================================
@@ -1146,13 +1139,11 @@ namespace VTPlayer
 			const auto		ds_index	= unpacker.Get<uint>();
 			const auto		un_count	= unpacker.Get<uint>();
 			auto &			res			= data.descriptors[ds_index];
+			DescriptorSetID	desc_set	{"ds"s + ToString(ds_index) };
 
-			RawDescriptorSetLayoutID	ds_layout;
-			uint						ds_binding = ds_index;
-			CHECK( data.thread->GetDescriptorSet( pipeline, DescriptorSetID{"ds"s + ToString(ds_index)}, OUT ds_layout, OUT ds_binding ));
-			CHECK( data.thread->InitPipelineResources( ds_layout, OUT res ));
+			CHECK( data.thread->InitPipelineResources( pipeline, desc_set, OUT res ));
 
-			outResources[ds_binding] = &res;
+			outResources.insert({ desc_set, &res });
 
 			for (uint j = 0; j < un_count; ++j)
 			{

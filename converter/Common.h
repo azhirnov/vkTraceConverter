@@ -3,7 +3,7 @@
 #pragma once
 
 // from FrameGraph/stl
-#include "stl/CompileTime/DefaultType.h"
+#include "stl/Common.h"
 #include "stl/Containers/ArrayView.h"
 #include "stl/Containers/FixedArray.h"
 #include "stl/Containers/StaticString.h"

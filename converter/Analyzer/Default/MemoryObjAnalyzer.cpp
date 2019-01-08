@@ -198,7 +198,7 @@ namespace VTC
 	{
 		if ( not EnumEq( mem.propertyFlags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
 		{
-			// coherent is not needed becouse vktrace generate flush commands
+			// coherent is not needed because vktrace generate flush commands
 			//mem.propertyFlags |= VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
 			mem.propertyFlags |= VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;

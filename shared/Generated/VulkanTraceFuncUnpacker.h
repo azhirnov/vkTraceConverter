@@ -1053,13 +1053,6 @@ case EPacketID::VCmdDrawIndexedIndirectCountKHR : {
 	break;
 }
 
-case EPacketID::VDebugMarkerSetObjectNameEXT : {
-	auto const&  device = unpacker.Get<VkDevice>();
-	auto const&  pNameInfo = unpacker.Get<const VkDebugMarkerObjectNameInfoEXT *>();
-	VK_CALL( vkDebugMarkerSetObjectNameEXT( device, pNameInfo ));
-	break;
-}
-
 case EPacketID::VCmdDebugMarkerBeginEXT : {
 	auto const&  commandBuffer = unpacker.Get<VkCommandBuffer>();
 	auto const&  pMarkerInfo = unpacker.Get<const VkDebugMarkerMarkerInfoEXT *>();

@@ -60,7 +60,8 @@ namespace VTC
 
 		template <typename T>	void operator << (const T &);
 		
-		template <size_t Size, uint UID> void operator << (const _fg_hidden_::IDWithString<Size,UID> &);
+		template <size_t Size, uint UID, bool Optimize, uint Seed>
+		void operator << (const _fg_hidden_::IDWithString<Size,UID, Optimize, Seed> &);
 
 								void Begin (EPacketID);
 								void End (EPacketID);
@@ -119,10 +120,13 @@ namespace VTC
 	operator <<
 =================================================
 */
-	template <size_t Size, uint UID>
-	inline void  TracePacker::operator << (const _fg_hidden_::IDWithString<Size,UID> &value)
+	template <size_t Size, uint UID, bool Optimize, uint Seed>
+	inline void  TracePacker::operator << (const _fg_hidden_::IDWithString<Size,UID,Optimize,Seed> &value)
 	{
-		_Store( &value, sizeof(value), alignof(_fg_hidden_::IDWithString<Size,UID>) );
+		STATIC_ASSERT( not Optimize );
+
+		StaticString<Size>	temp{ value.GetName() };
+		_Store( &temp, sizeof(temp), alignof(StaticString<Size>) );
 	}
 
 /*

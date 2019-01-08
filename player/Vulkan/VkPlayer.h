@@ -274,6 +274,7 @@ namespace VTPlayer
 
 		bool _ImageCapture (VUnpacker &);
 		bool _BufferCapture (VUnpacker &);
+		bool _SetObjectName (VUnpacker &);
 
 		bool _QueueSubmit (VUnpacker &);
 	};

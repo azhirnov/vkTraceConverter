@@ -13,7 +13,6 @@
 namespace VTC
 {
 
-	
 /*
 =================================================
 	constructor
@@ -1008,18 +1007,6 @@ namespace VTC
 																   const DestriptorStates_t &allDescriptors, Ptr<RenderPass> renderPass,
 																   TraceRange::Bookmark pos, TracePacker &packer) const
 	{
-		const auto	ValidateImage = [this, renderPass] (INOUT RawImageID &imageId, INOUT ImageViewDesc &desc)
-									{
-										if ( not renderPass ) return;
-										for (auto& rt : renderPass->desc.renderTargets) {
-											if ( rt.second.image == imageId ) {
-												imageId			= _fgConv._imageConv->GetDummyColorImage2D();	// TODO: 2D array and other
-												desc.format		= _fgConv._imageConv->GetDummyColorImage2DDesc().format;
-												desc.aspectMask	= EPixelFormat_ToImageAspect( desc.format ) & (EImageAspect::Color | EImageAspect::Depth);
-												break;
-											}
-										}
-									};
 		const auto	ConvertImageView = [this] (const ImageAnalyzer::ImageViewInfo_t &view, INOUT ImageViewDesc &desc) -> bool
 									{
 										CHECK_ERR( _ConvertImageView( view, OUT desc ));
@@ -1089,7 +1076,6 @@ namespace VTC
 						CHECK_ERR( ConvertImageView( *view, INOUT view_desc ));
 
 						auto	image_id = _fgConv._imageConv->Remap( view->image->id, pos );
-						ValidateImage( INOUT image_id, INOUT view_desc );
 
 						packer << image_id.Index();
 						packer << _fgConv._samplerConv->Remap( desc.image.sampler, pos ).Index();
@@ -1117,7 +1103,6 @@ namespace VTC
 						CHECK_ERR( ConvertImageView( *view, OUT view_desc ));
 						
 						auto	image_id = _fgConv._imageConv->Remap( view->image->id, pos );
-						ValidateImage( INOUT image_id, INOUT view_desc );
 
 						packer << image_id.Index();
 						FGPack_ImageViewDesc( view_desc, packer );
@@ -2512,6 +2497,7 @@ namespace VTC
 		FGPack_ColorBuffersState( rp.desc.colorState, packer );
 		FGPack_DepthBufferState( rp.desc.depthState, packer );
 		FGPack_StencilBufferState( rp.desc.stencilState, packer );
+		FGPack_RasterizationState( rp.desc.rasterizationState, packer );
 		FGPack_MultisampleState( rp.desc.multisampleState, packer );
 
 		// render targets
@@ -2780,7 +2766,7 @@ namespace VTC
 										  OUT data_begin, OUT data_end ) )
 					{
 									data_begin	 = AlignToLarger( data_begin - buf_begin, row_pitch ) + buf_begin;
-						uint64_t	data_size	 = AlignToSmaller( data_end - data_begin, row_pitch * texel_block_dim.y );
+						uint64_t	data_size	 = AlignToSmaller( data_end - data_begin, row_pitch );
 						uint64_t	block_offset = data_begin - block.memOffset;
 						int3		img_offset	 = { reg.imageOffset.x, reg.imageOffset.y, reg.imageOffset.z };
 						uint3		img_size	 = { reg.imageExtent.width, reg.imageExtent.height, reg.imageExtent.depth };

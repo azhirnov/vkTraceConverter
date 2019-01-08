@@ -36,11 +36,16 @@ namespace VTPlayer
 			value = *static_cast<T *>(unpacker._Read( SizeOf<T>, AlignOf<T> ));
 		}
 		
-
-		template <size_t Size, uint UID>
-		friend void operator << (OUT _fg_hidden_::IDWithString<Size,UID> &value, FGUnpacker &unpacker)
+		
+		template <size_t Size, uint UID, bool Optimize, uint Seed>
+		friend void operator << (OUT _fg_hidden_::IDWithString<Size,UID,Optimize,Seed> &value, FGUnpacker &unpacker)
 		{
-			memcpy( &value, unpacker._Read( BytesU::SizeOf(value), BytesU::AlignOf(value) ), sizeof(value) );
+			STATIC_ASSERT( not Optimize );
+
+			StaticString<Size>	temp;
+			memcpy( &temp, unpacker._Read( BytesU::SizeOf(temp), BytesU::AlignOf(temp) ), sizeof(temp) );
+
+			value = _fg_hidden_::IDWithString<Size,UID,Optimize,Seed>{ temp };
 		}
 
 

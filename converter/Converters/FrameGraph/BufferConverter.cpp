@@ -27,6 +27,7 @@ namespace VTC
 			packer.Begin( EPacketID::FgCreateBuffer );
 			packer << uint(0);	// TODO: thread id
 			packer << iter->id;
+			packer << iter->uid;
 			FGPack_BufferDesc( iter->desc, packer );
 			FGPack_MemoryDesc( iter->mem, packer );
 			packer.End( EPacketID::FgCreateBuffer );
@@ -148,7 +149,7 @@ namespace VTC
 			
 			item.mem.type	= EnumEq( mem->usage, MemoryObjAnalyzer::EMemoryUsage::Dedicated ) ? EMemoryType::Dedicated :
 							  EnumEq( mem->usage, EMemoryUsage::HostWrite ) ? EMemoryType::HostWrite : EMemoryType::Default;
-			item.mem.poolId = MemPoolID{ ToString( mem->id )};
+			item.mem.poolId = MemPoolID{ ToString<16>( mem->id )};
 			item.memBinded	= true;
 			
 			_remapping.resize(Max( resource->localIndex+1, _remapping.size() ));
@@ -186,7 +187,7 @@ namespace VTC
 
 				item.mem.type	= EnumEq( mem->usage, MemoryObjAnalyzer::EMemoryUsage::Dedicated ) ? EMemoryType::Dedicated :
 								  EnumEq( mem->usage, EMemoryUsage::HostWrite ) ? EMemoryType::HostWrite : EMemoryType::Default;
-				item.mem.poolId = MemPoolID{ ToString( mem->id )};
+				item.mem.poolId = MemPoolID{ ToString<16>( mem->id )};
 				item.memBinded	= true;
 				
 				_remapping.resize(Max( resource->localIndex+1, _remapping.size() ));

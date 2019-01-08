@@ -16,6 +16,10 @@
 #include "framegraph/Public/FrameGraphDrawTask.h"
 #include "framegraph/Public/FrameGraphTask.h"
 
+#if defined(FG_OPTIMIZE_IDS) and FG_OPTIMIZE_IDS
+#	error not supported
+#endif
+
 namespace VTC
 {
 

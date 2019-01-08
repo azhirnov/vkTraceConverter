@@ -7,6 +7,9 @@
 #include "stl/Memory/LinearAllocator.h"
 #include "FrameGraph/VFG.h"
 
+#if defined(FG_OPTIMIZE_IDS) and FG_OPTIMIZE_IDS
+#	error not supported
+#endif
 
 namespace VTPlayer
 {
@@ -93,7 +96,7 @@ namespace VTPlayer
 		VulkanDeviceExt			_vulkan;
 		IWindow *				_window				= null;
 
-		FrameGraphPtr			_frameGraphInst;
+		FGInstancePtr			_fgInstance;
 		Array<FrameData>		_frameGraphThreads;
 
 		Resources				_resources;
@@ -206,7 +209,6 @@ namespace VTPlayer
 		bool _EndFrame (FGUnpacker &);
 		bool _BeginThread (FGUnpacker &);
 		bool _EndThread (FGUnpacker &);
-		bool _UpdateUniformBuffer (FGUnpacker &);
 		bool _UpdateHostBuffer (FGUnpacker &);
 		
 		bool _DrawVertices (FGUnpacker &);
