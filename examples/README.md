@@ -33,8 +33,8 @@ Also you can run player on any GPU, becouse memory allocation overrided.<br/>
 --open          doom.vktrace
 --output-dir    converted
 ```
-Converts vulkan api calls into [FrameGraph](https://github.com/azhirnov/FrameGraph) api calls.
-`force-dbo=true` can be used to convert all UBOs and SSBOs with dynamic offset.
+Converts vulkan api calls into [FrameGraph](https://github.com/azhirnov/FrameGraph) api calls.<br/>
+`force-dbo=true` can be used to convert all UBOs and SSBOs descriptors with dynamic offset.
 
 ![image](doom-fg.jpg)
 
