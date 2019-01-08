@@ -1,4 +1,4 @@
-// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
+// Copyright (c) 2018-2019,  Zhirnov Andrey. For more information see 'LICENSE'
 /*
 	Interfaces for simple virtual file system.
 	VFS used to pack shaders, buffer data, image data and all other large data.

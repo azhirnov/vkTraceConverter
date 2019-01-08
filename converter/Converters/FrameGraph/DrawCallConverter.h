@@ -1,4 +1,4 @@
-// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
+// Copyright (c) 2018-2019,  Zhirnov Andrey. For more information see 'LICENSE'
 /*
 	docs:
 	https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#pipelines-dynamic-state

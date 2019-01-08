@@ -1,4 +1,4 @@
-// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
+// Copyright (c) 2018-2019,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #pragma once
 
@@ -53,9 +53,6 @@ namespace VTC
 
 		uint					_imageCounter	= 0;
 
-		RawImageID				_dummyColorImage2D;
-		ImageDesc				_dummyColorImage2DDesc;
-
 
 	// methods
 	public:
@@ -75,14 +72,10 @@ namespace VTC
 		ND_ RawImageID	Remap (ResourceID id, TraceRange::Bookmark)		const;
 		ND_ RawImageID	Remap (VkImage id, TraceRange::Bookmark pos)	const	{ return Remap( ResourceID(id), pos ); }
 
-		ND_ RawImageID			GetDummyColorImage2D ()					const	{ return _dummyColorImage2D; }
-		ND_ ImageDesc const&	GetDummyColorImage2DDesc ()				const	{ return _dummyColorImage2DDesc; }
-
 
 	private:
 		bool _AddHostImage (VkImage img, MemoryObjAnalyzer::MemoryObjInfo_t const* mem, TraceRange::Bookmark pos);
 		bool _UpdateImage (const HostAccessibleImage &, TraceRange::Bookmark, FrameID, INOUT TracePacker &);
-		bool _CreateDummyImages (TracePacker &packer);
 	};
 
 

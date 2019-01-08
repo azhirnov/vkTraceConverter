@@ -1,4 +1,4 @@
-// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
+// Copyright (c) 2018-2019,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #include "Converters/FrameGraph/ImageConverter.h"
 #include "Converters/FrameGraph/FGEnumCast.h"
@@ -17,9 +17,6 @@ namespace VTC
 */
 	bool FrameGraphConverter::ImageConverter::OnBeginFrame (TraceRange::Bookmark submitPos, FrameID frameId, TracePacker &packer)
 	{
-		if ( not _dummyColorImage2D )
-			CHECK( _CreateDummyImages( packer ));
-
 		for (auto iter = _pendingImages.begin(); iter != _pendingImages.end();)
 		{
 			if ( not iter->memBinded ) {

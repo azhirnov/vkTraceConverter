@@ -1,4 +1,4 @@
-// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
+// Copyright (c) 2018-2019,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #include "Parser/AppTrace.h"
 #include "Converters/Converter.h"
@@ -28,44 +28,41 @@ using namespace VTC;
 */
 static const char	s_Help[] = R"#(
 -o
---open			open vktrace file
+--open          open vktrace file
 
 -d
 --output-dir    output directory
 
 -c      
---convert		run converters, available values:
-					vk-cpp		-- converts to c++ source with raw vulkan api calls (very large source files!).
-					vk-trace	-- converts to vulkan trace file.
-					vez-trace	-- converts to vulkan-ez trace file (WIP).
-					fg-trace	-- converts to framegraph trace file (WIP).
-					graphviz	-- converts to dot file.
-					all			-- enable all converters.
+--convert       run converters, available values:
+                    vk-cpp      -- converts to c++ source with raw vulkan api calls (very large source files!).
+                    vk-trace    -- converts to vulkan trace file.
+                    fg-trace    -- converts to framegraph trace file.
+                    graphviz    -- converts to dot file.
+                    all         -- enable all converters.
 
---cfg-vk-cpp		configure 'vk-cpp' converter:
-						multithreaded=[true/false] -- enable/disable multithread submiting to queue.
-						async-load=[true/false] -- enable/disable async data loading.
-						begin=[N] -- start converting on N frame, default is 0.
-						end=[N] -- stop converting on N frame, default is -1.
-						remap-mem=[true/false] -- enable this for portability.
-						remap-queue=[true/false] -- enable this for portability.
+--cfg-vk-cpp    configure 'vk-cpp' converter:
+                    multithreaded=[true/false] -- enable/disable multithread submiting to queue.
+                    async-load=[true/false] -- enable/disable async data loading.
+                    begin=[N] -- start converting on N frame, default is 0.
+                    end=[N] -- stop converting on N frame, default is -1.
+                    remap-mem=[true/false] -- enable this for portability.
+                    remap-queue=[true/false] -- enable this for portability.
 
---cfg-vk-trace		configure 'vk-trace' converter:
-						end=[N] -- stop converting on N frame, default is -1.
-						remap-mem=[true/false] -- enable this for portability.
-						remap-queue=[true/false] -- enable this for portability.
-						indirect-swapchain=[true/false] -- enable this for portability.
+--cfg-vk-trace  configure 'vk-trace' converter:
+                    end=[N] -- stop converting on N frame, default is -1.
+                    remap-mem=[true/false] -- enable this for portability.
+                    remap-queue=[true/false] -- enable this for portability.
+                    indirect-swapchain=[true/false] -- enable this for portability.
 
---cfg-vez-trace		configure 'vez-trace' converter:
+--cfg-fg-trace  configure 'fg-trace' converter:
+                    end=[N] -- stop converting on N frame, default is -1.
+                    force-dbo=[true/false] -- always use dynamic offset for UBO and SSBO.
 
---cfg-fg-trace		configure 'fg-trace' converter:
-						end=[N] -- stop converting on N frame, default is -1.
-						force-dbo=[true/false] -- always use dynamic offset for UBO and SSBO.
-
---cfg-graphviz		configure 'graphviz' converter:
-						begin=[N] -- start converting on N frame, default is 0.
-						end=[N] -- stop converting on N frame, default is -1.
-						show-sync=[true/false] -- show/hide barriers, events, semaphores, fences, subpass dependencies.
+--cfg-graphviz  configure 'graphviz' converter:
+                    begin=[N] -- start converting on N frame, default is 0.
+                    end=[N] -- stop converting on N frame, default is -1.
+                    show-sync=[true/false] -- show/hide barriers, events, semaphores, fences, subpass dependencies.
 )#";
 
 /*
@@ -237,8 +234,6 @@ int main (int argc, const char** argv)
 {
 	ConverterConfig		config;
 
-
-
 	// parse arguments
 	for (int i = 1; i < argc; ++i)
 	{
@@ -301,9 +296,11 @@ int main (int argc, const char** argv)
 	app_trace.AddAnalyzer(AnalyzerPtr{ new MemoryObjAnalyzer() });
 	app_trace.AddAnalyzer(AnalyzerPtr{ new RenderPassAnalyzer() });
 	app_trace.AddAnalyzer(AnalyzerPtr{ new MemoryTransferAnalyzer() });
-	//app_trace.AddAnalyzer(AnalyzerPtr{ new SynchronizationsAnalyzer( 3101, 3104 ) });
 	app_trace.AddAnalyzer(AnalyzerPtr{ new FPSAnalyzer() });
 	app_trace.AddAnalyzer(AnalyzerPtr{ new ExtensionAnalyzer() });
+	
+	if ( config.conveters.graphviz.isEnabled )
+		app_trace.AddAnalyzer(AnalyzerPtr{ new SynchronizationsAnalyzer() });
 
 	// load vktrace
 	CHECK_ERR( app_trace.Open( StringView(config.inputTraceFile) ), -120 );

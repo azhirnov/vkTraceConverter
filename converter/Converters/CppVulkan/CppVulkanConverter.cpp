@@ -1,4 +1,4 @@
-// Copyright (c) 2018,  Zhirnov Andrey. For more information see 'LICENSE'
+// Copyright (c) 2018-2019,  Zhirnov Andrey. For more information see 'LICENSE'
 
 #include "Converters/CppVulkan/CppVulkanConverter.h"
 #include "extensions/vulkan_loader/VulkanCheckError.h"
@@ -310,6 +310,8 @@ namespace VTC
 	{
 		CHECK_ERR( first < last );
 
+#	if defined(VTC_FRAMEGRAPH_SOURCE_PATH) and defined(VTC_FRAMEGRAPH_EXTERNAL_PATH) and defined(VTC_APPLICATION_SOURCE_PATH)
+
 		String	str;
 		str << "cmake_minimum_required (VERSION 3.6.0)\n\n"
 			<< "project( \"" << _projName << "\" LANGUAGES C CXX )\n"
@@ -353,12 +355,12 @@ namespace VTC
 
 		//str << "add_definitions( \"-DDATA_PATH=\\\"" << ConvertToCStyleString( _dataDir.string() ) << "\\\"\" )\n";
 		
-#	if defined(FG_ENABLE_GLFW)
+#	  if defined(FG_ENABLE_GLFW)
 		str << "add_definitions( -DFG_ENABLE_GLFW )\n";
-#	endif
-#	if defined(FG_ENABLE_SDL2)
+#	  endif
+#	  if defined(FG_ENABLE_SDL2)
 		str << "add_definitions( -DFG_ENABLE_SDL2 )\n";
-#	endif
+#	  endif
 		str << "add_definitions( -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -DNOMINMAX )\n"
 			<< "add_definitions( -D__STDC_LIMIT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_CONSTANT_MACROS )\n";
 
@@ -369,6 +371,11 @@ namespace VTC
 
 		CHECK_ERR( _StoreFile( fname, str ));
 		return true;
+
+#	else	// VTC_FRAMEGRAPH_SOURCE_PATH and VTC_FRAMEGRAPH_EXTERNAL_PATH
+
+		return false;
+#	endif
 	}
 	
 /*

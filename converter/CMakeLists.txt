@@ -2,7 +2,7 @@
 cmake_minimum_required (VERSION 3.6.0)
 
 set( VkTraceConverter_VERSION_MAJOR 0 )
-set( VkTraceConverter_VERSION_MINOR 1 )
+set( VkTraceConverter_VERSION_MINOR 3 )
 
 #==================================================================================================
 # project: Generator

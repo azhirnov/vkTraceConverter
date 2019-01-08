@@ -26,7 +26,7 @@ set( SOURCES
 	"Core/Settings.h"
 	"Core/VTPlayerDll.cpp"
 	"CMakeLists.txt" )
-add_library( "Player" STATIC ${SOURCES} )
+add_library( "Player" SHARED ${SOURCES} )
 source_group( "Reader" FILES "Reader/DataLoader.h" "Reader/TraceReader.cpp" "Reader/TraceReader.h" )
 source_group( "Public" FILES "Public/VTPlayer.h" )
 source_group( "Vulkan" FILES "Vulkan/VkPlayer.cpp" "Vulkan/VkPlayer.h" "Vulkan/VUnpacker.h" )
