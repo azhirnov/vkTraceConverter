@@ -47,7 +47,7 @@ Converts vulkan api calls into [FrameGraph](https://github.com/azhirnov/FrameGra
 --output-dir    converted
 ```
 You can inspect some frames or convert full trace (by removing `begin` and `end` commands) and get fully editable application source code, but usualy there is a megabytes of code and compilation may take a lot of time.<br/>
-Result: [doom-Frame3098](doom-Frame3098.cpp.txt)
+Result: [doom-Frame3098](doom-Frame3098.cpp.txt), [wolfenstein-Frame2639](wolfenstein-Frame2639.cpp.txt), [wolfenstein-Frame3141](wolfenstein-async-Frame3141.cpp.txt)
 
 
 ## Convert to C++ source code with dividing by threads
@@ -59,7 +59,7 @@ Result: [doom-Frame3098](doom-Frame3098.cpp.txt)
 ```
 Same as above, but vulkan api calls grouped by thread.<br/>
 **Warning:** threre is incorrect execution order, so application may not work correctly.<br/>
-Result: [doom-Frame3102](doom-Frame3102.cpp.txt)
+Result: [doom-Frame3102](doom-Frame3102.cpp.txt), [wolfenstein-Frame2640](wolfenstein-Frame2640.cpp.txt), [wolfenstein-Frame3142](wolfenstein-async-Frame3142.cpp.txt)
 
 
 ## Convert to synchronization graph and visualize
@@ -87,3 +87,9 @@ blue lines - command submision order.<br/>
 
 Doom synchronizations:
 ![doom](doom-syncgraph.png)
+
+Wolfenstein synchronizations (without async compute):
+![wolf1](wolfenstein-syncgraph.png)
+
+Wolfenstein synchronizations (with async compute):
+![wolf1](wolfenstein-async-syncgraph.png)
