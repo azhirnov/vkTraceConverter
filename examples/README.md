@@ -59,7 +59,7 @@ Result: [doom-Frame3098](doom-Frame3098.cpp.txt), [wolfenstein-Frame2639](wolfen
 ```
 Same as above, but vulkan api calls grouped by thread.<br/>
 **Warning:** threre is incorrect execution order, so application may not work correctly.<br/>
-Result: [doom-Frame3102](doom-Frame3102.cpp.txt), [wolfenstein-Frame2640](wolfenstein-Frame2640.cpp.txt), [wolfenstein-Frame3142](wolfenstein-async-Frame3142.cpp.txt)
+Result: [doom-Frame3102](doom-Frame3102.cpp.txt), [wolfenstein-Frame2640](wolfenstein-Frame2640.cpp.txt), [wolfenstein-Frame3142](wolfenstein-async-Frame3142.cpp.txt), [UE-ParticleEffects-Frame1100](UE-ParticleEffects-Frame1100.cpp.txt)
 
 
 ## Convert to synchronization graph and visualize
@@ -92,4 +92,7 @@ Wolfenstein synchronizations (without async compute):
 ![wolf1](wolfenstein-syncgraph.png)
 
 Wolfenstein synchronizations (with async compute):
-![wolf1](wolfenstein-async-syncgraph.png)
+![wolf2](wolfenstein-async-syncgraph.png)
+
+UE4 ParticleEffects synchronizations:
+![ue1](UE-ParticleEffects-syncgraph.png)
